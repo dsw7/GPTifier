@@ -1,8 +1,32 @@
 #include "query.h"
 
-#include <curl/curl.h>
 #include <iostream>
 #include <stdexcept>
+
+QueryHandler::QueryHandler(const std::string &api_key)
+{
+    this->api_key = api_key;
+    this->is_global_init = false;
+    this->curl = NULL;
+}
+
+QueryHandler::~QueryHandler()
+{
+    if (this->curl)
+    {
+        ::curl_easy_cleanup(curl);
+    }
+}
+
+void QueryHandler::init_easy()
+{
+    this->curl = ::curl_easy_init();
+
+    if (curl == NULL)
+    {
+        throw std::runtime_error("Something went wrong when starting libcurl easy session");
+    }
+}
 
 size_t write_callback(char* ptr, size_t size, size_t nmemb, std::string* data)
 {
