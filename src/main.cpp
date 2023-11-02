@@ -34,6 +34,23 @@ void load_api_key(std::string &api_key)
     s_key.close();
 }
 
+void run_query(const std::string &api_key, const std::string &prompt)
+{
+    static std::string url = "https://api.openai.com/v1/chat/completions";
+    static std::string model_id = "gpt-3.5-turbo";
+
+    std::cout << "--- GPTifier ---\n";
+    std::cout << "Using model: " + model_id + "\n";
+    std::cout << "Processing query: " + prompt << std::endl;
+
+    std::string header_content_type = "Content-Type: application/json";
+    std::string header_auth = "Authorization: Bearer " + api_key;
+
+    struct curl_slist* headers = NULL;
+    headers = curl_slist_append(headers, header_content_type.c_str());
+    headers = curl_slist_append(headers, header_auth.c_str());
+}
+
 int main(int argc, char **argv)
 {
     std::string exec = std::string(argv[0]);
@@ -64,5 +81,6 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    ::run_query(api_key, prompt);
     return EXIT_SUCCESS;
 }
