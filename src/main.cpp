@@ -29,11 +29,9 @@ void load_api_key(std::string &api_key)
     }
 
     std::ifstream s_key(path_key);
+    std::getline(s_key, api_key);
 
-    while (std::getline(s_key, api_key))
-    {
-        std::cout << api_key;
-    }
+    s_key.close();
 }
 
 int main(int argc, char **argv)
@@ -48,13 +46,7 @@ int main(int argc, char **argv)
 
     std::string prompt = std::string(argv[1]);
 
-    if (prompt.compare("-h") == 0)
-    {
-        ::help(exec);
-        return EXIT_SUCCESS;
-    }
-
-    if (prompt.compare("--help") == 0)
+    if ((prompt.compare("-h") == 0) or (prompt.compare("--help") == 0))
     {
         ::help(exec);
         return EXIT_SUCCESS;
