@@ -67,7 +67,11 @@ int main(int argc, char **argv)
     try
     {
         QueryHandler q(api_key);
-        q.run_query(prompt);
+
+        std::string reply;
+        q.run_query(prompt, reply);
+
+        std::cout << reply << std::endl;
     }
     catch (std::runtime_error& e)
     {

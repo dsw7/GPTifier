@@ -1,6 +1,5 @@
 #include "query.h"
 
-#include <iostream>
 #include <stdexcept>
 
 size_t write_callback(char* ptr, size_t size, size_t nmemb, std::string* data)
@@ -36,7 +35,7 @@ QueryHandler::~QueryHandler()
     ::curl_global_cleanup();
 }
 
-void QueryHandler::run_query(const std::string &prompt)
+void QueryHandler::run_query(const std::string &prompt, std::string &reply)
 {
     static std::string url = "https://api.openai.com/v1/chat/completions";
     ::curl_easy_setopt(this->curl, ::CURLOPT_URL, url.c_str());
@@ -55,14 +54,10 @@ void QueryHandler::run_query(const std::string &prompt)
     ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, data.c_str());
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEFUNCTION, ::write_callback);
-
-    std::string response;
-    ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEDATA, &response);
+    ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEDATA, &reply);
 
     if (::curl_easy_perform(this->curl) != ::CURLE_OK)
     {
         throw std::runtime_error("Failed to run query");
     }
-
-    std::cout << response << std::endl;
 }

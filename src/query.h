@@ -12,5 +12,5 @@ class QueryHandler
     public:
         QueryHandler(const std::string &api_key);
         ~QueryHandler();
-        void run_query(const std::string &prompt);
+        void run_query(const std::string &prompt, std::string &reply);
 };
