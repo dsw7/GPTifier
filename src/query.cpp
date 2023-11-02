@@ -35,7 +35,7 @@ QueryHandler::~QueryHandler()
     ::curl_global_cleanup();
 }
 
-void QueryHandler::run_query(const std::string &prompt, std::string &reply)
+void QueryHandler::run_query(const std::string &payload, std::string &reply)
 {
     static std::string url = "https://api.openai.com/v1/chat/completions";
     ::curl_easy_setopt(this->curl, ::CURLOPT_URL, url.c_str());
@@ -48,20 +48,7 @@ void QueryHandler::run_query(const std::string &prompt, std::string &reply)
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);
 
-    static std::string model_id = "gpt-3.5-turbo";
-
-    nlohmann::json messages = {};
-    messages["role"] = "user";
-    messages["content"] = prompt;
-
-    nlohmann::json payload = {};
-    payload["model"] = model_id;
-    payload["messages"] = {messages};
-
-    std::string data = "{\n\t\"model\": \"" + model_id + "\",\n\t\"messages\": [{ \"role\": \"user\", \"content\": \"" + prompt + "\" }]\n}";
-
-    ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, data.c_str());
-
+    ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, payload.c_str());
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEFUNCTION, ::write_callback);
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEDATA, &reply);
 

@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <string>
 
@@ -32,6 +33,21 @@ void load_api_key(std::string &api_key)
     std::getline(s_key, api_key);
 
     s_key.close();
+}
+
+void build_payload(const std::string &prompt, std::string &payload)
+{
+    nlohmann::json messages = {};
+
+    messages["role"] = "user";
+    messages["content"] = prompt;
+
+    nlohmann::json body = {};
+    body["messages"] = {messages};
+    body["model"] = "gpt-3.5-turbo";
+
+    std::cout << "Passing payload:\n" + body.dump(2) << std::endl;
+    payload = body.dump();
 }
 
 int main(int argc, char **argv)
@@ -64,12 +80,15 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    std::string payload;
+    ::build_payload(prompt, payload);
+
     try
     {
         QueryHandler q(api_key);
 
         std::string reply;
-        q.run_query(prompt, reply);
+        q.run_query(payload, reply);
 
         std::cout << reply << std::endl;
     }
