@@ -64,6 +64,16 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    ::run_query(api_key, prompt);
+    try
+    {
+        QueryHandler q(api_key);
+        q.run_query(prompt);
+    }
+    catch (std::runtime_error& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
