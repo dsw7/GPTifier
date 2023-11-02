@@ -49,7 +49,16 @@ void QueryHandler::run_query(const std::string &prompt, std::string &reply)
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);
 
     static std::string model_id = "gpt-3.5-turbo";
-    std::string data = "{\n\t\"model\": \"" + model_id + "\",\n\t\"messages\": [{ \"role\": \"system\", \"content\": \"You are a helpful assistant.\" }, { \"role\": \"user\", \"content\": \"" + prompt + "\" }]\n}";
+
+    nlohmann::json messages = {};
+    messages["role"] = "user";
+    messages["content"] = prompt;
+
+    nlohmann::json payload = {};
+    payload["model"] = model_id;
+    payload["messages"] = {messages};
+
+    std::string data = "{\n\t\"model\": \"" + model_id + "\",\n\t\"messages\": [{ \"role\": \"user\", \"content\": \"" + prompt + "\" }]\n}";
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, data.c_str());
 
