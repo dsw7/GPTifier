@@ -47,6 +47,8 @@ void print_results(const std::string &reply)
     std::string content = results["choices"][0]["message"]["content"];
     std::cout << "\033[1mResults:\033[0m\n" + content + "\n";
 
+    results["choices"][0]["message"]["content"] = "<See Results section>";
+
     print_separator();
     std::cout << "\033[1mAbout:\033[0m " + results.dump(2) << std::endl;
 }
