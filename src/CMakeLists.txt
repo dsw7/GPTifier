@@ -1,10 +1,27 @@
-project(GPTifier)
 cmake_minimum_required(VERSION 3.18)
+project(GPTifier)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
+
+set(NLOHMANN_JSON "nlohmann/json.hpp")
+set(NLOHMANN_JSON_NOT_FOUND BOOL TRUE)
+
+message(STATUS "Checking if ${NLOHMANN_JSON} exists anywhere")
+
+foreach(dir ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
+  if(EXISTS "${dir}/${NLOHMANN_JSON}")
+    message(STATUS "File ${NLOHMANN_JSON} found in ${dir}")
+    set(NLOHMANN_JSON_NOT_FOUND FALSE)
+    break()
+  endif()
+endforeach()
+
+if(NLOHMANN_JSON_NOT_FOUND)
+  message(FATAL_ERROR "Could not find ${NLOHMANN_JSON} in any include directory")
+endif()
 
 add_executable(
   "gpt"
