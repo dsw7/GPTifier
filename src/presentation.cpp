@@ -36,7 +36,7 @@ void print_help(const std::string &exec)
 void print_payload(const std::string &payload)
 {
     print_separator();
-    std::cout << "\033[1m\033[4mPayload\033[0m: " + payload << std::endl;
+    std::cout << "\033[1mPayload:\033[0m " + payload << std::endl;
 }
 
 void print_results(const std::string &reply)
@@ -45,10 +45,10 @@ void print_results(const std::string &reply)
 
     print_separator();
     std::string content = results["choices"][0]["message"]["content"];
-    std::cout << "\033[1m\033[4mResults\033[0m:\n" + content + "\n";
+    std::cout << "\033[1mResults:\033[0m\n" + content + "\n";
 
     print_separator();
-    std::cout << "\033[1m\033[4mAbout\033[0m: " + results.dump(2) << std::endl;
+    std::cout << "\033[1mAbout:\033[0m " + results.dump(2) << std::endl;
 }
 
 } // presentation
