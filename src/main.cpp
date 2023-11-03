@@ -8,12 +8,6 @@
 #include <stdexcept>
 #include <string>
 
-void help(const std::string &exec)
-{
-    std::cerr << "--- GPTifier ---\n";
-    std::cerr << "Usage: " + exec + " '<prompt>'" << std::endl;
-}
-
 void load_api_key(std::string &api_key)
 {
     const char* home_dir = std::getenv("HOME");
@@ -56,7 +50,7 @@ int main(int argc, char **argv)
 
     if (argc < 2)
     {
-        ::help(exec);
+        presentation::print_help(exec);
         return EXIT_FAILURE;
     }
 
@@ -64,7 +58,7 @@ int main(int argc, char **argv)
 
     if ((prompt.compare("-h") == 0) or (prompt.compare("--help") == 0))
     {
-        ::help(exec);
+        presentation::print_help(exec);
         return EXIT_SUCCESS;
     }
 

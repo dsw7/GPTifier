@@ -26,4 +26,10 @@ void print_separator()
     std::cout << std::string(columns, '-') << std::endl;
 }
 
+void print_help(const std::string &exec)
+{
+    print_separator();
+    std::cout << "Usage: " + exec + " '<prompt>'" << std::endl;
+}
+
 } // presentation
