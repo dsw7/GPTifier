@@ -49,7 +49,8 @@ void parse_results(const std::string &reply)
     nlohmann::json results = nlohmann::json::parse(reply);
 
     presentation::print_separator();
-    std::cout << results["choices"][0]["message"]["content"] << std::endl;
+    std::string content = results["choices"][0]["message"]["content"];
+    std::cout << content << std::endl;
 
     presentation::print_separator();
     std::cout << results.dump(2) << std::endl;
