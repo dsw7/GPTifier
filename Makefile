@@ -1,4 +1,4 @@
-.PHONY = help compile clean
+.PHONY = help compile clean lint
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
@@ -6,6 +6,8 @@ To compile binary:
     $$ make compile
 To remove build directory:
     $$ make clean
+To run cppcheck linter:
+    $$ make lint
 endef
 
 export HELP_LIST_TARGETS
@@ -19,3 +21,6 @@ compile:
 
 clean:
 	@rm --recursive --verbose build
+
+lint:
+	@cppcheck src/ --enable=all
