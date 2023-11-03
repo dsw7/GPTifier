@@ -77,9 +77,7 @@ int main(int argc, char **argv)
     std::string payload;
     ::build_payload(prompt, payload);
 
-    presentation::print_separator();
-    std::cout << payload << std::endl;
-
+    presentation::print_payload(payload);
     std::string reply;
 
     try
