@@ -8,6 +8,13 @@
 #include <stdexcept>
 #include <string>
 
+void read_prompt(std::string &prompt)
+{
+    presentation::print_separator();
+    std::cout << "\033[1mInput:\033[0m ";
+    std::getline(std::cin, prompt);
+}
+
 void load_api_key(std::string &api_key)
 {
     const char* home_dir = std::getenv("HOME");
@@ -48,18 +55,24 @@ int main(int argc, char **argv)
 {
     std::string exec = std::string(argv[0]);
 
-    if (argc < 2)
+    if (argc > 1)
     {
-        presentation::print_help(exec);
-        return EXIT_FAILURE;
+        std::string flag = std::string(argv[1]);
+
+        if ((flag.compare("-h") == 0) or (flag.compare("--help") == 0))
+        {
+            presentation::print_help(exec);
+            return EXIT_SUCCESS;
+        }
     }
 
-    std::string prompt = std::string(argv[1]);
+    std::string prompt;
+    ::read_prompt(prompt);
 
-    if ((prompt.compare("-h") == 0) or (prompt.compare("--help") == 0))
+    if (prompt.empty())
     {
-        presentation::print_help(exec);
-        return EXIT_SUCCESS;
+        std::cerr << "Prompt cannot be empty" << std::endl;
+        return EXIT_FAILURE;
     }
 
     std::string api_key;
