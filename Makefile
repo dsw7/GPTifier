@@ -17,7 +17,7 @@ help:
 
 compile:
 	@cmake -S src -B build
-	@make --jobs=12 --directory=build
+	@make --jobs=12 --directory=build install
 
 clean:
 	@rm --recursive --verbose build

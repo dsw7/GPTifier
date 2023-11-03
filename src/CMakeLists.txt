@@ -16,3 +16,6 @@ target_link_libraries(
   "gpt"
   "curl"
 )
+
+set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local")
+install(TARGETS "gpt" DESTINATION "bin")
