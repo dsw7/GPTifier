@@ -44,18 +44,6 @@ void build_payload(const std::string &prompt, std::string &payload)
     payload = body.dump(2);
 }
 
-void parse_results(const std::string &reply)
-{
-    nlohmann::json results = nlohmann::json::parse(reply);
-
-    presentation::print_separator();
-    std::string content = results["choices"][0]["message"]["content"];
-    std::cout << content << std::endl;
-
-    presentation::print_separator();
-    std::cout << results.dump(2) << std::endl;
-}
-
 int main(int argc, char **argv)
 {
     std::string exec = std::string(argv[0]);
@@ -105,6 +93,6 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    ::parse_results(reply);
+    presentation::print_results(reply);
     return EXIT_SUCCESS;
 }

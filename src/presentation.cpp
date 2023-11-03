@@ -1,6 +1,7 @@
 #include "presentation.h"
 
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -30,6 +31,18 @@ void print_help(const std::string &exec)
 {
     print_separator();
     std::cout << "Usage: " + exec + " '<prompt>'" << std::endl;
+}
+
+void print_results(const std::string &reply)
+{
+    nlohmann::json results = nlohmann::json::parse(reply);
+
+    print_separator();
+    std::string content = results["choices"][0]["message"]["content"];
+    std::cout << content << std::endl;
+
+    print_separator();
+    std::cout << results.dump(2) << std::endl;
 }
 
 } // presentation
