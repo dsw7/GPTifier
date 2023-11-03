@@ -44,6 +44,17 @@ void build_payload(const std::string &prompt, std::string &payload)
     payload = body.dump(2);
 }
 
+void parse_results(const std::string &reply)
+{
+    nlohmann::json results = nlohmann::json::parse(reply);
+
+    presentation::print_separator();
+    std::cout << results["choices"][0]["message"]["content"] << std::endl;
+
+    presentation::print_separator();
+    std::cout << results.dump(2) << std::endl;
+}
+
 int main(int argc, char **argv)
 {
     std::string exec = std::string(argv[0]);
@@ -80,14 +91,12 @@ int main(int argc, char **argv)
     presentation::print_separator();
     std::cout << payload << std::endl;
 
+    std::string reply;
+
     try
     {
         QueryHandler q(api_key);
-
-        std::string reply;
         q.run_query(payload, reply);
-
-        std::cout << reply << std::endl;
     }
     catch (std::runtime_error& e)
     {
@@ -95,5 +104,6 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
+    ::parse_results(reply);
     return EXIT_SUCCESS;
 }
