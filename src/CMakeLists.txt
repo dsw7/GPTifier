@@ -9,6 +9,7 @@ add_compile_options(-Wall -Wextra -pedantic -Werror)
 add_executable(
   "gpt"
   "main.cpp"
+  "presentation.cpp"
   "query.cpp"
 )
 target_link_libraries(

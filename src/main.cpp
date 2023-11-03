@@ -1,4 +1,5 @@
 #include "query.h"
+#include "presentation.h"
 
 #include <filesystem>
 #include <fstream>
@@ -46,8 +47,7 @@ void build_payload(const std::string &prompt, std::string &payload)
     body["messages"] = {messages};
     body["model"] = "gpt-3.5-turbo";
 
-    std::cout << "Passing payload:\n" + body.dump(2) << std::endl;
-    payload = body.dump();
+    payload = body.dump(2);
 }
 
 int main(int argc, char **argv)
@@ -82,6 +82,9 @@ int main(int argc, char **argv)
 
     std::string payload;
     ::build_payload(prompt, payload);
+
+    presentation::print_separator();
+    std::cout << payload << std::endl;
 
     try
     {
