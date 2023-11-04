@@ -12,6 +12,14 @@ locate the `nlohmann/json.hpp` header file. To set up the header file, first run
 ```
 curl https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp -o /tmp/json.hpp
 ```
+Then make the folder:
+```
+sudo mkdir /usr/include/nlohmann
+```
+Then copy:
+```
+sudo cp /tmp/json.hpp /usr/include/nlohmann/
+```
 ### Compile binary
 To set the product up, simply run the `make` target:
 ```
