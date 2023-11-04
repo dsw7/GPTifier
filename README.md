@@ -8,7 +8,8 @@ A beautiful C++ libcurl / ChatGPT interface
 ## Setup
 ### Get `json.hpp`
 This project uses the [nlohmann/json](https://github.com/nlohmann/json) library. The compiler must be able to
-locate the `nlohmann/json.hpp` header file. If the `json.hpp` file does not exist anywhere, `cmake` will print out:
+locate the `nlohmann/json.hpp` header file. If the `json.hpp` file does not exist anywhere, `cmake` will print
+out:
 ```
 -- Checking if nlohmann/json.hpp exists anywhere
 -- Checking directory: /usr/include/c++/10
