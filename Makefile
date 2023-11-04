@@ -20,7 +20,7 @@ compile:
 	@make --jobs=12 --directory=build install
 
 clean:
-	@rm --recursive --verbose build
+	@rm -rfv build
 
 lint:
 	@cppcheck src/ --enable=all
