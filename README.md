@@ -2,7 +2,7 @@
 A beautiful C++ libcurl / ChatGPT interface
 ## Table of Contents
 - [Setup](#setup)
-  - [Get `json.hpp`](#get-json-hpp)
+  - [Get `json.hpp`](#get-jsonhpp)
   - [Compile binary](#compile-binary)
   - [Clean up](#clean-up)
 
