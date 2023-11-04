@@ -4,6 +4,7 @@ A beautiful C++ libcurl / ChatGPT interface
 - [Setup](#setup)
   - [Get `json.hpp`](#get-json-hpp)
   - [Compile binary](#compile-binary)
+  - [Clean up](#clean-up)
 
 ## Setup
 ### Get `json.hpp`
@@ -44,4 +45,9 @@ The binary will be installed into whatever install directory is resolved by CMak
 program, run:
 ```
 gpt
+```
+### Clean up
+The compilation process will generate many build artifacts. Clean up the build artifacts by running:
+```
+make clean
 ```
