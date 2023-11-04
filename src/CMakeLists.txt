@@ -6,7 +6,7 @@ set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
-set(NLOHMANN_JSON "nlohmann/json.hpp2")
+set(NLOHMANN_JSON "nlohmann/json.hpp")
 set(NLOHMANN_JSON_NOT_FOUND BOOL TRUE)
 
 message(STATUS "Checking if ${NLOHMANN_JSON} exists anywhere")
