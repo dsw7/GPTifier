@@ -27,12 +27,6 @@ void print_separator()
     std::cout << std::string(columns, '-') + "\n";
 }
 
-void print_help(const std::string &exec)
-{
-    print_separator();
-    std::cout << "Usage: " + exec + " '<prompt>'" << std::endl;
-}
-
 void print_payload(const std::string &payload)
 {
     print_separator();

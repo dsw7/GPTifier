@@ -51,21 +51,8 @@ void build_payload(const std::string &prompt, std::string &payload)
     payload = body.dump(2);
 }
 
-int main(int argc, char **argv)
+int main()
 {
-    std::string exec = std::string(argv[0]);
-
-    if (argc > 1)
-    {
-        std::string flag = std::string(argv[1]);
-
-        if ((flag.compare("-h") == 0) or (flag.compare("--help") == 0))
-        {
-            presentation::print_help(exec);
-            return EXIT_SUCCESS;
-        }
-    }
-
     std::string prompt;
     ::read_prompt(prompt);
 
