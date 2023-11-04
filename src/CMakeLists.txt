@@ -12,6 +12,7 @@ set(NLOHMANN_JSON_NOT_FOUND BOOL TRUE)
 message(STATUS "Checking if ${NLOHMANN_JSON} exists anywhere")
 
 foreach(dir ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
+  message(STATUS "Checking directory: ${dir}")
   if(EXISTS "${dir}/${NLOHMANN_JSON}")
     message(STATUS "File ${NLOHMANN_JSON} found in ${dir}")
     set(NLOHMANN_JSON_NOT_FOUND FALSE)
