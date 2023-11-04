@@ -39,7 +39,9 @@ To set the product up, simply run the `make` target:
 ```
 make compile
 ```
-The binary will be installed into whatever install directory is resolved by CMake's [install()](https://cmake.org/cmake/help/latest/command/install.html#command:install). To drop into the program, run:
+The binary will be installed into whatever install directory is resolved by CMake's
+[install()](https://cmake.org/cmake/help/latest/command/install.html#command:install). To drop into the
+program, run:
 ```
 gpt
 ```
