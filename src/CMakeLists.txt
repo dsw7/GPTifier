@@ -26,6 +26,7 @@ endif()
 
 add_executable(
   "gpt"
+  "configs.cpp"
   "main.cpp"
   "presentation.cpp"
   "query.cpp"
