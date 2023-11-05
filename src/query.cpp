@@ -61,7 +61,7 @@ void QueryHandler::print_payload()
         throw std::runtime_error("Payload is empty. Will not print payload");
     }
 
-    std::cout << "\033[1mPayload:\033[0m " + payload << std::endl;
+    std::cout << "\033[1mPayload:\033[0m " + payload + '\n';
 }
 
 void QueryHandler::run_query()
