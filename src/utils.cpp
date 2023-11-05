@@ -1,9 +1,11 @@
-#include "presentation.h"
+#include "utils.h"
 
 #include <iostream>
-#include <nlohmann/json.hpp>
 #include <sys/ioctl.h>
 #include <unistd.h>
+
+namespace utils
+{
 
 unsigned short get_terminal_columns()
 {
@@ -18,13 +20,10 @@ unsigned short get_terminal_columns()
     return 20;
 }
 
-namespace presentation
-{
-
 void print_separator()
 {
-    static unsigned short columns = ::get_terminal_columns();
+    static unsigned short columns = get_terminal_columns();
     std::cout << std::string(columns, '-') + "\n";
 }
 
-} // presentation
+} // utils

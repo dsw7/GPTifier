@@ -1,6 +1,6 @@
 #include "configs.h"
-#include "presentation.h"
 #include "query.h"
+#include "utils.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -8,7 +8,7 @@
 
 void read_prompt(std::string &prompt)
 {
-    presentation::print_separator();
+    utils::print_separator();
     std::cout << "\033[1mInput:\033[0m ";
     std::getline(std::cin, prompt);
 }

@@ -1,5 +1,5 @@
-#include "presentation.h"
 #include "query.h"
+#include "utils.h"
 
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -54,7 +54,7 @@ void QueryHandler::build_payload(const std::string &prompt)
 
 void QueryHandler::print_payload()
 {
-    presentation::print_separator();
+    utils::print_separator();
 
     if (this->payload.empty())
     {
@@ -98,7 +98,7 @@ void QueryHandler::print_response()
         throw std::runtime_error("Response is empty. Cannot print response");
     }
 
-    presentation::print_separator();
+    utils::print_separator();
 
     nlohmann::json results = nlohmann::json::parse(this->response);
 
@@ -108,10 +108,10 @@ void QueryHandler::print_response()
         results["error"]["message"] = "<See Results section>";
 
         std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
-        presentation::print_separator();
+        utils::print_separator();
 
         std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
-        presentation::print_separator();
+        utils::print_separator();
 
         std::cout << std::endl;
     }
@@ -121,10 +121,10 @@ void QueryHandler::print_response()
         results["choices"][0]["message"]["content"] = "<See Results section>";
 
         std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
-        presentation::print_separator();
+        utils::print_separator();
 
         std::cout << "\033[1mResults:\033[32m " + content + "\033[0m\n";
-        presentation::print_separator();
+        utils::print_separator();
 
         std::cout << std::endl;
     }
