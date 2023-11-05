@@ -1,9 +1,9 @@
 #include "configs.h"
 
-#include <toml++/toml.hpp>
 #include <cstdlib>
 #include <filesystem>
 #include <stdexcept>
+#include <toml++/toml.hpp>
 
 void read_configs(Configs &configs)
 {
@@ -27,9 +27,9 @@ void read_configs(Configs &configs)
     {
         tbl = toml::parse_file(path_toml);
     }
-    catch (const toml::parse_error& err)
+    catch (const toml::parse_error& e)
     {
-        throw std::runtime_error(err);
+        throw std::runtime_error(e);
     }
 
     configs.api_key = tbl["authentication"]["api-key"].value_or("");
