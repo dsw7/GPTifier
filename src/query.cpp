@@ -64,11 +64,11 @@ void QueryHandler::print_payload()
     std::cout << "\033[1mPayload:\033[0m " + payload << std::endl;
 }
 
-void QueryHandler::run_query(std::string &reply)
+void QueryHandler::run_query()
 {
     if (this->payload.empty())
     {
-        throw std::runtime_error("Payload is empty. Cannot proceed");
+        throw std::runtime_error("Payload is empty. Cannot run query");
     }
     ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, this->payload.c_str());
 
@@ -83,10 +83,49 @@ void QueryHandler::run_query(std::string &reply)
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEFUNCTION, ::write_callback);
-    ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEDATA, &reply);
+    ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEDATA, &this->response);
 
     if (::curl_easy_perform(this->curl) != ::CURLE_OK)
     {
         throw std::runtime_error("Failed to run query");
+    }
+}
+
+void QueryHandler::print_response()
+{
+    if (this->response.empty())
+    {
+        throw std::runtime_error("Response is empty. Cannot print response");
+    }
+
+    presentation::print_separator();
+
+    nlohmann::json results = nlohmann::json::parse(this->response);
+
+    if (results.contains("error"))
+    {
+        std::string error = results["error"]["message"];
+        results["error"]["message"] = "<See Results section>";
+
+        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
+        presentation::print_separator();
+
+        std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
+        presentation::print_separator();
+
+        std::cout << std::endl;
+    }
+    else
+    {
+        std::string content = results["choices"][0]["message"]["content"];
+        results["choices"][0]["message"]["content"] = "<See Results section>";
+
+        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
+        presentation::print_separator();
+
+        std::cout << "\033[1mResults:\033[32m " + content + "\033[0m\n";
+        presentation::print_separator();
+
+        std::cout << std::endl;
     }
 }

@@ -27,38 +27,4 @@ void print_separator()
     std::cout << std::string(columns, '-') + "\n";
 }
 
-void print_results(const std::string &reply)
-{
-    nlohmann::json results = nlohmann::json::parse(reply);
-
-    print_separator();
-
-    if (results.contains("error"))
-    {
-        std::string error = results["error"]["message"];
-        results["error"]["message"] = "<See Results section>";
-
-        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
-        print_separator();
-
-        std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
-        print_separator();
-
-        std::cout << std::endl;
-    }
-    else
-    {
-        std::string content = results["choices"][0]["message"]["content"];
-        results["choices"][0]["message"]["content"] = "<See Results section>";
-
-        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
-        print_separator();
-
-        std::cout << "\033[1mResults:\033[32m " + content + "\033[0m\n";
-        print_separator();
-
-        std::cout << std::endl;
-    }
-}
-
 } // presentation

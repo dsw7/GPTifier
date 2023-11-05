@@ -36,14 +36,12 @@ int main()
         return EXIT_FAILURE;
     }
 
-    std::string reply;
-
     try
     {
         QueryHandler q(configs);
         q.build_payload(prompt);
         q.print_payload();
-        q.run_query(reply);
+        q.run_query();
     }
     catch (std::runtime_error& e)
     {
@@ -51,6 +49,5 @@ int main()
         return EXIT_FAILURE;
     }
 
-    presentation::print_results(reply);
     return EXIT_SUCCESS;
 }
