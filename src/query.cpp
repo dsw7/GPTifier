@@ -1,6 +1,8 @@
 #include "query.h"
 
 #include <stdexcept>
+#include <nlohmann/json.hpp>
+#include "presentation.h"
 
 size_t write_callback(char* ptr, size_t size, size_t nmemb, std::string* data)
 {
@@ -35,8 +37,28 @@ QueryHandler::~QueryHandler()
     ::curl_global_cleanup();
 }
 
-void QueryHandler::run_query(const std::string &payload, std::string &reply)
+void QueryHandler::build_payload(const std::string &prompt)
 {
+    nlohmann::json body = {};
+    body["model"] = "gpt-3.5-turbo";
+
+    nlohmann::json messages = {};
+    messages["role"] = "user";
+    messages["content"] = prompt;
+
+    body["messages"] = {messages};
+    this->payload = body.dump(2);
+    presentation::print_payload(this->payload);
+}
+
+void QueryHandler::run_query(std::string &reply)
+{
+    if (this->payload.empty())
+    {
+        throw std::runtime_error("Payload is empty. Cannot proceed");
+    }
+    ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, this->payload.c_str());
+
     static std::string url = "https://api.openai.com/v1/chat/completions";
     ::curl_easy_setopt(this->curl, ::CURLOPT_URL, url.c_str());
 
@@ -47,8 +69,6 @@ void QueryHandler::run_query(const std::string &payload, std::string &reply)
     headers = ::curl_slist_append(headers, header_auth.c_str());
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);
-
-    ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, payload.c_str());
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEFUNCTION, ::write_callback);
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEDATA, &reply);
 
