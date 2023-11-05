@@ -8,9 +8,9 @@ size_t write_callback(char* ptr, size_t size, size_t nmemb, std::string* data)
     return size * nmemb;
 }
 
-QueryHandler::QueryHandler(const std::string &api_key)
+QueryHandler::QueryHandler(const Configs &configs)
 {
-    this->api_key = api_key;
+    this->configs = configs;
 
     if (::curl_global_init(CURL_GLOBAL_DEFAULT) != 0)
     {
@@ -43,7 +43,7 @@ void QueryHandler::run_query(const std::string &payload, std::string &reply)
     struct ::curl_slist* headers = NULL;
     headers = ::curl_slist_append(headers, "Content-Type: application/json");
 
-    std::string header_auth = "Authorization: Bearer " + api_key;
+    std::string header_auth = "Authorization: Bearer " + this->configs.api_key;
     headers = ::curl_slist_append(headers, header_auth.c_str());
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);

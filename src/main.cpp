@@ -59,7 +59,7 @@ int main()
 
     try
     {
-        QueryHandler q(configs.api_key);
+        QueryHandler q(configs);
         q.run_query(payload, reply);
     }
     catch (std::runtime_error& e)
