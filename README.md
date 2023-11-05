@@ -73,6 +73,8 @@ To set the product up, simply run the `make` target:
 ```
 make compile
 ```
+The binary will be installed into whatever install directory is resolved by CMake's
+[install()](https://cmake.org/cmake/help/latest/command/install.html#command:install).
 ### Set up TOML
 This project uses [TOML](https://toml.io/en/) to store configurations. Copy the [.gptifier](./.gptifier) TOML
 file from this repository to your home directory:
@@ -95,9 +97,7 @@ api-key = "<your-api-key>"
 # See https://platform.openai.com/docs/models/overview for a list of models
 model = "<choose-a-valid-model>"
 ```
-The binary will be installed into whatever install directory is resolved by CMake's
-[install()](https://cmake.org/cmake/help/latest/command/install.html#command:install). To drop into the
-program, run:
+Next, drop into the program:
 ```
 gpt
 ```
