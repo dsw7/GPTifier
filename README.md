@@ -7,6 +7,7 @@ A beautiful C++ libcurl / ChatGPT interface
   - [Get `json.hpp`](#get-jsonhpp)
   - [Get `toml.hpp`](#get-tomlhpp)
   - [Compile binary](#compile-binary)
+  - [Set up TOML](#set-up-toml)
   - [Clean up](#clean-up)
 
 ## Setup
@@ -72,12 +73,35 @@ To set the product up, simply run the `make` target:
 ```
 make compile
 ```
+### Set up TOML
+This project uses [TOML](https://toml.io/en/) to store configurations. Copy the [.gptifier](./.gptifier) TOML
+file from this repository to your home directory:
+```
+cp .gptifier ~/
+```
+Set the permissions to 600:
+```
+chmod 600 ~/.gptifier
+```
+And edit the file:
+```toml
+[authentication]
+# Specify API key
+# See https://platform.openai.com/docs/api-reference/authentication
+api-key = "<your-api-key>"
+
+[models]
+# Specify model
+# See https://platform.openai.com/docs/models/overview for a list of models
+model = "<choose-a-valid-model>"
+```
 The binary will be installed into whatever install directory is resolved by CMake's
 [install()](https://cmake.org/cmake/help/latest/command/install.html#command:install). To drop into the
 program, run:
 ```
 gpt
 ```
+The program should begin if the `.gptifier` file is properly set up.
 ### Clean up
 The compilation process will generate many build artifacts. Clean up the build artifacts by running:
 ```
