@@ -6,13 +6,6 @@
 #include <stdexcept>
 #include <string>
 
-void read_prompt(std::string &prompt)
-{
-    utils::print_separator();
-    std::cout << "\033[1mInput:\033[0m ";
-    std::getline(std::cin, prompt);
-}
-
 int main()
 {
     Configs configs;
@@ -27,8 +20,11 @@ int main()
         return EXIT_FAILURE;
     }
 
+    utils::print_separator();
+
     std::string prompt;
-    ::read_prompt(prompt);
+    std::cout << "\033[1mInput:\033[0m ";
+    std::getline(std::cin, prompt);
 
     if (prompt.empty())
     {
