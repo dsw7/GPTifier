@@ -42,6 +42,7 @@ int main()
     {
         QueryHandler q(configs);
         q.build_payload(prompt);
+        q.print_payload();
         q.run_query(reply);
     }
     catch (std::runtime_error& e)

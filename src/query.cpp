@@ -1,8 +1,9 @@
+#include "presentation.h"
 #include "query.h"
 
-#include <stdexcept>
+#include <iostream>
 #include <nlohmann/json.hpp>
-#include "presentation.h"
+#include <stdexcept>
 
 size_t write_callback(char* ptr, size_t size, size_t nmemb, std::string* data)
 {
@@ -47,8 +48,20 @@ void QueryHandler::build_payload(const std::string &prompt)
     messages["content"] = prompt;
 
     body["messages"] = {messages};
+
     this->payload = body.dump(2);
-    presentation::print_payload(this->payload);
+}
+
+void QueryHandler::print_payload()
+{
+    presentation::print_separator();
+
+    if (this->payload.empty())
+    {
+        throw std::runtime_error("Payload is empty. Will not print payload");
+    }
+
+    std::cout << "\033[1mPayload:\033[0m " + payload << std::endl;
 }
 
 void QueryHandler::run_query(std::string &reply)

@@ -27,12 +27,6 @@ void print_separator()
     std::cout << std::string(columns, '-') + "\n";
 }
 
-void print_payload(const std::string &payload)
-{
-    print_separator();
-    std::cout << "\033[1mPayload:\033[0m " + payload << std::endl;
-}
-
 void print_results(const std::string &reply)
 {
     nlohmann::json results = nlohmann::json::parse(reply);
