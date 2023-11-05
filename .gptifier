@@ -1,11 +1,15 @@
-[authentication]
+# --------------------------------------------------
+# GPTifier
+# Written by David Weber
+# See https://github.com/dsw7/GPTifier for more information
+# --------------------------------------------------
 
+[authentication]
 # Specify API key
 # See https://platform.openai.com/docs/api-reference/authentication
 api-key = "<api-key>"
 
 [models]
-
 # Specify model
 # See https://platform.openai.com/docs/models/overview for a list of models
 model = "gpt-3.5-turbo"
