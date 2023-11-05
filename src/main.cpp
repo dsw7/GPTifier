@@ -42,6 +42,7 @@ int main()
         q.build_payload(prompt);
         q.print_payload();
         q.run_query();
+        q.print_response();
     }
     catch (std::runtime_error& e)
     {
