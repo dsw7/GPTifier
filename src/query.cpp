@@ -41,7 +41,7 @@ QueryHandler::~QueryHandler()
 void QueryHandler::build_payload(const std::string &prompt)
 {
     nlohmann::json body = {};
-    body["model"] = "gpt-3.5-turbo";
+    body["model"] = this->configs.model;
 
     nlohmann::json messages = {};
     messages["role"] = "user";

@@ -21,17 +21,17 @@ void read_configs(Configs &configs)
         throw std::runtime_error("Could not locate .gptifier TOML file in home directory!");
     }
 
-    toml::table tbl;
+    toml::table table;
 
     try
     {
-        tbl = toml::parse_file(path_toml);
+        table = toml::parse_file(path_toml);
     }
     catch (const toml::parse_error& e)
     {
         throw std::runtime_error(e);
     }
 
-    configs.api_key = tbl["authentication"]["api-key"].value_or("");
-    configs.model = "foo";
+    configs.api_key = table["authentication"]["api-key"].value_or("");
+    configs.model = table["models"]["model"].value_or("");
 }
