@@ -24,6 +24,24 @@ if(NLOHMANN_JSON_NOT_FOUND)
   message(FATAL_ERROR "Could not find ${NLOHMANN_JSON} in any include directory")
 endif()
 
+set(TOMLPLUSPLUS "toml++/toml.hpp")
+set(TOMLPLUSPLUS_NOT_FOUND BOOL TRUE)
+
+message(STATUS "Checking if ${TOMLPLUSPLUS} exists anywhere")
+
+foreach(dir ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
+  message(STATUS "Checking directory: ${dir}")
+  if(EXISTS "${dir}/${TOMLPLUSPLUS}")
+    message(STATUS "File ${TOMLPLUSPLUS} found in ${dir}")
+    set(TOMLPLUSPLUS_NOT_FOUND FALSE)
+    break()
+  endif()
+endforeach()
+
+if(TOMLPLUSPLUS_NOT_FOUND)
+  message(FATAL_ERROR "Could not find ${TOMLPLUSPLUS} in any include directory")
+endif()
+
 add_executable(
   "gpt"
   "configs.cpp"
