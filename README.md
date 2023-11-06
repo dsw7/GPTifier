@@ -13,10 +13,9 @@ A beautiful C++ libcurl / ChatGPT interface
 ## Setup
 ### Get `json.hpp`
 This project uses the [nlohmann/json](https://github.com/nlohmann/json) library. The compiler must be able to
-locate the `nlohmann/json.hpp` header file. If the `json.hpp` file does not exist anywhere, `cmake` will print
-out:
+locate the `json.hpp` header file. If the `json.hpp` file does not exist anywhere, `cmake` will print out:
 ```
--- Checking if nlohmann/json.hpp exists anywhere
+-- Checking if json.hpp exists anywhere
 -- Checking directory: /usr/include/c++/10
 -- Checking directory: /usr/include/x86_64-linux-gnu/c++/10
 -- Checking directory: /usr/include/c++/10/backward
@@ -25,26 +24,19 @@ out:
 -- Checking directory: /usr/include/x86_64-linux-gnu
 -- Checking directory: /usr/include
 CMake Error at CMakeLists.txt:<line-number> (message):
-  Could not find nlohmann/json.hpp in any include directory
+  Could not find json.hpp in any include directory
 ```
-To install `json.hpp` into say `/usr/include`, first get the file:
+To install `json.hpp` into say `/usr/include`, simply run the convenience script:
 ```
-curl https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp -o /tmp/json.hpp
+chmod +x get_deps.sh && ./get_deps.sh /usr/include/
 ```
-Then create the `nlohmann` directory:
-```
-sudo mkdir /usr/include/nlohmann
-```
-Then copy:
-```
-sudo cp /tmp/json.hpp /usr/include/nlohmann/
-```
+Running the script may require elevated privileges.
 ### Get `toml.hpp`
 This project uses the [TOML++](https://marzer.github.io/tomlplusplus/) configuration parser. The compiler must
-be able to locate the `toml++/toml.hpp` header file. If the `toml.hpp` file does not exist anywhere, `cmake`
-will print out:
+be able to locate the `toml.hpp` header file. If the `toml.hpp` file does not exist anywhere, `cmake` will
+print out:
 ```
--- Checking if toml++/toml.hpp exists anywhere
+-- Checking if toml.hpp exists anywhere
 -- Checking directory: /usr/include/c++/10
 -- Checking directory: /usr/include/x86_64-linux-gnu/c++/10
 -- Checking directory: /usr/include/c++/10/backward
@@ -53,21 +45,13 @@ will print out:
 -- Checking directory: /usr/include/x86_64-linux-gnu
 -- Checking directory: /usr/include
 CMake Error at CMakeLists.txt:<line-number> (message):
-  Could not find toml++/toml.hpp in any include directory
+  Could not find toml.hpp in any include directory
 ```
-Which is identical [`json.hpp`](#get-jsonhpp) case. As before, to install `toml.hpp` into `/usr/include`,
-first get the file:
+Which is identical [`json.hpp`](#get-jsonhpp) case. As before, simply run the convenience script:
 ```
-curl https://raw.githubusercontent.com/marzer/tomlplusplus/master/toml.hpp -o toml.hpp
+chmod +x get_deps.sh && ./get_deps.sh /usr/include/
 ```
-Then create the `toml++` directory:
-```
-sudo mkdir /usr/include/toml++
-```
-Then copy:
-```
-sudo cp /tmp/toml.hpp /usr/include/toml++/
-```
+Running the script may require elevated privileges.
 ### Compile binary
 To set the product up, simply run the `make` target:
 ```
