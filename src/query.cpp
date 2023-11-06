@@ -2,7 +2,7 @@
 #include "utils.h"
 
 #include <iostream>
-#include <nlohmann/json.hpp>
+#include <json.hpp>
 #include <stdexcept>
 
 size_t write_callback(char* ptr, size_t size, size_t nmemb, std::string* data)

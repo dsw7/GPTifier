@@ -6,7 +6,7 @@ set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
-set(NLOHMANN_JSON "nlohmann/json.hpp")
+set(NLOHMANN_JSON "json.hpp")
 set(NLOHMANN_JSON_NOT_FOUND BOOL TRUE)
 
 message(STATUS "Checking if ${NLOHMANN_JSON} exists anywhere")
@@ -24,7 +24,7 @@ if(NLOHMANN_JSON_NOT_FOUND)
   message(FATAL_ERROR "Could not find ${NLOHMANN_JSON} in any include directory")
 endif()
 
-set(TOMLPLUSPLUS "toml++/toml.hpp")
+set(TOMLPLUSPLUS "toml.hpp")
 set(TOMLPLUSPLUS_NOT_FOUND BOOL TRUE)
 
 message(STATUS "Checking if ${TOMLPLUSPLUS} exists anywhere")

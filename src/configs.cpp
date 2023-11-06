@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <stdexcept>
-#include <toml++/toml.hpp>
+#include <toml.hpp>
 
 void read_configs(Configs &configs)
 {
