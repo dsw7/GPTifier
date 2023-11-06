@@ -28,7 +28,7 @@ CMake Error at CMakeLists.txt:<line-number> (message):
 ```
 To install `json.hpp` into say `/usr/include`, simply run the convenience script:
 ```
-chmod +x get_deps.sh && ./get_deps.sh /usr/include/
+./get_deps.sh /usr/include/
 ```
 Running the script may require elevated privileges.
 ### Get `toml.hpp`
@@ -49,7 +49,7 @@ CMake Error at CMakeLists.txt:<line-number> (message):
 ```
 Which is identical [`json.hpp`](#get-jsonhpp) case. As before, simply run the convenience script:
 ```
-chmod +x get_deps.sh && ./get_deps.sh /usr/include/
+./get_deps.sh /usr/include/
 ```
 Running the script may require elevated privileges.
 ### Compile binary
