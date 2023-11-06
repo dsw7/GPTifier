@@ -1,46 +1,62 @@
 import sys
 from argparse import ArgumentParser
 from pathlib import Path
-from tempfile import gettempdir, TemporaryDirectory
+from tempfile import TemporaryDirectory
 from requests import get
 
 
-def download_file(url: str, file_path: Path) -> None:
-    print(f"Downloading: {url}")
-    print(f"Downloading to: {file_path}")
-
+def download_file(url: str, file_path: Path) -> bool:
+    print(f"Downloading {url} -> {file_path}")
     response = get(url, stream=True)
+
+    if response.status_code != 200:
+        print(f"URL {url} returned {response.status_code}", file=sys.stderr)
+        return False
 
     with file_path.open("wb") as f:
         for chunk in response.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
 
+    return True
+
 
 def install_json(include_path: Path) -> None:
     url = "https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp"
-    dest = include_path / "nlohmann"
 
     with TemporaryDirectory() as td:
         path_header = Path(td) / "json.hpp"
-        download_file(url, path_header)
+
+        if not download_file(url, path_header):
+            return
+
+        dest = include_path / "nlohmann"
 
         if not dest.exists():
             print(f"{dest} does not exist. Making directory")
             dest.mkdir()
+
+        path_new = path_header.rename(dest / "json.hpp")
+        print(f"{path_header} -> {path_new}")
 
 
 def install_toml(include_path: Path) -> None:
     url = "https://raw.githubusercontent.com/marzer/tomlplusplus/master/toml.hpp"
-    dest = include_path / "toml++"
 
     with TemporaryDirectory() as td:
         path_header = Path(td) / "toml.hpp"
-        download_file(url, path_header)
+
+        if not download_file(url, path_header):
+            return
+
+        dest = include_path / "toml++"
 
         if not dest.exists():
             print(f"{dest} does not exist. Making directory")
             dest.mkdir()
+
+        path_new = path_header.rename(dest / "toml.hpp")
+        print(f"{path_header} -> {path_new}")
 
 
 def main() -> None:
