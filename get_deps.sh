@@ -12,7 +12,18 @@ if [ ! -d "$INCLUDE_DIR" ]; then
   exit 1
 fi
 
-if [ $(stat -c %U "$INCLUDE_DIR") = "root" ]; then
+UNAME_OS=$(uname -s)
+
+if [ "$UNAME_OS" = "Darwin" ]; then
+  OWNER=$(stat -f "%Su" "$INCLUDE_DIR")
+elif [ "$UNAME_OS" = "Linux" ]; then
+  OWNER=$(stat -c %U "$INCLUDE_DIR")
+else
+  echo "Unrecognized OS: $UNAME_OS"
+  exit 1
+fi
+
+if [ "$OWNER" = "root" ]; then
   if [ ! $(id -u) = 0 ]; then
     echo "Directory $INCLUDE_DIR is owned by root"
     echo "Elevated privileges will be required to install header files into this directory"
