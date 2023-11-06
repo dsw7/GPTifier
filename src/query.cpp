@@ -47,7 +47,7 @@ void QueryHandler::build_payload(const std::string &prompt)
     messages["role"] = "user";
     messages["content"] = prompt;
 
-    body["messages"] = {messages};
+    body["messages"] = nlohmann::json::array({messages});
 
     this->payload = body.dump(2);
 }
