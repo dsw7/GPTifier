@@ -36,8 +36,11 @@ def install_json(include_path: Path) -> None:
             print(f"{dest} does not exist. Making directory")
             dest.mkdir()
 
-        path_new = path_header.rename(dest / "json.hpp")
-        print(f"{path_header} -> {path_new}")
+        try:
+            path_new = path_header.rename(dest / "json.hpp")
+            print(f"{path_header} -> {path_new}")
+        except PermissionError as e:
+            print(f"Elevated privileges required: ({e})", file=sys.stderr)
 
 
 def install_toml(include_path: Path) -> None:
@@ -55,8 +58,11 @@ def install_toml(include_path: Path) -> None:
             print(f"{dest} does not exist. Making directory")
             dest.mkdir()
 
-        path_new = path_header.rename(dest / "toml.hpp")
-        print(f"{path_header} -> {path_new}")
+        try:
+            path_new = path_header.rename(dest / "toml.hpp")
+            print(f"{path_header} -> {path_new}")
+        except PermissionError as e:
+            print(f"Elevated privileges required: ({e})", file=sys.stderr)
 
 
 def main() -> None:
