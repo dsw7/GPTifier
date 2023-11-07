@@ -16,8 +16,9 @@ void print_help_messages()
     "\033[1m\033[4m" + name + "\033[0m - See https://github.com/dsw7/GPTifier for more information.\n\n"
     " \033[1mVersion:\033[0m " + version + "\n\n"
     " \033[1mOptions:\033[0m\n"
-    "   -h, --help    Print help information and exit.\n"
-    "   -v, --version Print version and exit.\n";
+    "   -h, --help        Print help information and exit.\n"
+    "   -v, --version     Print version and exit.\n"
+    "   -d, --dump <file> Export results to a JSON file.\n";
     std::cout << doc << std::endl;
 }
 
@@ -32,14 +33,15 @@ void parse_cli(const int argc, char **argv)
     {
         static struct option long_options[] =
         {
-            {"help",        no_argument,       0, 'h'},
-            {"version",     no_argument,       0, 'v'},
-            {0,             0,                 0,  0 }
+            {"help",    no_argument,       0, 'h'},
+            {"version", no_argument,       0, 'v'},
+            {"dump",    required_argument, 0, 'd'},
+            {0,         0,                 0,  0 },
         };
 
         int option_index = 0;
         int c = ::getopt_long(
-            argc, argv, "hv", long_options, &option_index
+            argc, argv, "hvd:", long_options, &option_index
         );
 
         if (c == -1)
