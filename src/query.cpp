@@ -124,5 +124,4 @@ void QueryHandler::print_response()
     }
 
     utils::print_separator();
-    std::cout << std::endl;
 }
