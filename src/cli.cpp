@@ -19,8 +19,6 @@ void help_message()
 
 void parse_cli(const int argc, char **argv)
 {
-    int option;
-
     while (true)
     {
         static struct option long_options[] =
@@ -31,17 +29,16 @@ void parse_cli(const int argc, char **argv)
         };
 
         int option_index = 0;
-
-        option = ::getopt_long(
+        int c = ::getopt_long(
             argc, argv, "hv", long_options, &option_index
         );
 
-        if (option == -1)
+        if (c == -1)
         {
             break;
         }
 
-        switch (option)
+        switch (c)
         {
             case 'h':
                 help_message();
