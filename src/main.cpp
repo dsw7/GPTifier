@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 
     if (argc > 1)
     {
-        cli::parse_cli(argc, argv);
+        cli::parse_cli(argc, argv, configs);
     }
 
     try

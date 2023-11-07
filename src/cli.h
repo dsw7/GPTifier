@@ -1,6 +1,8 @@
 #pragma once
 
+#include "configs.h"
+
 namespace cli
 {
-    void parse_cli(const int argc, char** argv);
+    void parse_cli(const int argc, char** argv, Configs &configs);
 }

@@ -27,7 +27,7 @@ void print_version()
     std::cout << PROJECT_VERSION << std::endl;
 }
 
-void parse_cli(const int argc, char **argv)
+void parse_cli(const int argc, char **argv, Configs &configs)
 {
     while (true)
     {
@@ -57,6 +57,9 @@ void parse_cli(const int argc, char **argv)
             case 'v':
                 print_version();
                 ::exit(EXIT_SUCCESS);
+            case 'd':
+                configs.dump = ::optarg;
+                break;
             default:
                 std::cerr << "Try running with -h or --help for more information" << std::endl;
                 ::exit(EXIT_FAILURE);
