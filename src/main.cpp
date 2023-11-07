@@ -11,7 +11,10 @@ int main(int argc, char** argv)
 {
     Configs configs;
 
-    cli::parse_cli(argc, argv);
+    if (argc > 1)
+    {
+        cli::parse_cli(argc, argv);
+    }
 
     try
     {
