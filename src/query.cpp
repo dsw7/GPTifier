@@ -1,6 +1,7 @@
 #include "query.h"
 #include "utils.h"
 
+#include <fstream>
 #include <iostream>
 #include <json.hpp>
 #include <stdexcept>
@@ -124,4 +125,29 @@ void QueryHandler::print_response()
     }
 
     utils::print_separator();
+}
+
+void QueryHandler::dump_response()
+{
+    if (this->configs.dump.empty())
+    {
+        return;
+    }
+
+    if (this->response.empty())
+    {
+        throw std::runtime_error("Response is empty. Cannot dump response to file");
+    }
+
+    std::cout << "Dumping results to " + this->configs.dump + '\n';
+    std::ofstream dump_file(this->configs.dump);
+
+    if (not dump_file.is_open())
+    {
+        throw std::runtime_error("Unable to open " + this->configs.dump);
+    }
+
+    nlohmann::json results = nlohmann::json::parse(this->response);
+    dump_file << results << std::endl;
+    dump_file.close();
 }

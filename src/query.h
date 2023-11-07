@@ -24,4 +24,5 @@ class QueryHandler
         void print_payload();
         void run_query();
         void print_response();
+        void dump_response();
 };

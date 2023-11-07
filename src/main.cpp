@@ -45,6 +45,7 @@ int main(int argc, char** argv)
         q.print_payload();
         q.run_query();
         q.print_response();
+        q.dump_response();
     }
     catch (std::runtime_error& e)
     {
