@@ -1,3 +1,4 @@
+#include "cli.h"
 #include "configs.h"
 #include "query.h"
 #include "utils.h"
@@ -6,9 +7,11 @@
 #include <stdexcept>
 #include <string>
 
-int main()
+int main(int argc, char** argv)
 {
     Configs configs;
+
+    cli::parse_cli(argc, argv);
 
     try
     {

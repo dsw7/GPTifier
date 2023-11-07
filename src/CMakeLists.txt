@@ -44,6 +44,7 @@ endif()
 
 add_executable(
   "gpt"
+  "cli.cpp"
   "configs.cpp"
   "main.cpp"
   "query.cpp"
