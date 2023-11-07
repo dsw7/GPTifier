@@ -9,11 +9,15 @@ namespace cli
 
 void help_message()
 {
+    std::string name = std::string(PROJECT_NAME);
+    std::string version = std::string(PROJECT_VERSION);
+
     std::string doc =
-    "\033[1m\033[4mGPTifier\033[0m - See https://github.com/dsw7/GPTifier for more information.\n\n"
-    "\033[1mOptions:\033[0m\n"
-    "  -h, --help    Print help information and exit.\n"
-    "  -v, --version Print version and exit.\n";
+    "\033[1m\033[4m" + name + "\033[0m - See https://github.com/dsw7/GPTifier for more information.\n\n"
+    " \033[1mVersion:\033[0m " + version + "\n\n"
+    " \033[1mOptions:\033[0m\n"
+    "   -h, --help    Print help information and exit.\n"
+    "   -v, --version Print version and exit.\n";
     std::cout << doc << std::endl;
 }
 

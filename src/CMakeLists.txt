@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.18)
-project(GPTifier)
+project(GPTifier VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
+
+add_compile_definitions(PROJECT_NAME="${PROJECT_NAME}")
+add_compile_definitions(PROJECT_VERSION="${PROJECT_VERSION}")
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
