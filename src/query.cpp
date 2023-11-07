@@ -111,9 +111,6 @@ void QueryHandler::print_response()
         utils::print_separator();
 
         std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
-        utils::print_separator();
-
-        std::cout << std::endl;
     }
     else
     {
@@ -124,8 +121,8 @@ void QueryHandler::print_response()
         utils::print_separator();
 
         std::cout << "\033[1mResults:\033[32m " + content + "\033[0m\n";
-        utils::print_separator();
-
-        std::cout << std::endl;
     }
+
+    utils::print_separator();
+    std::cout << std::endl;
 }
