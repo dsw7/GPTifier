@@ -7,7 +7,7 @@
 namespace cli
 {
 
-void help_message()
+void print_help_messages()
 {
     std::string name = std::string(PROJECT_NAME);
     std::string version = std::string(PROJECT_VERSION);
@@ -19,6 +19,11 @@ void help_message()
     "   -h, --help    Print help information and exit.\n"
     "   -v, --version Print version and exit.\n";
     std::cout << doc << std::endl;
+}
+
+void print_version()
+{
+    std::cout << PROJECT_VERSION << std::endl;
 }
 
 void parse_cli(const int argc, char **argv)
@@ -45,9 +50,10 @@ void parse_cli(const int argc, char **argv)
         switch (c)
         {
             case 'h':
-                help_message();
+                print_help_messages();
                 ::exit(EXIT_SUCCESS);
             case 'v':
+                print_version();
                 ::exit(EXIT_SUCCESS);
             default:
                 std::cerr << "Try running with -h or --help for more information" << std::endl;
