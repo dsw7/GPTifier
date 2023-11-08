@@ -16,9 +16,10 @@ void print_help_messages()
     "\033[1m\033[4m" + name + "\033[0m - See https://github.com/dsw7/GPTifier for more information.\n\n"
     " \033[1mVersion:\033[0m " + version + "\n\n"
     " \033[1mOptions:\033[0m\n"
-    "   -h, --help        Print help information and exit.\n"
-    "   -v, --version     Print version and exit.\n"
-    "   -d, --dump <file> Export results to a JSON file.\n";
+    "   -h, --help            Print help information and exit.\n"
+    "   -v, --version         Print version and exit.\n"
+    "   -p, --prompt <prompt> Provide prompt via command line.\n"
+    "   -d, --dump <file>     Export results to a JSON file.\n";
     std::cout << doc << std::endl;
 }
 
@@ -35,6 +36,7 @@ void parse_cli(const int argc, char **argv, Params &params)
         {
             {"help",    no_argument,       0, 'h'},
             {"version", no_argument,       0, 'v'},
+            {"prompt",  required_argument, 0, 'p'},
             {"dump",    required_argument, 0, 'd'},
             {0,         0,                 0,  0 },
         };
@@ -59,6 +61,9 @@ void parse_cli(const int argc, char **argv, Params &params)
                 ::exit(EXIT_SUCCESS);
             case 'd':
                 params.dump = ::optarg;
+                break;
+            case 'p':
+                params.prompt = ::optarg;
                 break;
             default:
                 std::cerr << "Try running with -h or --help for more information" << std::endl;

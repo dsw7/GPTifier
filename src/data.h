@@ -11,4 +11,5 @@ struct Configs
 struct Params
 {
     std::string dump;
+    std::string prompt;
 };
