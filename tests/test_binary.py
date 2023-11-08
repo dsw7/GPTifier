@@ -9,7 +9,7 @@ def test_binary() -> None:
     json_file = Path(gettempdir()) / "gptifier_test.json"
 
     command = [
-        "gpt",
+        "build/gpt",
         "--prompt='What is 3 + 5? Format the result as follows: >>>{result}<<<'",
         f"--dump={json_file}",
     ]
