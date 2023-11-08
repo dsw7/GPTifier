@@ -1,4 +1,4 @@
-.PHONY = help compile clean lint
+.PHONY = help compile clean lint test
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
@@ -8,6 +8,8 @@ To remove build directory:
     $$ make clean
 To run cppcheck linter:
     $$ make lint
+To run unit tests:
+    $$ make test
 endef
 
 export HELP_LIST_TARGETS
@@ -24,3 +26,6 @@ clean:
 
 lint:
 	@cppcheck src/ --enable=all
+
+test: compile
+	@pytest -vs tests
