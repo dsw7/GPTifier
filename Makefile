@@ -28,4 +28,4 @@ lint:
 	@cppcheck src/ --enable=all
 
 test: compile
-	@pytest -vs tests
+	@python3 -m pytest -vs tests
