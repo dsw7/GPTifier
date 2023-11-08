@@ -9,13 +9,13 @@
 
 int main(int argc, char** argv)
 {
-    Configs configs;
-
+    Params params;
     if (argc > 1)
     {
-        cli::parse_cli(argc, argv, configs);
+        cli::parse_cli(argc, argv, params);
     }
 
+    Configs configs;
     try
     {
         ::read_configs(configs);
@@ -45,7 +45,11 @@ int main(int argc, char** argv)
         q.print_payload();
         q.run_query();
         q.print_response();
-        q.dump_response();
+
+        if (not params.dump.empty())
+        {
+            q.dump_response(params.dump);
+        }
     }
     catch (std::runtime_error& e)
     {

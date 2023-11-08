@@ -5,6 +5,10 @@
 struct Configs
 {
     std::string api_key;
-    std::string dump;
     std::string model;
+};
+
+struct Params
+{
+    std::string dump;
 };

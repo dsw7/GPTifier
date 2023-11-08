@@ -127,27 +127,22 @@ void QueryHandler::print_response()
     utils::print_separator();
 }
 
-void QueryHandler::dump_response()
+void QueryHandler::dump_response(const std::string &filename)
 {
-    if (this->configs.dump.empty())
-    {
-        return;
-    }
-
     if (this->response.empty())
     {
         throw std::runtime_error("Response is empty. Cannot dump response to file");
     }
 
-    std::cout << "Dumping results to " + this->configs.dump + '\n';
-    std::ofstream dump_file(this->configs.dump);
+    std::cout << "Dumping results to " + filename + '\n';
+    std::ofstream st_filename(filename);
 
-    if (not dump_file.is_open())
+    if (not st_filename.is_open())
     {
-        throw std::runtime_error("Unable to open " + this->configs.dump);
+        throw std::runtime_error("Unable to open " + filename);
     }
 
     nlohmann::json results = nlohmann::json::parse(this->response);
-    dump_file << results << std::endl;
-    dump_file.close();
+    st_filename << results << std::endl;
+    st_filename.close();
 }
