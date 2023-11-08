@@ -7,6 +7,14 @@
 #include <stdexcept>
 #include <string>
 
+void read_input(std::string &prompt)
+{
+    utils::print_separator();
+    std::cout << "\033[1mInput:\033[0m ";
+
+    std::getline(std::cin, prompt);
+}
+
 int main(int argc, char** argv)
 {
     Params params;
@@ -26,13 +34,12 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    utils::print_separator();
+    if (params.prompt.empty())
+    {
+        read_input(params.prompt);
+    }
 
-    std::string prompt;
-    std::cout << "\033[1mInput:\033[0m ";
-    std::getline(std::cin, prompt);
-
-    if (prompt.empty())
+    if (params.prompt.empty())
     {
         std::cerr << "Prompt cannot be empty" << std::endl;
         return EXIT_FAILURE;
@@ -41,7 +48,7 @@ int main(int argc, char** argv)
     try
     {
         QueryHandler q(configs);
-        q.build_payload(prompt);
+        q.build_payload(params.prompt);
         q.print_payload();
         q.run_query();
         q.print_response();
