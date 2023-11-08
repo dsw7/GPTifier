@@ -143,6 +143,6 @@ void QueryHandler::dump_response(const std::string &filename)
     }
 
     nlohmann::json results = nlohmann::json::parse(this->response);
-    st_filename << results << std::endl;
+    st_filename << std::setw(2) << results << std::endl;
     st_filename.close();
 }
