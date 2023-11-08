@@ -43,7 +43,7 @@ void parse_cli(const int argc, char **argv, Params &params)
 
         int option_index = 0;
         int c = ::getopt_long(
-            argc, argv, "hvd:", long_options, &option_index
+            argc, argv, "hvd:p:", long_options, &option_index
         );
 
         if (c == -1)
