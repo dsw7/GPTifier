@@ -1,4 +1,4 @@
-.PHONY = help compile clean lint test
+.PHONY = help compile clean lint test format
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
@@ -10,6 +10,8 @@ To run cppcheck linter:
     $$ make lint
 To run unit tests:
     $$ make test
+To format code:
+    $$ make format
 endef
 
 export HELP_LIST_TARGETS
@@ -29,3 +31,6 @@ lint:
 
 test: compile
 	@python3 -m pytest -vs tests
+
+format:
+	@clang-format -i --verbose --style=file src/*.cpp src/*.h
