@@ -15,7 +15,7 @@ void read_input(std::string &prompt)
     std::getline(std::cin, prompt);
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     Params params;
     if (argc > 1)
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     {
         ::read_configs(configs);
     }
-    catch (std::runtime_error& e)
+    catch (std::runtime_error &e)
     {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
             q.dump_response(params.dump);
         }
     }
-    catch (std::runtime_error& e)
+    catch (std::runtime_error &e)
     {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;

@@ -6,7 +6,7 @@
 #include <json.hpp>
 #include <stdexcept>
 
-size_t write_callback(char* ptr, size_t size, size_t nmemb, std::string* data)
+size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
 {
     data->append(ptr, size * nmemb);
     return size * nmemb;
@@ -76,7 +76,7 @@ void QueryHandler::run_query()
     static std::string url = "https://api.openai.com/v1/chat/completions";
     ::curl_easy_setopt(this->curl, ::CURLOPT_URL, url.c_str());
 
-    struct ::curl_slist* headers = NULL;
+    struct ::curl_slist *headers = NULL;
     headers = ::curl_slist_append(headers, "Content-Type: application/json");
 
     std::string header_auth = "Authorization: Bearer " + this->configs.api_key;

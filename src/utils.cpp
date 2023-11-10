@@ -26,4 +26,4 @@ void print_separator()
     std::cout << std::string(columns, '-') + "\n";
 }
 
-} // utils
+} // namespace utils

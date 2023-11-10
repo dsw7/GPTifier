@@ -2,5 +2,5 @@
 
 namespace utils
 {
-    void print_separator();
+void print_separator();
 }

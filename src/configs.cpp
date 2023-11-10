@@ -7,7 +7,7 @@
 
 void read_configs(Configs &configs)
 {
-    const char* home_dir = std::getenv("HOME");
+    const char *home_dir = std::getenv("HOME");
 
     if (not home_dir)
     {
@@ -27,7 +27,7 @@ void read_configs(Configs &configs)
     {
         table = toml::parse_file(path_toml);
     }
-    catch (const toml::parse_error& e)
+    catch (const toml::parse_error &e)
     {
         throw std::runtime_error(e);
     }
