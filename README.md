@@ -3,12 +3,17 @@ A beautiful C++ libcurl / ChatGPT interface
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dsw7/GPTifier/master/LICENSE)
 ## Table of Contents
+- [Motivation](#motivation)
 - [Setup](#setup)
   - [Get `json.hpp`](#get-jsonhpp)
   - [Get `toml.hpp`](#get-tomlhpp)
   - [Compile binary](#compile-binary)
   - [Set up TOML](#set-up-toml)
   - [Clean up](#clean-up)
+
+## Motivation
+There are numerous ChatGPT command line programs currently available. Many of them are written in Python. I
+wanted something a bit quicker and a bit easier to install, so I wrote this program in C++.
 
 ## Setup
 ### Get `json.hpp`
