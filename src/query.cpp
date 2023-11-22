@@ -1,10 +1,12 @@
 #include "query.h"
 #include "utils.h"
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <json.hpp>
 #include <stdexcept>
+#include <thread>
 
 size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
 {
@@ -15,6 +17,7 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
 QueryHandler::QueryHandler(const Configs &configs)
 {
     this->configs = configs;
+    this->run_timer = true;
 
     if (::curl_global_init(CURL_GLOBAL_DEFAULT) != 0)
     {
@@ -31,11 +34,12 @@ QueryHandler::QueryHandler(const Configs &configs)
 
 QueryHandler::~QueryHandler()
 {
+    this->run_timer = false;
+
     if (this->curl)
     {
         ::curl_easy_cleanup(curl);
     }
-
     ::curl_global_cleanup();
 }
 
@@ -67,12 +71,33 @@ void QueryHandler::print_payload()
     utils::print_separator();
 }
 
+void QueryHandler::time_query()
+{
+    auto delay = std::chrono::milliseconds(250);
+    auto start = std::chrono::high_resolution_clock::now();
+
+    while (this->run_timer)
+    {
+        std::this_thread::sleep_for(delay);
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = end - start;
+
+        std::cout << "\033[1mTime (s):\033[0m " << duration.count() << "\r";
+        std::cout.flush();
+    }
+
+    std::cout << "\n";
+    utils::print_separator();
+}
+
 void QueryHandler::run_query()
 {
     if (this->payload.empty())
     {
         throw std::runtime_error("Payload is empty. Cannot run query");
     }
+
     ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, this->payload.c_str());
 
     static std::string url = "https://api.openai.com/v1/chat/completions";
@@ -88,7 +113,14 @@ void QueryHandler::run_query()
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEFUNCTION, ::write_callback);
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEDATA, &this->response);
 
-    if (::curl_easy_perform(this->curl) != ::CURLE_OK)
+    std::thread timer(&QueryHandler::time_query, this);
+
+    ::CURLcode rv = ::curl_easy_perform(this->curl);
+
+    this->run_timer = false;
+    timer.join();
+
+    if (rv != ::CURLE_OK)
     {
         throw std::runtime_error("Failed to run query");
     }

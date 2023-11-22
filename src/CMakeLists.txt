@@ -56,6 +56,7 @@ add_executable(
 target_link_libraries(
   "gpt"
   "curl"
+  "pthread"
 )
 
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local")

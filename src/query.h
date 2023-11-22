@@ -10,11 +10,14 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data);
 class QueryHandler
 {
 private:
+    void time_query();
+
     Configs configs;
     ::CURL *curl = NULL;
 
     std::string payload;
     std::string response;
+    bool run_timer = false;
 
 public:
     QueryHandler(const Configs &configs);
