@@ -63,6 +63,8 @@ void QueryHandler::print_payload()
     }
 
     std::cout << "\033[1mPayload:\033[0m " + payload + '\n';
+
+    utils::print_separator();
 }
 
 void QueryHandler::run_query()
@@ -98,8 +100,6 @@ void QueryHandler::print_response()
     {
         throw std::runtime_error("Response is empty. Cannot print response");
     }
-
-    utils::print_separator();
 
     nlohmann::json results = nlohmann::json::parse(this->response);
 
