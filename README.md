@@ -7,6 +7,7 @@ A beautiful C++ libcurl / ChatGPT interface
 ## Table of Contents
 - [Motivation](#motivation)
 - [Setup](#setup)
+  - [Get specific release](#get-specific-release)
   - [Get `json.hpp`](#get-jsonhpp)
   - [Get `toml.hpp`](#get-tomlhpp)
   - [Compile binary](#compile-binary)
@@ -18,6 +19,24 @@ There are numerous ChatGPT command line programs currently available. Many of th
 wanted something a bit quicker and a bit easier to install, so I wrote this program in C++.
 
 ## Setup
+### Get specific release
+Interested in a specific release? To download `1.0.0`, for example:
+```
+wget https://github.com/dsw7/GPTifier/archive/refs/tags/v1.0.0.tar.gz
+```
+Which will yield:
+```
+v1.0.0.tar.gz
+```
+Then run:
+```
+tar -xvf v1.0.0.tar.gz
+```
+Which will generate:
+```
+GPTifier-1.0.0
+```
+Change directories into `GPTifier-1.0.0` and proceed with the next steps.
 ### Get `json.hpp`
 This project uses the [nlohmann/json](https://github.com/nlohmann/json) library. The compiler must be able to
 locate the `json.hpp` header file. If the `json.hpp` file does not exist anywhere, `cmake` will print out:
