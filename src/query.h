@@ -1,7 +1,5 @@
 #pragma once
 
-#include "configs.h"
-
 #include <curl/curl.h>
 #include <string>
 
@@ -12,7 +10,6 @@ class QueryHandler
 private:
     void time_query();
 
-    Configs configs;
     ::CURL *curl = NULL;
 
     std::string payload;
@@ -20,12 +17,12 @@ private:
     bool run_timer = false;
 
 public:
-    QueryHandler(const Configs &configs);
+    QueryHandler();
     ~QueryHandler();
 
-    void build_payload(const std::string &prompt);
+    void build_payload(const std::string &prompt, const std::string &model);
     void print_payload();
-    void run_query();
+    void run_query(const std::string &api_key);
     void print_response();
     void dump_response(const std::string &filename);
 };

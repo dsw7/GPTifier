@@ -17,10 +17,11 @@ void read_input(std::string &prompt)
 
 void run_basic_query(const Params &params, const Configs &configs)
 {
-    QueryHandler q(configs);
-    q.build_payload(params.prompt);
+    QueryHandler q;
+
+    q.build_payload(params.prompt, configs.model);
     q.print_payload();
-    q.run_query();
+    q.run_query(configs.api_key);
     q.print_response();
 
     if (not params.dump.empty())

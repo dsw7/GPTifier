@@ -14,9 +14,8 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
     return size * nmemb;
 }
 
-QueryHandler::QueryHandler(const Configs &configs)
+QueryHandler::QueryHandler()
 {
-    this->configs = configs;
     this->run_timer = true;
 
     if (::curl_global_init(CURL_GLOBAL_DEFAULT) != 0)
@@ -43,10 +42,10 @@ QueryHandler::~QueryHandler()
     ::curl_global_cleanup();
 }
 
-void QueryHandler::build_payload(const std::string &prompt)
+void QueryHandler::build_payload(const std::string &prompt, const std::string &model)
 {
     nlohmann::json body = {};
-    body["model"] = this->configs.model;
+    body["model"] = model;
 
     nlohmann::json messages = {};
     messages["role"] = "user";
@@ -91,7 +90,7 @@ void QueryHandler::time_query()
     utils::print_separator();
 }
 
-void QueryHandler::run_query()
+void QueryHandler::run_query(const std::string &api_key)
 {
     if (this->payload.empty())
     {
@@ -106,7 +105,7 @@ void QueryHandler::run_query()
     struct ::curl_slist *headers = NULL;
     headers = ::curl_slist_append(headers, "Content-Type: application/json");
 
-    std::string header_auth = "Authorization: Bearer " + this->configs.api_key;
+    std::string header_auth = "Authorization: Bearer " + api_key;
     headers = ::curl_slist_append(headers, header_auth.c_str());
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);
