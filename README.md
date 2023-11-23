@@ -2,6 +2,8 @@
 A beautiful C++ libcurl / ChatGPT interface
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dsw7/GPTifier/master/LICENSE)
+[![GitHub Releases](https://img.shields.io/github/release/dsw7/GPTifier.svg)](https://github.com/dsw7/GPTifier/releases)
+
 ## Table of Contents
 - [Motivation](#motivation)
 - [Setup](#setup)
