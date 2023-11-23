@@ -8,9 +8,9 @@ A beautiful C++ libcurl / ChatGPT interface
 - [Motivation](#motivation)
 - [Setup](#setup)
   - [Get specific release](#get-specific-release)
+  - [Compile binary](#compile-binary)
   - [Get `json.hpp`](#get-jsonhpp)
   - [Get `toml.hpp`](#get-tomlhpp)
-  - [Compile binary](#compile-binary)
   - [Set up TOML](#set-up-toml)
   - [Clean up](#clean-up)
 
@@ -37,6 +37,13 @@ Which will generate:
 GPTifier-1.0.0
 ```
 Change directories into `GPTifier-1.0.0` and proceed with the next steps.
+### Compile binary
+To set the product up, simply run the `make` target:
+```
+make compile
+```
+The binary will be installed into whatever install directory is resolved by CMake's
+[install()](https://cmake.org/cmake/help/latest/command/install.html#command:install).
 ### Get `json.hpp`
 This project uses the [nlohmann/json](https://github.com/nlohmann/json) library. The compiler must be able to
 locate the `json.hpp` header file. If the `json.hpp` file does not exist anywhere, `cmake` will print out:
@@ -78,13 +85,6 @@ Which is identical [`json.hpp`](#get-jsonhpp) case. As before, simply run the co
 ./get_deps.sh /usr/include/
 ```
 Running the script may require elevated privileges.
-### Compile binary
-To set the product up, simply run the `make` target:
-```
-make compile
-```
-The binary will be installed into whatever install directory is resolved by CMake's
-[install()](https://cmake.org/cmake/help/latest/command/install.html#command:install).
 ### Set up TOML
 This project uses [TOML](https://toml.io/en/) to store configurations. Copy the [.gptifier](./.gptifier) TOML
 file from this repository to your home directory:
