@@ -13,7 +13,7 @@ void print_help_messages()
     std::string version = std::string(PROJECT_VERSION);
 
     std::string doc = "\033[1m\033[4m" + name +
-                      "\033[0m - See https://github.com/dsw7/GPTifier for more information.\n\n"
+                      "\033[0m - See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.\n\n"
                       " \033[1mVersion:\033[0m " +
                       version +
                       "\n\n"
