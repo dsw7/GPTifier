@@ -15,6 +15,21 @@ void read_input(std::string &prompt)
     std::getline(std::cin, prompt);
 }
 
+void run_basic_query(const Params &params, const Configs &configs)
+{
+    QueryHandler q;
+
+    q.build_payload(params.prompt, configs.model);
+    q.print_payload();
+    q.run_query(configs.api_key);
+    q.print_response();
+
+    if (not params.dump.empty())
+    {
+        q.dump_response(params.dump);
+    }
+}
+
 int main(int argc, char **argv)
 {
     Params params;
@@ -36,7 +51,7 @@ int main(int argc, char **argv)
 
     if (params.prompt.empty())
     {
-        read_input(params.prompt);
+        ::read_input(params.prompt);
     }
 
     if (params.prompt.empty())
@@ -47,16 +62,7 @@ int main(int argc, char **argv)
 
     try
     {
-        QueryHandler q(configs);
-        q.build_payload(params.prompt);
-        q.print_payload();
-        q.run_query();
-        q.print_response();
-
-        if (not params.dump.empty())
-        {
-            q.dump_response(params.dump);
-        }
+        ::run_basic_query(params, configs);
     }
     catch (std::runtime_error &e)
     {
