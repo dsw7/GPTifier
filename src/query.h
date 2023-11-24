@@ -20,7 +20,7 @@ public:
     QueryHandler();
     ~QueryHandler();
 
-    void build_payload(const std::string &prompt, const std::string &model);
+    void build_payload(const std::string &prompt, const std::string &model, const std::string &temp);
     void print_payload();
     void run_query(const std::string &api_key);
     void print_response();
