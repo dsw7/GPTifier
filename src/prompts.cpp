@@ -6,7 +6,7 @@
 namespace prompt
 {
 
-void read_input(std::string &prompt)
+void read_prompt_interactively(std::string &prompt)
 {
     utils::print_separator();
     std::cout << "\033[1mInput:\033[0m ";
@@ -23,7 +23,7 @@ void get_prompt(Params &params)
     }
 
     // Otherwise default to reading from stdin
-    read_input(params.prompt);
+    read_prompt_interactively(params.prompt);
 }
 
 } // namespace prompt
