@@ -1,19 +1,11 @@
 #include "cli.h"
 #include "configs.h"
+#include "prompts.h"
 #include "query.h"
 #include "utils.h"
 
 #include <iostream>
 #include <stdexcept>
-#include <string>
-
-void read_input(std::string &prompt)
-{
-    utils::print_separator();
-    std::cout << "\033[1mInput:\033[0m ";
-
-    std::getline(std::cin, prompt);
-}
 
 void run_basic_query(const Params &params, const Configs &configs)
 {
@@ -49,10 +41,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    if (params.prompt.empty())
-    {
-        ::read_input(params.prompt);
-    }
+    prompt::get_prompt(params);
 
     if (params.prompt.empty())
     {

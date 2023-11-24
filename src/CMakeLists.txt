@@ -50,6 +50,7 @@ add_executable(
   "cli.cpp"
   "configs.cpp"
   "main.cpp"
+  "prompts.cpp"
   "query.cpp"
   "utils.cpp"
 )
