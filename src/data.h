@@ -12,5 +12,6 @@ struct Params
 {
     std::string dump;
     std::string prompt;
+    std::string prompt_file;
     std::string temperature = "1";
 };
