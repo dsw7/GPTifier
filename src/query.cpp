@@ -42,10 +42,11 @@ QueryHandler::~QueryHandler()
     ::curl_global_cleanup();
 }
 
-void QueryHandler::build_payload(const std::string &prompt, const std::string &model)
+void QueryHandler::build_payload(const std::string &prompt, const std::string &model, const std::string &temp)
 {
     nlohmann::json body = {};
     body["model"] = model;
+    body["temperature"] = temp;
 
     nlohmann::json messages = {};
     messages["role"] = "user";
