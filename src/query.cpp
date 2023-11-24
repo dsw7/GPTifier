@@ -45,8 +45,18 @@ QueryHandler::~QueryHandler()
 void QueryHandler::build_payload(const std::string &prompt, const std::string &model, const std::string &temp)
 {
     nlohmann::json body = {};
+
     body["model"] = model;
-    body["temperature"] = temp;
+
+    try
+    {
+        body["temperature"] = std::stof(temp);
+    }
+    catch (std::invalid_argument &e)
+    {
+        std::cerr << e.what() << std::endl;
+        throw std::runtime_error("Failed to convert '" + temp + "' to float");
+    }
 
     nlohmann::json messages = {};
     messages["role"] = "user";
