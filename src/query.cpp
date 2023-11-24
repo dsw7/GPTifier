@@ -132,6 +132,7 @@ void QueryHandler::run_query(const std::string &api_key)
 
     if (rv != ::CURLE_OK)
     {
+        std::cerr << "Failed to run query. ";
         throw std::runtime_error(::curl_easy_strerror(rv));
     }
 }
