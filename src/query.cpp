@@ -62,12 +62,6 @@ void QueryHandler::time_query()
 
 ::str_response QueryHandler::run_query(const std::string &api_key, const ::str_request &request)
 {
-    if (request.empty())
-    {
-        std::cerr << "Request is empty. Cannot run query\n";
-        return std::string();
-    }
-
     ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, request.c_str());
 
     static std::string url = "https://api.openai.com/v1/chat/completions";
