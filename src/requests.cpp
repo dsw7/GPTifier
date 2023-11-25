@@ -1,13 +1,14 @@
 #include "requests.h"
+#include "utils.h"
 
+#include <iostream>
 #include <json.hpp>
 #include <stdexcept>
-#include <iostream>
 
 namespace requests
 {
 
-std::string build_chat_request(const std::string &prompt, const std::string &model, const std::string &temp)
+::req_str build_chat_request(const std::string &prompt, const std::string &model, const std::string &temp)
 {
     // Build "chat completion" request
     // See https://platform.openai.com/docs/api-reference/chat/create
@@ -33,6 +34,20 @@ std::string build_chat_request(const std::string &prompt, const std::string &mod
     body["messages"] = nlohmann::json::array({messages});
 
     return body.dump(2);
+}
+
+void print_request(const ::req_str &request)
+{
+    utils::print_separator();
+
+    if (request.empty())
+    {
+        throw std::runtime_error("Request is empty!");
+    }
+
+    std::cout << "\033[1mRequest:\033[0m " + request + '\n';
+
+    utils::print_separator();
 }
 
 } // namespace requests
