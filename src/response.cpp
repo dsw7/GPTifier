@@ -6,16 +6,11 @@
 #include <json.hpp>
 #include <stdexcept>
 
-namespace response
+namespace responses
 {
 
 void print_response(const ::str_response &response)
 {
-    if (response.empty())
-    {
-        throw std::runtime_error("Response is empty. Cannot print response");
-    }
-
     nlohmann::json results = nlohmann::json::parse(response);
 
     if (results.contains("error"))
@@ -44,11 +39,6 @@ void print_response(const ::str_response &response)
 
 void dump_response(const ::str_response &response, const std::string &filename)
 {
-    if (response.empty())
-    {
-        throw std::runtime_error("Response is empty. Cannot dump response to file");
-    }
-
     std::cout << "Dumping results to " + filename + '\n';
     std::ofstream st_filename(filename);
 
@@ -64,4 +54,4 @@ void dump_response(const ::str_response &response, const std::string &filename)
     st_filename.close();
 }
 
-} // namespace response
+} // namespace responses

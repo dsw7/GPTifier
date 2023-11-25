@@ -62,11 +62,12 @@ void QueryHandler::time_query()
     utils::print_separator();
 }
 
-void QueryHandler::run_query(const std::string &api_key, const ::str_request &request)
+::str_response QueryHandler::run_query(const std::string &api_key, const ::str_request &request)
 {
     if (request.empty())
     {
-        throw std::runtime_error("Payload is empty. Cannot run query");
+        std::cerr << "Request is empty. Cannot run query\n";
+        return std::string();
     }
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, request.c_str());
@@ -82,7 +83,9 @@ void QueryHandler::run_query(const std::string &api_key, const ::str_request &re
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEFUNCTION, ::write_callback);
-    ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEDATA, &this->response);
+
+    std::string response;
+    ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEDATA, &response);
 
     std::thread timer(&QueryHandler::time_query, this);
 
@@ -93,62 +96,9 @@ void QueryHandler::run_query(const std::string &api_key, const ::str_request &re
 
     if (rv != ::CURLE_OK)
     {
-        std::cerr << "Failed to run query. ";
-        throw std::runtime_error(::curl_easy_strerror(rv));
-    }
-}
-
-void QueryHandler::print_response()
-{
-    if (this->response.empty())
-    {
-        throw std::runtime_error("Response is empty. Cannot print response");
+        std::cerr << "Failed to run query. " << ::curl_easy_strerror(rv) + '\n';
+        return std::string();
     }
 
-    nlohmann::json results = nlohmann::json::parse(this->response);
-
-    if (results.contains("error"))
-    {
-        std::string error = results["error"]["message"];
-        results["error"]["message"] = "<See Results section>";
-
-        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
-        utils::print_separator();
-
-        std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
-    }
-    else
-    {
-        std::string content = results["choices"][0]["message"]["content"];
-        results["choices"][0]["message"]["content"] = "<See Results section>";
-
-        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
-        utils::print_separator();
-
-        std::cout << "\033[1mResults:\033[32m " + content + "\033[0m\n";
-    }
-
-    utils::print_separator();
-}
-
-void QueryHandler::dump_response(const std::string &filename)
-{
-    if (this->response.empty())
-    {
-        throw std::runtime_error("Response is empty. Cannot dump response to file");
-    }
-
-    std::cout << "Dumping results to " + filename + '\n';
-    std::ofstream st_filename(filename);
-
-    if (not st_filename.is_open())
-    {
-        throw std::runtime_error("Unable to open " + filename);
-    }
-
-    nlohmann::json results = nlohmann::json::parse(this->response);
-    static short int indent_pretty_print = 2;
-
-    st_filename << std::setw(indent_pretty_print) << results << std::endl;
-    st_filename.close();
+    return response;
 }

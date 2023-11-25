@@ -4,8 +4,8 @@
 
 #include <string>
 
-namespace response
+namespace responses
 {
 void print_response(const ::str_response &response);
 void dump_response(const ::str_response &response, const std::string &filename);
-} // namespace response
+} // namespace responses

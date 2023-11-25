@@ -3,6 +3,7 @@
 #include "prompts.h"
 #include "query.h"
 #include "requests.h"
+#include "response.h"
 #include "typedefs.h"
 #include "utils.h"
 
@@ -21,12 +22,18 @@ void create_chat_completion(const Params &params, const Configs &configs)
     requests::print_request(request);
 
     QueryHandler q;
-    q.run_query(configs.api_key, request);
-    q.print_response();
+    ::str_response response = q.run_query(configs.api_key, request);
+
+    if (response.empty())
+    {
+        throw std::runtime_error("Response is empty!");
+    }
+
+    responses::print_response(response);
 
     if (not params.dump.empty())
     {
-        q.dump_response(params.dump);
+        responses::dump_response(response, params.dump);
     }
 }
 
