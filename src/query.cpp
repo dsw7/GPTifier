@@ -42,45 +42,6 @@ QueryHandler::~QueryHandler()
     ::curl_global_cleanup();
 }
 
-void QueryHandler::build_payload(const std::string &prompt, const std::string &model, const std::string &temp)
-{
-    nlohmann::json body = {};
-
-    body["model"] = model;
-
-    try
-    {
-        body["temperature"] = std::stof(temp);
-    }
-    catch (std::invalid_argument &e)
-    {
-        std::cerr << e.what() << std::endl;
-        throw std::runtime_error("Failed to convert '" + temp + "' to float");
-    }
-
-    nlohmann::json messages = {};
-    messages["role"] = "user";
-    messages["content"] = prompt;
-
-    body["messages"] = nlohmann::json::array({messages});
-
-    this->payload = body.dump(2);
-}
-
-void QueryHandler::print_payload()
-{
-    utils::print_separator();
-
-    if (this->payload.empty())
-    {
-        throw std::runtime_error("Payload is empty. Will not print payload");
-    }
-
-    std::cout << "\033[1mPayload:\033[0m " + payload + '\n';
-
-    utils::print_separator();
-}
-
 void QueryHandler::time_query()
 {
     auto delay = std::chrono::milliseconds(250);
@@ -101,14 +62,14 @@ void QueryHandler::time_query()
     utils::print_separator();
 }
 
-void QueryHandler::run_query(const std::string &api_key)
+void QueryHandler::run_query(const std::string &api_key, const ::req_str &request)
 {
-    if (this->payload.empty())
+    if (request.empty())
     {
         throw std::runtime_error("Payload is empty. Cannot run query");
     }
 
-    ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, this->payload.c_str());
+    ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, request.c_str());
 
     static std::string url = "https://api.openai.com/v1/chat/completions";
     ::curl_easy_setopt(this->curl, ::CURLOPT_URL, url.c_str());

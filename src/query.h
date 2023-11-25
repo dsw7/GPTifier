@@ -1,5 +1,7 @@
 #pragma once
 
+#include "requests.h"
+
 #include <curl/curl.h>
 #include <string>
 
@@ -12,7 +14,6 @@ private:
 
     ::CURL *curl = NULL;
 
-    std::string payload;
     std::string response;
     bool run_timer = false;
 
@@ -20,9 +21,7 @@ public:
     QueryHandler();
     ~QueryHandler();
 
-    void build_payload(const std::string &prompt, const std::string &model, const std::string &temp);
-    void print_payload();
-    void run_query(const std::string &api_key);
+    void run_query(const std::string &api_key, const ::req_str &request);
     void print_response();
     void dump_response(const std::string &filename);
 };

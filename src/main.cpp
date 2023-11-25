@@ -2,6 +2,7 @@
 #include "configs.h"
 #include "prompts.h"
 #include "query.h"
+#include "requests.h"
 #include "utils.h"
 
 #include <iostream>
@@ -9,11 +10,11 @@
 
 void run_basic_query(const Params &params, const Configs &configs)
 {
-    QueryHandler q;
+    ::req_str request = requests::build_chat_request(params.prompt, configs.model, params.temperature);
+    requests::print_request(request);
 
-    q.build_payload(params.prompt, configs.model, params.temperature);
-    q.print_payload();
-    q.run_query(configs.api_key);
+    QueryHandler q;
+    q.run_query(configs.api_key, request);
     q.print_response();
 
     if (not params.dump.empty())
