@@ -8,7 +8,7 @@
 #include <iostream>
 #include <stdexcept>
 
-void run_basic_query(const Params &params, const Configs &configs)
+void create_chat_completion(const Params &params, const Configs &configs)
 {
     ::req_str request = requests::build_chat_request(params.prompt, configs.model, params.temperature);
     requests::print_request(request);
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 
     try
     {
-        ::run_basic_query(params, configs);
+        ::create_chat_completion(params, configs);
     }
     catch (std::runtime_error &e)
     {
