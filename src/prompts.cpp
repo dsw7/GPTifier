@@ -17,7 +17,7 @@ void read_prompt_interactively(std::string &prompt)
     std::getline(std::cin, prompt);
 }
 
-void read_prompt_from_file(std::string &prompt, std::string &filename)
+void read_prompt_from_file(std::string &prompt, const std::string &filename)
 {
     utils::print_separator();
     std::cout << "Reading prompt from file: " + filename + '\n';
