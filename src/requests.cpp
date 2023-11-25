@@ -23,8 +23,8 @@ namespace requests
     }
     catch (std::invalid_argument &e)
     {
-        std::cerr << e.what() << std::endl;
-        throw std::runtime_error("Failed to convert '" + temp + "' to float");
+        std::cerr << e.what() << ". Failed to convert '" + temp + "' to float" << std::endl;
+        return std::string();
     }
 
     nlohmann::json messages = {};
@@ -39,14 +39,7 @@ namespace requests
 void print_request(const ::str_request &request)
 {
     utils::print_separator();
-
-    if (request.empty())
-    {
-        throw std::runtime_error("Request is empty!");
-    }
-
     std::cout << "\033[1mRequest:\033[0m " + request + '\n';
-
     utils::print_separator();
 }
 

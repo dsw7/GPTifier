@@ -12,6 +12,12 @@
 void create_chat_completion(const Params &params, const Configs &configs)
 {
     ::str_request request = requests::build_chat_request(params.prompt, configs.model, params.temperature);
+
+    if (request.empty())
+    {
+        throw std::runtime_error("Request is empty!");
+    }
+
     requests::print_request(request);
 
     QueryHandler q;
