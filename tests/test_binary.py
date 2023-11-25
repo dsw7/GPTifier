@@ -58,3 +58,26 @@ def test_invalid_temp(temp: str, result: str, tempdir: Path) -> None:
     with json_file.open() as f:
         data = loads(f.read())
         assert data["error"]["message"] == result
+
+
+def test_read_from_file(tempdir: Path) -> None:
+    json_file = tempdir / "test_read_from_file.json"
+
+    prompt = tempdir / "test_read_from_file.txt"
+    prompt.write_text("What is 3 + 5? Format the result as follows: >>>{result}<<<")
+
+    command = [
+        "build/gpt",
+        f"--read-from-file={prompt}",
+        "--temperature=0",
+        f"--dump={json_file}",
+    ]
+
+    try:
+        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
+    except CalledProcessError as exc:
+        fail(exc.stderr.decode())
+
+    with json_file.open() as f:
+        data = loads(f.read())
+        assert data["choices"][0]["message"]["content"] == ">>>8<<<"
