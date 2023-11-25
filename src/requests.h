@@ -1,11 +1,11 @@
 #pragma once
 
-#include <string>
+#include "typedefs.h"
 
-typedef std::string req_str;
+#include <string>
 
 namespace requests
 {
-::req_str build_chat_request(const std::string &prompt, const std::string &model, const std::string &temp);
-void print_request(const ::req_str &request);
+::str_request build_chat_request(const std::string &prompt, const std::string &model, const std::string &temp);
+void print_request(const ::str_request &request);
 } // namespace requests

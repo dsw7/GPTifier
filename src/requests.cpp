@@ -8,7 +8,7 @@
 namespace requests
 {
 
-::req_str build_chat_request(const std::string &prompt, const std::string &model, const std::string &temp)
+::str_request build_chat_request(const std::string &prompt, const std::string &model, const std::string &temp)
 {
     // Build "chat completion" request
     // See https://platform.openai.com/docs/api-reference/chat/create
@@ -36,7 +36,7 @@ namespace requests
     return body.dump(2);
 }
 
-void print_request(const ::req_str &request)
+void print_request(const ::str_request &request)
 {
     utils::print_separator();
 

@@ -62,7 +62,7 @@ void QueryHandler::time_query()
     utils::print_separator();
 }
 
-void QueryHandler::run_query(const std::string &api_key, const ::req_str &request)
+void QueryHandler::run_query(const std::string &api_key, const ::str_request &request)
 {
     if (request.empty())
     {

@@ -3,6 +3,7 @@
 #include "prompts.h"
 #include "query.h"
 #include "requests.h"
+#include "typedefs.h"
 #include "utils.h"
 
 #include <iostream>
@@ -10,7 +11,7 @@
 
 void create_chat_completion(const Params &params, const Configs &configs)
 {
-    ::req_str request = requests::build_chat_request(params.prompt, configs.model, params.temperature);
+    ::str_request request = requests::build_chat_request(params.prompt, configs.model, params.temperature);
     requests::print_request(request);
 
     QueryHandler q;

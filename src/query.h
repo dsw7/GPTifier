@@ -1,6 +1,6 @@
 #pragma once
 
-#include "requests.h"
+#include "typedefs.h"
 
 #include <curl/curl.h>
 #include <string>
@@ -21,7 +21,7 @@ public:
     QueryHandler();
     ~QueryHandler();
 
-    void run_query(const std::string &api_key, const ::req_str &request);
+    void run_query(const std::string &api_key, const ::str_request &request);
     void print_response();
     void dump_response(const std::string &filename);
 };
