@@ -41,7 +41,15 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    prompt::get_prompt(params);
+    try
+    {
+        prompt::get_prompt(params);
+    }
+    catch (std::runtime_error &e)
+    {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 
     if (params.prompt.empty())
     {
