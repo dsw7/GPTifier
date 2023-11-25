@@ -53,6 +53,7 @@ add_executable(
   "prompts.cpp"
   "query.cpp"
   "requests.cpp"
+  "response.cpp"
   "utils.cpp"
 )
 target_link_libraries(
