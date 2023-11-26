@@ -3,7 +3,7 @@
 #include "prompts.h"
 #include "query.h"
 #include "requests.h"
-#include "response.h"
+#include "responses.h"
 #include "typedefs.h"
 #include "utils.h"
 
