@@ -29,11 +29,11 @@ void create_chat_completion(const Params &params, const Configs &configs)
         throw std::runtime_error("Response is empty!");
     }
 
-    responses::print_response(response);
+    responses::print_chat_completion_response(response);
 
     if (not params.dump.empty())
     {
-        responses::dump_response(response, params.dump);
+        responses::dump_chat_completion_response(response, params.dump);
     }
 }
 

@@ -9,7 +9,7 @@
 namespace responses
 {
 
-void print_response(const ::str_response &response)
+void print_chat_completion_response(const ::str_response &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
 
@@ -37,7 +37,7 @@ void print_response(const ::str_response &response)
     utils::print_separator();
 }
 
-void dump_response(const ::str_response &response, const std::string &filename)
+void dump_chat_completion_response(const ::str_response &response, const std::string &filename)
 {
     std::cout << "Dumping results to " + filename + '\n';
     std::ofstream st_filename(filename);

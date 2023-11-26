@@ -6,6 +6,6 @@
 
 namespace responses
 {
-void print_response(const ::str_response &response);
-void dump_response(const ::str_response &response, const std::string &filename);
+void print_chat_completion_response(const ::str_response &response);
+void dump_chat_completion_response(const ::str_response &response, const std::string &filename);
 } // namespace responses
