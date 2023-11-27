@@ -28,8 +28,8 @@ def test_basic(tempdir: Path) -> None:
     except CalledProcessError as exc:
         pytest.fail(exc.stderr.decode())
 
-    with json_file.open() as f:
-        data = loads(f.read())
+    with json_file.open() as f_json:
+        data = loads(f_json.read())
         assert data["choices"][0]["message"]["content"] == ">>>8<<<"
 
 
@@ -55,8 +55,8 @@ def test_invalid_temp(temp: str, result: str, tempdir: Path) -> None:
     except CalledProcessError as exc:
         pytest.fail(exc.stderr.decode())
 
-    with json_file.open() as f:
-        data = loads(f.read())
+    with json_file.open() as f_json:
+        data = loads(f_json.read())
         assert data["error"]["message"] == result
 
 
@@ -78,8 +78,8 @@ def test_read_from_file(tempdir: Path) -> None:
     except CalledProcessError as exc:
         pytest.fail(exc.stderr.decode())
 
-    with json_file.open() as f:
-        data = loads(f.read())
+    with json_file.open() as f_json:
+        data = loads(f_json.read())
         assert data["choices"][0]["message"]["content"] == ">>>8<<<"
 
 
@@ -88,3 +88,34 @@ def test_missing_file() -> None:
 
     with pytest.raises(CalledProcessError):
         run(command, stdout=DEVNULL, stderr=DEVNULL, check=True)
+
+
+@pytest.mark.parametrize(
+    "model, result, valid_model",
+    [
+        ("gpt-3.5-turbo-0301", "gpt-3.5-turbo-0301", True),
+        ("gpt-3.5-turbo-0302", "The model `gpt-3.5-turbo-0302` does not exist", False),
+    ],
+)
+def test_model(model: str, result: str, valid_model: bool, tempdir: Path) -> None:
+    json_file = tempdir / "test_model.json"
+
+    command = [
+        "build/gpt",
+        "--prompt='What is 3 + 5?'",
+        f"--model={model}",
+        f"--dump={json_file}",
+    ]
+
+    try:
+        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
+    except CalledProcessError as exc:
+        pytest.fail(exc.stderr.decode())
+
+    with json_file.open() as f_json:
+        data = loads(f_json.read())
+
+    if valid_model:
+        assert data["model"] == result
+    else:
+        assert data["error"]["message"] == result
