@@ -1,11 +1,11 @@
-#include "cli.h"
-#include "configs.h"
-#include "prompts.h"
-#include "query.h"
-#include "requests.h"
-#include "responses.h"
-#include "typedefs.h"
-#include "utils.h"
+#include "cli.hpp"
+#include "configs.hpp"
+#include "prompts.hpp"
+#include "query.hpp"
+#include "requests.hpp"
+#include "responses.hpp"
+#include "typedefs.hpp"
+#include "utils.hpp"
 
 #include <iostream>
 #include <stdexcept>

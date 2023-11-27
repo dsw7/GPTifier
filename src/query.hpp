@@ -1,6 +1,6 @@
 #pragma once
 
-#include "typedefs.h"
+#include "typedefs.hpp"
 
 #include <curl/curl.h>
 #include <string>

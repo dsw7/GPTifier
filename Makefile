@@ -33,4 +33,4 @@ test: compile
 	@python3 -m pytest -vs tests
 
 format:
-	@clang-format -i --verbose --style=file src/*.cpp src/*.h
+	@clang-format -i --verbose --style=file src/*.cpp src/*.hpp

@@ -1,5 +1,5 @@
 #pragma once
 
-#include "data.h"
+#include "data.hpp"
 
 void read_configs(Configs &configs);

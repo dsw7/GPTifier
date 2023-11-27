@@ -1,6 +1,6 @@
 #pragma once
 
-#include "configs.h"
+#include "configs.hpp"
 
 namespace cli
 {

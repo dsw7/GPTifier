@@ -1,4 +1,4 @@
-#include "configs.h"
+#include "configs.hpp"
 
 #include <cstdlib>
 #include <filesystem>

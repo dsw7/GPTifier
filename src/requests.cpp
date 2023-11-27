@@ -1,5 +1,5 @@
-#include "requests.h"
-#include "utils.h"
+#include "requests.hpp"
+#include "utils.hpp"
 
 #include <iostream>
 #include <json.hpp>

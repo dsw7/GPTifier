@@ -1,5 +1,5 @@
-#include "query.h"
-#include "utils.h"
+#include "query.hpp"
+#include "utils.hpp"
 
 #include <chrono>
 #include <iostream>

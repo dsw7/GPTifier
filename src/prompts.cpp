@@ -1,5 +1,5 @@
-#include "prompts.h"
-#include "utils.h"
+#include "prompts.hpp"
+#include "utils.hpp"
 
 #include <fstream>
 #include <iostream>

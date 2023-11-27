@@ -1,5 +1,5 @@
-#include "responses.h"
-#include "utils.h"
+#include "responses.hpp"
+#include "utils.hpp"
 
 #include <fstream>
 #include <iostream>
