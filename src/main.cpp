@@ -12,7 +12,7 @@
 
 void create_chat_completion(const Params &params, const Configs &configs)
 {
-    ::str_request request = requests::build_chat_request(params.prompt, configs.model, params.temperature);
+    ::str_request request = requests::build_chat_request(params.prompt, params.model, params.temperature);
 
     if (request.empty())
     {
