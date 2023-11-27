@@ -18,9 +18,9 @@ def test_basic(tempdir: Path) -> None:
 
     command = [
         "build/gpt",
-        "--prompt='What is 3 + 5? Format the result as follows: >>>{result}<<<'",
-        "--temperature=0",
-        f"--dump={json_file}",
+        "-p'What is 3 + 5? Format the result as follows: >>>{result}<<<'",
+        "-t0",
+        f"-d{json_file}",
     ]
 
     try:
@@ -43,12 +43,7 @@ def test_basic(tempdir: Path) -> None:
 def test_invalid_temp(temp: str, result: str, tempdir: Path) -> None:
     json_file = tempdir / "test_invalid_temp.json"
 
-    command = [
-        "build/gpt",
-        "--prompt='Running a test!'",
-        f"--dump={json_file}",
-        f"--temperature={temp}",
-    ]
+    command = ["build/gpt", "-p'Running a test!'", f"-d{json_file}", f"-t{temp}"]
 
     try:
         run(command, stdout=DEVNULL, stderr=PIPE, check=True)
@@ -66,12 +61,7 @@ def test_read_from_file(tempdir: Path) -> None:
     prompt = tempdir / "test_read_from_file.txt"
     prompt.write_text("What is 3 + 5? Format the result as follows: >>>{result}<<<")
 
-    command = [
-        "build/gpt",
-        f"--read-from-file={prompt}",
-        "--temperature=0",
-        f"--dump={json_file}",
-    ]
+    command = ["build/gpt", f"-r{prompt}", "-t0", f"-d{json_file}"]
 
     try:
         run(command, stdout=DEVNULL, stderr=PIPE, check=True)
@@ -84,7 +74,7 @@ def test_read_from_file(tempdir: Path) -> None:
 
 
 def test_missing_file() -> None:
-    command = ["build/gpt", "--read-from-file=/tmp/yU8nnkRs.txt"]
+    command = ["build/gpt", "-r/tmp/yU8nnkRs.txt"]
 
     with pytest.raises(CalledProcessError):
         run(command, stdout=DEVNULL, stderr=DEVNULL, check=True)
@@ -100,12 +90,7 @@ def test_missing_file() -> None:
 def test_model(model: str, result: str, valid_model: bool, tempdir: Path) -> None:
     json_file = tempdir / "test_model.json"
 
-    command = [
-        "build/gpt",
-        "--prompt='What is 3 + 5?'",
-        f"--model={model}",
-        f"--dump={json_file}",
-    ]
+    command = ["build/gpt", "-p'What is 3 + 5?'", f"-m{model}", f"-d{json_file}"]
 
     try:
         run(command, stdout=DEVNULL, stderr=PIPE, check=True)
