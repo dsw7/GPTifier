@@ -33,5 +33,4 @@ void read_configs(Configs &configs)
     }
 
     configs.api_key = table["authentication"]["api-key"].value_or("");
-    configs.model = table["models"]["model"].value_or("");
 }

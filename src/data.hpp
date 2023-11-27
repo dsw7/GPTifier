@@ -5,7 +5,6 @@
 struct Configs
 {
     std::string api_key;
-    std::string model;
 };
 
 struct Params
