@@ -101,11 +101,6 @@ And edit the file:
 # Specify API key
 # See https://platform.openai.com/docs/api-reference/authentication
 api-key = "<your-api-key>"
-
-[models]
-# Specify model
-# See https://platform.openai.com/docs/models/overview for a list of models
-model = "<choose-a-valid-model>"
 ```
 Next, drop into the program:
 ```
