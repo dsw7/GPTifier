@@ -45,16 +45,19 @@ if(TOMLPLUSPLUS_NOT_FOUND)
   message(FATAL_ERROR "Could not find ${TOMLPLUSPLUS} in any include directory")
 endif()
 
+include_directories(
+  "include"
+)
 add_executable(
   "gpt"
-  "cli.cpp"
-  "configs.cpp"
-  "main.cpp"
-  "prompts.cpp"
-  "query.cpp"
-  "requests.cpp"
-  "responses.cpp"
-  "utils.cpp"
+  "src/cli.cpp"
+  "src/configs.cpp"
+  "src/main.cpp"
+  "src/prompts.cpp"
+  "src/query.cpp"
+  "src/requests.cpp"
+  "src/responses.cpp"
+  "src/utils.cpp"
 )
 target_link_libraries(
   "gpt"

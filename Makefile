@@ -20,17 +20,17 @@ help:
 	@echo "$$HELP_LIST_TARGETS"
 
 compile:
-	@cmake -S src -B build
+	@cmake -S GPTifier -B build
 	@make --jobs=12 --directory=build install
 
 clean:
 	@rm -rfv build
 
 lint:
-	@cppcheck src/ --enable=all
+	@cppcheck GPTifier --enable=all
 
 test: compile
 	@python3 -m pytest -vs tests
 
 format:
-	@clang-format -i --verbose --style=file src/*.cpp src/*.hpp
+	@clang-format -i --verbose --style=file GPTifier/src/*.cpp GPTifier/include/*.hpp
