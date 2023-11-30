@@ -1,16 +1,7 @@
 from json import loads
 from pathlib import Path
-from subprocess import run, CalledProcessError, PIPE, DEVNULL
-from tempfile import TemporaryDirectory
-from typing import Generator
+import subprocess
 import pytest
-
-
-@pytest.fixture
-def tempdir() -> Generator[Path, None, None]:
-    t_dir = TemporaryDirectory()
-    yield Path(t_dir.name)
-    t_dir.cleanup()
 
 
 def test_basic(tempdir: Path) -> None:
@@ -24,8 +15,10 @@ def test_basic(tempdir: Path) -> None:
     ]
 
     try:
-        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
-    except CalledProcessError as exc:
+        subprocess.run(
+            command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True
+        )
+    except subprocess.CalledProcessError as exc:
         pytest.fail(exc.stderr.decode())
 
     with json_file.open() as f_json:
@@ -46,8 +39,10 @@ def test_invalid_temp(temp: str, result: str, tempdir: Path) -> None:
     command = ["build/gpt", "-p'Running a test!'", f"-d{json_file}", f"-t{temp}"]
 
     try:
-        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
-    except CalledProcessError as exc:
+        subprocess.run(
+            command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True
+        )
+    except subprocess.CalledProcessError as exc:
         pytest.fail(exc.stderr.decode())
 
     with json_file.open() as f_json:
@@ -64,8 +59,10 @@ def test_read_from_file(tempdir: Path) -> None:
     command = ["build/gpt", f"-r{prompt}", "-t0", f"-d{json_file}"]
 
     try:
-        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
-    except CalledProcessError as exc:
+        subprocess.run(
+            command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True
+        )
+    except subprocess.CalledProcessError as exc:
         pytest.fail(exc.stderr.decode())
 
     with json_file.open() as f_json:
@@ -76,8 +73,10 @@ def test_read_from_file(tempdir: Path) -> None:
 def test_missing_file() -> None:
     command = ["build/gpt", "-r/tmp/yU8nnkRs.txt"]
 
-    with pytest.raises(CalledProcessError):
-        run(command, stdout=DEVNULL, stderr=DEVNULL, check=True)
+    with pytest.raises(subprocess.CalledProcessError):
+        subprocess.run(
+            command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+        )
 
 
 @pytest.mark.parametrize(
@@ -93,8 +92,10 @@ def test_model(model: str, result: str, valid_model: bool, tempdir: Path) -> Non
     command = ["build/gpt", "-p'What is 3 + 5?'", f"-m{model}", f"-d{json_file}"]
 
     try:
-        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
-    except CalledProcessError as exc:
+        subprocess.run(
+            command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True
+        )
+    except subprocess.CalledProcessError as exc:
         pytest.fail(exc.stderr.decode())
 
     with json_file.open() as f_json:
