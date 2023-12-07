@@ -88,7 +88,7 @@ void QueryHandler::time_query()
 
     if (rv != ::CURLE_OK)
     {
-        std::cerr << "Failed to run query. " << ::curl_easy_strerror(rv) + '\n';
+        std::cerr << "Failed to run query. " << ::curl_easy_strerror(rv) << '\n';
         return std::string();
     }
 
