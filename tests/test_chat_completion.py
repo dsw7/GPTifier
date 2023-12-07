@@ -9,6 +9,7 @@ def test_basic(tempdir: Path) -> None:
 
     command = [
         "build/gpt",
+        "-u",
         "-p'What is 3 + 5? Format the result as follows: >>>{result}<<<'",
         "-t0",
         f"-d{json_file}",
@@ -36,7 +37,7 @@ def test_basic(tempdir: Path) -> None:
 def test_invalid_temp(temp: str, result: str, tempdir: Path) -> None:
     json_file = tempdir / "test_invalid_temp.json"
 
-    command = ["build/gpt", "-p'Running a test!'", f"-d{json_file}", f"-t{temp}"]
+    command = ["build/gpt", "-u", "-p'Running a test!'", f"-d{json_file}", f"-t{temp}"]
 
     try:
         subprocess.run(
@@ -56,7 +57,7 @@ def test_read_from_file(tempdir: Path) -> None:
     prompt = tempdir / "test_read_from_file.txt"
     prompt.write_text("What is 3 + 5? Format the result as follows: >>>{result}<<<")
 
-    command = ["build/gpt", f"-r{prompt}", "-t0", f"-d{json_file}"]
+    command = ["build/gpt", "-u", f"-r{prompt}", "-t0", f"-d{json_file}"]
 
     try:
         subprocess.run(
@@ -89,7 +90,7 @@ def test_missing_file() -> None:
 def test_model(model: str, result: str, valid_model: bool, tempdir: Path) -> None:
     json_file = tempdir / "test_model.json"
 
-    command = ["build/gpt", "-p'What is 3 + 5?'", f"-m{model}", f"-d{json_file}"]
+    command = ["build/gpt", "-u", "-p'What is 3 + 5?'", f"-m{model}", f"-d{json_file}"]
 
     try:
         subprocess.run(
