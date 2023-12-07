@@ -37,6 +37,22 @@ void print_chat_completion_response(const ::str_response &response)
     utils::print_separator();
 }
 
+void write_message_to_file(const std::string &message)
+{
+    static std::string filename = "results.gpt";
+    std::cout << "> Writing reply to file " + filename + '\n';
+
+    std::ofstream st_filename(filename);
+
+    if (not st_filename.is_open())
+    {
+        throw std::runtime_error("Unable to open " + filename);
+    }
+
+    st_filename << message << std::endl;
+    st_filename.close();
+}
+
 void export_chat_completion_response(const ::str_response &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
@@ -76,7 +92,7 @@ void export_chat_completion_response(const ::str_response &response)
     }
     else
     {
-        std::cout << "> Writing reply to file.\n";
+        write_message_to_file(results["choices"][0]["message"]["content"]);
     }
 
     utils::print_separator();
