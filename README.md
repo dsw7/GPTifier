@@ -145,3 +145,5 @@ Subsequent requests will append to this file. A suggested practice is to "highli
 LS_COLORS=$LS_COLORS:"*.gpt=4;93"
 export LS_COLORS
 ```
+In some cases, prompting interactively may be undesirable, such as when running automated unit tests. To
+disable the `y/n` prompt, run `gpt` with the `-u` or `--no-interactive-export` flags.
