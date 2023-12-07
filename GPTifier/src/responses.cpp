@@ -1,6 +1,7 @@
 #include "responses.hpp"
 #include "utils.hpp"
 
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <json.hpp>
@@ -39,11 +40,17 @@ void print_chat_completion_response(const ::str_response &response)
 
 void write_message_to_file(const std::string &message)
 {
-    static std::string filename = "results.gpt";
+    const char *home_dir = std::getenv("HOME");
+
+    if (not home_dir)
+    {
+        throw std::runtime_error("Could not locate home directory!");
+    }
+
+    std::string filename = std::string(home_dir) + "/results.gpt";
     std::cout << "> Writing reply to file " + filename + '\n';
 
     std::ofstream st_filename(filename);
-
     if (not st_filename.is_open())
     {
         throw std::runtime_error("Unable to open " + filename);
