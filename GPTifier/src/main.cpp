@@ -32,7 +32,10 @@ void create_chat_completion(const Params &params, const Configs &configs)
     if (params.dump.empty())
     {
         responses::print_chat_completion_response(response);
-        responses::export_chat_completion_response(response);
+        if (params.enable_export)
+        {
+            responses::export_chat_completion_response(response);
+        }
     }
     else
     {
