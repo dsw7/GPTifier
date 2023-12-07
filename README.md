@@ -15,6 +15,7 @@ A beautiful C++ libcurl / ChatGPT interface
   - [Clean up](#clean-up)
 - [Usage](#usage)
   - [Basic example](#basic-example)
+  - [Exporting a result](#exporting-a-result)
 
 ## Motivation
 There are numerous ChatGPT command line programs currently available. Many of them are written in Python. I
@@ -128,4 +129,19 @@ And hit `Enter`. The program will dispatch a request and return:
 ...
 Results: 3 + 5 equals 8.
 ------------------------------------------------------------------------------------------
+Export:
+> Write reply to file? [y/n]:
+```
+### Exporting a result
+In the above example, the user is prompted to export the completion a file. Entering `y` will print:
+```
+...
+> Writing reply to file /home/<your-username>/results.gpt
+------------------------------------------------------------------------------------------
+```
+Subsequent requests will append to this file. A suggested practice is to "highlight" this file by updating the
+`LS_COLORS` environment variable in any `init` file as follows:
+```
+LS_COLORS=$LS_COLORS:"*.gpt=4;93"
+export LS_COLORS
 ```
