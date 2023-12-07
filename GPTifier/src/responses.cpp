@@ -50,13 +50,18 @@ void write_message_to_file(const std::string &message)
     std::string filename = std::string(home_dir) + "/results.gpt";
     std::cout << "> Writing reply to file " + filename + '\n';
 
-    std::ofstream st_filename(filename);
+    std::ofstream st_filename(filename, std::ios::app);
     if (not st_filename.is_open())
     {
         throw std::runtime_error("Unable to open " + filename);
     }
 
-    st_filename << message << std::endl;
+    std::string separator(110, '=');
+    st_filename << separator + '\n';
+    st_filename << "[GPTifier] Results:\n";
+    st_filename << separator + '\n';
+    st_filename << message << '\n' << std::endl;
+
     st_filename.close();
 }
 
