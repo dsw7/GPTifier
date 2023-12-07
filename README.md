@@ -141,7 +141,7 @@ In the above example, the user is prompted to export the completion a file. Ente
 ```
 Subsequent requests will append to this file. A suggested practice is to "highlight" this file by updating the
 `LS_COLORS` environment variable in any `init` file as follows:
-```
+```bash
 LS_COLORS=$LS_COLORS:"*.gpt=4;93"
 export LS_COLORS
 ```
