@@ -13,6 +13,7 @@ A beautiful C++ libcurl / ChatGPT interface
   - [Get `toml.hpp`](#get-tomlhpp)
   - [Set up TOML](#set-up-toml)
   - [Clean up](#clean-up)
+- [Usage](#usage)
 
 ## Motivation
 There are numerous ChatGPT command line programs currently available. Many of them are written in Python. I
@@ -111,4 +112,18 @@ The program should begin if the `.gptifier` file is properly set up.
 The compilation process will generate many build artifacts. Clean up the build artifacts by running:
 ```
 make clean
+```
+
+## Usage
+Simply run `gpt`! This will begin an interactive session. Type in a question:
+```
+$ gpt
+------------------------------------------------------------------------------------------
+Input: What is 3 + 5?
+```
+And hit `Enter`. The program will dispatch a request and return:
+```
+...
+Results: 3 + 5 equals 8.
+------------------------------------------------------------------------------------------
 ```
