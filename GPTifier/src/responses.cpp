@@ -37,6 +37,21 @@ void print_chat_completion_response(const ::str_response &response)
     utils::print_separator();
 }
 
+void export_chat_completion_response(const ::str_response &response)
+{
+    nlohmann::json results = nlohmann::json::parse(response);
+
+    if (results.contains("error"))
+    {
+        std::cerr << "Cannot export results as error occurred\n";
+        utils::print_separator();
+        return;
+    }
+
+    std::cout << "Dumping file!\n";
+    utils::print_separator();
+}
+
 void dump_chat_completion_response(const ::str_response &response, const std::string &filename)
 {
     std::cout << "Dumping results to " + filename + '\n';
