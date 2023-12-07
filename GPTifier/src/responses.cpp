@@ -48,7 +48,37 @@ void export_chat_completion_response(const ::str_response &response)
         return;
     }
 
-    std::cout << "Dumping file!\n";
+    std::cout << "\033[1mExport:\033[0m\n";
+    std::string choice;
+
+    while (true)
+    {
+        std::cout << "> Write reply to file? [y/n]: ";
+        std::cin >> choice;
+
+        if (choice.compare("y") == 0)
+        {
+            break;
+        }
+        else if (choice.compare("n") == 0)
+        {
+            break;
+        }
+        else
+        {
+            std::cout << "> Invalid choice. Input either 'y' or 'n'!\n";
+        }
+    }
+
+    if (choice.compare("n") == 0)
+    {
+        std::cout << "> Not exporting response.\n";
+    }
+    else
+    {
+        std::cout << "> Writing reply to file.\n";
+    }
+
     utils::print_separator();
 }
 
