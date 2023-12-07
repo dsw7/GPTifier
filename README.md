@@ -14,6 +14,7 @@ A beautiful C++ libcurl / ChatGPT interface
   - [Set up TOML](#set-up-toml)
   - [Clean up](#clean-up)
 - [Usage](#usage)
+  - [Basic example](#basic-example)
 
 ## Motivation
 There are numerous ChatGPT command line programs currently available. Many of them are written in Python. I
@@ -115,6 +116,7 @@ make clean
 ```
 
 ## Usage
+### Basic example
 Simply run `gpt`! This will begin an interactive session. Type in a question:
 ```
 $ gpt
