@@ -21,6 +21,7 @@ void print_help_messages()
         " \033[1mOptions:\033[0m\n"
         "   -h, --help                      Print help information and exit.\n"
         "   -v, --version                   Print version and exit.\n"
+        "   -u, --no-interactive-export     Disable prompt asking whether to export results.\n"
         "   -d, --dump <file>               Export results to a JSON file.\n"
         "   -m, --model <model-name>        Specify a valid model.\n"
         "   -p, --prompt <prompt>           Provide prompt via command line. Takes precedence over -r argument.\n"
@@ -40,6 +41,7 @@ void parse_cli(const int argc, char **argv, Params &params)
     {
         static struct option long_options[] = {
             {"help", no_argument, 0, 'h'},
+            {"no-interactive-export", no_argument, 0, 'u'},
             {"version", no_argument, 0, 'v'},
             {"dump", required_argument, 0, 'd'},
             {"model", required_argument, 0, 'm'},
@@ -50,7 +52,7 @@ void parse_cli(const int argc, char **argv, Params &params)
         };
 
         int option_index = 0;
-        int c = ::getopt_long(argc, argv, "hvd:m:p:r:t:", long_options, &option_index);
+        int c = ::getopt_long(argc, argv, "huvd:m:p:r:t:", long_options, &option_index);
 
         if (c == -1)
         {
@@ -62,6 +64,9 @@ void parse_cli(const int argc, char **argv, Params &params)
         case 'h':
             print_help_messages();
             ::exit(EXIT_SUCCESS);
+        case 'u':
+            params.enable_export = false;
+            break;
         case 'v':
             print_version();
             ::exit(EXIT_SUCCESS);

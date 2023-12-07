@@ -9,6 +9,7 @@ struct Configs
 
 struct Params
 {
+    bool enable_export = true;
     std::string dump;
     std::string model = "gpt-3.5-turbo";
     std::string prompt;
