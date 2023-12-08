@@ -86,6 +86,9 @@ void QueryHandler::time_query()
     this->run_timer = false;
     timer.join();
 
+    // Leads to a Valgrind-detectable memory leak if headers are not freed
+    ::curl_slist_free_all(headers);
+
     if (rv != ::CURLE_OK)
     {
         std::cerr << "Failed to run query. " << ::curl_easy_strerror(rv) << '\n';
