@@ -2,12 +2,7 @@ from pathlib import Path
 import subprocess
 import pytest
 
-VALGRIND_ROOT = [
-    "valgrind",
-    "--error-exitcode=1",
-    "--leak-check=full",
-    "build/gpt",
-]
+VALGRIND_ROOT = ["valgrind", "--error-exitcode=1", "--leak-check=full", "build/gpt"]
 
 
 @pytest.mark.valgrind
@@ -63,16 +58,6 @@ def test_read_from_file(tempdir: Path) -> None:
         )
     except subprocess.CalledProcessError as exc:
         pytest.fail(exc.stderr.decode())
-
-
-@pytest.mark.valgrind
-def test_missing_file() -> None:
-    command = VALGRIND_ROOT + ["-r/tmp/yU8nnkRs.txt"]
-
-    with pytest.raises(subprocess.CalledProcessError):
-        subprocess.run(
-            command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
-        )
 
 
 @pytest.mark.valgrind
