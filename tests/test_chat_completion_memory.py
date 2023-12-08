@@ -45,3 +45,47 @@ def test_invalid_temp_memory(temp: str, tempdir: Path) -> None:
         )
     except subprocess.CalledProcessError as exc:
         pytest.fail(exc.stderr.decode())
+
+
+def test_read_from_file(tempdir: Path) -> None:
+    json_file = tempdir / "test_read_from_file.json"
+
+    prompt = tempdir / "test_read_from_file.txt"
+    prompt.write_text("What is 3 + 5? Format the result as follows: >>>{result}<<<")
+
+    command = VALGRIND_ROOT + ["-u", f"-r{prompt}", "-t0", f"-d{json_file}"]
+
+    try:
+        subprocess.run(
+            command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True
+        )
+    except subprocess.CalledProcessError as exc:
+        pytest.fail(exc.stderr.decode())
+
+
+def test_missing_file() -> None:
+    command = VALGRIND_ROOT + ["-r/tmp/yU8nnkRs.txt"]
+
+    with pytest.raises(subprocess.CalledProcessError):
+        subprocess.run(
+            command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+        )
+
+
+@pytest.mark.parametrize("model", ["gpt-3.5-turbo-0301", "gpt-3.5-turbo-0302"])
+def test_model(model: str, tempdir: Path) -> None:
+    json_file = tempdir / "test_model.json"
+
+    command = VALGRIND_ROOT + [
+        "-u",
+        "-p'What is 3 + 5?'",
+        f"-m{model}",
+        f"-d{json_file}",
+    ]
+
+    try:
+        subprocess.run(
+            command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True
+        )
+    except subprocess.CalledProcessError as exc:
+        pytest.fail(exc.stderr.decode())
