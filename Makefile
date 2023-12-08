@@ -1,4 +1,4 @@
-.PHONY = help compile clean lint test test-memory format
+.PHONY = help compile clean lint test format
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
@@ -10,8 +10,6 @@ To run cppcheck linter:
     $$ make lint
 To run unit tests:
     $$ make test
-To run Valgrind tests:
-    $$ make test-memory
 To format code:
     $$ make format
 endef
@@ -32,10 +30,7 @@ lint:
 	@cppcheck GPTifier --enable=all
 
 test: compile
-	@python3 -m pytest -vs tests -m "not valgrind"
-
-test-memory: compile
-	@python3 -m pytest -vs tests -m "valgrind"
+	@python3 -m pytest -vs tests
 
 format:
 	@clang-format -i --verbose --style=file GPTifier/src/*.cpp GPTifier/include/*.hpp
