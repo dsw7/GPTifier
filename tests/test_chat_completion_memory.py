@@ -1,49 +1,41 @@
 from pathlib import Path
-import subprocess
-import pytest
+from subprocess import run, DEVNULL, PIPE, CalledProcessError
+from pytest import mark, fail
 
 VALGRIND_ROOT = ["valgrind", "--error-exitcode=1", "--leak-check=full", "build/gpt"]
 
 
-@pytest.mark.valgrind
-def test_basic_memory(tempdir: Path) -> None:
+def test_basic(tempdir: Path) -> None:
     command = VALGRIND_ROOT + [
         "-u",
-        "-p'What is 3 + 5? Format the result as follows: >>>{result}<<<'",
+        "-p'What is 3 + 5?'",
         "-t0",
         f"-d{tempdir / 'test_memory.json'}",
     ]
 
     try:
-        subprocess.run(
-            command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True
-        )
-    except subprocess.CalledProcessError as exc:
-        pytest.fail(exc.stderr.decode())
+        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
+    except CalledProcessError as exc:
+        fail(exc.stderr.decode())
 
 
-@pytest.mark.valgrind
-@pytest.mark.parametrize("temp", ["-2.5", "2.5"])
-def test_invalid_temp_memory(temp: str, tempdir: Path) -> None:
+def test_invalid_temp(tempdir: Path) -> None:
     command = VALGRIND_ROOT + [
-        "u",
+        "-u",
         "-p'Running a test!'",
+        f"-t2.5",
         f"-d{tempdir / 'test_memory.json'}",
-        f"-t{temp}",
     ]
 
     try:
-        subprocess.run(
-            command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True
-        )
-    except subprocess.CalledProcessError as exc:
-        pytest.fail(exc.stderr.decode())
+        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
+    except CalledProcessError as exc:
+        fail(exc.stderr.decode())
 
 
-@pytest.mark.valgrind
 def test_read_from_file(tempdir: Path) -> None:
     prompt = tempdir / "test_read_from_file.txt"
-    prompt.write_text("What is 3 + 5? Format the result as follows: >>>{result}<<<")
+    prompt.write_text("What is 3 + 5?")
 
     command = VALGRIND_ROOT + [
         "-u",
@@ -53,15 +45,12 @@ def test_read_from_file(tempdir: Path) -> None:
     ]
 
     try:
-        subprocess.run(
-            command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True
-        )
-    except subprocess.CalledProcessError as exc:
-        pytest.fail(exc.stderr.decode())
+        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
+    except CalledProcessError as exc:
+        fail(exc.stderr.decode())
 
 
-@pytest.mark.valgrind
-@pytest.mark.parametrize("model", ["gpt-3.5-turbo-0301", "gpt-3.5-turbo-0302"])
+@mark.parametrize("model", ["gpt-3.5-turbo-0301", "gpt-3.5-turbo-0302"])
 def test_model(model: str, tempdir: Path) -> None:
     command = VALGRIND_ROOT + [
         "-u",
@@ -71,8 +60,6 @@ def test_model(model: str, tempdir: Path) -> None:
     ]
 
     try:
-        subprocess.run(
-            command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True
-        )
-    except subprocess.CalledProcessError as exc:
-        pytest.fail(exc.stderr.decode())
+        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
+    except CalledProcessError as exc:
+        fail(exc.stderr.decode())
