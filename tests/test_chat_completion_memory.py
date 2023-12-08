@@ -10,6 +10,7 @@ VALGRIND_ROOT = [
 ]
 
 
+@pytest.mark.valgrind
 def test_basic_memory(tempdir: Path) -> None:
     command = VALGRIND_ROOT + [
         "-u",
@@ -26,6 +27,7 @@ def test_basic_memory(tempdir: Path) -> None:
         pytest.fail(exc.stderr.decode())
 
 
+@pytest.mark.valgrind
 @pytest.mark.parametrize("temp", ["-2.5", "2.5"])
 def test_invalid_temp_memory(temp: str, tempdir: Path) -> None:
     command = VALGRIND_ROOT + [
@@ -43,6 +45,7 @@ def test_invalid_temp_memory(temp: str, tempdir: Path) -> None:
         pytest.fail(exc.stderr.decode())
 
 
+@pytest.mark.valgrind
 def test_read_from_file(tempdir: Path) -> None:
     prompt = tempdir / "test_read_from_file.txt"
     prompt.write_text("What is 3 + 5? Format the result as follows: >>>{result}<<<")
@@ -62,6 +65,7 @@ def test_read_from_file(tempdir: Path) -> None:
         pytest.fail(exc.stderr.decode())
 
 
+@pytest.mark.valgrind
 def test_missing_file() -> None:
     command = VALGRIND_ROOT + ["-r/tmp/yU8nnkRs.txt"]
 
@@ -71,6 +75,7 @@ def test_missing_file() -> None:
         )
 
 
+@pytest.mark.valgrind
 @pytest.mark.parametrize("model", ["gpt-3.5-turbo-0301", "gpt-3.5-turbo-0302"])
 def test_model(model: str, tempdir: Path) -> None:
     command = VALGRIND_ROOT + [
