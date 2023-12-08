@@ -23,7 +23,7 @@ def test_invalid_temp(tempdir: Path) -> None:
     command = VALGRIND_ROOT + [
         "-u",
         "-p'Running a test!'",
-        f"-t2.5",
+        "-t2.5",
         f"-d{tempdir / 'test_memory.json'}",
     ]
 
