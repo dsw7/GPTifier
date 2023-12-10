@@ -13,11 +13,13 @@ void print_help_messages()
     std::string version = std::string(PROJECT_VERSION);
 
     std::string doc =
-        "\033[1m\033[4m" + name +
-        "\033[0m - See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.\n\n"
-        "\033[1mVERSION:\033[0m " +
-        version +
-        "\n\n"
+        "\033[1mNAME:\033[0m\n"
+        "     \033[4m" +
+        name + " v" + version +
+        "\033[0m\n\n"
+        "\033[1mDESCRIPTION:\033[0m\n"
+        "     A command line program for querying OpenAI via the OpenAI API. See\n"
+        "     \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.\n\n"
         "\033[1mOPTIONS:\033[0m\n"
         "  \033[2m-h, --help\033[0m\n"
         "     Print help information and exit.\n\n"
