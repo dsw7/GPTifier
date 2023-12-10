@@ -18,8 +18,10 @@ void print_help_messages()
         name + " v" + version +
         "\033[0m\n\n"
         "\033[1mDESCRIPTION:\033[0m\n"
-        "     A command line program for querying OpenAI via the OpenAI API. See\n"
+        "     A command line program for interactively querying OpenAI via the OpenAI API. See\n"
         "     \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.\n\n"
+        "\033[1mSYNOPSIS:\033[0m\n"
+        "     \033[4mgpt\033[0m [<options>]\n\n"
         "\033[1mOPTIONS:\033[0m\n"
         "  \033[2m-h, --help\033[0m\n"
         "     Print help information and exit.\n\n"
