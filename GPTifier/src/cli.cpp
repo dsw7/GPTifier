@@ -41,7 +41,7 @@ void print_help_messages()
         "    similar to the \033[2m--no-interactive-export\033[0m flag.\n\n"
         "  \033[2m-p <prompt>, --prompt=<prompt>\033[0m\n"
         "    Provide prompt via command line as opposed to interactively. This feature may be\n"
-        "    useful if performating automated unit tests. Note that a prompt provided via command line\n"
+        "    useful if performing automated unit tests. Note that a prompt provided via command line\n"
         "    will take precedence over a prompt provided via \033[2m--read-from-file\033[0m.\n\n"
         "  \033[2m-r <filename>, --read-from-file=<filename>\033[0m\n"
         "    Read prompt from a file. This option may be particularly useful when working\n"
