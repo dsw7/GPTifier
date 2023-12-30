@@ -16,6 +16,8 @@ A beautiful C++ libcurl / ChatGPT interface
 - [Usage](#usage)
   - [Basic example](#basic-example)
   - [Exporting a result](#exporting-a-result)
+- [Integrations](#integrations)
+  - [Coupling with `vim`](#coupling-with-vim)
 
 ## Motivation
 There are numerous ChatGPT command line programs currently available. Many of them are written in Python. I
@@ -147,3 +149,27 @@ export LS_COLORS
 ```
 In some cases, prompting interactively may be undesirable, such as when running automated unit tests. To
 disable the `y/n` prompt, run `gpt` with the `-u` or `--no-interactive-export` flags.
+
+## Integrations
+### Coupling with `vim`
+In the [Exporting a result](#exporting-a-result) section, it was stated that results can be voluntarily
+exported to `~/results.gpt`. One may be interested in integrating this into a `vim` workflow. This can be
+achieved as follows. First, add the following function to `~/.vimrc`:
+```vim
+function OpenGPTifierResults()
+  let l:results_file = expand('~') . '/results.gpt'
+
+  if filereadable(l:results_file)
+    execute 'vs' . l:results_file
+  else
+    echoerr l:results_file . ' does not exist'
+  endif
+endfunction
+```
+Then add a command to `~/.vimrc`:
+```vim
+" Open GPTifier results file
+command G :call OpenGPTifierResults()
+```
+The command `G` will open `~/results.gpt` in a separate vertical split, thus allowing for cherry picking saved
+OpenAI completions into a source file, for example.
