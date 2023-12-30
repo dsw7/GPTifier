@@ -155,7 +155,7 @@ disable the `y/n` prompt, run `gpt` with the `-u` or `--no-interactive-export` f
 In the [Exporting a result](#exporting-a-result) section, it was stated that results can be voluntarily
 exported to `~/results.gpt`. One may be interested in integrating this into a `vim` workflow. This can be
 achieved as follows. First, add the following function to `~/.vimrc`:
-```vimscript
+```vim
 function OpenGPTifierResults()
   let l:results_file = expand('~') . '/results.gpt'
 
@@ -167,7 +167,7 @@ function OpenGPTifierResults()
 endfunction
 ```
 Then add a command to `~/.vimrc`:
-```vimscript
+```vim
 " Open GPTifier results file
 command G :call OpenGPTifierResults()
 ```
