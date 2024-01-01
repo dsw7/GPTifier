@@ -1,4 +1,4 @@
-#include "data.hpp"
+#include "params.hpp"
 
 #include <cstdlib>
 #include <filesystem>

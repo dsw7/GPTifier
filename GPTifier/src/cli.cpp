@@ -1,5 +1,5 @@
 #include "cli.hpp"
-#include "data.hpp"
+#include "params.hpp"
 
 #include <cstdlib>
 #include <getopt.h>
