@@ -1,5 +1,5 @@
-#include "params.hpp"
 #include "query.hpp"
+#include "params.hpp"
 #include "utils.hpp"
 
 #include <chrono>

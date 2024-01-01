@@ -1,5 +1,5 @@
-#include "params.hpp"
 #include "prompts.hpp"
+#include "params.hpp"
 #include "utils.hpp"
 
 #include <fstream>
