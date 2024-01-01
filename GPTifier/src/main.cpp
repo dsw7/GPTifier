@@ -11,7 +11,7 @@
 #include <iostream>
 #include <stdexcept>
 
-Params params;
+::Params params;
 
 void create_chat_completion()
 {
@@ -32,10 +32,10 @@ void create_chat_completion()
         throw std::runtime_error("Response is empty!");
     }
 
-    if (params.dump.empty())
+    if (::params.dump.empty())
     {
         responses::print_chat_completion_response(response);
-        if (params.enable_export)
+        if (::params.enable_export)
         {
             responses::export_chat_completion_response(response);
         }
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    if (params.prompt.empty())
+    if (::params.prompt.empty())
     {
         std::cerr << "Prompt cannot be empty" << std::endl;
         return EXIT_FAILURE;

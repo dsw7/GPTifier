@@ -32,5 +32,5 @@ void read_configs()
         throw std::runtime_error(e);
     }
 
-    params.api_key = table["authentication"]["api-key"].value_or("");
+    ::params.api_key = table["authentication"]["api-key"].value_or("");
 }

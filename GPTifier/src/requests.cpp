@@ -14,21 +14,21 @@ namespace requests
 {
     nlohmann::json body = {};
 
-    body["model"] = params.model;
+    body["model"] = ::params.model;
 
     try
     {
-        body["temperature"] = std::stof(params.temperature);
+        body["temperature"] = std::stof(::params.temperature);
     }
     catch (std::invalid_argument &e)
     {
-        std::cerr << e.what() << ". Failed to convert '" + params.temperature + "' to float" << std::endl;
+        std::cerr << e.what() << ". Failed to convert '" + ::params.temperature + "' to float" << std::endl;
         return std::string();
     }
 
     nlohmann::json messages = {};
     messages["role"] = "user";
-    messages["content"] = params.prompt;
+    messages["content"] = ::params.prompt;
 
     body["messages"] = nlohmann::json::array({messages});
 

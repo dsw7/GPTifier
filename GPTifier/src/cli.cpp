@@ -94,25 +94,25 @@ void parse_cli(const int argc, char **argv)
             print_help_messages();
             ::exit(EXIT_SUCCESS);
         case 'u':
-            params.enable_export = false;
+            ::params.enable_export = false;
             break;
         case 'v':
             print_version();
             ::exit(EXIT_SUCCESS);
         case 'd':
-            params.dump = ::optarg;
+            ::params.dump = ::optarg;
             break;
         case 'p':
-            params.prompt = ::optarg;
+            ::params.prompt = ::optarg;
             break;
         case 't':
-            params.temperature = ::optarg;
+            ::params.temperature = ::optarg;
             break;
         case 'r':
-            params.prompt_file = ::optarg;
+            ::params.prompt_file = ::optarg;
             break;
         case 'm':
-            params.model = ::optarg;
+            ::params.model = ::optarg;
             break;
         default:
             std::cerr << "Try running with -h or --help for more information" << std::endl;
