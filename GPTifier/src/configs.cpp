@@ -1,4 +1,3 @@
-#include "configs.hpp"
 #include "data.hpp"
 
 #include <cstdlib>
@@ -33,5 +32,5 @@ void read_configs()
         throw std::runtime_error(e);
     }
 
-    configs.api_key = table["authentication"]["api-key"].value_or("");
+    params.api_key = table["authentication"]["api-key"].value_or("");
 }

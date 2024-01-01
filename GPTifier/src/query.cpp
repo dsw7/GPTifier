@@ -71,7 +71,7 @@ void QueryHandler::time_query()
     struct ::curl_slist *headers = NULL;
     headers = ::curl_slist_append(headers, "Content-Type: application/json");
 
-    std::string header_auth = "Authorization: Bearer " + configs.api_key;
+    std::string header_auth = "Authorization: Bearer " + params.api_key;
     headers = ::curl_slist_append(headers, header_auth.c_str());
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);

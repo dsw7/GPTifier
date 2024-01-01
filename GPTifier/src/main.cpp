@@ -11,7 +11,6 @@
 #include <iostream>
 #include <stdexcept>
 
-Configs configs;
 Params params;
 
 void create_chat_completion()
