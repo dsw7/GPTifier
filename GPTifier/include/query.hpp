@@ -3,9 +3,6 @@
 #include "typedefs.hpp"
 
 #include <curl/curl.h>
-#include <string>
-
-size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data);
 
 class QueryHandler
 {
