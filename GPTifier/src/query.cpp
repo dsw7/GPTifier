@@ -1,4 +1,5 @@
 #include "query.hpp"
+#include "data.hpp"
 #include "utils.hpp"
 
 #include <chrono>
@@ -60,7 +61,7 @@ void QueryHandler::time_query()
     utils::print_separator();
 }
 
-::str_response QueryHandler::run_query(const std::string &api_key, const ::str_request &request)
+::str_response QueryHandler::run_query(const ::str_request &request)
 {
     ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, request.c_str());
 
@@ -70,7 +71,7 @@ void QueryHandler::time_query()
     struct ::curl_slist *headers = NULL;
     headers = ::curl_slist_append(headers, "Content-Type: application/json");
 
-    std::string header_auth = "Authorization: Bearer " + api_key;
+    std::string header_auth = "Authorization: Bearer " + configs.api_key;
     headers = ::curl_slist_append(headers, header_auth.c_str());
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);

@@ -16,3 +16,5 @@ struct Params
     std::string prompt_file;
     std::string temperature = "1";
 };
+
+extern Configs configs;

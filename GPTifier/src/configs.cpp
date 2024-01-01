@@ -1,11 +1,12 @@
 #include "configs.hpp"
+#include "data.hpp"
 
 #include <cstdlib>
 #include <filesystem>
 #include <stdexcept>
 #include <toml.hpp>
 
-void read_configs(Configs &configs)
+void read_configs()
 {
     const char *home_dir = std::getenv("HOME");
 

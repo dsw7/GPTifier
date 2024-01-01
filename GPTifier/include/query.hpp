@@ -17,5 +17,5 @@ private:
 public:
     QueryHandler();
     ~QueryHandler();
-    ::str_response run_query(const std::string &api_key, const ::str_request &request);
+    ::str_response run_query(const ::str_request &request);
 };

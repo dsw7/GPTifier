@@ -10,7 +10,9 @@
 #include <iostream>
 #include <stdexcept>
 
-void create_chat_completion(const Params &params, const Configs &configs)
+Configs configs;
+
+void create_chat_completion(const Params &params)
 {
     ::str_request request = requests::build_chat_request(params.prompt, params.model, params.temperature);
 
@@ -22,7 +24,7 @@ void create_chat_completion(const Params &params, const Configs &configs)
     requests::print_request(request);
 
     QueryHandler q;
-    ::str_response response = q.run_query(configs.api_key, request);
+    ::str_response response = q.run_query(request);
 
     if (response.empty())
     {
@@ -51,10 +53,9 @@ int main(int argc, char **argv)
         cli::parse_cli(argc, argv, params);
     }
 
-    Configs configs;
     try
     {
-        ::read_configs(configs);
+        ::read_configs();
     }
     catch (std::runtime_error &e)
     {
@@ -80,7 +81,7 @@ int main(int argc, char **argv)
 
     try
     {
-        ::create_chat_completion(params, configs);
+        ::create_chat_completion(params);
     }
     catch (std::runtime_error &e)
     {
