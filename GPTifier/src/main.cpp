@@ -1,5 +1,4 @@
 #include "cli.hpp"
-#include "configs.hpp"
 #include "params.hpp"
 #include "prompts.hpp"
 #include "query.hpp"
@@ -55,7 +54,7 @@ int main(int argc, char **argv)
 
     try
     {
-        ::read_configs();
+        params.load_params_from_config_file();
     }
     catch (std::runtime_error &e)
     {

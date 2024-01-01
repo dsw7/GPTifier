@@ -4,6 +4,8 @@
 
 struct Params
 {
+    void load_params_from_config_file();
+
     // Parameters strictly from configuration file
     std::string api_key;
 

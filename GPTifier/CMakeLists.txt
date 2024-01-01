@@ -51,8 +51,8 @@ include_directories(
 add_executable(
   "gpt"
   "src/cli.cpp"
-  "src/configs.cpp"
   "src/main.cpp"
+  "src/params.cpp"
   "src/prompts.cpp"
   "src/query.cpp"
   "src/requests.cpp"

@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <toml.hpp>
 
-void read_configs()
+void Params::load_params_from_config_file()
 {
     const char *home_dir = std::getenv("HOME");
 
@@ -32,5 +32,5 @@ void read_configs()
         throw std::runtime_error(e);
     }
 
-    ::params.api_key = table["authentication"]["api-key"].value_or("");
+    this->api_key = table["authentication"]["api-key"].value_or("");
 }
