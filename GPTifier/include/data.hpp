@@ -18,3 +18,4 @@ struct Params
 };
 
 extern Configs configs;
+extern Params params;

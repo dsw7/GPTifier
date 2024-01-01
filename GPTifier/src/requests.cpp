@@ -1,35 +1,34 @@
 #include "requests.hpp"
+#include "data.hpp"
 #include "utils.hpp"
 
 #include <iostream>
 #include <json.hpp>
 #include <stdexcept>
+#include <string>
 
 namespace requests
 {
 
-::str_request build_chat_request(const std::string &prompt, const std::string &model, const std::string &temp)
+::str_request build_chat_request()
 {
-    // Build "chat completion" request
-    // See https://platform.openai.com/docs/api-reference/chat/create
-
     nlohmann::json body = {};
 
-    body["model"] = model;
+    body["model"] = params.model;
 
     try
     {
-        body["temperature"] = std::stof(temp);
+        body["temperature"] = std::stof(params.temperature);
     }
     catch (std::invalid_argument &e)
     {
-        std::cerr << e.what() << ". Failed to convert '" + temp + "' to float" << std::endl;
+        std::cerr << e.what() << ". Failed to convert '" + params.temperature + "' to float" << std::endl;
         return std::string();
     }
 
     nlohmann::json messages = {};
     messages["role"] = "user";
-    messages["content"] = prompt;
+    messages["content"] = params.prompt;
 
     body["messages"] = nlohmann::json::array({messages});
 

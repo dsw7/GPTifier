@@ -1,5 +1,6 @@
 #include "cli.hpp"
 #include "configs.hpp"
+#include "data.hpp"
 #include "prompts.hpp"
 #include "query.hpp"
 #include "requests.hpp"
@@ -11,10 +12,11 @@
 #include <stdexcept>
 
 Configs configs;
+Params params;
 
-void create_chat_completion(const Params &params)
+void create_chat_completion()
 {
-    ::str_request request = requests::build_chat_request(params.prompt, params.model, params.temperature);
+    ::str_request request = requests::build_chat_request();
 
     if (request.empty())
     {
@@ -41,16 +43,15 @@ void create_chat_completion(const Params &params)
     }
     else
     {
-        responses::dump_chat_completion_response(response, params.dump);
+        responses::dump_chat_completion_response(response);
     }
 }
 
 int main(int argc, char **argv)
 {
-    Params params;
     if (argc > 1)
     {
-        cli::parse_cli(argc, argv, params);
+        cli::parse_cli(argc, argv);
     }
 
     try
@@ -65,7 +66,7 @@ int main(int argc, char **argv)
 
     try
     {
-        prompt::get_prompt(params);
+        prompt::get_prompt();
     }
     catch (std::runtime_error &e)
     {
@@ -81,7 +82,7 @@ int main(int argc, char **argv)
 
     try
     {
-        ::create_chat_completion(params);
+        ::create_chat_completion();
     }
     catch (std::runtime_error &e)
     {

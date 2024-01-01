@@ -1,8 +1,10 @@
 #include "cli.hpp"
+#include "data.hpp"
 
 #include <cstdlib>
 #include <getopt.h>
 #include <iostream>
+#include <string>
 
 namespace cli
 {
@@ -62,7 +64,7 @@ void print_version()
     std::cout << PROJECT_VERSION << std::endl;
 }
 
-void parse_cli(const int argc, char **argv, Params &params)
+void parse_cli(const int argc, char **argv)
 {
     while (true)
     {
