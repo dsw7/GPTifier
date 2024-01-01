@@ -5,6 +5,7 @@
 struct Params
 {
     void load_params_from_config_file();
+    void load_params_from_command_line(const int argc, char **argv);
 
     // Parameters strictly from configuration file
     std::string api_key;

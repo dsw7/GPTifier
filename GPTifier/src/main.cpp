@@ -1,4 +1,3 @@
-#include "cli.hpp"
 #include "params.hpp"
 #include "prompts.hpp"
 #include "query.hpp"
@@ -49,7 +48,7 @@ int main(int argc, char **argv)
 {
     if (argc > 1)
     {
-        cli::parse_cli(argc, argv);
+        params.load_params_from_command_line(argc, argv);
     }
 
     try
