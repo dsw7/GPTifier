@@ -51,6 +51,7 @@ include_directories(
 add_executable(
   "gpt"
   "src/cli.cpp"
+  "src/help_messages.cpp"
   "src/main.cpp"
   "src/params.cpp"
   "src/prompts.cpp"
