@@ -24,11 +24,6 @@ void create_chat_completion()
     QueryHandler q;
     ::str_response response = q.run_query(request);
 
-    if (response.empty())
-    {
-        throw std::runtime_error("Response is empty!");
-    }
-
     if (::params.dump.empty())
     {
         responses::print_chat_completion_response(response);

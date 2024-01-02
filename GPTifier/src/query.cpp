@@ -5,6 +5,7 @@
 #include <chrono>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <thread>
 
 size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
@@ -92,8 +93,8 @@ void QueryHandler::time_query()
 
     if (rv != ::CURLE_OK)
     {
-        std::cerr << "Failed to run query. " << ::curl_easy_strerror(rv) << '\n';
-        return std::string();
+        std::string errmsg = "Failed to run query. " + std::string(::curl_easy_strerror(rv)); 
+        throw std::runtime_error(errmsg);
     }
 
     return response;
