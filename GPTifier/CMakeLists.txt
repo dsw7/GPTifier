@@ -57,6 +57,7 @@ add_executable(
   "src/query.cpp"
   "src/requests.cpp"
   "src/responses.cpp"
+  "src/run_completion.cpp"
   "src/utils.cpp"
 )
 target_link_libraries(
