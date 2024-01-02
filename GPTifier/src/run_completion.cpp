@@ -7,16 +7,9 @@
 #include "responses.hpp"
 #include "typedefs.hpp"
 
-#include <stdexcept>
-
 void create_chat_completion()
 {
     prompt::get_prompt();
-
-    if (::params.prompt.empty())
-    {
-        throw std::runtime_error("Prompt cannot be empty");
-    }
 
     ::str_request request = requests::build_chat_request();
     requests::print_request(request);

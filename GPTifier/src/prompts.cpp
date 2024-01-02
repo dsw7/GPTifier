@@ -10,14 +10,6 @@
 namespace prompt
 {
 
-void read_prompt_interactively()
-{
-    utils::print_separator();
-    std::cout << "\033[1mInput:\033[0m ";
-
-    std::getline(std::cin, ::params.prompt);
-}
-
 void read_prompt_from_file()
 {
     utils::print_separator();
@@ -37,6 +29,14 @@ void read_prompt_from_file()
     file.close();
 }
 
+void read_prompt_interactively()
+{
+    utils::print_separator();
+    std::cout << "\033[1mInput:\033[0m ";
+
+    std::getline(std::cin, ::params.prompt);
+}
+
 void get_prompt()
 {
     // Prompt was passed via command line
@@ -54,6 +54,12 @@ void get_prompt()
 
     // Otherwise default to reading from stdin
     read_prompt_interactively();
+
+    // If still empty then we cannot proceed
+    if (::params.prompt.empty())
+    {
+        throw std::runtime_error("Prompt cannot be empty");
+    }
 }
 
 } // namespace prompt

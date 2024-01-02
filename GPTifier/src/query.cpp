@@ -93,7 +93,7 @@ void QueryHandler::time_query()
 
     if (rv != ::CURLE_OK)
     {
-        std::string errmsg = "Failed to run query. " + std::string(::curl_easy_strerror(rv)); 
+        std::string errmsg = "Failed to run query. " + std::string(::curl_easy_strerror(rv));
         throw std::runtime_error(errmsg);
     }
 
