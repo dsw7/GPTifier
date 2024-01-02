@@ -26,12 +26,6 @@ void create_chat_completion()
     }
 
     ::str_request request = requests::build_chat_request();
-
-    if (request.empty())
-    {
-        throw std::runtime_error("Request is empty!");
-    }
-
     requests::print_request(request);
 
     QueryHandler q;

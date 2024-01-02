@@ -22,8 +22,8 @@ namespace requests
     }
     catch (std::invalid_argument &e)
     {
-        std::cerr << e.what() << ". Failed to convert '" + ::params.temperature + "' to float" << std::endl;
-        return std::string();
+        std::string errmsg = std::string(e.what()) + ". Failed to convert '" + ::params.temperature + "' to float";
+        throw std::runtime_error(errmsg);
     }
 
     nlohmann::json messages = {};
