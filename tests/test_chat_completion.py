@@ -74,6 +74,17 @@ def test_missing_prompt_file(capfd) -> None:
     assert cap.err.strip() == "Could not open file '/tmp/yU8nnkRs.txt'"
 
 
+def test_invalid_dump_loc(capfd) -> None:
+    process = run(
+        ["build/gpt", "--prompt='What is 3 + 5?'", "--dump=/tmp/a/b/c"],
+        stdout=DEVNULL,
+    )
+    assert process.returncode != EX_OK
+
+    cap = capfd.readouterr()
+    assert cap.err.strip() == "Unable to open '/tmp/a/b/c'"
+
+
 @mark.parametrize(
     "model, result, valid_model",
     [

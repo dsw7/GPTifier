@@ -118,7 +118,7 @@ void dump_chat_completion_response(const ::str_response &response)
 
     if (not st_filename.is_open())
     {
-        throw std::runtime_error("Unable to open " + params.dump);
+        throw std::runtime_error("Unable to open '" + params.dump + "'");
     }
 
     nlohmann::json results = nlohmann::json::parse(response);
