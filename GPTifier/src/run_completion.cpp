@@ -11,14 +11,7 @@
 
 void create_chat_completion()
 {
-    try
-    {
-        prompt::get_prompt();
-    }
-    catch (std::runtime_error &e)
-    {
-        throw;
-    }
+    prompt::get_prompt();
 
     if (::params.prompt.empty())
     {
@@ -39,6 +32,7 @@ void create_chat_completion()
     if (::params.dump.empty())
     {
         responses::print_chat_completion_response(response);
+
         if (::params.enable_export)
         {
             responses::export_chat_completion_response(response);

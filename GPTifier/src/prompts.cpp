@@ -27,7 +27,7 @@ void read_prompt_from_file()
 
     if (not file.is_open())
     {
-        throw std::runtime_error("Could not open file " + ::params.prompt_file);
+        throw std::runtime_error("Could not open file '" + ::params.prompt_file + "'");
     }
 
     std::stringstream buffer;
