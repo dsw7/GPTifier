@@ -1,9 +1,11 @@
 #include "query.hpp"
+#include "params.hpp"
 #include "utils.hpp"
 
 #include <chrono>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <thread>
 
 size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
@@ -60,7 +62,7 @@ void QueryHandler::time_query()
     utils::print_separator();
 }
 
-::str_response QueryHandler::run_query(const std::string &api_key, const ::str_request &request)
+::str_response QueryHandler::run_query(const ::str_request &request)
 {
     ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, request.c_str());
 
@@ -70,7 +72,7 @@ void QueryHandler::time_query()
     struct ::curl_slist *headers = NULL;
     headers = ::curl_slist_append(headers, "Content-Type: application/json");
 
-    std::string header_auth = "Authorization: Bearer " + api_key;
+    std::string header_auth = "Authorization: Bearer " + params.api_key;
     headers = ::curl_slist_append(headers, header_auth.c_str());
 
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);
@@ -91,8 +93,8 @@ void QueryHandler::time_query()
 
     if (rv != ::CURLE_OK)
     {
-        std::cerr << "Failed to run query. " << ::curl_easy_strerror(rv) << '\n';
-        return std::string();
+        std::string errmsg = "Failed to run query. " + std::string(::curl_easy_strerror(rv));
+        throw std::runtime_error(errmsg);
     }
 
     return response;

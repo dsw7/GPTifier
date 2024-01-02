@@ -1,4 +1,5 @@
 #include "prompts.hpp"
+#include "params.hpp"
 #include "utils.hpp"
 
 #include <fstream>
@@ -9,50 +10,56 @@
 namespace prompt
 {
 
-void read_prompt_interactively(std::string &prompt)
+void read_prompt_from_file()
 {
     utils::print_separator();
-    std::cout << "\033[1mInput:\033[0m ";
+    std::cout << "Reading prompt from file: " + ::params.prompt_file + '\n';
 
-    std::getline(std::cin, prompt);
-}
-
-void read_prompt_from_file(std::string &prompt, const std::string &filename)
-{
-    utils::print_separator();
-    std::cout << "Reading prompt from file: " + filename + '\n';
-
-    std::ifstream file(filename);
+    std::ifstream file(::params.prompt_file);
 
     if (not file.is_open())
     {
-        throw std::runtime_error("Could not open file " + filename);
+        throw std::runtime_error("Could not open file '" + ::params.prompt_file + "'");
     }
 
     std::stringstream buffer;
     buffer << file.rdbuf();
-    prompt = buffer.str();
+    ::params.prompt = buffer.str();
 
     file.close();
 }
 
-void get_prompt(Params &params)
+void read_prompt_interactively()
+{
+    utils::print_separator();
+    std::cout << "\033[1mInput:\033[0m ";
+
+    std::getline(std::cin, ::params.prompt);
+}
+
+void get_prompt()
 {
     // Prompt was passed via command line
-    if (not params.prompt.empty())
+    if (not ::params.prompt.empty())
     {
         return;
     }
 
     // Prompt was passed via file
-    if (not params.prompt_file.empty())
+    if (not ::params.prompt_file.empty())
     {
-        read_prompt_from_file(params.prompt, params.prompt_file);
+        read_prompt_from_file();
         return;
     }
 
     // Otherwise default to reading from stdin
-    read_prompt_interactively(params.prompt);
+    read_prompt_interactively();
+
+    // If still empty then we cannot proceed
+    if (::params.prompt.empty())
+    {
+        throw std::runtime_error("Prompt cannot be empty");
+    }
 }
 
 } // namespace prompt

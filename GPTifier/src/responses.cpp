@@ -1,4 +1,5 @@
 #include "responses.hpp"
+#include "params.hpp"
 #include "utils.hpp"
 
 #include <cstdlib>
@@ -110,14 +111,14 @@ void export_chat_completion_response(const ::str_response &response)
     utils::print_separator();
 }
 
-void dump_chat_completion_response(const ::str_response &response, const std::string &filename)
+void dump_chat_completion_response(const ::str_response &response)
 {
-    std::cout << "Dumping results to " + filename + '\n';
-    std::ofstream st_filename(filename);
+    std::cout << "Dumping results to " + params.dump + '\n';
+    std::ofstream st_filename(params.dump);
 
     if (not st_filename.is_open())
     {
-        throw std::runtime_error("Unable to open " + filename);
+        throw std::runtime_error("Unable to open '" + params.dump + "'");
     }
 
     nlohmann::json results = nlohmann::json::parse(response);
