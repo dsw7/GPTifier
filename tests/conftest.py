@@ -1,5 +1,5 @@
 from pathlib import Path
-from tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory, NamedTemporaryFile, gettempdir
 from typing import Generator
 from pytest import fixture
 
@@ -10,7 +10,7 @@ def pytest_addoption(parser):
     )
 
 
-@fixture(scope="session")
+@fixture(scope="function")
 def command(pytestconfig) -> list[str]:
     if not pytestconfig.getoption("memory"):
         return ["build/gpt", "--no-interactive-export"]
@@ -30,3 +30,9 @@ def tempdir() -> Generator[Path, None, None]:
 
     yield Path(handle_tempdir.name)
     handle_tempdir.cleanup()
+
+
+@fixture(scope="function")
+def json_file() -> Generator[str, None, None]:
+    with NamedTemporaryFile(dir=gettempdir()) as temp_file:
+        yield temp_file.name
