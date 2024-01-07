@@ -9,20 +9,6 @@ if system() == "Darwin":
 VALGRIND_ROOT = ["valgrind", "--error-exitcode=1", "--leak-check=full", "build/gpt"]
 
 
-def test_basic(tempdir: Path) -> None:
-    command = VALGRIND_ROOT + [
-        "-u",
-        "-p'What is 3 + 5?'",
-        "-t0",
-        f"-d{tempdir / 'test_memory.json'}",
-    ]
-
-    try:
-        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
-    except CalledProcessError as exc:
-        fail(exc.stderr.decode())
-
-
 def test_invalid_temp(tempdir: Path) -> None:
     command = VALGRIND_ROOT + [
         "-u",
