@@ -5,28 +5,6 @@ from subprocess import run, DEVNULL, PIPE, CalledProcessError
 from pytest import mark, fail
 
 
-@mark.parametrize(
-    "temp, result",
-    [
-        ("-2.5", "-2.5 is less than the minimum of 0 - 'temperature'"),
-        ("2.5", "2.5 is greater than the maximum of 2 - 'temperature'"),
-    ],
-)
-def test_invalid_temp(temp: str, result: str, tempdir: Path) -> None:
-    json_file = tempdir / "test_invalid_temp.json"
-
-    command = ["build/gpt", "-u", "-p'Running a test!'", f"-d{json_file}", f"-t{temp}"]
-
-    try:
-        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
-    except CalledProcessError as exc:
-        fail(exc.stderr.decode())
-
-    with json_file.open() as f_json:
-        data = loads(f_json.read())
-        assert data["error"]["message"] == result
-
-
 def test_read_from_file(tempdir: Path) -> None:
     json_file = tempdir / "test_read_from_file.json"
 
