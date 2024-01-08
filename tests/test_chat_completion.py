@@ -2,26 +2,25 @@ from json import loads
 from os import EX_OK
 from pathlib import Path
 from subprocess import run, DEVNULL, PIPE, CalledProcessError
-from pytest import mark, fail
+from pytest import fail, mark
+from consts import EX_MEM_LEAK
 
 
-def test_basic(tempdir: Path) -> None:
-    json_file = tempdir / "test_basic.json"
-
-    command = [
-        "build/gpt",
-        "-u",
-        "-p'What is 3 + 5? Format the result as follows: >>>{result}<<<'",
-        "-t0",
-        f"-d{json_file}",
-    ]
+def test_basic(json_file: str, command: list[str]) -> None:
+    command.extend(
+        [
+            "-p'What is 3 + 5? Format the result as follows: >>>{result}<<<'",
+            "-t0",
+            f"-d{json_file}",
+        ]
+    )
 
     try:
         run(command, stdout=DEVNULL, stderr=PIPE, check=True)
     except CalledProcessError as exc:
         fail(exc.stderr.decode())
 
-    with json_file.open() as f_json:
+    with open(json_file) as f_json:
         data = loads(f_json.read())
         assert data["choices"][0]["message"]["content"] == ">>>8<<<"
 
@@ -33,56 +32,53 @@ def test_basic(tempdir: Path) -> None:
         ("2.5", "2.5 is greater than the maximum of 2 - 'temperature'"),
     ],
 )
-def test_invalid_temp(temp: str, result: str, tempdir: Path) -> None:
-    json_file = tempdir / "test_invalid_temp.json"
-
-    command = ["build/gpt", "-u", "-p'Running a test!'", f"-d{json_file}", f"-t{temp}"]
+def test_invalid_temp(
+    temp: str, result: str, json_file: str, command: list[str]
+) -> None:
+    command.extend(["-p'Running a test!'", f"-t{temp}", f"-d{json_file}"])
 
     try:
         run(command, stdout=DEVNULL, stderr=PIPE, check=True)
     except CalledProcessError as exc:
         fail(exc.stderr.decode())
 
-    with json_file.open() as f_json:
+    with open(json_file) as f_json:
         data = loads(f_json.read())
         assert data["error"]["message"] == result
 
 
-def test_read_from_file(tempdir: Path) -> None:
-    json_file = tempdir / "test_read_from_file.json"
-
-    prompt = tempdir / "test_read_from_file.txt"
-    prompt.write_text("What is 3 + 5? Format the result as follows: >>>{result}<<<")
-
-    command = ["build/gpt", "-u", f"-r{prompt}", "-t0", f"-d{json_file}"]
+def test_read_from_file(json_file: str, command: list[str]) -> None:
+    prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
+    command.extend([f"-r{prompt}", "-t0", f"-d{json_file}"])
 
     try:
         run(command, stdout=DEVNULL, stderr=PIPE, check=True)
     except CalledProcessError as exc:
         fail(exc.stderr.decode())
 
-    with json_file.open() as f_json:
+    with open(json_file) as f_json:
         data = loads(f_json.read())
         assert data["choices"][0]["message"]["content"] == ">>>8<<<"
 
 
-def test_missing_prompt_file(capfd) -> None:
-    process = run(["build/gpt", "--read-from-file=/tmp/yU8nnkRs.txt"], stdout=DEVNULL)
-    assert process.returncode != EX_OK
+def test_missing_prompt_file(command: list[str], capfd) -> None:
+    command.extend(["--read-from-file=/tmp/yU8nnkRs.txt"])
+
+    process = run(command, stdout=DEVNULL)
+    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
 
     cap = capfd.readouterr()
-    assert cap.err.strip() == "Could not open file '/tmp/yU8nnkRs.txt'"
+    assert "Could not open file '/tmp/yU8nnkRs.txt'" in cap.err
 
 
-def test_invalid_dump_loc(capfd) -> None:
-    process = run(
-        ["build/gpt", "--prompt='What is 3 + 5?'", "--dump=/tmp/a/b/c"],
-        stdout=DEVNULL,
-    )
-    assert process.returncode != EX_OK
+def test_invalid_dump_loc(command: list[str], capfd) -> None:
+    command.extend(["--prompt='What is 3 + 5?'", "--dump=/tmp/a/b/c"])
+
+    process = run(command, stdout=DEVNULL)
+    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
 
     cap = capfd.readouterr()
-    assert cap.err.strip() == "Unable to open '/tmp/a/b/c'"
+    assert "Unable to open '/tmp/a/b/c'" in cap.err
 
 
 @mark.parametrize(
@@ -92,17 +88,17 @@ def test_invalid_dump_loc(capfd) -> None:
         ("gpt-3.5-turbo-0302", "The model `gpt-3.5-turbo-0302` does not exist", False),
     ],
 )
-def test_model(model: str, result: str, valid_model: bool, tempdir: Path) -> None:
-    json_file = tempdir / "test_model.json"
-
-    command = ["build/gpt", "-u", "-p'What is 3 + 5?'", f"-m{model}", f"-d{json_file}"]
+def test_model(
+    model: str, result: str, valid_model: bool, json_file: str, command: list[str]
+) -> None:
+    command.extend(["-p'What is 3 + 5?'", f"-m{model}", f"-d{json_file}"])
 
     try:
         run(command, stdout=DEVNULL, stderr=PIPE, check=True)
     except CalledProcessError as exc:
         fail(exc.stderr.decode())
 
-    with json_file.open() as f_json:
+    with open(json_file) as f_json:
         data = loads(f_json.read())
 
     if valid_model:
