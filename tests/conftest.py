@@ -2,6 +2,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory, NamedTemporaryFile, gettempdir
 from typing import Generator
 from pytest import fixture
+from consts import EX_MEM_LEAK
 
 
 def pytest_addoption(parser):
@@ -17,7 +18,7 @@ def command(pytestconfig) -> list[str]:
 
     return [
         "valgrind",
-        "--error-exitcode=1",
+        f"--error-exitcode={EX_MEM_LEAK}",
         "--leak-check=full",
         "build/gpt",
         "--no-interactive-export",

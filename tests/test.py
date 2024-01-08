@@ -1,7 +1,9 @@
 from json import loads
+from os import EX_OK
 from pathlib import Path
 from subprocess import run, DEVNULL, PIPE, CalledProcessError
 from pytest import fail, mark
+from consts import EX_MEM_LEAK
 
 
 def test_basic(json_file: str, command: list[str]) -> None:
@@ -57,3 +59,13 @@ def test_read_from_file(json_file: str, command: list[str]) -> None:
     with open(json_file) as f_json:
         data = loads(f_json.read())
         assert data["choices"][0]["message"]["content"] == ">>>8<<<"
+
+
+def test_missing_prompt_file(command: list[str], capfd) -> None:
+    command.extend(["--read-from-file=/tmp/yU8nnkRs.txt"])
+
+    process = run(command, stdout=DEVNULL)
+    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
+
+    cap = capfd.readouterr()
+    assert "Could not open file '/tmp/yU8nnkRs.txt'" in cap.err

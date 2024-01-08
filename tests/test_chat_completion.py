@@ -5,14 +5,6 @@ from subprocess import run, DEVNULL, PIPE, CalledProcessError
 from pytest import mark, fail
 
 
-def test_missing_prompt_file(capfd) -> None:
-    process = run(["build/gpt", "--read-from-file=/tmp/yU8nnkRs.txt"], stdout=DEVNULL)
-    assert process.returncode != EX_OK
-
-    cap = capfd.readouterr()
-    assert cap.err.strip() == "Could not open file '/tmp/yU8nnkRs.txt'"
-
-
 def test_invalid_dump_loc(capfd) -> None:
     process = run(
         ["build/gpt", "--prompt='What is 3 + 5?'", "--dump=/tmp/a/b/c"],
