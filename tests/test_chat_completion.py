@@ -5,24 +5,6 @@ from subprocess import run, DEVNULL, PIPE, CalledProcessError
 from pytest import mark, fail
 
 
-def test_read_from_file(tempdir: Path) -> None:
-    json_file = tempdir / "test_read_from_file.json"
-
-    prompt = tempdir / "test_read_from_file.txt"
-    prompt.write_text("What is 3 + 5? Format the result as follows: >>>{result}<<<")
-
-    command = ["build/gpt", "-u", f"-r{prompt}", "-t0", f"-d{json_file}"]
-
-    try:
-        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
-    except CalledProcessError as exc:
-        fail(exc.stderr.decode())
-
-    with json_file.open() as f_json:
-        data = loads(f_json.read())
-        assert data["choices"][0]["message"]["content"] == ">>>8<<<"
-
-
 def test_missing_prompt_file(capfd) -> None:
     process = run(["build/gpt", "--read-from-file=/tmp/yU8nnkRs.txt"], stdout=DEVNULL)
     assert process.returncode != EX_OK

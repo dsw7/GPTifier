@@ -1,4 +1,5 @@
 from json import loads
+from pathlib import Path
 from subprocess import run, DEVNULL, PIPE, CalledProcessError
 from pytest import fail, mark
 
@@ -42,3 +43,17 @@ def test_invalid_temp(
     with open(json_file) as f_json:
         data = loads(f_json.read())
         assert data["error"]["message"] == result
+
+
+def test_read_from_file(json_file: str, command: list[str]) -> None:
+    prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
+    command.extend([f"-r{prompt}", "-t0", f"-d{json_file}"])
+
+    try:
+        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
+    except CalledProcessError as exc:
+        fail(exc.stderr.decode())
+
+    with open(json_file) as f_json:
+        data = loads(f_json.read())
+        assert data["choices"][0]["message"]["content"] == ">>>8<<<"
