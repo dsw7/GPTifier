@@ -69,3 +69,13 @@ def test_missing_prompt_file(command: list[str], capfd) -> None:
 
     cap = capfd.readouterr()
     assert "Could not open file '/tmp/yU8nnkRs.txt'" in cap.err
+
+
+def test_invalid_dump_loc(command: list[str], capfd) -> None:
+    command.extend(["--prompt='What is 3 + 5?'", "--dump=/tmp/a/b/c"])
+
+    process = run(command, stdout=DEVNULL)
+    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
+
+    cap = capfd.readouterr()
+    assert "Unable to open '/tmp/a/b/c'" in cap.err

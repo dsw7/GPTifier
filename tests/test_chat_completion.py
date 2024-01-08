@@ -1,19 +1,7 @@
 from json import loads
-from os import EX_OK
 from pathlib import Path
 from subprocess import run, DEVNULL, PIPE, CalledProcessError
 from pytest import mark, fail
-
-
-def test_invalid_dump_loc(capfd) -> None:
-    process = run(
-        ["build/gpt", "--prompt='What is 3 + 5?'", "--dump=/tmp/a/b/c"],
-        stdout=DEVNULL,
-    )
-    assert process.returncode != EX_OK
-
-    cap = capfd.readouterr()
-    assert cap.err.strip() == "Unable to open '/tmp/a/b/c'"
 
 
 @mark.parametrize(
