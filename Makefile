@@ -31,6 +31,7 @@ lint:
 
 test: compile
 	@python3 -m pytest -vs tests
+	@python3 -m pytest -vs tests --memory
 
 format:
 	@clang-format -i --verbose --style=file GPTifier/src/*.cpp GPTifier/include/*.hpp
