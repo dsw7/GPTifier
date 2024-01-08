@@ -1,7 +1,8 @@
 from pathlib import Path
+from platform import system
 from tempfile import TemporaryDirectory, NamedTemporaryFile, gettempdir
 from typing import Generator
-from pytest import fixture
+from pytest import fixture, exit
 from consts import EX_MEM_LEAK
 
 
@@ -9,6 +10,13 @@ def pytest_addoption(parser):
     parser.addoption(
         "--memory", action="store_true", default=False, help="Run Valgrind tests"
     )
+
+
+@fixture(scope="session", autouse=True)
+def check_platform(pytestconfig) -> None:
+    if pytestconfig.getoption("memory"):
+        if system() == "Darwin":
+            exit("Valgrind not supported on MacOS")
 
 
 @fixture(scope="function")
