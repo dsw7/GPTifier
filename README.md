@@ -26,25 +26,25 @@ wanted something a bit quicker and a bit easier to install, so I wrote this prog
 ## Setup
 ### Get specific release
 Interested in a specific release? To download `1.0.0`, for example:
-```
+```console
 wget https://github.com/dsw7/GPTifier/archive/refs/tags/v1.0.0.tar.gz
 ```
 Which will yield:
-```
+```console
 v1.0.0.tar.gz
 ```
 Then run:
-```
+```console
 tar -xvf v1.0.0.tar.gz
 ```
 Which will generate:
-```
+```console
 GPTifier-1.0.0
 ```
 Change directories into `GPTifier-1.0.0` and proceed with the next steps.
 ### Compile binary
 To set the product up, simply run the `make` target:
-```
+```console
 make compile
 ```
 The binary will be installed into whatever install directory is resolved by CMake's
@@ -52,7 +52,7 @@ The binary will be installed into whatever install directory is resolved by CMak
 ### Get `json.hpp`
 This project uses the [nlohmann/json](https://github.com/nlohmann/json) library. The compiler must be able to
 locate the `json.hpp` header file. If the `json.hpp` file does not exist anywhere, `cmake` will print out:
-```
+```console
 -- Checking if json.hpp exists anywhere
 -- Checking directory: /usr/include/c++/10
 -- Checking directory: /usr/include/x86_64-linux-gnu/c++/10
@@ -65,7 +65,7 @@ CMake Error at CMakeLists.txt:<line-number> (message):
   Could not find json.hpp in any include directory
 ```
 To install `json.hpp` into say `/usr/include`, simply run the convenience script:
-```
+```console
 ./get_dependencies /usr/include/
 ```
 Running the script may require elevated privileges.
@@ -73,7 +73,7 @@ Running the script may require elevated privileges.
 This project uses the [TOML++](https://marzer.github.io/tomlplusplus/) configuration parser. The compiler must
 be able to locate the `toml.hpp` header file. If the `toml.hpp` file does not exist anywhere, `cmake` will
 print out:
-```
+```console
 -- Checking if toml.hpp exists anywhere
 -- Checking directory: /usr/include/c++/10
 -- Checking directory: /usr/include/x86_64-linux-gnu/c++/10
@@ -86,18 +86,18 @@ CMake Error at CMakeLists.txt:<line-number> (message):
   Could not find toml.hpp in any include directory
 ```
 Which is identical [`json.hpp`](#get-jsonhpp) case. As before, simply run the convenience script:
-```
+```console
 ./get_dependencies /usr/include/
 ```
 Running the script may require elevated privileges.
 ### Set up TOML
 This project uses [TOML](https://toml.io/en/) to store configurations. Copy the [.gptifier](./.gptifier) TOML
 file from this repository to your home directory:
-```
+```console
 cp .gptifier ~/
 ```
 Set the permissions to 600:
-```
+```console
 chmod 600 ~/.gptifier
 ```
 And edit the file:
@@ -108,26 +108,26 @@ And edit the file:
 api-key = "<your-api-key>"
 ```
 Next, drop into the program:
-```
+```console
 gpt
 ```
 The program should begin if the `.gptifier` file is properly set up.
 ### Clean up
 The compilation process will generate many build artifacts. Clean up the build artifacts by running:
-```
+```console
 make clean
 ```
 
 ## Usage
 ### Basic example
-Simply run `gpt`! This will begin an interactive session. Type in a question:
-```
+Simply run `gpt`! This will begin an interactive session. Type in a prompt:
+```console
 $ gpt
 ------------------------------------------------------------------------------------------
 Input: What is 3 + 5?
 ```
 And hit `Enter`. The program will dispatch a request and return:
-```
+```console
 ...
 Results: 3 + 5 equals 8.
 ------------------------------------------------------------------------------------------
@@ -136,14 +136,14 @@ Export:
 ```
 ### Exporting a result
 In the above example, the user is prompted to export the completion a file. Entering `y` will print:
-```
+```console
 ...
 > Writing reply to file /home/<your-username>/results.gpt
 ------------------------------------------------------------------------------------------
 ```
 Subsequent requests will append to this file. A suggested practice is to "highlight" this file by updating the
 `LS_COLORS` environment variable in any `init` file as follows:
-```bash
+```console
 LS_COLORS=$LS_COLORS:"*.gpt=4;93"
 export LS_COLORS
 ```
