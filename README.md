@@ -18,6 +18,10 @@ A beautiful C++ libcurl / ChatGPT interface
   - [Exporting a result](#exporting-a-result)
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
+- [Development](#development)
+  - [Testing](#testing)
+  - [Formatting](#formatting)
+  - [Linting](#linting)
 
 ## Motivation
 There are numerous ChatGPT command line programs currently available. Many of them are written in Python. I
@@ -173,3 +177,24 @@ command G :call OpenGPTifierResults()
 ```
 The command `G` will open `~/results.gpt` in a separate vertical split, thus allowing for cherry picking saved
 OpenAI completions into a source file, for example.
+
+## Development
+### Testing
+To run unit tests:
+```console
+make test
+```
+This target will compile the current branch, then run [pytest](https://docs.pytest.org/en/latest/) unit tests
+against the branch. The target will also run [Valgrind](https://valgrind.org/) tests in an attempt to detect
+memory management bugs.
+### Formatting
+Code in this project is formatted using [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html). This
+project uses the **Microsoft** formatting style. To format the code, run:
+```console
+make format
+```
+### Linting
+Code in this project is linted using [cppcheck](https://cppcheck.sourceforge.io/). To run the linter:
+```console
+make lint
+```
