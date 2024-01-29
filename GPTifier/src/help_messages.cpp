@@ -50,5 +50,5 @@ void print_help_messages()
         "    $ gpt\n\n"
         "  2. Run a query non-interactively and export results:\n"
         "    $ gpt --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\"\n";
-    std::cout << doc << std::endl;
+    std::cout << doc;
 }
