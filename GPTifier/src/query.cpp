@@ -59,7 +59,7 @@ void QueryHandler::time_query()
     }
 
     std::cout << "\n";
-    utils::print_separator();
+    ::print_separator();
 }
 
 ::str_response QueryHandler::run_query(const ::str_request &request)

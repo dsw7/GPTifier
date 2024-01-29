@@ -19,7 +19,7 @@ int main(int argc, char **argv)
     }
     catch (std::runtime_error &e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << e.what();
         return EXIT_FAILURE;
     }
 
@@ -29,10 +29,9 @@ int main(int argc, char **argv)
     }
     catch (std::runtime_error &e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << e.what();
         return EXIT_FAILURE;
     }
 
-    std::cout << std::endl;
     return EXIT_SUCCESS;
 }
