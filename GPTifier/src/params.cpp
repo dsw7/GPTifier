@@ -6,8 +6,19 @@
 #include <filesystem>
 #include <getopt.h>
 #include <iostream>
+#include <json.hpp>
 #include <stdexcept>
 #include <toml.hpp>
+
+void print_build_information()
+{
+    nlohmann::json data = {};
+
+    data["build_date"] = BUILD_DATE;
+    data["version"] = PROJECT_VERSION;
+
+    std::cout << data.dump(2) << '\n';
+}
 
 void Params::load_params_from_config_file()
 {
@@ -72,7 +83,7 @@ void Params::load_params_from_command_line(const int argc, char **argv)
             this->enable_export = false;
             break;
         case 'v':
-            std::cout << PROJECT_VERSION;
+            ::print_build_information();
             ::exit(EXIT_SUCCESS);
         case 'd':
             this->dump = ::optarg;
