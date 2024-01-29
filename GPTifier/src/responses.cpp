@@ -61,7 +61,7 @@ void write_message_to_file(const std::string &message)
     st_filename << separator + '\n';
     st_filename << "[GPTifier] Results:\n";
     st_filename << separator + '\n';
-    st_filename << message << '\n' << std::endl;
+    st_filename << message << '\n';
 
     st_filename.close();
 }
