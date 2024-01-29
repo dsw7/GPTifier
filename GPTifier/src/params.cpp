@@ -72,7 +72,7 @@ void Params::load_params_from_command_line(const int argc, char **argv)
             this->enable_export = false;
             break;
         case 'v':
-            std::cout << PROJECT_VERSION << std::endl;
+            std::cout << PROJECT_VERSION;
             ::exit(EXIT_SUCCESS);
         case 'd':
             this->dump = ::optarg;
