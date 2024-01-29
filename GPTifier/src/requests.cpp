@@ -37,9 +37,9 @@ namespace requests
 
 void print_request(const ::str_request &request)
 {
-    utils::print_separator();
+    ::print_separator();
     std::cout << "\033[1mRequest:\033[0m " + request + '\n';
-    utils::print_separator();
+    ::print_separator();
 }
 
 } // namespace requests

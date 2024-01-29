@@ -21,7 +21,7 @@ void print_chat_completion_response(const ::str_response &response)
         results["error"]["message"] = "<See Results section>";
 
         std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
-        utils::print_separator();
+        ::print_separator();
 
         std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
     }
@@ -31,12 +31,12 @@ void print_chat_completion_response(const ::str_response &response)
         results["choices"][0]["message"]["content"] = "<See Results section>";
 
         std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
-        utils::print_separator();
+        ::print_separator();
 
         std::cout << "\033[1mResults:\033[32m " + content + "\033[0m\n";
     }
 
-    utils::print_separator();
+    ::print_separator();
 }
 
 void write_message_to_file(const std::string &message)
@@ -73,7 +73,7 @@ void export_chat_completion_response(const ::str_response &response)
     if (results.contains("error"))
     {
         std::cerr << "Cannot export results as error occurred\n";
-        utils::print_separator();
+        ::print_separator();
         return;
     }
 
@@ -108,7 +108,7 @@ void export_chat_completion_response(const ::str_response &response)
         write_message_to_file(results["choices"][0]["message"]["content"]);
     }
 
-    utils::print_separator();
+    ::print_separator();
 }
 
 void dump_chat_completion_response(const ::str_response &response)

@@ -12,7 +12,7 @@ namespace prompt
 
 void read_prompt_from_file()
 {
-    utils::print_separator();
+    ::print_separator();
     std::cout << "Reading prompt from file: " + ::params.prompt_file + '\n';
 
     std::ifstream file(::params.prompt_file);
@@ -31,7 +31,7 @@ void read_prompt_from_file()
 
 void read_prompt_interactively()
 {
-    utils::print_separator();
+    ::print_separator();
     std::cout << "\033[1mInput:\033[0m ";
 
     std::getline(std::cin, ::params.prompt);

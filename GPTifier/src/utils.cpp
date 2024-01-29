@@ -4,9 +4,6 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-namespace utils
-{
-
 unsigned short get_terminal_columns()
 {
     static struct ::winsize window_size;
@@ -22,8 +19,6 @@ unsigned short get_terminal_columns()
 
 void print_separator()
 {
-    static unsigned short columns = get_terminal_columns();
+    static unsigned short columns = ::get_terminal_columns();
     std::cout << std::string(columns, '-') + "\n";
 }
-
-} // namespace utils
