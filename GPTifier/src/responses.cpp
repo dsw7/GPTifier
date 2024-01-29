@@ -124,7 +124,7 @@ void dump_chat_completion_response(const ::str_response &response)
     nlohmann::json results = nlohmann::json::parse(response);
     static short int indent_pretty_print = 2;
 
-    st_filename << std::setw(indent_pretty_print) << results << std::endl;
+    st_filename << std::setw(indent_pretty_print) << results;
     st_filename.close();
 }
 
