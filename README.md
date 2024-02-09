@@ -135,7 +135,7 @@ Export:
 In the above example, the user is prompted to export the completion a file. Entering `y` will print:
 ```console
 ...
-> Writing reply to file /home/<your-username>/results.gpt
+> Writing reply to file /home/<your-username>/.gptifier/completions.gpt
 ------------------------------------------------------------------------------------------
 ```
 Subsequent requests will append to this file. A suggested practice is to "highlight" this file by updating the
@@ -150,11 +150,11 @@ disable the `y/n` prompt, run `gpt` with the `-u` or `--no-interactive-export` f
 ## Integrations
 ### Coupling with `vim`
 In the [Exporting a result](#exporting-a-result) section, it was stated that results can be voluntarily
-exported to `~/results.gpt`. One may be interested in integrating this into a `vim` workflow. This can be
-achieved as follows. First, add the following function to `~/.vimrc`:
+exported to `~/.gptifier/completions.gpt`. One may be interested in integrating this into a `vim` workflow.
+This can be achieved as follows. First, add the following function to `~/.vimrc`:
 ```vim
 function OpenGPTifierResults()
-  let l:results_file = expand('~') . '/results.gpt'
+  let l:results_file = expand('~') . '/.gptifier/completions.gpt'
 
   if filereadable(l:results_file)
     execute 'vs' . l:results_file
@@ -168,8 +168,8 @@ Then add a command to `~/.vimrc`:
 " Open GPTifier results file
 command G :call OpenGPTifierResults()
 ```
-The command `G` will open `~/results.gpt` in a separate vertical split, thus allowing for cherry picking saved
-OpenAI completions into a source file, for example.
+The command `G` will open `~/.gptifier/completions.gpt` in a separate vertical split, thus allowing for cherry
+picking saved OpenAI completions into a source file, for example.
 
 ## Development
 ### Testing
