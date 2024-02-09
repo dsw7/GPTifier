@@ -41,7 +41,7 @@ void print_chat_completion_response(const ::str_response &response)
 
 void write_message_to_file(const std::string &message)
 {
-    std::string path_completion = ::get_proj_home_dir() + "/completion.gpt";
+    std::string path_completion = ::get_proj_home_dir() + "/completions.gpt";
 
     std::cout << "> Writing reply to file " + path_completion + '\n';
 
