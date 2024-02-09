@@ -15,4 +15,6 @@ else
   cp --verbose .gptifier/$GPTIFIER_TOML $GPTIFIER_HOME
 fi
 
+chmod --verbose 600 $GPTIFIER_HOME/$GPTIFIER_TOML
+
 cp --verbose .gptifier/$GPTIFIER_README $GPTIFIER_HOME
