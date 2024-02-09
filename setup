@@ -2,7 +2,15 @@
 
 GPTIFIER_HOME="$HOME/.gptifier"
 
-if [ ! -d "$GPTIFIER_HOME" ]; then
+if [ ! -d $GPTIFIER_HOME ]; then
   echo "GPTifier home directory '$GPTIFIER_HOME' does not exist"
   mkdir --verbose $GPTIFIER_HOME
+fi
+
+GPTIFIER_TOML="gptifier.toml"
+
+if [ -f $GPTIFIER_HOME/$GPTIFIER_TOML ]; then
+  echo "$GPTIFIER_HOME/$GPTIFIER_TOML already exists. I refuse to overwrite it" >&2
+else
+  cp --verbose .gptifier/$GPTIFIER_TOML $GPTIFIER_HOME
 fi
