@@ -108,7 +108,7 @@ And apply the relevant configurations. Next, drop into the program:
 ```console
 gpt
 ```
-The program should begin if the `.gptifier` file is properly set up.
+The program should start an interactive session if the configuration file was properly set up.
 ### Clean up
 The compilation process will generate many build artifacts. Clean up the build artifacts by running:
 ```console
