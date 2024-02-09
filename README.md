@@ -100,7 +100,7 @@ the home directory, run:
 ```console
 ./setup
 ```
-This script will drop a configuration file into the project's home home directory. Open the file:
+This script will dump a configuration file into the project's home home directory. Open the file:
 ```console
 ~/.gptifier/gptifier.toml
 ```
