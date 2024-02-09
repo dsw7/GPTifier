@@ -1,6 +1,9 @@
 #include "utils.hpp"
 
+#include <cstdlib>
+#include <filesystem>
 #include <iostream>
+#include <stdexcept>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -21,4 +24,23 @@ void print_separator()
 {
     static unsigned short columns = ::get_terminal_columns();
     std::cout << std::string(columns, '-') + "\n";
+}
+
+std::string get_proj_home_dir()
+{
+    const char *user_home_dir = std::getenv("HOME");
+
+    if (not user_home_dir)
+    {
+        throw std::runtime_error("Could not locate user home directory!");
+    }
+
+    std::string proj_home_dir = std::string(user_home_dir) + "/.gptifier";
+
+    if (not std::filesystem::exists(proj_home_dir))
+    {
+        throw std::runtime_error("Could not locate '~/.gptifier' project home directory!");
+    }
+
+    return proj_home_dir;
 }
