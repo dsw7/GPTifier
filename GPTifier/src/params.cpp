@@ -1,8 +1,8 @@
 #include "params.hpp"
+#include "utils.hpp"
 
 #include "help_messages.hpp"
 
-#include <cstdlib>
 #include <filesystem>
 #include <getopt.h>
 #include <iostream>
@@ -22,18 +22,11 @@ void print_build_information()
 
 void Params::load_params_from_config_file()
 {
-    const char *home_dir = std::getenv("HOME");
-
-    if (not home_dir)
-    {
-        throw std::runtime_error("Could not locate home directory!");
-    }
-
-    std::string path_toml = std::string(home_dir) + "/.gptifier";
+    std::string path_toml = ::get_proj_home_dir() + "/gptifier.toml";
 
     if (not std::filesystem::exists(path_toml))
     {
-        throw std::runtime_error("Could not locate .gptifier TOML file in home directory!");
+        throw std::runtime_error("Could not locate GPTifier configuration file!");
     }
 
     toml::table table;

@@ -11,7 +11,7 @@ A beautiful C++ libcurl / ChatGPT interface
   - [Compile binary](#compile-binary)
   - [Get `json.hpp`](#get-jsonhpp)
   - [Get `toml.hpp`](#get-tomlhpp)
-  - [Set up TOML](#set-up-toml)
+  - [Set up project files](#set-up-project-files)
   - [Clean up](#clean-up)
 - [Usage](#usage)
   - [Basic example](#basic-example)
@@ -94,28 +94,21 @@ Which is identical [`json.hpp`](#get-jsonhpp) case. As before, simply run the co
 ./get_dependencies /usr/include/
 ```
 Running the script may require elevated privileges.
-### Set up TOML
-This project uses [TOML](https://toml.io/en/) to store configurations. Copy the [.gptifier](./.gptifier) TOML
-file from this repository to your home directory:
+### Set up project files
+This project makes reference to a "home directory" (`~/.gptifier`, specifically) that must be set up prior to
+running the program. To set up `~/.gptifier`, run:
 ```console
-cp .gptifier ~/
+./setup
 ```
-Set the permissions to 600:
+This script will dump a configuration file under `~/.gptifier`. Open the file:
 ```console
-chmod 600 ~/.gptifier
+~/.gptifier/gptifier.toml
 ```
-And edit the file:
-```toml
-[authentication]
-# Specify API key
-# See https://platform.openai.com/docs/api-reference/authentication
-api-key = "<your-api-key>"
-```
-Next, drop into the program:
+And apply the relevant configurations. Next, drop into the program:
 ```console
 gpt
 ```
-The program should begin if the `.gptifier` file is properly set up.
+The program should start an interactive session if the configuration file was properly set up.
 ### Clean up
 The compilation process will generate many build artifacts. Clean up the build artifacts by running:
 ```console
@@ -142,26 +135,21 @@ Export:
 In the above example, the user is prompted to export the completion a file. Entering `y` will print:
 ```console
 ...
-> Writing reply to file /home/<your-username>/results.gpt
+> Writing reply to file /home/<your-username>/.gptifier/completions.gpt
 ------------------------------------------------------------------------------------------
 ```
-Subsequent requests will append to this file. A suggested practice is to "highlight" this file by updating the
-`LS_COLORS` environment variable in any `init` file as follows:
-```console
-LS_COLORS=$LS_COLORS:"*.gpt=4;93"
-export LS_COLORS
-```
-In some cases, prompting interactively may be undesirable, such as when running automated unit tests. To
-disable the `y/n` prompt, run `gpt` with the `-u` or `--no-interactive-export` flags.
+Subsequent requests will append to this file. In some cases, prompting interactively may be undesirable, such
+as when running automated unit tests. To disable the `y/n` prompt, run `gpt` with the `-u` or
+`--no-interactive-export` flags.
 
 ## Integrations
 ### Coupling with `vim`
 In the [Exporting a result](#exporting-a-result) section, it was stated that results can be voluntarily
-exported to `~/results.gpt`. One may be interested in integrating this into a `vim` workflow. This can be
-achieved as follows. First, add the following function to `~/.vimrc`:
+exported to `~/.gptifier/completions.gpt`. One may be interested in integrating this into a `vim` workflow.
+This can be achieved as follows. First, add the following function to `~/.vimrc`:
 ```vim
 function OpenGPTifierResults()
-  let l:results_file = expand('~') . '/results.gpt'
+  let l:results_file = expand('~') . '/.gptifier/completions.gpt'
 
   if filereadable(l:results_file)
     execute 'vs' . l:results_file
@@ -175,8 +163,8 @@ Then add a command to `~/.vimrc`:
 " Open GPTifier results file
 command G :call OpenGPTifierResults()
 ```
-The command `G` will open `~/results.gpt` in a separate vertical split, thus allowing for cherry picking saved
-OpenAI completions into a source file, for example.
+The command `G` will open `~/.gptifier/completions.gpt` in a separate vertical split, thus allowing for cherry
+picking saved OpenAI completions into a source file, for example.
 
 ## Development
 ### Testing
