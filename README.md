@@ -138,14 +138,9 @@ In the above example, the user is prompted to export the completion a file. Ente
 > Writing reply to file /home/<your-username>/.gptifier/completions.gpt
 ------------------------------------------------------------------------------------------
 ```
-Subsequent requests will append to this file. A suggested practice is to "highlight" this file by updating the
-`LS_COLORS` environment variable in any `init` file as follows:
-```console
-LS_COLORS=$LS_COLORS:"*.gpt=4;93"
-export LS_COLORS
-```
-In some cases, prompting interactively may be undesirable, such as when running automated unit tests. To
-disable the `y/n` prompt, run `gpt` with the `-u` or `--no-interactive-export` flags.
+Subsequent requests will append to this file. In some cases, prompting interactively may be undesirable, such
+as when running automated unit tests. To disable the `y/n` prompt, run `gpt` with the `-u` or
+`--no-interactive-export` flags.
 
 ## Integrations
 ### Coupling with `vim`
