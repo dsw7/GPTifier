@@ -2,11 +2,11 @@
 #include "params.hpp"
 #include "utils.hpp"
 
-#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <json.hpp>
 #include <stdexcept>
+#include <string>
 
 namespace responses
 {
@@ -41,20 +41,14 @@ void print_chat_completion_response(const ::str_response &response)
 
 void write_message_to_file(const std::string &message)
 {
-    const char *home_dir = std::getenv("HOME");
+    std::string path_completion = ::get_proj_home_dir() + "/completion.gpt";
 
-    if (not home_dir)
-    {
-        throw std::runtime_error("Could not locate home directory!");
-    }
+    std::cout << "> Writing reply to file " + path_completion + '\n';
 
-    std::string filename = std::string(home_dir) + "/results.gpt";
-    std::cout << "> Writing reply to file " + filename + '\n';
-
-    std::ofstream st_filename(filename, std::ios::app);
+    std::ofstream st_filename(path_completion, std::ios::app);
     if (not st_filename.is_open())
     {
-        throw std::runtime_error("Unable to open " + filename);
+        throw std::runtime_error("Unable to open " + path_completion);
     }
 
     std::string separator(110, '=');
