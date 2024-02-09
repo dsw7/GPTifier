@@ -1,0 +1,8 @@
+#!/bin/bash
+
+GPTIFIER_HOME="$HOME/.gptifier"
+
+if [ ! -d "$GPTIFIER_HOME" ]; then
+  echo "GPTifier home directory '$GPTIFIER_HOME' does not exist"
+  mkdir --verbose $GPTIFIER_HOME
+fi
