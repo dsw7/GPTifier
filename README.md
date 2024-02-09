@@ -95,12 +95,12 @@ Which is identical [`json.hpp`](#get-jsonhpp) case. As before, simply run the co
 ```
 Running the script may require elevated privileges.
 ### Set up project files
-This project makes reference to a "home directory" that must be set up prior to running the program. To set up
-the home directory, run:
+This project makes reference to a "home directory" (`~/.gptifier`, specifically) that must be set up prior to
+running the program. To set up `~/.gptifier`, run:
 ```console
 ./setup
 ```
-This script will dump a configuration file into the project's home home directory. Open the file:
+This script will dump a configuration file under `~/.gptifier`. Open the file:
 ```console
 ~/.gptifier/gptifier.toml
 ```
