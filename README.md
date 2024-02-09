@@ -11,7 +11,7 @@ A beautiful C++ libcurl / ChatGPT interface
   - [Compile binary](#compile-binary)
   - [Get `json.hpp`](#get-jsonhpp)
   - [Get `toml.hpp`](#get-tomlhpp)
-  - [Set up TOML](#set-up-toml)
+  - [Set up project files](#set-up-project-files)
   - [Clean up](#clean-up)
 - [Usage](#usage)
   - [Basic example](#basic-example)
@@ -94,24 +94,17 @@ Which is identical [`json.hpp`](#get-jsonhpp) case. As before, simply run the co
 ./get_dependencies /usr/include/
 ```
 Running the script may require elevated privileges.
-### Set up TOML
-This project uses [TOML](https://toml.io/en/) to store configurations. Copy the [.gptifier](./.gptifier) TOML
-file from this repository to your home directory:
+### Set up project files
+This project makes reference to a "home directory" that must be set up prior to running the program. To set up
+the home directory, run:
 ```console
-cp .gptifier ~/
+./setup
 ```
-Set the permissions to 600:
+This script will drop a configuration file into the project's home home directory. Open the file:
 ```console
-chmod 600 ~/.gptifier
+~/.gptifier/gptifier.toml
 ```
-And edit the file:
-```toml
-[authentication]
-# Specify API key
-# See https://platform.openai.com/docs/api-reference/authentication
-api-key = "<your-api-key>"
-```
-Next, drop into the program:
+And apply the relevant configurations. Next, drop into the program:
 ```console
 gpt
 ```
