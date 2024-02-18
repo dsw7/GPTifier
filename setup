@@ -6,15 +6,15 @@ GPTIFIER_README="README.txt"
 
 if [ ! -d $GPTIFIER_HOME ]; then
   echo "GPTifier home directory '$GPTIFIER_HOME' does not exist"
-  mkdir --verbose $GPTIFIER_HOME
+  mkdir -v $GPTIFIER_HOME
 fi
 
 if [ -f $GPTIFIER_HOME/$GPTIFIER_TOML ]; then
   echo "$GPTIFIER_HOME/$GPTIFIER_TOML already exists. I refuse to overwrite it" >&2
 else
-  cp --verbose .gptifier/$GPTIFIER_TOML $GPTIFIER_HOME
+  cp -v .gptifier/$GPTIFIER_TOML $GPTIFIER_HOME
 fi
 
-chmod --verbose 600 $GPTIFIER_HOME/$GPTIFIER_TOML
+chmod -v 600 $GPTIFIER_HOME/$GPTIFIER_TOML
 
-cp --verbose .gptifier/$GPTIFIER_README $GPTIFIER_HOME
+cp -v .gptifier/$GPTIFIER_README $GPTIFIER_HOME
