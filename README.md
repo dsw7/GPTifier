@@ -21,7 +21,7 @@ A beautiful C++ libcurl / ChatGPT interface
 - [Development](#development)
   - [Testing](#testing)
   - [Formatting](#formatting)
-  - [Linting C++](#linting-c++)
+  - [Linting C++](#linting-c)
   - [Linting bash](#linting-bash)
 
 ## Motivation
