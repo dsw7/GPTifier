@@ -21,7 +21,8 @@ A beautiful C++ libcurl / ChatGPT interface
 - [Development](#development)
   - [Testing](#testing)
   - [Formatting](#formatting)
-  - [Linting](#linting)
+  - [Linting C++](#linting-c++)
+  - [Linting bash](#linting-bash)
 
 ## Motivation
 There are numerous ChatGPT command line programs currently available. Many of them are written in Python. I
@@ -181,8 +182,14 @@ project uses the **Microsoft** formatting style. To format the code, run:
 ```console
 make format
 ```
-### Linting
+### Linting C++
 Code in this project is linted using [cppcheck](https://cppcheck.sourceforge.io/). To run the linter:
 ```console
 make lint
 ```
+### Linting bash
+All bash code in this project is subjected to **shellcheck** static analysis. Run:
+```console
+make sc
+```
+See [shellcheck](https://github.com/koalaman/shellcheck) for more information.
