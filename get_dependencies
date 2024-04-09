@@ -24,7 +24,7 @@ else
 fi
 
 if [ "$OWNER" = "root" ]; then
-  if [ ! $(id -u) = 0 ]; then
+  if [ ! "$(id -u)" = 0 ]; then
     echo "Directory $INCLUDE_DIR is owned by root"
     echo "Elevated privileges will be required to install header files into this directory"
     exit 1
