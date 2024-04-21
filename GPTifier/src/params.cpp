@@ -1,8 +1,6 @@
 #include "params.hpp"
 #include "utils.hpp"
 
-#include "help_messages.hpp"
-
 #include <filesystem>
 #include <getopt.h>
 #include <iostream>
@@ -37,7 +35,6 @@ void Params::load_params_from_command_line(const int argc, char **argv)
     while (true)
     {
         static struct option long_options[] = {
-            {"help", no_argument, 0, 'h'},
             {"no-interactive-export", no_argument, 0, 'u'},
             {"dump", required_argument, 0, 'd'},
             {"model", required_argument, 0, 'm'},
@@ -48,7 +45,7 @@ void Params::load_params_from_command_line(const int argc, char **argv)
         };
 
         int option_index = 0;
-        int c = ::getopt_long(argc, argv, "hud:m:p:r:t:", long_options, &option_index);
+        int c = ::getopt_long(argc, argv, "ud:m:p:r:t:", long_options, &option_index);
 
         if (c == -1)
         {
@@ -57,9 +54,6 @@ void Params::load_params_from_command_line(const int argc, char **argv)
 
         switch (c)
         {
-        case 'h':
-            ::print_help_messages();
-            ::exit(EXIT_SUCCESS);
         case 'u':
             this->enable_export = false;
             break;

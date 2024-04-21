@@ -12,6 +12,12 @@ int main(int argc, char **argv)
     {
         std::string command = std::string(argv[1]);
 
+        if (command.compare("-h") == 0 or command.compare("--help") == 0)
+        {
+            ::print_build_information();
+            return EXIT_SUCCESS;
+        }
+
         if (command.compare("-v") == 0 or command.compare("--version") == 0)
         {
             ::print_build_information();
