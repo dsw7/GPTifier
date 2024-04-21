@@ -9,9 +9,11 @@ from consts import EX_MEM_LEAK
 def test_basic(json_file: str, command: list[str]) -> None:
     command.extend(
         [
+            "run",
             "-p'What is 3 + 5? Format the result as follows: >>>{result}<<<'",
             "-t0",
             f"-d{json_file}",
+            "-u",
         ]
     )
 
@@ -35,7 +37,7 @@ def test_basic(json_file: str, command: list[str]) -> None:
 def test_invalid_temp(
     temp: str, result: str, json_file: str, command: list[str]
 ) -> None:
-    command.extend(["-p'Running a test!'", f"-t{temp}", f"-d{json_file}"])
+    command.extend(["run", "-p'Running a test!'", f"-t{temp}", f"-d{json_file}", "-u"])
 
     try:
         run(command, stdout=DEVNULL, stderr=PIPE, check=True)
@@ -49,7 +51,7 @@ def test_invalid_temp(
 
 def test_read_from_file(json_file: str, command: list[str]) -> None:
     prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
-    command.extend([f"-r{prompt}", "-t0", f"-d{json_file}"])
+    command.extend(["run", f"-r{prompt}", "-t0", f"-d{json_file}", "-u"])
 
     try:
         run(command, stdout=DEVNULL, stderr=PIPE, check=True)
@@ -62,7 +64,7 @@ def test_read_from_file(json_file: str, command: list[str]) -> None:
 
 
 def test_missing_prompt_file(command: list[str], capfd) -> None:
-    command.extend(["--read-from-file=/tmp/yU8nnkRs.txt"])
+    command.extend(["run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u"])
 
     process = run(command, stdout=DEVNULL)
     assert process.returncode not in (EX_OK, EX_MEM_LEAK)
@@ -72,7 +74,7 @@ def test_missing_prompt_file(command: list[str], capfd) -> None:
 
 
 def test_invalid_dump_loc(command: list[str], capfd) -> None:
-    command.extend(["--prompt='What is 3 + 5?'", "--dump=/tmp/a/b/c"])
+    command.extend(["run", "--prompt='What is 3 + 5?'", "--dump=/tmp/a/b/c", "-u"])
 
     process = run(command, stdout=DEVNULL)
     assert process.returncode not in (EX_OK, EX_MEM_LEAK)
@@ -95,7 +97,7 @@ def test_invalid_dump_loc(command: list[str], capfd) -> None:
 def test_model(
     model: str, result: str, valid_model: bool, json_file: str, command: list[str]
 ) -> None:
-    command.extend(["-p'What is 3 + 5?'", f"-m{model}", f"-d{json_file}"])
+    command.extend(["run", "-p'What is 3 + 5?'", f"-m{model}", f"-d{json_file}", "-u"])
 
     try:
         run(command, stdout=DEVNULL, stderr=PIPE, check=True)

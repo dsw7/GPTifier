@@ -22,14 +22,13 @@ def check_platform(pytestconfig) -> None:
 @fixture(scope="function")
 def command(pytestconfig) -> list[str]:
     if not pytestconfig.getoption("memory"):
-        return ["build/gpt", "--no-interactive-export"]
+        return ["build/gpt"]
 
     return [
         "valgrind",
         f"--error-exitcode={EX_MEM_LEAK}",
         "--leak-check=full",
         "build/gpt",
-        "--no-interactive-export",
     ]
 
 
