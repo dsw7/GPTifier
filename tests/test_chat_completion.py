@@ -85,7 +85,11 @@ def test_invalid_dump_loc(command: list[str], capfd) -> None:
     "model, result, valid_model",
     [
         ("gpt-3.5-turbo-0301", "gpt-3.5-turbo-0301", True),
-        ("gpt-3.5-turbo-0302", "The model `gpt-3.5-turbo-0302` does not exist", False),
+        (
+            "gpt-3.5-turbo-0302",
+            "The model `gpt-3.5-turbo-0302` does not exist or you do not have access to it.",
+            False,
+        ),
     ],
 )
 def test_model(
