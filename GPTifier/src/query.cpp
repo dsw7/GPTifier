@@ -64,19 +64,18 @@ void QueryHandler::time_query()
 
 ::str_response QueryHandler::run_query(const ::str_request &request)
 {
-    ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, request.c_str());
+    static std::string url_chat_completions = "https://api.openai.com/v1/chat/completions";
+    ::curl_easy_setopt(this->curl, ::CURLOPT_URL, url_chat_completions.c_str());
 
-    static std::string url = "https://api.openai.com/v1/chat/completions";
-    ::curl_easy_setopt(this->curl, ::CURLOPT_URL, url.c_str());
+    std::string header_auth = "Authorization: Bearer " + params.api_key;
 
     struct ::curl_slist *headers = NULL;
     headers = ::curl_slist_append(headers, "Content-Type: application/json");
-
-    std::string header_auth = "Authorization: Bearer " + params.api_key;
     headers = ::curl_slist_append(headers, header_auth.c_str());
-
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);
+
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEFUNCTION, ::write_callback);
+    ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, request.c_str());
 
     std::string response;
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEDATA, &response);
