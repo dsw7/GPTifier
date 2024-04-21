@@ -1,5 +1,5 @@
+#include "commands.hpp"
 #include "params.hpp"
-#include "run_completion.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -8,9 +8,24 @@
 
 int main(int argc, char **argv)
 {
-    if (argc > 1)
+    if (argc < 2)
     {
-        params.load_params_from_command_line(argc, argv);
+        ::print_help_messages();
+        return EXIT_FAILURE;
+    }
+
+    std::string command = std::string(argv[1]);
+
+    if (command.compare("-h") == 0 or command.compare("--help") == 0)
+    {
+        ::print_help_messages();
+        return EXIT_SUCCESS;
+    }
+
+    if (command.compare("-v") == 0 or command.compare("--version") == 0)
+    {
+        ::print_build_information();
+        return EXIT_SUCCESS;
     }
 
     try
@@ -23,13 +38,23 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    try
+    if (command.compare("run") == 0)
     {
-        ::create_chat_completion();
+        params.load_params_from_command_line(argc, argv);
+
+        try
+        {
+            ::create_chat_completion();
+        }
+        catch (std::runtime_error &e)
+        {
+            std::cerr << e.what() << '\n';
+            return EXIT_FAILURE;
+        }
     }
-    catch (std::runtime_error &e)
+    else
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << "Received unknown command: \"" + command + "\"\n";
         return EXIT_FAILURE;
     }
 

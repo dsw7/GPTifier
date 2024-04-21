@@ -107,7 +107,7 @@ This script will dump a configuration file under `~/.gptifier`. Open the file:
 ```
 And apply the relevant configurations. Next, drop into the program:
 ```console
-gpt
+gpt run
 ```
 The program should start an interactive session if the configuration file was properly set up.
 ### Clean up
@@ -118,9 +118,9 @@ make clean
 
 ## Usage
 ### Basic example
-Simply run `gpt`! This will begin an interactive session. Type in a prompt:
+Simply run `gpt run`! This will begin an interactive session. Type in a prompt:
 ```console
-$ gpt
+$ gpt run
 ------------------------------------------------------------------------------------------
 Input: What is 3 + 5?
 ```
@@ -140,7 +140,7 @@ In the above example, the user is prompted to export the completion a file. Ente
 ------------------------------------------------------------------------------------------
 ```
 Subsequent requests will append to this file. In some cases, prompting interactively may be undesirable, such
-as when running automated unit tests. To disable the `y/n` prompt, run `gpt` with the `-u` or
+as when running automated unit tests. To disable the `y/n` prompt, run `gpt run` with the `-u` or
 `--no-interactive-export` flags.
 
 ## Integrations
