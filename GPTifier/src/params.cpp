@@ -73,7 +73,7 @@ void Params::load_params_from_command_line(const int argc, char **argv)
             this->model = ::optarg;
             break;
         default:
-            std::cerr << "Try running with -h or --help for more information";
+            std::cerr << "Try running with -h or --help for more information\n";
             ::exit(EXIT_FAILURE);
         }
     };
