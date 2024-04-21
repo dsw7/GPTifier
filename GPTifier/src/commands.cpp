@@ -1,11 +1,24 @@
 #include "commands.hpp"
 
+#include "json.hpp"
 #include "params.hpp"
 #include "prompts.hpp"
 #include "query.hpp"
 #include "requests.hpp"
 #include "responses.hpp"
 #include "typedefs.hpp"
+
+#include <iostream>
+
+void print_build_information()
+{
+    nlohmann::json data = {};
+
+    data["build_date"] = BUILD_DATE;
+    data["version"] = PROJECT_VERSION;
+
+    std::cout << data.dump(2) << '\n';
+}
 
 void create_chat_completion()
 {

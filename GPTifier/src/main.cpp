@@ -10,6 +10,14 @@ int main(int argc, char **argv)
 {
     if (argc > 1)
     {
+        std::string command = std::string(argv[1]);
+
+        if (command.compare("-v") == 0 or command.compare("--version") == 0)
+        {
+            ::print_build_information();
+            return EXIT_SUCCESS;
+        }
+
         params.load_params_from_command_line(argc, argv);
     }
 

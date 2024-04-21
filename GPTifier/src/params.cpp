@@ -6,19 +6,8 @@
 #include <filesystem>
 #include <getopt.h>
 #include <iostream>
-#include <json.hpp>
 #include <stdexcept>
 #include <toml.hpp>
-
-void print_build_information()
-{
-    nlohmann::json data = {};
-
-    data["build_date"] = BUILD_DATE;
-    data["version"] = PROJECT_VERSION;
-
-    std::cout << data.dump(2) << '\n';
-}
 
 void Params::load_params_from_config_file()
 {
@@ -50,7 +39,6 @@ void Params::load_params_from_command_line(const int argc, char **argv)
         static struct option long_options[] = {
             {"help", no_argument, 0, 'h'},
             {"no-interactive-export", no_argument, 0, 'u'},
-            {"version", no_argument, 0, 'v'},
             {"dump", required_argument, 0, 'd'},
             {"model", required_argument, 0, 'm'},
             {"prompt", required_argument, 0, 'p'},
@@ -60,7 +48,7 @@ void Params::load_params_from_command_line(const int argc, char **argv)
         };
 
         int option_index = 0;
-        int c = ::getopt_long(argc, argv, "huvd:m:p:r:t:", long_options, &option_index);
+        int c = ::getopt_long(argc, argv, "hud:m:p:r:t:", long_options, &option_index);
 
         if (c == -1)
         {
@@ -75,9 +63,6 @@ void Params::load_params_from_command_line(const int argc, char **argv)
         case 'u':
             this->enable_export = false;
             break;
-        case 'v':
-            ::print_build_information();
-            ::exit(EXIT_SUCCESS);
         case 'd':
             this->dump = ::optarg;
             break;
