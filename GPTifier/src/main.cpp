@@ -8,23 +8,24 @@
 
 int main(int argc, char **argv)
 {
-    if (argc > 1)
+    if (argc < 2)
     {
-        std::string command = std::string(argv[1]);
+        ::print_help_messages();
+        return EXIT_FAILURE;
+    }
 
-        if (command.compare("-h") == 0 or command.compare("--help") == 0)
-        {
-            ::print_help_messages();
-            return EXIT_SUCCESS;
-        }
+    std::string command = std::string(argv[1]);
 
-        if (command.compare("-v") == 0 or command.compare("--version") == 0)
-        {
-            ::print_build_information();
-            return EXIT_SUCCESS;
-        }
+    if (command.compare("-h") == 0 or command.compare("--help") == 0)
+    {
+        ::print_help_messages();
+        return EXIT_SUCCESS;
+    }
 
-        params.load_params_from_command_line(argc, argv);
+    if (command.compare("-v") == 0 or command.compare("--version") == 0)
+    {
+        ::print_build_information();
+        return EXIT_SUCCESS;
     }
 
     try
@@ -36,6 +37,8 @@ int main(int argc, char **argv)
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
+
+    params.load_params_from_command_line(argc, argv);
 
     try
     {
