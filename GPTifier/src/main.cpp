@@ -38,15 +38,23 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    params.load_params_from_command_line(argc, argv);
+    if (command.compare("run") == 0)
+    {
+        params.load_params_from_command_line(argc, argv);
 
-    try
-    {
-        ::create_chat_completion();
+        try
+        {
+            ::create_chat_completion();
+        }
+        catch (std::runtime_error &e)
+        {
+            std::cerr << e.what() << '\n';
+            return EXIT_FAILURE;
+        }
     }
-    catch (std::runtime_error &e)
+    else
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << "Received unknown command: \"" + command + "\"\n";
         return EXIT_FAILURE;
     }
 
