@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 
         if (command.compare("-h") == 0 or command.compare("--help") == 0)
         {
-            ::print_build_information();
+            ::print_help_messages();
             return EXIT_SUCCESS;
         }
 
