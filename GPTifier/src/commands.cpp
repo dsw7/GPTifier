@@ -56,9 +56,9 @@ void print_help_messages()
         "     coherent completions, whereas values approaching 2 provide more creative completions.\n\n"
         "\033[1mEXAMPLES:\033[0m\n"
         "  1. Run an interactive session:\n"
-        "    $ gpt\n\n"
+        "    $ gpt run\n\n"
         "  2. Run a query non-interactively and export results:\n"
-        "    $ gpt --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\"\n";
+        "    $ gpt run --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\"\n\n";
     std::cout << doc;
 }
 
