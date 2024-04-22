@@ -3,9 +3,20 @@
 #include "params.hpp"
 
 #include <iostream>
+#include <json.hpp>
 #include <stdexcept>
 
 ::Params params;
+
+void print_build_information()
+{
+    nlohmann::json data = {};
+
+    data["build_date"] = BUILD_DATE;
+    data["version"] = PROJECT_VERSION;
+
+    std::cout << data.dump(2) << '\n';
+}
 
 int main(int argc, char **argv)
 {

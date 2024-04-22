@@ -1,7 +1,6 @@
 #include "commands.hpp"
 
 #include <iostream>
-#include <json.hpp>
 #include <string>
 
 void print_help_messages()
@@ -53,14 +52,4 @@ void print_help_messages()
         "  2. Run a query non-interactively and export results:\n"
         "    $ gpt run --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\"\n\n";
     std::cout << doc;
-}
-
-void print_build_information()
-{
-    nlohmann::json data = {};
-
-    data["build_date"] = BUILD_DATE;
-    data["version"] = PROJECT_VERSION;
-
-    std::cout << data.dump(2) << '\n';
 }
