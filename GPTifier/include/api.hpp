@@ -1,19 +1,15 @@
 #pragma once
 
 #include <curl/curl.h>
-#include <string>
 
-class QueryHandler
+class Curl
 {
 private:
-    void time_query();
-
-    ::CURL *curl = NULL;
     struct ::curl_slist *headers = NULL;
-    bool run_timer = false;
 
 public:
-    QueryHandler();
-    ~QueryHandler();
-    std::string run_query(const std::string &request);
+    Curl();
+    ~Curl();
+
+    ::CURL *curl = NULL;
 };

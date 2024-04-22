@@ -1,11 +1,7 @@
 #include "api.hpp"
 #include "params.hpp"
-#include "utils.hpp"
 
-#include <chrono>
-#include <iostream>
 #include <stdexcept>
-#include <thread>
 
 size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
 {
@@ -13,10 +9,8 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
     return size * nmemb;
 }
 
-QueryHandler::QueryHandler()
+Curl::Curl()
 {
-    this->run_timer = true;
-
     if (::curl_global_init(CURL_GLOBAL_DEFAULT) != 0)
     {
         throw std::runtime_error("Something went wrong when initializing libcurl");
@@ -29,7 +23,7 @@ QueryHandler::QueryHandler()
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
 
-    std::string header_auth = "Authorization: Bearer " + params.api_key;
+    std::string header_auth = "Authorization: Bearer " + ::params.api_key;
     this->headers = ::curl_slist_append(this->headers, header_auth.c_str());
     this->headers = ::curl_slist_append(this->headers, "Content-Type: application/json");
     ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, this->headers);
@@ -37,10 +31,8 @@ QueryHandler::QueryHandler()
     ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEFUNCTION, ::write_callback);
 }
 
-QueryHandler::~QueryHandler()
+Curl::~Curl()
 {
-    this->run_timer = false;
-
     if (this->curl)
     {
         // Leads to a Valgrind-detectable memory leak if headers are not freed
@@ -49,51 +41,4 @@ QueryHandler::~QueryHandler()
     }
 
     ::curl_global_cleanup();
-}
-
-void QueryHandler::time_query()
-{
-    auto delay = std::chrono::milliseconds(250);
-    auto start = std::chrono::high_resolution_clock::now();
-
-    while (this->run_timer)
-    {
-        std::this_thread::sleep_for(delay);
-
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> duration = end - start;
-
-        std::cout << "\033[1mTime (s):\033[0m " << duration.count() << "\r";
-        std::cout.flush();
-    }
-
-    std::cout << "\n";
-    ::print_separator();
-}
-
-std::string QueryHandler::run_query(const std::string &request)
-{
-    static std::string url_chat_completions = "https://api.openai.com/v1/chat/completions";
-    ::curl_easy_setopt(this->curl, ::CURLOPT_URL, url_chat_completions.c_str());
-
-    ::curl_easy_setopt(curl, ::CURLOPT_POST, 1L);
-    ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, request.c_str());
-
-    std::string response;
-    ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEDATA, &response);
-
-    std::thread timer(&QueryHandler::time_query, this);
-
-    ::CURLcode rv = ::curl_easy_perform(this->curl);
-
-    this->run_timer = false;
-    timer.join();
-
-    if (rv != ::CURLE_OK)
-    {
-        std::string errmsg = "Failed to run query. " + std::string(::curl_easy_strerror(rv));
-        throw std::runtime_error(errmsg);
-    }
-
-    return response;
 }
