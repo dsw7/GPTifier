@@ -51,12 +51,11 @@ endif()
 
 include_directories(
   "include"
-  "include/api_calls"
 )
 add_executable(
   "gpt"
   "src/api.cpp"
-  "src/api_calls/run_completion.cpp"
+  "src/command_run.cpp"
   "src/commands.cpp"
   "src/main.cpp"
   "src/params.cpp"

@@ -1,11 +1,11 @@
 #include "commands.hpp"
 
 #include "api.hpp"
+#include "command_run.hpp"
 #include "json.hpp"
 #include "params.hpp"
 #include "prompts.hpp"
 #include "responses.hpp"
-#include "run_completion.hpp"
 
 #include <iostream>
 #include <string>
