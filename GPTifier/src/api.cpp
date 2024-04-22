@@ -35,7 +35,6 @@ Curl::~Curl()
 {
     if (this->handle)
     {
-        // Leads to a Valgrind-detectable memory leak if headers are not freed
         ::curl_slist_free_all(this->headers);
         ::curl_easy_cleanup(this->handle);
     }
