@@ -1,3 +1,4 @@
+#include "command_models.hpp"
 #include "command_run.hpp"
 #include "help_messages.hpp"
 #include "params.hpp"
@@ -50,23 +51,25 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    if (command.compare("run") == 0)
+    try
     {
-        params.load_params_from_command_line(argc, argv);
-
-        try
+        if (command.compare("run") == 0)
         {
+            params.load_params_from_command_line(argc, argv);
             ::command_run();
         }
-        catch (std::runtime_error &e)
+        else if (command.compare("models") == 0)
         {
-            std::cerr << e.what() << '\n';
-            return EXIT_FAILURE;
+            ::command_models();
+        }
+        else
+        {
+            std::cerr << "Received unknown command: \"" + command + "\"\n";
         }
     }
-    else
+    catch (std::runtime_error &e)
     {
-        std::cerr << "Received unknown command: \"" + command + "\"\n";
+        std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
 
