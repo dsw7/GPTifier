@@ -16,9 +16,9 @@ Curl::Curl()
         throw std::runtime_error("Something went wrong when initializing libcurl");
     }
 
-    this->curl = ::curl_easy_init();
+    this->handle = ::curl_easy_init();
 
-    if (this->curl == NULL)
+    if (this->handle == NULL)
     {
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
@@ -26,18 +26,18 @@ Curl::Curl()
     std::string header_auth = "Authorization: Bearer " + ::params.api_key;
     this->headers = ::curl_slist_append(this->headers, header_auth.c_str());
     this->headers = ::curl_slist_append(this->headers, "Content-Type: application/json");
-    ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, this->headers);
+    ::curl_easy_setopt(this->handle, ::CURLOPT_HTTPHEADER, this->headers);
 
-    ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEFUNCTION, ::write_callback);
+    ::curl_easy_setopt(this->handle, ::CURLOPT_WRITEFUNCTION, ::write_callback);
 }
 
 Curl::~Curl()
 {
-    if (this->curl)
+    if (this->handle)
     {
         // Leads to a Valgrind-detectable memory leak if headers are not freed
         ::curl_slist_free_all(this->headers);
-        ::curl_easy_cleanup(this->curl);
+        ::curl_easy_cleanup(this->handle);
     }
 
     ::curl_global_cleanup();

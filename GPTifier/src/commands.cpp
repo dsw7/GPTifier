@@ -6,6 +6,7 @@
 #include "prompts.hpp"
 #include "requests.hpp"
 #include "responses.hpp"
+#include "run_completion.hpp"
 
 #include <iostream>
 #include <string>
@@ -78,8 +79,8 @@ void create_chat_completion()
     std::string request = requests::build_chat_request();
     requests::print_request(request);
 
-    QueryHandler q;
-    std::string response = q.run_query(request);
+    Curl c;
+    std::string response = ::create_chat_completion(c.curl, request);
 
     if (::params.dump.empty())
     {

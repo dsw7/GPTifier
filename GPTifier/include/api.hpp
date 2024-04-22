@@ -11,5 +11,5 @@ public:
     Curl();
     ~Curl();
 
-    ::CURL *curl = NULL;
+    ::CURL *handle = NULL;
 };
