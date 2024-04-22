@@ -82,6 +82,7 @@ std::string create_chat_completion(::CURL *curl)
     std::string response;
     ::curl_easy_setopt(curl, ::CURLOPT_WRITEDATA, &response);
 
+    ::run_timer = true;
     std::thread timer(::time_api_call);
 
     ::CURLcode rv = ::curl_easy_perform(curl);
