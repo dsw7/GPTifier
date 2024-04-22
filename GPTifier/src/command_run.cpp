@@ -212,11 +212,7 @@ void export_chat_completion_response(const std::string &response)
         std::cout << "> Write reply to file? [y/n]: ";
         std::cin >> choice;
 
-        if (choice.compare("y") == 0)
-        {
-            break;
-        }
-        else if (choice.compare("n") == 0)
+        if (choice.compare("y") == 0 or choice.compare("n") == 0)
         {
             break;
         }
@@ -232,7 +228,7 @@ void export_chat_completion_response(const std::string &response)
     }
     else
     {
-        write_message_to_file(results["choices"][0]["message"]["content"]);
+        ::write_message_to_file(results["choices"][0]["message"]["content"]);
     }
 
     ::print_separator();
@@ -271,7 +267,6 @@ void command_run()
     if (::params.dump.empty())
     {
         ::print_chat_completion_response(response);
-
         if (::params.enable_export)
         {
             ::export_chat_completion_response(response);
