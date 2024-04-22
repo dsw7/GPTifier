@@ -16,7 +16,7 @@
 
 bool run_timer = false;
 
-std::string get_post_fields()
+void get_post_fields(std::string &post_fields)
 {
     nlohmann::json body = {};
 
@@ -37,14 +37,13 @@ std::string get_post_fields()
     messages["content"] = ::params.prompt;
 
     body["messages"] = nlohmann::json::array({messages});
-
-    return body.dump(2);
+    post_fields = body.dump(2);
 }
 
-void log_post_fields(const std::string &request)
+void log_post_fields(const std::string &post_fields)
 {
     ::print_separator();
-    std::cout << "\033[1mRequest:\033[0m " + request + '\n';
+    std::cout << "\033[1mRequest:\033[0m " + post_fields + '\n';
     ::print_separator();
 }
 
@@ -68,15 +67,12 @@ void time_api_call()
     ::print_separator();
 }
 
-std::string create_chat_completion(::CURL *curl)
+std::string create_chat_completion(::CURL *curl, const std::string &post_fields)
 {
     static std::string url_chat_completions = "https://api.openai.com/v1/chat/completions";
     ::curl_easy_setopt(curl, ::CURLOPT_URL, url_chat_completions.c_str());
 
     ::curl_easy_setopt(curl, ::CURLOPT_POST, 1L);
-
-    std::string post_fields = ::get_post_fields();
-    ::log_post_fields(post_fields);
     ::curl_easy_setopt(curl, ::CURLOPT_POSTFIELDS, post_fields.c_str());
 
     std::string response;
@@ -103,8 +99,13 @@ void command_run()
 {
     prompt::get_prompt();
 
+    std::string post_fields;
+    ::get_post_fields(post_fields);
+
+    ::log_post_fields(post_fields);
+
     Curl curl;
-    std::string response = ::create_chat_completion(curl.handle);
+    std::string response = ::create_chat_completion(curl.handle, post_fields);
 
     if (::params.dump.empty())
     {
