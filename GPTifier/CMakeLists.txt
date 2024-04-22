@@ -61,7 +61,6 @@ add_executable(
   "src/main.cpp"
   "src/params.cpp"
   "src/prompts.cpp"
-  "src/requests.cpp"
   "src/responses.cpp"
   "src/utils.cpp"
 )

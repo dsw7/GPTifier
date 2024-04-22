@@ -4,7 +4,6 @@
 #include "json.hpp"
 #include "params.hpp"
 #include "prompts.hpp"
-#include "requests.hpp"
 #include "responses.hpp"
 #include "run_completion.hpp"
 
@@ -76,11 +75,8 @@ void command_run()
 {
     prompt::get_prompt();
 
-    std::string request = requests::build_chat_request();
-    requests::print_request(request);
-
     Curl curl;
-    std::string response = ::create_chat_completion(curl.handle, request);
+    std::string response = ::create_chat_completion(curl.handle);
 
     if (::params.dump.empty())
     {

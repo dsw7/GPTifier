@@ -4,10 +4,43 @@
 
 #include <chrono>
 #include <iostream>
+#include <json.hpp>
 #include <stdexcept>
 #include <thread>
 
 bool run_timer = false;
+
+std::string get_post_fields()
+{
+    nlohmann::json body = {};
+
+    body["model"] = ::params.model;
+
+    try
+    {
+        body["temperature"] = std::stof(::params.temperature);
+    }
+    catch (std::invalid_argument &e)
+    {
+        std::string errmsg = std::string(e.what()) + ". Failed to convert '" + ::params.temperature + "' to float";
+        throw std::runtime_error(errmsg);
+    }
+
+    nlohmann::json messages = {};
+    messages["role"] = "user";
+    messages["content"] = ::params.prompt;
+
+    body["messages"] = nlohmann::json::array({messages});
+
+    return body.dump(2);
+}
+
+void log_post_fields(const std::string &request)
+{
+    ::print_separator();
+    std::cout << "\033[1mRequest:\033[0m " + request + '\n';
+    ::print_separator();
+}
 
 void time_api_call()
 {
@@ -29,13 +62,16 @@ void time_api_call()
     ::print_separator();
 }
 
-std::string create_chat_completion(::CURL *curl, const std::string &request)
+std::string create_chat_completion(::CURL *curl)
 {
     static std::string url_chat_completions = "https://api.openai.com/v1/chat/completions";
     ::curl_easy_setopt(curl, ::CURLOPT_URL, url_chat_completions.c_str());
 
     ::curl_easy_setopt(curl, ::CURLOPT_POST, 1L);
-    ::curl_easy_setopt(curl, ::CURLOPT_POSTFIELDS, request.c_str());
+
+    std::string post_fields = ::get_post_fields();
+    ::log_post_fields(post_fields);
+    ::curl_easy_setopt(curl, ::CURLOPT_POSTFIELDS, post_fields.c_str());
 
     std::string response;
     ::curl_easy_setopt(curl, ::CURLOPT_WRITEDATA, &response);
