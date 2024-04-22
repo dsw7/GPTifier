@@ -59,7 +59,6 @@ add_executable(
   "src/help_messages.cpp"
   "src/main.cpp"
   "src/params.cpp"
-  "src/prompts.cpp"
   "src/responses.cpp"
   "src/utils.cpp"
 )

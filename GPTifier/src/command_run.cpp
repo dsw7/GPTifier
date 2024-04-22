@@ -2,19 +2,70 @@
 
 #include "api.hpp"
 #include "params.hpp"
-#include "prompts.hpp"
 #include "responses.hpp"
 #include "utils.hpp"
 
 #include <chrono>
 #include <curl/curl.h>
+#include <fstream>
 #include <iostream>
 #include <json.hpp>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <thread>
 
-bool run_timer = false;
+void read_prompt_from_file()
+{
+    ::print_separator();
+    std::cout << "Reading prompt from file: " + ::params.prompt_file + '\n';
+
+    std::ifstream file(::params.prompt_file);
+
+    if (not file.is_open())
+    {
+        throw std::runtime_error("Could not open file '" + ::params.prompt_file + "'");
+    }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    ::params.prompt = buffer.str();
+
+    file.close();
+}
+
+void read_prompt_interactively()
+{
+    ::print_separator();
+    std::cout << "\033[1mInput:\033[0m ";
+
+    std::getline(std::cin, ::params.prompt);
+}
+
+void get_prompt()
+{
+    // Prompt was passed via command line
+    if (not ::params.prompt.empty())
+    {
+        return;
+    }
+
+    // Prompt was passed via file
+    if (not ::params.prompt_file.empty())
+    {
+        ::read_prompt_from_file();
+        return;
+    }
+
+    // Otherwise default to reading from stdin
+    ::read_prompt_interactively();
+
+    // If still empty then we cannot proceed
+    if (::params.prompt.empty())
+    {
+        throw std::runtime_error("Prompt cannot be empty");
+    }
+}
 
 void get_post_fields(std::string &post_fields)
 {
@@ -46,6 +97,8 @@ void log_post_fields(const std::string &post_fields)
     std::cout << "\033[1mRequest:\033[0m " + post_fields + '\n';
     ::print_separator();
 }
+
+bool run_timer = false;
 
 void time_api_call()
 {
@@ -97,11 +150,11 @@ std::string create_chat_completion(::CURL *curl, const std::string &post_fields)
 
 void command_run()
 {
-    prompt::get_prompt();
+    ::get_prompt();
 
     std::string post_fields;
-    ::get_post_fields(post_fields);
 
+    ::get_post_fields(post_fields);
     ::log_post_fields(post_fields);
 
     Curl curl;
