@@ -2,7 +2,6 @@
 
 #include "api.hpp"
 #include "params.hpp"
-#include "responses.hpp"
 #include "utils.hpp"
 
 #include <chrono>
@@ -120,7 +119,7 @@ void time_api_call()
     ::print_separator();
 }
 
-std::string create_chat_completion(::CURL *curl, const std::string &post_fields)
+void query_chat_completion_api(::CURL *curl, const std::string &post_fields, std::string &response)
 {
     static std::string url_chat_completions = "https://api.openai.com/v1/chat/completions";
     ::curl_easy_setopt(curl, ::CURLOPT_URL, url_chat_completions.c_str());
@@ -128,7 +127,6 @@ std::string create_chat_completion(::CURL *curl, const std::string &post_fields)
     ::curl_easy_setopt(curl, ::CURLOPT_POST, 1L);
     ::curl_easy_setopt(curl, ::CURLOPT_POSTFIELDS, post_fields.c_str());
 
-    std::string response;
     ::curl_easy_setopt(curl, ::CURLOPT_WRITEDATA, &response);
 
     ::run_timer = true;
@@ -144,8 +142,117 @@ std::string create_chat_completion(::CURL *curl, const std::string &post_fields)
         std::string errmsg = "Failed to run query. " + std::string(::curl_easy_strerror(rv));
         throw std::runtime_error(errmsg);
     }
+}
 
-    return response;
+void print_chat_completion_response(const std::string &response)
+{
+    nlohmann::json results = nlohmann::json::parse(response);
+
+    if (results.contains("error"))
+    {
+        std::string error = results["error"]["message"];
+        results["error"]["message"] = "<See Results section>";
+
+        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
+        ::print_separator();
+
+        std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
+    }
+    else
+    {
+        std::string content = results["choices"][0]["message"]["content"];
+        results["choices"][0]["message"]["content"] = "<See Results section>";
+
+        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
+        ::print_separator();
+
+        std::cout << "\033[1mResults:\033[32m " + content + "\033[0m\n";
+    }
+
+    ::print_separator();
+}
+
+void write_message_to_file(const std::string &message)
+{
+    std::string path_completion = ::get_proj_home_dir() + "/completions.gpt";
+
+    std::cout << "> Writing reply to file " + path_completion + '\n';
+
+    std::ofstream st_filename(path_completion, std::ios::app);
+    if (not st_filename.is_open())
+    {
+        throw std::runtime_error("Unable to open " + path_completion);
+    }
+
+    std::string separator(110, '=');
+    st_filename << separator + '\n';
+    st_filename << "[GPTifier] Results:\n";
+    st_filename << separator + '\n';
+    st_filename << message << '\n';
+
+    st_filename.close();
+}
+
+void export_chat_completion_response(const std::string &response)
+{
+    nlohmann::json results = nlohmann::json::parse(response);
+
+    if (results.contains("error"))
+    {
+        std::cerr << "Cannot export results as error occurred\n";
+        ::print_separator();
+        return;
+    }
+
+    std::cout << "\033[1mExport:\033[0m\n";
+    std::string choice;
+
+    while (true)
+    {
+        std::cout << "> Write reply to file? [y/n]: ";
+        std::cin >> choice;
+
+        if (choice.compare("y") == 0)
+        {
+            break;
+        }
+        else if (choice.compare("n") == 0)
+        {
+            break;
+        }
+        else
+        {
+            std::cout << "> Invalid choice. Input either 'y' or 'n'!\n";
+        }
+    }
+
+    if (choice.compare("n") == 0)
+    {
+        std::cout << "> Not exporting response.\n";
+    }
+    else
+    {
+        write_message_to_file(results["choices"][0]["message"]["content"]);
+    }
+
+    ::print_separator();
+}
+
+void dump_chat_completion_response(const std::string &response)
+{
+    std::cout << "Dumping results to " + params.dump + '\n';
+    std::ofstream st_filename(params.dump);
+
+    if (not st_filename.is_open())
+    {
+        throw std::runtime_error("Unable to open '" + params.dump + "'");
+    }
+
+    nlohmann::json results = nlohmann::json::parse(response);
+    static short int indent_pretty_print = 2;
+
+    st_filename << std::setw(indent_pretty_print) << results;
+    st_filename.close();
 }
 
 void command_run()
@@ -158,19 +265,20 @@ void command_run()
     ::log_post_fields(post_fields);
 
     Curl curl;
-    std::string response = ::create_chat_completion(curl.handle, post_fields);
+    std::string response;
+    ::query_chat_completion_api(curl.handle, post_fields, response);
 
     if (::params.dump.empty())
     {
-        responses::print_chat_completion_response(response);
+        ::print_chat_completion_response(response);
 
         if (::params.enable_export)
         {
-            responses::export_chat_completion_response(response);
+            ::export_chat_completion_response(response);
         }
     }
     else
     {
-        responses::dump_chat_completion_response(response);
+        ::dump_chat_completion_response(response);
     }
 }
