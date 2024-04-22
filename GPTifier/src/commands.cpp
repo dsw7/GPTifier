@@ -1,9 +1,9 @@
 #include "commands.hpp"
 
+#include "api.hpp"
 #include "json.hpp"
 #include "params.hpp"
 #include "prompts.hpp"
-#include "query.hpp"
 #include "requests.hpp"
 #include "responses.hpp"
 
