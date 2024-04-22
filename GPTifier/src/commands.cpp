@@ -1,13 +1,7 @@
 #include "commands.hpp"
 
-#include "api.hpp"
-#include "command_run.hpp"
-#include "json.hpp"
-#include "params.hpp"
-#include "prompts.hpp"
-#include "responses.hpp"
-
 #include <iostream>
+#include <json.hpp>
 #include <string>
 
 void print_help_messages()
@@ -69,26 +63,4 @@ void print_build_information()
     data["version"] = PROJECT_VERSION;
 
     std::cout << data.dump(2) << '\n';
-}
-
-void command_run()
-{
-    prompt::get_prompt();
-
-    Curl curl;
-    std::string response = ::create_chat_completion(curl.handle);
-
-    if (::params.dump.empty())
-    {
-        responses::print_chat_completion_response(response);
-
-        if (::params.enable_export)
-        {
-            responses::export_chat_completion_response(response);
-        }
-    }
-    else
-    {
-        responses::dump_chat_completion_response(response);
-    }
 }

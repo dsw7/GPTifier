@@ -1,3 +1,4 @@
+#include "command_run.hpp"
 #include "commands.hpp"
 #include "params.hpp"
 

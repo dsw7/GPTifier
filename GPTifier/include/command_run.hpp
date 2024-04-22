@@ -1,6 +1,3 @@
 #pragma once
 
-#include <curl/curl.h>
-#include <string>
-
-std::string create_chat_completion(::CURL *curl);
+void command_run();

@@ -1,12 +1,17 @@
 #include "command_run.hpp"
 
+#include "api.hpp"
 #include "params.hpp"
+#include "prompts.hpp"
+#include "responses.hpp"
 #include "utils.hpp"
 
 #include <chrono>
+#include <curl/curl.h>
 #include <iostream>
 #include <json.hpp>
 #include <stdexcept>
+#include <string>
 #include <thread>
 
 bool run_timer = false;
@@ -91,4 +96,26 @@ std::string create_chat_completion(::CURL *curl)
     }
 
     return response;
+}
+
+void command_run()
+{
+    prompt::get_prompt();
+
+    Curl curl;
+    std::string response = ::create_chat_completion(curl.handle);
+
+    if (::params.dump.empty())
+    {
+        responses::print_chat_completion_response(response);
+
+        if (::params.enable_export)
+        {
+            responses::export_chat_completion_response(response);
+        }
+    }
+    else
+    {
+        responses::dump_chat_completion_response(response);
+    }
 }
