@@ -72,15 +72,15 @@ void print_build_information()
     std::cout << data.dump(2) << '\n';
 }
 
-void create_chat_completion()
+void command_run()
 {
     prompt::get_prompt();
 
     std::string request = requests::build_chat_request();
     requests::print_request(request);
 
-    Curl c;
-    std::string response = ::create_chat_completion(c.curl, request);
+    Curl curl;
+    std::string response = ::create_chat_completion(curl.handle, request);
 
     if (::params.dump.empty())
     {

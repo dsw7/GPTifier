@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
         try
         {
-            ::create_chat_completion();
+            ::command_run();
         }
         catch (std::runtime_error &e)
         {
