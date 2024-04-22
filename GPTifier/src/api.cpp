@@ -28,6 +28,13 @@ QueryHandler::QueryHandler()
     {
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
+
+    std::string header_auth = "Authorization: Bearer " + params.api_key;
+    this->headers = ::curl_slist_append(this->headers, header_auth.c_str());
+    this->headers = ::curl_slist_append(this->headers, "Content-Type: application/json");
+    ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, this->headers);
+
+    ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEFUNCTION, ::write_callback);
 }
 
 QueryHandler::~QueryHandler()
@@ -36,8 +43,11 @@ QueryHandler::~QueryHandler()
 
     if (this->curl)
     {
-        ::curl_easy_cleanup(curl);
+        // Leads to a Valgrind-detectable memory leak if headers are not freed
+        ::curl_slist_free_all(this->headers);
+        ::curl_easy_cleanup(this->curl);
     }
+
     ::curl_global_cleanup();
 }
 
@@ -66,14 +76,7 @@ std::string QueryHandler::run_query(const std::string &request)
     static std::string url_chat_completions = "https://api.openai.com/v1/chat/completions";
     ::curl_easy_setopt(this->curl, ::CURLOPT_URL, url_chat_completions.c_str());
 
-    std::string header_auth = "Authorization: Bearer " + params.api_key;
-
-    struct ::curl_slist *headers = NULL;
-    headers = ::curl_slist_append(headers, "Content-Type: application/json");
-    headers = ::curl_slist_append(headers, header_auth.c_str());
-    ::curl_easy_setopt(this->curl, ::CURLOPT_HTTPHEADER, headers);
-
-    ::curl_easy_setopt(this->curl, ::CURLOPT_WRITEFUNCTION, ::write_callback);
+    ::curl_easy_setopt(curl, ::CURLOPT_POST, 1L);
     ::curl_easy_setopt(this->curl, ::CURLOPT_POSTFIELDS, request.c_str());
 
     std::string response;
@@ -85,9 +88,6 @@ std::string QueryHandler::run_query(const std::string &request)
 
     this->run_timer = false;
     timer.join();
-
-    // Leads to a Valgrind-detectable memory leak if headers are not freed
-    ::curl_slist_free_all(headers);
 
     if (rv != ::CURLE_OK)
     {
