@@ -51,35 +51,25 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    if (command.compare("run") == 0)
+    try
     {
-        params.load_params_from_command_line(argc, argv);
-
-        try
+        if (command.compare("run") == 0)
         {
+            params.load_params_from_command_line(argc, argv);
             ::command_run();
         }
-        catch (std::runtime_error &e)
-        {
-            std::cerr << e.what() << '\n';
-            return EXIT_FAILURE;
-        }
-    }
-    else if (command.compare("models") == 0)
-    {
-        try
+        else if (command.compare("models") == 0)
         {
             ::command_models();
         }
-        catch (std::runtime_error &e)
+        else
         {
-            std::cerr << e.what() << '\n';
-            return EXIT_FAILURE;
+            std::cerr << "Received unknown command: \"" + command + "\"\n";
         }
     }
-    else
+    catch (std::runtime_error &e)
     {
-        std::cerr << "Received unknown command: \"" + command + "\"\n";
+        std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
 
