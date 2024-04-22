@@ -1,10 +1,22 @@
-#include "commands.hpp"
+#include "command_run.hpp"
+#include "help_messages.hpp"
 #include "params.hpp"
 
 #include <iostream>
+#include <json.hpp>
 #include <stdexcept>
 
 ::Params params;
+
+void print_build_information()
+{
+    nlohmann::json data = {};
+
+    data["build_date"] = BUILD_DATE;
+    data["version"] = PROJECT_VERSION;
+
+    std::cout << data.dump(2) << '\n';
+}
 
 int main(int argc, char **argv)
 {
@@ -44,7 +56,7 @@ int main(int argc, char **argv)
 
         try
         {
-            ::create_chat_completion();
+            ::command_run();
         }
         catch (std::runtime_error &e)
         {

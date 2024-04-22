@@ -54,13 +54,11 @@ include_directories(
 )
 add_executable(
   "gpt"
-  "src/commands.cpp"
+  "src/api.cpp"
+  "src/command_run.cpp"
+  "src/help_messages.cpp"
   "src/main.cpp"
   "src/params.cpp"
-  "src/prompts.cpp"
-  "src/query.cpp"
-  "src/requests.cpp"
-  "src/responses.cpp"
   "src/utils.cpp"
 )
 target_link_libraries(
