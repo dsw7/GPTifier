@@ -1,9 +1,9 @@
 #pragma once
 
-#include "typedefs.hpp"
+#include <string>
 
 namespace requests
 {
-::str_request build_chat_request();
-void print_request(const ::str_request &request);
+std::string build_chat_request();
+void print_request(const std::string &request);
 } // namespace requests

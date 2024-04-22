@@ -6,7 +6,6 @@
 #include "query.hpp"
 #include "requests.hpp"
 #include "responses.hpp"
-#include "typedefs.hpp"
 
 #include <iostream>
 #include <string>
@@ -76,11 +75,11 @@ void create_chat_completion()
 {
     prompt::get_prompt();
 
-    ::str_request request = requests::build_chat_request();
+    std::string request = requests::build_chat_request();
     requests::print_request(request);
 
     QueryHandler q;
-    ::str_response response = q.run_query(request);
+    std::string response = q.run_query(request);
 
     if (::params.dump.empty())
     {

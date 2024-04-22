@@ -5,7 +5,6 @@
 #include <chrono>
 #include <iostream>
 #include <stdexcept>
-#include <string>
 #include <thread>
 
 size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
@@ -62,7 +61,7 @@ void QueryHandler::time_query()
     ::print_separator();
 }
 
-::str_response QueryHandler::run_query(const ::str_request &request)
+std::string QueryHandler::run_query(const std::string &request)
 {
     static std::string url_chat_completions = "https://api.openai.com/v1/chat/completions";
     ::curl_easy_setopt(this->curl, ::CURLOPT_URL, url_chat_completions.c_str());

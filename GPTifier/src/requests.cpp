@@ -5,12 +5,11 @@
 #include <iostream>
 #include <json.hpp>
 #include <stdexcept>
-#include <string>
 
 namespace requests
 {
 
-::str_request build_chat_request()
+std::string build_chat_request()
 {
     nlohmann::json body = {};
 
@@ -35,7 +34,7 @@ namespace requests
     return body.dump(2);
 }
 
-void print_request(const ::str_request &request)
+void print_request(const std::string &request)
 {
     ::print_separator();
     std::cout << "\033[1mRequest:\033[0m " + request + '\n';

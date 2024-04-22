@@ -1,8 +1,7 @@
 #pragma once
 
-#include "typedefs.hpp"
-
 #include <curl/curl.h>
+#include <string>
 
 class QueryHandler
 {
@@ -14,5 +13,5 @@ private:
 public:
     QueryHandler();
     ~QueryHandler();
-    ::str_response run_query(const ::str_request &request);
+    std::string run_query(const std::string &request);
 };

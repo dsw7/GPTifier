@@ -6,12 +6,11 @@
 #include <iostream>
 #include <json.hpp>
 #include <stdexcept>
-#include <string>
 
 namespace responses
 {
 
-void print_chat_completion_response(const ::str_response &response)
+void print_chat_completion_response(const std::string &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
 
@@ -60,7 +59,7 @@ void write_message_to_file(const std::string &message)
     st_filename.close();
 }
 
-void export_chat_completion_response(const ::str_response &response)
+void export_chat_completion_response(const std::string &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
 
@@ -105,7 +104,7 @@ void export_chat_completion_response(const ::str_response &response)
     ::print_separator();
 }
 
-void dump_chat_completion_response(const ::str_response &response)
+void dump_chat_completion_response(const std::string &response)
 {
     std::cout << "Dumping results to " + params.dump + '\n';
     std::ofstream st_filename(params.dump);
