@@ -56,7 +56,7 @@ add_executable(
   "gpt"
   "src/api.cpp"
   "src/command_run.cpp"
-  "src/commands.cpp"
+  "src/help_messages.cpp"
   "src/main.cpp"
   "src/params.cpp"
   "src/prompts.cpp"
