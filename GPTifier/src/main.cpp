@@ -1,3 +1,4 @@
+#include "command_models.hpp"
 #include "command_run.hpp"
 #include "help_messages.hpp"
 #include "params.hpp"
@@ -57,6 +58,18 @@ int main(int argc, char **argv)
         try
         {
             ::command_run();
+        }
+        catch (std::runtime_error &e)
+        {
+            std::cerr << e.what() << '\n';
+            return EXIT_FAILURE;
+        }
+    }
+    else if (command.compare("models") == 0)
+    {
+        try
+        {
+            ::command_models();
         }
         catch (std::runtime_error &e)
         {
