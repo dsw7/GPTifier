@@ -7,6 +7,7 @@
 #include <json.hpp>
 #include <stdexcept>
 
+::Configs configs;
 ::Params params;
 
 void print_build_information()
@@ -43,7 +44,7 @@ int main(int argc, char **argv)
 
     try
     {
-        params.load_params_from_config_file();
+        ::configs.load_configs_from_config_file();
     }
     catch (std::runtime_error &e)
     {
@@ -55,7 +56,7 @@ int main(int argc, char **argv)
     {
         if (command.compare("run") == 0)
         {
-            params.load_params_from_command_line(argc, argv);
+            ::params.load_params_from_command_line(argc, argv);
             ::command_run();
         }
         else if (command.compare("models") == 0)

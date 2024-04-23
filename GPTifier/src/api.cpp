@@ -23,7 +23,7 @@ Curl::Curl()
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
 
-    std::string header_auth = "Authorization: Bearer " + ::params.api_key;
+    std::string header_auth = "Authorization: Bearer " + ::configs.api_key;
     this->headers = ::curl_slist_append(this->headers, header_auth.c_str());
     this->headers = ::curl_slist_append(this->headers, "Content-Type: application/json");
     ::curl_easy_setopt(this->handle, ::CURLOPT_HTTPHEADER, this->headers);

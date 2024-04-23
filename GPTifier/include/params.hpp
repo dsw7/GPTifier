@@ -2,13 +2,17 @@
 
 #include <string>
 
-struct Params
+struct Configs
 {
-    void load_params_from_config_file();
-    void load_params_from_command_line(const int argc, char **argv);
+    void load_configs_from_config_file();
 
     // Parameters strictly from configuration file
     std::string api_key;
+};
+
+struct Params
+{
+    void load_params_from_command_line(const int argc, char **argv);
 
     // Parameters from command line interface
     bool enable_export = true;
@@ -20,3 +24,4 @@ struct Params
 };
 
 extern Params params;
+extern Configs configs;

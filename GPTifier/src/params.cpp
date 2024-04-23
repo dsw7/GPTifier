@@ -7,9 +7,9 @@
 #include <stdexcept>
 #include <toml.hpp>
 
-void Params::load_params_from_config_file()
+void Configs::load_configs_from_config_file()
 {
-    std::string path_toml = ::get_proj_home_dir() + "/gptifier.toml";
+    static std::string path_toml = ::get_proj_home_dir() + "/gptifier.toml";
 
     if (not std::filesystem::exists(path_toml))
     {
