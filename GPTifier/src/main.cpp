@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 {
     if (argc < 2)
     {
-        ::print_help_messages();
+        help::root_messages();
         return EXIT_FAILURE;
     }
 
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
     if (command.compare("-h") == 0 or command.compare("--help") == 0)
     {
-        ::print_help_messages();
+        help::root_messages();
         return EXIT_SUCCESS;
     }
 
