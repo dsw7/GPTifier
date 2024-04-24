@@ -3,6 +3,22 @@
 #include <iostream>
 #include <string>
 
+namespace help
+{
+void command_models()
+{
+    std::string doc = "\033[1mDESCRIPTION:\033[0m\n"
+                      "  List available OpenAI models.\n\n"
+                      "\033[1mSYNOPSIS:\033[0m\n"
+                      "  \033[4mgpt\033[0m models [-h | --help]\n\n"
+                      "\033[1mOPTIONS:\033[0m\n"
+                      "  \033[2m-h, --help\033[0m\n"
+                      "    Print help information and exit.\n\n";
+
+    std::cout << doc;
+}
+} // namespace help
+
 void print_help_messages()
 {
     std::string name = std::string(PROJECT_NAME);

@@ -1,4 +1,5 @@
 #include "command_models.hpp"
+#include "help_messages.hpp"
 
 #include "api.hpp"
 
@@ -10,19 +11,6 @@
 #include <string>
 
 bool should_print_help = false;
-
-void print_help()
-{
-    std::string doc = "\033[1mDESCRIPTION:\033[0m\n"
-                      "  List available OpenAI models.\n\n"
-                      "\033[1mSYNOPSIS:\033[0m\n"
-                      "  \033[4mgpt\033[0m models [-h | --help]\n\n"
-                      "\033[1mOPTIONS:\033[0m\n"
-                      "  \033[2m-h, --help\033[0m\n"
-                      "    Print help information and exit.\n\n";
-
-    std::cout << doc;
-}
 
 void read_cli(int argc, char **argv)
 {
@@ -89,7 +77,7 @@ void command_models(int argc, char **argv)
 
     if (::should_print_help)
     {
-        ::print_help();
+        help::command_models();
         return;
     }
 
