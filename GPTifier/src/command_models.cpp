@@ -32,7 +32,8 @@ void read_cli_models(const int argc, char **argv)
             ::should_print_help = true;
             break;
         default:
-            ::should_print_help = true;
+            std::cerr << "Try running with -h or --help for more information\n";
+            ::exit(EXIT_FAILURE);
         }
     }
 }
