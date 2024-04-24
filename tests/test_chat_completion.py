@@ -111,3 +111,13 @@ def test_model(
         assert data["model"] == result
     else:
         assert data["error"]["message"] == result
+
+
+def test_run_help(command: list[str], capfd) -> None:
+    command.extend(["run", "--help"])
+
+    process = run(command)
+    assert process.returncode == EX_OK
+
+    cap = capfd.readouterr()
+    assert "SYNOPSIS" in cap.out
