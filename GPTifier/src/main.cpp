@@ -8,7 +8,6 @@
 #include <stdexcept>
 
 ::Configs configs;
-::Params params;
 
 void print_build_information()
 {
@@ -56,8 +55,7 @@ int main(int argc, char **argv)
     {
         if (command.compare("run") == 0)
         {
-            ::params.load_params_from_command_line(argc, argv);
-            ::command_run();
+            ::command_run(argc, argv);
         }
         else if (command.compare("models") == 0)
         {

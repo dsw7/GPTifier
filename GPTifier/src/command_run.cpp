@@ -1,18 +1,77 @@
 #include "command_run.hpp"
 
 #include "api.hpp"
-#include "params.hpp"
 #include "utils.hpp"
 
 #include <chrono>
 #include <curl/curl.h>
 #include <fstream>
+#include <getopt.h>
 #include <iostream>
 #include <json.hpp>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <thread>
+
+struct Params
+{
+    bool enable_export = true;
+    std::string dump;
+    std::string model = "gpt-3.5-turbo";
+    std::string prompt;
+    std::string prompt_file;
+    std::string temperature = "1";
+} params;
+
+void read_cli_run(const int argc, char **argv)
+{
+    while (true)
+    {
+        static struct option long_options[] = {
+            {"no-interactive-export", no_argument, 0, 'u'},
+            {"dump", required_argument, 0, 'd'},
+            {"model", required_argument, 0, 'm'},
+            {"prompt", required_argument, 0, 'p'},
+            {"read-from-file", required_argument, 0, 'r'},
+            {"temperature", required_argument, 0, 't'},
+            {0, 0, 0, 0},
+        };
+
+        int option_index = 0;
+        int c = ::getopt_long(argc, argv, "ud:m:p:r:t:", long_options, &option_index);
+
+        if (c == -1)
+        {
+            break;
+        }
+
+        switch (c)
+        {
+        case 'u':
+            ::params.enable_export = false;
+            break;
+        case 'd':
+            ::params.dump = ::optarg;
+            break;
+        case 'p':
+            ::params.prompt = ::optarg;
+            break;
+        case 't':
+            ::params.temperature = ::optarg;
+            break;
+        case 'r':
+            ::params.prompt_file = ::optarg;
+            break;
+        case 'm':
+            ::params.model = ::optarg;
+            break;
+        default:
+            std::cerr << "Try running with -h or --help for more information\n";
+            ::exit(EXIT_FAILURE);
+        }
+    };
+}
 
 void read_prompt_from_file()
 {
@@ -236,12 +295,12 @@ void export_chat_completion_response(const std::string &response)
 
 void dump_chat_completion_response(const std::string &response)
 {
-    std::cout << "Dumping results to " + params.dump + '\n';
-    std::ofstream st_filename(params.dump);
+    std::cout << "Dumping results to " + ::params.dump + '\n';
+    std::ofstream st_filename(::params.dump);
 
     if (not st_filename.is_open())
     {
-        throw std::runtime_error("Unable to open '" + params.dump + "'");
+        throw std::runtime_error("Unable to open '" + ::params.dump + "'");
     }
 
     nlohmann::json results = nlohmann::json::parse(response);
@@ -251,8 +310,9 @@ void dump_chat_completion_response(const std::string &response)
     st_filename.close();
 }
 
-void command_run()
+void command_run(const int argc, char **argv)
 {
+    ::read_cli_run(argc, argv);
     ::get_prompt();
 
     std::string post_fields;

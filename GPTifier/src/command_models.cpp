@@ -12,7 +12,7 @@
 
 bool should_print_help = false;
 
-void read_cli(const int argc, char **argv)
+void read_cli_models(const int argc, char **argv)
 {
     while (true)
     {
@@ -72,7 +72,7 @@ void print_models_response(const std::string &response)
 
 void command_models(const int argc, char **argv)
 {
-    ::read_cli(argc, argv);
+    ::read_cli_models(argc, argv);
 
     if (::should_print_help)
     {
