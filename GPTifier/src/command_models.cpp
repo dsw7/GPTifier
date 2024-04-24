@@ -12,16 +12,15 @@
 
 bool should_print_help = false;
 
-void read_cli(int argc, char **argv)
+void read_cli(const int argc, char **argv)
 {
-    int c;
-
-    while (1)
+    while (true)
     {
-        int option_index = 0;
         static struct option long_options[] = {{"help", no_argument, 0, 'h'}, {0, 0, 0, 0}};
 
-        c = getopt_long(argc, argv, "h", long_options, &option_index);
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "h", long_options, &option_index);
+
         if (c == -1)
         {
             break;
@@ -71,7 +70,7 @@ void print_models_response(const std::string &response)
     }
 }
 
-void command_models(int argc, char **argv)
+void command_models(const int argc, char **argv)
 {
     ::read_cli(argc, argv);
 
