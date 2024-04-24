@@ -61,7 +61,7 @@ int main(int argc, char **argv)
         }
         else if (command.compare("models") == 0)
         {
-            ::command_models();
+            ::command_models(argc, argv);
         }
         else
         {
