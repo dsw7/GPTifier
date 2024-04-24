@@ -7,7 +7,7 @@
 #include <json.hpp>
 #include <stdexcept>
 
-::Params params;
+::Configs configs;
 
 void print_build_information()
 {
@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 {
     if (argc < 2)
     {
-        ::print_help_messages();
+        help::root_messages();
         return EXIT_FAILURE;
     }
 
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
     if (command.compare("-h") == 0 or command.compare("--help") == 0)
     {
-        ::print_help_messages();
+        help::root_messages();
         return EXIT_SUCCESS;
     }
 
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
     try
     {
-        params.load_params_from_config_file();
+        ::configs.load_configs_from_config_file();
     }
     catch (std::runtime_error &e)
     {
@@ -55,12 +55,11 @@ int main(int argc, char **argv)
     {
         if (command.compare("run") == 0)
         {
-            params.load_params_from_command_line(argc, argv);
-            ::command_run();
+            ::command_run(argc, argv);
         }
         else if (command.compare("models") == 0)
         {
-            ::command_models();
+            ::command_models(argc, argv);
         }
         else
         {

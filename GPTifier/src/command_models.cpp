@@ -1,14 +1,42 @@
 #include "command_models.hpp"
+#include "help_messages.hpp"
 
 #include "api.hpp"
 
 #include <curl/curl.h>
+#include <getopt.h>
 #include <iostream>
 #include <json.hpp>
-#include <map>
 #include <stdexcept>
 #include <string>
-#include <vector>
+
+bool should_print_help = false;
+
+void read_cli_models(const int argc, char **argv)
+{
+    while (true)
+    {
+        static struct option long_options[] = {{"help", no_argument, 0, 'h'}, {0, 0, 0, 0}};
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "h", long_options, &option_index);
+
+        if (c == -1)
+        {
+            break;
+        }
+
+        switch (c)
+        {
+        case 'h':
+            ::should_print_help = true;
+            break;
+        default:
+            std::cerr << "Try running with -h or --help for more information\n";
+            ::exit(EXIT_FAILURE);
+        }
+    }
+}
 
 void query_models_api(::CURL *curl, std::string &response)
 {
@@ -43,8 +71,16 @@ void print_models_response(const std::string &response)
     }
 }
 
-void command_models()
+void command_models(const int argc, char **argv)
 {
+    ::read_cli_models(argc, argv);
+
+    if (::should_print_help)
+    {
+        help::command_models();
+        return;
+    }
+
     Curl curl;
     std::string response;
 
