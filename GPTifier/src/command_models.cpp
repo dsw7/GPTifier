@@ -72,13 +72,10 @@ void print_models_response(const std::string &response)
               << "Owner\n";
     ::print_separator();
 
-    std::string id;
-    std::string owned_by;
-
     for (const auto &entry : results["data"])
     {
-        id = entry["id"];
-        owned_by = entry["owned_by"];
+        std::string id = entry["id"];
+        std::string owned_by = entry["owned_by"];
         std::cout << std::setw(30) << std::left << id << owned_by << "\n";
     }
 
