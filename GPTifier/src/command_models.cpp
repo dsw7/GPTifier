@@ -65,9 +65,12 @@ void print_models_response(const std::string &response)
         return;
     }
 
+    std::string id;
+
     for (const auto &entry : results["data"])
     {
-        std::cout << "> " << entry["id"] << "\n";
+        id = entry["id"];
+        std::cout << "> " << id << "\n";
     }
 }
 
