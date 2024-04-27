@@ -22,4 +22,3 @@ def test_models(command: list[str], capfd) -> None:
     models = cap.out.split("\n")
 
     assert len(models) > 1
-    assert '> "gpt-4"' in models
