@@ -1,7 +1,8 @@
 #include "command_models.hpp"
-#include "help_messages.hpp"
 
 #include "api.hpp"
+#include "help_messages.hpp"
+#include "utils.hpp"
 
 #include <curl/curl.h>
 #include <getopt.h>
@@ -66,6 +67,11 @@ void print_models_response(const std::string &response)
         return;
     }
 
+    ::print_separator();
+    std::cout << std::setw(30) << std::left << "Model ID"
+              << "Owner\n";
+    ::print_separator();
+
     std::string id;
     std::string owned_by;
 
@@ -75,6 +81,8 @@ void print_models_response(const std::string &response)
         owned_by = entry["owned_by"];
         std::cout << std::setw(30) << std::left << id << owned_by << "\n";
     }
+
+    ::print_separator();
 }
 
 void command_models(const int argc, char **argv)
