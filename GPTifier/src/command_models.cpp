@@ -5,6 +5,7 @@
 
 #include <curl/curl.h>
 #include <getopt.h>
+#include <iomanip>
 #include <iostream>
 #include <json.hpp>
 #include <stdexcept>
@@ -66,11 +67,13 @@ void print_models_response(const std::string &response)
     }
 
     std::string id;
+    std::string owned_by;
 
     for (const auto &entry : results["data"])
     {
         id = entry["id"];
-        std::cout << "> " << id << "\n";
+        owned_by = entry["owned_by"];
+        std::cout << std::setw(30) << std::left << id << owned_by << "\n";
     }
 }
 
