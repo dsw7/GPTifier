@@ -17,6 +17,7 @@ A beautiful C++ libcurl / ChatGPT interface
   - [The `run` command](#the-run-command)
     - [Basic example](#basic-example)
     - [Exporting a result](#exporting-a-result)
+    - [Specifying a model](#specifying-a-model)
   - [The `models` command](#the-models-command)
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
@@ -146,6 +147,13 @@ In the above example, the user is prompted to export the completion a file. Ente
 Subsequent requests will append to this file. In some cases, prompting interactively may be undesirable, such
 as when running automated unit tests. To disable the <kbd>y/n</kbd> prompt, run `gpt run` with the `-u` or
 `--no-interactive-export` flags.
+#### Specifying a model
+A chat completion can be run against an available model by specifying the model name using the `-m` or
+`--model` option. For example, to create a chat completion via command line using the GPT-4 model, run:
+```console
+gpt run --model gpt-4 --prompt "What is 3 + 5?"
+```
+A full list of models can be found by running the [models command](#the-models-command).
 
 ### The `models` command
 This command returns a list of currently available models. Simply run:
