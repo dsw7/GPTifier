@@ -4,7 +4,6 @@
 #include "help_messages.hpp"
 #include "utils.hpp"
 
-#include <chrono>
 #include <ctime>
 #include <curl/curl.h>
 #include <getopt.h>
@@ -58,19 +57,13 @@ void query_models_api(::CURL *curl, std::string &response)
     }
 }
 
-void datetime_from_unix_timestamp(const std::time_t &timestamp, std::string &result)
+std::string datetime_from_unix_timestamp(const std::time_t &timestamp)
 {
-    std::chrono::system_clock::time_point time_point = std::chrono::system_clock::from_time_t(timestamp);
+    std::tm *datetime = std::gmtime(&timestamp);
+    char buffer[80];
 
-    std::time_t time = std::chrono::system_clock::to_time_t(time_point);
-    std::tm *datetime = std::gmtime(&time);
-
-    result += std::to_string(1900 + datetime->tm_year) + "-";
-    result += std::to_string(1 + datetime->tm_mon) + "-";
-    result += std::to_string(datetime->tm_mday) + " ";
-    result += std::to_string(datetime->tm_hour) + ":";
-    result += std::to_string(datetime->tm_min) + ":";
-    result += std::to_string(datetime->tm_sec);
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", datetime);
+    return buffer;
 }
 
 void print_models_response(const std::string &response)
@@ -93,8 +86,7 @@ void print_models_response(const std::string &response)
     {
         std::string id = entry["id"];
         std::string owned_by = entry["owned_by"];
-        std::string creation_time;
-        ::datetime_from_unix_timestamp(entry["created"], creation_time);
+        std::string creation_time = ::datetime_from_unix_timestamp(entry["created"]);
         std::cout << std::setw(30) << std::left << id << std::setw(30) << std::left << owned_by << creation_time
                   << "\n";
     }
