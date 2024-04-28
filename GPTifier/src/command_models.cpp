@@ -4,6 +4,7 @@
 #include "help_messages.hpp"
 #include "utils.hpp"
 
+#include <ctime>
 #include <curl/curl.h>
 #include <getopt.h>
 #include <iomanip>
@@ -56,6 +57,15 @@ void query_models_api(::CURL *curl, std::string &response)
     }
 }
 
+std::string datetime_from_unix_timestamp(const std::time_t &timestamp)
+{
+    std::tm *datetime = std::gmtime(&timestamp);
+    char buffer[80];
+
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", datetime);
+    return buffer;
+}
+
 void print_models_response(const std::string &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
@@ -68,15 +78,17 @@ void print_models_response(const std::string &response)
     }
 
     ::print_separator();
-    std::cout << std::setw(30) << std::left << "Model ID"
-              << "Owner\n";
+    std::cout << std::setw(30) << std::left << "Model ID" << std::setw(30) << std::left << "Owner"
+              << "Creation time\n";
     ::print_separator();
 
     for (const auto &entry : results["data"])
     {
         std::string id = entry["id"];
         std::string owned_by = entry["owned_by"];
-        std::cout << std::setw(30) << std::left << id << owned_by << "\n";
+        std::string creation_time = ::datetime_from_unix_timestamp(entry["created"]);
+        std::cout << std::setw(30) << std::left << id << std::setw(30) << std::left << owned_by << creation_time
+                  << "\n";
     }
 
     ::print_separator();
