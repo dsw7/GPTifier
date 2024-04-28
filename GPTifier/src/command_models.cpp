@@ -68,15 +68,17 @@ void print_models_response(const std::string &response)
     }
 
     ::print_separator();
-    std::cout << std::setw(30) << std::left << "Model ID"
-              << "Owner\n";
+    std::cout << std::setw(30) << std::left << "Model ID" << std::setw(30) << std::left << "Owner"
+              << "Creation time\n";
     ::print_separator();
 
     for (const auto &entry : results["data"])
     {
         std::string id = entry["id"];
         std::string owned_by = entry["owned_by"];
-        std::cout << std::setw(30) << std::left << id << owned_by << "\n";
+        int creation_time = entry["created"];
+        std::cout << std::setw(30) << std::left << id << std::setw(30) << std::left << owned_by << creation_time
+                  << "\n";
     }
 
     ::print_separator();
