@@ -14,8 +14,9 @@ A beautiful C++ libcurl / ChatGPT interface
   - [Set up project files](#set-up-project-files)
   - [Clean up](#clean-up)
 - [Usage](#usage)
-  - [Basic example](#basic-example)
-  - [Exporting a result](#exporting-a-result)
+  - [The `run` command](#the-run-command)
+    - [Basic example](#basic-example)
+    - [Exporting a result](#exporting-a-result)
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
 - [Development](#development)
@@ -117,7 +118,8 @@ make clean
 ```
 
 ## Usage
-### Basic example
+### The `run` command
+#### Basic example
 Simply run `gpt run`! This will begin an interactive session. Type in a prompt:
 ```console
 $ gpt run
@@ -132,7 +134,7 @@ Results: 3 + 5 equals 8.
 Export:
 > Write reply to file? [y/n]:
 ```
-### Exporting a result
+#### Exporting a result
 In the above example, the user is prompted to export the completion a file. Entering `y` will print:
 ```console
 ...
