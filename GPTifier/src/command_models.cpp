@@ -4,6 +4,8 @@
 #include "help_messages.hpp"
 #include "utils.hpp"
 
+#include <chrono>
+#include <ctime>
 #include <curl/curl.h>
 #include <getopt.h>
 #include <iomanip>
@@ -56,6 +58,21 @@ void query_models_api(::CURL *curl, std::string &response)
     }
 }
 
+void datetime_from_unix_timestamp(const std::time_t &timestamp, std::string &result)
+{
+    std::chrono::system_clock::time_point time_point = std::chrono::system_clock::from_time_t(timestamp);
+
+    std::time_t time = std::chrono::system_clock::to_time_t(time_point);
+    std::tm *datetime = std::gmtime(&time);
+
+    result += std::to_string(1900 + datetime->tm_year) + "-";
+    result += std::to_string(1 + datetime->tm_mon) + "-";
+    result += std::to_string(datetime->tm_mday) + " ";
+    result += std::to_string(datetime->tm_hour) + ":";
+    result += std::to_string(datetime->tm_min) + ":";
+    result += std::to_string(datetime->tm_sec);
+}
+
 void print_models_response(const std::string &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
@@ -76,7 +93,8 @@ void print_models_response(const std::string &response)
     {
         std::string id = entry["id"];
         std::string owned_by = entry["owned_by"];
-        int creation_time = entry["created"];
+        std::string creation_time;
+        ::datetime_from_unix_timestamp(entry["created"], creation_time);
         std::cout << std::setw(30) << std::left << id << std::setw(30) << std::left << owned_by << creation_time
                   << "\n";
     }
