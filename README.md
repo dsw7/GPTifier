@@ -17,6 +17,7 @@ A beautiful C++ libcurl / ChatGPT interface
   - [The `run` command](#the-run-command)
     - [Basic example](#basic-example)
     - [Exporting a result](#exporting-a-result)
+  - [The `models` command](#the-models-command)
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
 - [Development](#development)
@@ -119,6 +120,7 @@ make clean
 
 ## Usage
 ### The `run` command
+This command works with OpenAI's chat completion models, such as GPT-4 Turbo and GPT-4.
 #### Basic example
 Simply run `gpt run`! This will begin an interactive session. Type in a prompt:
 ```console
@@ -144,6 +146,22 @@ In the above example, the user is prompted to export the completion a file. Ente
 Subsequent requests will append to this file. In some cases, prompting interactively may be undesirable, such
 as when running automated unit tests. To disable the `y/n` prompt, run `gpt run` with the `-u` or
 `--no-interactive-export` flags.
+
+### The `models` command
+This command returns a list of currently available models. Simply run:
+```console
+$ gpt models
+```
+Which will return:
+```console
+------------------------------------------------------------------------------------------
+Model ID                      Owner                         Creation time
+------------------------------------------------------------------------------------------
+dall-e-3                      system                        2023-10-31 20:46:29
+whisper-1                     openai-internal               2023-02-27 21:13:04
+davinci-002                   system                        2023-08-21 16:11:41
+...                           ...                           ...
+```
 
 ## Integrations
 ### Coupling with `vim`
