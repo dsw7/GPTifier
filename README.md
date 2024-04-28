@@ -128,7 +128,7 @@ $ gpt run
 ------------------------------------------------------------------------------------------
 Input: What is 3 + 5?
 ```
-And hit `Enter`. The program will dispatch a request and return:
+And hit <kbd>Enter</kbd>. The program will dispatch a request and return:
 ```console
 ...
 Results: 3 + 5 equals 8.
@@ -137,20 +137,20 @@ Export:
 > Write reply to file? [y/n]:
 ```
 #### Exporting a result
-In the above example, the user is prompted to export the completion a file. Entering `y` will print:
+In the above example, the user is prompted to export the completion a file. Entering <kbd>y</kbd> will print:
 ```console
 ...
 > Writing reply to file /home/<your-username>/.gptifier/completions.gpt
 ------------------------------------------------------------------------------------------
 ```
 Subsequent requests will append to this file. In some cases, prompting interactively may be undesirable, such
-as when running automated unit tests. To disable the `y/n` prompt, run `gpt run` with the `-u` or
+as when running automated unit tests. To disable the <kbd>y/n</kbd> prompt, run `gpt run` with the `-u` or
 `--no-interactive-export` flags.
 
 ### The `models` command
 This command returns a list of currently available models. Simply run:
 ```console
-$ gpt models
+gpt models
 ```
 Which will return:
 ```console
