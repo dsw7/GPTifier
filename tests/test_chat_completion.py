@@ -4,7 +4,7 @@ from pathlib import Path
 from subprocess import run, DEVNULL, PIPE, CalledProcessError
 from pytest import fail, mark
 from consts import EX_MEM_LEAK
-from utils import print_stdout, print_stderr
+from utils import print_stdout, print_stderr, print_stdout_stderr
 
 
 def test_basic(json_file: str, command: list[str], capfd) -> None:
@@ -17,13 +17,9 @@ def test_basic(json_file: str, command: list[str], capfd) -> None:
             "-u",
         ]
     )
-
     process = run(command)
-    output = capfd.readouterr()
-    print()
 
-    print_stdout(output.out)
-    print_stderr(output.err)
+    print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
 
     with open(json_file) as f_json:
@@ -31,32 +27,34 @@ def test_basic(json_file: str, command: list[str], capfd) -> None:
         assert data["choices"][0]["message"]["content"] == ">>>8<<<"
 
 
-@mark.parametrize(
-    "temp, result",
-    [
-        (
-            "-2.5",
-            "Invalid 'temperature': decimal below minimum value. Expected a value >= 0, but got -2.5 instead.",
-        ),
-        (
-            "2.5",
-            "Invalid 'temperature': decimal above maximum value. Expected a value <= 2, but got 2.5 instead.",
-        ),
-    ],
-)
-def test_invalid_temp(
-    temp: str, result: str, json_file: str, command: list[str]
-) -> None:
-    command.extend(["run", "-p'Running a test!'", f"-t{temp}", f"-d{json_file}", "-u"])
+def test_invalid_temp_low(json_file: str, command: list[str], capfd) -> None:
+    command.extend(["run", "-p'Running a test!'", "-t-2.5", f"-d{json_file}", "-u"])
+    process = run(command)
 
-    try:
-        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
-    except CalledProcessError as exc:
-        fail(exc.stderr.decode())
+    print_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
 
     with open(json_file) as f_json:
         data = loads(f_json.read())
-        assert data["error"]["message"] == result
+        assert (
+            data["error"]["message"]
+            == "Invalid 'temperature': decimal below minimum value. Expected a value >= 0, but got -2.5 instead."
+        )
+
+
+def test_invalid_temp_high(json_file: str, command: list[str], capfd) -> None:
+    command.extend(["run", "-p'Running a test!'", "-t2.5", f"-d{json_file}", "-u"])
+    process = run(command)
+
+    print_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
+
+    with open(json_file) as f_json:
+        data = loads(f_json.read())
+        assert (
+            data["error"]["message"]
+            == "Invalid 'temperature': decimal above maximum value. Expected a value <= 2, but got 2.5 instead."
+        )
 
 
 def test_read_from_file(json_file: str, command: list[str]) -> None:
