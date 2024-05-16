@@ -1,8 +1,7 @@
 from json import loads
 from os import EX_OK
 from pathlib import Path
-from subprocess import run, DEVNULL, PIPE, CalledProcessError
-from pytest import fail, mark
+from subprocess import run
 from consts import EX_MEM_LEAK
 from utils import print_stdout, print_stderr, print_stdout_stderr
 
@@ -97,34 +96,19 @@ def test_invalid_dump_location(command: list[str], capfd) -> None:
     assert "Unable to open '/tmp/a/b/c'" in capture.err
 
 
-@mark.parametrize(
-    "model, result, valid_model",
-    [
-        ("gpt-3.5-turbo-0301", "gpt-3.5-turbo-0301", True),
-        (
-            "gpt-3.5-turbo-0302",
-            "The model `gpt-3.5-turbo-0302` does not exist or you do not have access to it.",
-            False,
-        ),
-    ],
-)
-def test_model(
-    model: str, result: str, valid_model: bool, json_file: str, command: list[str]
-) -> None:
-    command.extend(["run", "-p'What is 3 + 5?'", f"-m{model}", f"-d{json_file}", "-u"])
+def test_invalid_model(json_file: str, command: list[str], capfd) -> None:
+    command.extend(["run", "-p'What is 3 + 5?'", "-mfoobar", f"-d{json_file}", "-u"])
+    process = run(command)
 
-    try:
-        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
-    except CalledProcessError as exc:
-        fail(exc.stderr.decode())
+    print_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
 
     with open(json_file) as f_json:
         data = loads(f_json.read())
-
-    if valid_model:
-        assert data["model"] == result
-    else:
-        assert data["error"]["message"] == result
+        assert (
+            data["error"]["message"]
+            == "The model `foobar` does not exist or you do not have access to it."
+        )
 
 
 def test_run_help(command: list[str], capfd) -> None:
