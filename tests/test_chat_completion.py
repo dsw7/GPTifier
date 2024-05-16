@@ -113,9 +113,12 @@ def test_invalid_model(json_file: str, command: list[str], capfd) -> None:
 
 def test_run_help(command: list[str], capfd) -> None:
     command.extend(["run", "--help"])
-
     process = run(command)
-    assert process.returncode == EX_OK
 
-    cap = capfd.readouterr()
-    assert "SYNOPSIS" in cap.out
+    capture = capfd.readouterr()
+    print()
+    print_stdout(capture.out)
+    print_stderr(capture.err)
+
+    assert process.returncode == EX_OK
+    assert "SYNOPSIS" in capture.out
