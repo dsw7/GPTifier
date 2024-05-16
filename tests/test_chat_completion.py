@@ -2,8 +2,7 @@ from json import loads
 from os import EX_OK
 from pathlib import Path
 from subprocess import run
-from consts import EX_MEM_LEAK
-from utils import print_stdout, print_stderr, print_stdout_stderr
+import utils
 
 
 def test_basic(json_file: str, command: list[str], capfd) -> None:
@@ -18,7 +17,7 @@ def test_basic(json_file: str, command: list[str], capfd) -> None:
     )
     process = run(command)
 
-    print_stdout_stderr(capfd)
+    utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
 
     with open(json_file) as f_json:
@@ -30,7 +29,7 @@ def test_invalid_temp_low(json_file: str, command: list[str], capfd) -> None:
     command.extend(["run", "-p'Running a test!'", "-t-2.5", f"-d{json_file}", "-u"])
     process = run(command)
 
-    print_stdout_stderr(capfd)
+    utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
 
     with open(json_file) as f_json:
@@ -45,7 +44,7 @@ def test_invalid_temp_high(json_file: str, command: list[str], capfd) -> None:
     command.extend(["run", "-p'Running a test!'", "-t2.5", f"-d{json_file}", "-u"])
     process = run(command)
 
-    print_stdout_stderr(capfd)
+    utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
 
     with open(json_file) as f_json:
@@ -62,7 +61,7 @@ def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
     command.extend(["run", f"-r{prompt}", "-t0", f"-d{json_file}", "-u"])
     process = run(command)
 
-    print_stdout_stderr(capfd)
+    utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
 
     with open(json_file) as f_json:
@@ -76,10 +75,10 @@ def test_missing_prompt_file(command: list[str], capfd) -> None:
 
     capture = capfd.readouterr()
     print()
-    print_stdout(capture.out)
-    print_stderr(capture.err)
+    utils.print_stdout(capture.out)
+    utils.print_stderr(capture.err)
 
-    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
+    assert process.returncode not in (EX_OK, utils.EX_MEM_LEAK)
     assert "Could not open file '/tmp/yU8nnkRs.txt'" in capture.err
 
 
@@ -89,10 +88,10 @@ def test_invalid_dump_location(command: list[str], capfd) -> None:
 
     capture = capfd.readouterr()
     print()
-    print_stdout(capture.out)
-    print_stderr(capture.err)
+    utils.print_stdout(capture.out)
+    utils.print_stderr(capture.err)
 
-    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
+    assert process.returncode not in (EX_OK, utils.EX_MEM_LEAK)
     assert "Unable to open '/tmp/a/b/c'" in capture.err
 
 
@@ -100,7 +99,7 @@ def test_invalid_model(json_file: str, command: list[str], capfd) -> None:
     command.extend(["run", "-p'What is 3 + 5?'", "-mfoobar", f"-d{json_file}", "-u"])
     process = run(command)
 
-    print_stdout_stderr(capfd)
+    utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
 
     with open(json_file) as f_json:
@@ -117,8 +116,8 @@ def test_run_help(command: list[str], capfd) -> None:
 
     capture = capfd.readouterr()
     print()
-    print_stdout(capture.out)
-    print_stderr(capture.err)
+    utils.print_stdout(capture.out)
+    utils.print_stderr(capture.err)
 
     assert process.returncode == EX_OK
     assert "SYNOPSIS" in capture.out

@@ -3,6 +3,9 @@ from colorama import Fore, Style
 PREFIX_STDOUT = Fore.GREEN + "stdout >>> " + Style.RESET_ALL
 PREFIX_STDERR = Fore.RED + "stderr >>> " + Style.RESET_ALL
 
+# Custom Valgrind exit code such that we can delimit stderr being tested from Valgrind stderr
+EX_MEM_LEAK = 3
+
 
 def print_stdout(raw_stdout: str) -> None:
     if not raw_stdout:
