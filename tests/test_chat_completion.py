@@ -57,14 +57,14 @@ def test_invalid_temp_high(json_file: str, command: list[str], capfd) -> None:
         )
 
 
-def test_read_from_file(json_file: str, command: list[str]) -> None:
+def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
     prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
-    command.extend(["run", f"-r{prompt}", "-t0", f"-d{json_file}", "-u"])
 
-    try:
-        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
-    except CalledProcessError as exc:
-        fail(exc.stderr.decode())
+    command.extend(["run", f"-r{prompt}", "-t0", f"-d{json_file}", "-u"])
+    process = run(command)
+
+    print_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
 
     with open(json_file) as f_json:
         data = loads(f_json.read())
@@ -73,12 +73,15 @@ def test_read_from_file(json_file: str, command: list[str]) -> None:
 
 def test_missing_prompt_file(command: list[str], capfd) -> None:
     command.extend(["run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u"])
+    process = run(command)
 
-    process = run(command, stdout=DEVNULL)
+    capture = capfd.readouterr()
+    print()
+    print_stdout(capture.out)
+    print_stderr(capture.err)
+
     assert process.returncode not in (EX_OK, EX_MEM_LEAK)
-
-    cap = capfd.readouterr()
-    assert "Could not open file '/tmp/yU8nnkRs.txt'" in cap.err
+    assert "Could not open file '/tmp/yU8nnkRs.txt'" in capture.err
 
 
 def test_invalid_dump_loc(command: list[str], capfd) -> None:

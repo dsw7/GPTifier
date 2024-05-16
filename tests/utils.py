@@ -19,6 +19,7 @@ def print_stderr(raw_stderr: str) -> None:
     for line in raw_stderr.split("\n"):
         print(PREFIX_STDERR + line)
 
+
 def print_stdout_stderr(capture) -> None:
     output = capture.readouterr()
     print()
