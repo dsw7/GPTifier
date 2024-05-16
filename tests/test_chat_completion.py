@@ -4,9 +4,10 @@ from pathlib import Path
 from subprocess import run, DEVNULL, PIPE, CalledProcessError
 from pytest import fail, mark
 from consts import EX_MEM_LEAK
+from utils import print_stdout, print_stderr
 
 
-def test_basic(json_file: str, command: list[str]) -> None:
+def test_basic(json_file: str, command: list[str], capfd) -> None:
     command.extend(
         [
             "run",
@@ -17,10 +18,13 @@ def test_basic(json_file: str, command: list[str]) -> None:
         ]
     )
 
-    try:
-        run(command, stdout=DEVNULL, stderr=PIPE, check=True)
-    except CalledProcessError as exc:
-        fail(exc.stderr.decode())
+    process = run(command)
+    output = capfd.readouterr()
+    print()
+
+    print_stdout(output.out)
+    print_stderr(output.err)
+    assert process.returncode == EX_OK
 
     with open(json_file) as f_json:
         data = loads(f_json.read())
