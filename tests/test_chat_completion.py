@@ -84,14 +84,17 @@ def test_missing_prompt_file(command: list[str], capfd) -> None:
     assert "Could not open file '/tmp/yU8nnkRs.txt'" in capture.err
 
 
-def test_invalid_dump_loc(command: list[str], capfd) -> None:
+def test_invalid_dump_location(command: list[str], capfd) -> None:
     command.extend(["run", "--prompt='What is 3 + 5?'", "--dump=/tmp/a/b/c", "-u"])
+    process = run(command)
 
-    process = run(command, stdout=DEVNULL)
+    capture = capfd.readouterr()
+    print()
+    print_stdout(capture.out)
+    print_stderr(capture.err)
+
     assert process.returncode not in (EX_OK, EX_MEM_LEAK)
-
-    cap = capfd.readouterr()
-    assert "Unable to open '/tmp/a/b/c'" in cap.err
+    assert "Unable to open '/tmp/a/b/c'" in capture.err
 
 
 @mark.parametrize(
