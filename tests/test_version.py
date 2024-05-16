@@ -2,17 +2,21 @@ from datetime import datetime
 from json import loads
 from os import EX_OK
 from subprocess import run
+from utils import print_stdout, print_stderr
 
 
 def test_version(command: list[str], capfd) -> None:
     command.extend(["--version"])
-
     process = run(command)
+
+    capture = capfd.readouterr()
+    print()
+    print_stdout(capture.out)
+    print_stderr(capture.err)
+
     assert process.returncode == EX_OK
 
-    cap = capfd.readouterr()
-    data = loads(cap.out)
-
+    data = loads(capture.out)
     assert "build_date" in data
     assert "version" in data
 
