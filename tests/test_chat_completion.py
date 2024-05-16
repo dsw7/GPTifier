@@ -30,8 +30,14 @@ def test_basic(json_file: str, command: list[str]) -> None:
 @mark.parametrize(
     "temp, result",
     [
-        ("-2.5", "-2.5 is less than the minimum of 0 - 'temperature'"),
-        ("2.5", "2.5 is greater than the maximum of 2 - 'temperature'"),
+        (
+            "-2.5",
+            "Invalid 'temperature': decimal below minimum value. Expected a value >= 0, but got -2.5 instead.",
+        ),
+        (
+            "2.5",
+            "Invalid 'temperature': decimal above maximum value. Expected a value <= 2, but got 2.5 instead.",
+        ),
     ],
 )
 def test_invalid_temp(
