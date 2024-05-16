@@ -3,7 +3,7 @@ from platform import system
 from tempfile import TemporaryDirectory, NamedTemporaryFile, gettempdir
 from typing import Generator
 from pytest import fixture, exit
-from consts import EX_MEM_LEAK
+from utils import EX_MEM_LEAK
 
 
 def pytest_addoption(parser):
