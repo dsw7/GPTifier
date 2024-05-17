@@ -38,7 +38,7 @@ Interested in a specific release? To download `1.0.0`, for example:
 wget https://github.com/dsw7/GPTifier/archive/refs/tags/v1.0.0.tar.gz
 ```
 Which will yield:
-```console
+```
 v1.0.0.tar.gz
 ```
 Then run:
@@ -46,7 +46,7 @@ Then run:
 tar -xvf v1.0.0.tar.gz
 ```
 Which will generate:
-```console
+```
 GPTifier-1.0.0
 ```
 Change directories into `GPTifier-1.0.0` and proceed with the next steps.
