@@ -1,7 +1,7 @@
 #include "command_models.hpp"
 #include "command_run.hpp"
+#include "configs.hpp"
 #include "help_messages.hpp"
-#include "params.hpp"
 
 #include <iostream>
 #include <json.hpp>
