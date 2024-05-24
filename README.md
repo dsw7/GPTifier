@@ -199,9 +199,13 @@ picking saved OpenAI completions into a source file, for example.
 ### GPTifier administration via OpenAI platform
 GPTifier's access to OpenAI resources can be managed by setting up a GPTifier project under [OpenAI's user
 platform](https://platform.openai.com/). Some possibilities include setting usage and model limits. To
-integrate GPTifier with an OpenAI project, copy the project ID from the [General
-settings](https://platform.openai.com/settings/organization/general) page (authentication is required) to the
-`project-id` key in the `~/.gptifier/gptifier.toml` file.
+integrate GPTifier with an OpenAI project, open GPTifier's configuration file:
+```console
+vim +/project-id ~/.gptifier/gptifier.toml
+```
+And set `project-id` to the project ID associated with the newly created GPTifier project. The ID can be
+obtained from the [General settings](https://platform.openai.com/settings/organization/general) page
+(authentication is required).
 
 ## Development
 ### Testing
