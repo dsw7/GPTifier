@@ -1,4 +1,4 @@
-#include "params.hpp"
+#include "configs.hpp"
 #include "utils.hpp"
 
 #include <filesystem>
@@ -26,4 +26,5 @@ void Configs::load_configs_from_config_file()
     }
 
     this->api_key = table["authentication"]["api-key"].value_or("");
+    this->model = table["profile"]["model"].value_or("");
 }

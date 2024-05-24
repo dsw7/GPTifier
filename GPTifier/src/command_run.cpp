@@ -1,6 +1,7 @@
 #include "command_run.hpp"
 
 #include "api.hpp"
+#include "configs.hpp"
 #include "help_messages.hpp"
 #include "utils.hpp"
 
@@ -20,7 +21,7 @@ struct Params
     bool enable_export = true;
     bool print_help = false;
     std::string dump;
-    std::string model = "gpt-3.5-turbo";
+    std::string model;
     std::string prompt;
     std::string prompt_file;
     std::string temperature = "1";
@@ -135,7 +136,21 @@ void get_post_fields(std::string &post_fields)
 {
     nlohmann::json body = {};
 
-    body["model"] = ::params.model;
+    if (::params.model.empty())
+    {
+        if (::configs.model.empty())
+        {
+            throw std::runtime_error("No model provided via configuration file or command line");
+        }
+        else
+        {
+            body["model"] = ::configs.model;
+        }
+    }
+    else
+    {
+        body["model"] = ::params.model;
+    }
 
     try
     {

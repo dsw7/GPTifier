@@ -57,9 +57,9 @@ add_executable(
   "src/api.cpp"
   "src/command_models.cpp"
   "src/command_run.cpp"
+  "src/configs.cpp"
   "src/help_messages.cpp"
   "src/main.cpp"
-  "src/params.cpp"
   "src/utils.cpp"
 )
 target_link_libraries(
