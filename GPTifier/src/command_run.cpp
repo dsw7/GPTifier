@@ -6,6 +6,7 @@
 #include "utils.hpp"
 
 #include <chrono>
+#include <cstdlib>
 #include <curl/curl.h>
 #include <fstream>
 #include <getopt.h>
@@ -132,25 +133,40 @@ void get_prompt()
     }
 }
 
+void select_model(nlohmann::json &body)
+{
+    if (not ::params.model.empty())
+    {
+        body["model"] = ::params.model;
+        return;
+    }
+
+    const char *pytest_current_test = std::getenv("PYTEST_CURRENT_TEST");
+
+    if (pytest_current_test)
+    {
+        std::cout << "Detected pytest run (" << pytest_current_test << ")\n";
+        static std::string low_cost_model = "gpt-3.5-turbo";
+
+        std::cout << "Defaulting to using a low cost model: " << low_cost_model << '\n';
+        body["model"] = low_cost_model;
+
+        return;
+    }
+
+    if (not ::configs.model.empty())
+    {
+        body["model"] = ::configs.model;
+        return;
+    }
+
+    throw std::runtime_error("No model provided via configuration file or command line");
+}
+
 void get_post_fields(std::string &post_fields)
 {
     nlohmann::json body = {};
-
-    if (::params.model.empty())
-    {
-        if (::configs.model.empty())
-        {
-            throw std::runtime_error("No model provided via configuration file or command line");
-        }
-        else
-        {
-            body["model"] = ::configs.model;
-        }
-    }
-    else
-    {
-        body["model"] = ::params.model;
-    }
+    ::select_model(body);
 
     try
     {
