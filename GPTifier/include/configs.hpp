@@ -8,6 +8,7 @@ struct Configs
 
     std::string api_key;
     std::string model;
+    std::string project_id;
 };
 
 extern Configs configs;
