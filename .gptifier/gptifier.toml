@@ -12,3 +12,7 @@ api-key = "<api-key>"
 [profile]
 # Specify a default model to use such as "gpt-3.5-turbo" or "gpt-4"
 model = "<model-name>"
+
+# Specify project ID
+# See https://platform.openai.com/settings/
+project-id = "<project-id>"
