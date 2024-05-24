@@ -25,6 +25,13 @@ Curl::Curl()
 
     std::string header_auth = "Authorization: Bearer " + ::configs.api_key;
     this->headers = ::curl_slist_append(this->headers, header_auth.c_str());
+
+    if (not ::configs.project_id.empty())
+    {
+        std::string header_project_id = "OpenAI-Project: " + ::configs.project_id;
+        this->headers = ::curl_slist_append(this->headers, header_project_id.c_str());
+    }
+
     this->headers = ::curl_slist_append(this->headers, "Content-Type: application/json");
     ::curl_easy_setopt(this->handle, ::CURLOPT_HTTPHEADER, this->headers);
 
