@@ -4,11 +4,6 @@
 # See https://github.com/dsw7/GPTifier for more information
 # --------------------------------------------------
 
-[authentication]
-# Specify API key
-# See https://platform.openai.com/docs/api-reference/authentication
-api-key = "<api-key>"
-
 [profile]
 # Specify a default model to use such as "gpt-3.5-turbo" or "gpt-4"
 model = "<model-name>"
