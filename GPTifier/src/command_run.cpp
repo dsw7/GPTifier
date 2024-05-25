@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <cstdlib>
+#include <ctime>
 #include <curl/curl.h>
 #include <fstream>
 #include <getopt.h>
@@ -33,6 +34,7 @@ struct Completion
     std::string _id;
     std::string content;
     std::string model;
+    std::time_t created = 0;
 };
 
 void read_cli_run(const int argc, char **argv)
@@ -287,8 +289,11 @@ void write_message_to_file(const Completion &completion)
         throw std::runtime_error("Unable to open " + path_completion);
     }
 
+    std::string created = ::datetime_from_unix_timestamp(completion.created);
     std::string separator(110, '=');
+
     st_filename << separator + '\n';
+    st_filename << "Created at: " + created + '\n';
     st_filename << "ID: " + completion._id + '\n';
     st_filename << "Model: " + completion.model + '\n';
     st_filename << "Results:\n\n";
@@ -334,9 +339,11 @@ void export_chat_completion_response(const std::string &response)
     else
     {
         Completion completion;
-        completion.content = results["choices"][0]["message"]["content"];
-        completion.model = results["model"];
+
         completion._id = results["id"];
+        completion.content = results["choices"][0]["message"]["content"];
+        completion.created = results["created"];
+        completion.model = results["model"];
 
         ::write_message_to_file(completion);
     }
