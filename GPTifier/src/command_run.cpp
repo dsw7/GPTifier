@@ -30,9 +30,9 @@ struct Params
 
 struct Completion
 {
+    std::string _id;
     std::string content;
     std::string model;
-    std::string id;
 };
 
 void read_cli_run(const int argc, char **argv)
@@ -289,9 +289,11 @@ void write_message_to_file(const Completion &completion)
 
     std::string separator(110, '=');
     st_filename << separator + '\n';
-    st_filename << "[GPTifier] Results:\n";
-    st_filename << separator + '\n';
+    st_filename << "ID: " + completion._id + '\n';
+    st_filename << "Model: " + completion.model + '\n';
+    st_filename << "Results:\n\n";
     st_filename << completion.content << '\n';
+    st_filename << separator + "\n\n";
 
     st_filename.close();
 }
@@ -333,6 +335,9 @@ void export_chat_completion_response(const std::string &response)
     {
         Completion completion;
         completion.content = results["choices"][0]["message"]["content"];
+        completion.model = results["model"];
+        completion._id = results["id"];
+
         ::write_message_to_file(completion);
     }
 
