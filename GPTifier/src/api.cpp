@@ -1,12 +1,26 @@
 #include "api.hpp"
 #include "configs.hpp"
 
+#include <cstdlib>
 #include <stdexcept>
+#include <string>
 
 size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
 {
     data->append(ptr, size * nmemb);
     return size * nmemb;
+}
+
+const std::string get_api_key()
+{
+    const char *api_key = std::getenv("OPENAI_API_KEY");
+
+    if (api_key)
+    {
+        return std::string(api_key);
+    }
+
+    return std::string();
 }
 
 Curl::Curl()
@@ -16,6 +30,13 @@ Curl::Curl()
         throw std::runtime_error("Something went wrong when initializing libcurl");
     }
 
+    std::string api_key = ::get_api_key();
+
+    if (api_key.empty())
+    {
+        throw std::runtime_error("OPENAI_API_KEY environment variable not set");
+    }
+
     this->handle = ::curl_easy_init();
 
     if (this->handle == NULL)
@@ -23,7 +44,7 @@ Curl::Curl()
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
 
-    std::string header_auth = "Authorization: Bearer " + ::configs.api_key;
+    std::string header_auth = "Authorization: Bearer " + api_key;
     this->headers = ::curl_slist_append(this->headers, header_auth.c_str());
 
     if (not ::configs.project_id.empty())
