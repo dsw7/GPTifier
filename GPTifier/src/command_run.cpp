@@ -335,19 +335,26 @@ void export_chat_completion_response(const std::string &response)
     if (choice.compare("n") == 0)
     {
         std::cout << "> Not exporting response.\n";
+        ::print_separator();
+        return;
     }
-    else
-    {
-        Completion completion;
 
+    Completion completion;
+
+    try
+    {
         completion._id = results["id"];
         completion.content = results["choices"][0]["message"]["content"];
         completion.created = results["created"];
         completion.model = results["model"];
-
-        ::write_message_to_file(completion);
+    }
+    catch (const nlohmann::json::type_error &e)
+    {
+        std::string errmsg = "Failed to parse completion. Error was: '" + std::string(e.what()) + "'";
+        throw std::runtime_error(errmsg);
     }
 
+    ::write_message_to_file(completion);
     ::print_separator();
 }
 
