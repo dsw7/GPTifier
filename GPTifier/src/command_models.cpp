@@ -4,7 +4,6 @@
 #include "help_messages.hpp"
 #include "utils.hpp"
 
-#include <ctime>
 #include <curl/curl.h>
 #include <getopt.h>
 #include <iomanip>
@@ -55,15 +54,6 @@ void query_models_api(::CURL *curl, std::string &response)
         std::string errmsg = "Failed to run query. " + std::string(::curl_easy_strerror(rv));
         throw std::runtime_error(errmsg);
     }
-}
-
-std::string datetime_from_unix_timestamp(const std::time_t &timestamp)
-{
-    std::tm *datetime = std::gmtime(&timestamp);
-    char buffer[80];
-
-    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", datetime);
-    return buffer;
 }
 
 void print_models_response(const std::string &response)
