@@ -28,6 +28,13 @@ struct Params
     std::string temperature = "1";
 } params;
 
+struct Completion
+{
+    std::string content;
+    std::string model;
+    std::string id;
+};
+
 void read_cli_run(const int argc, char **argv)
 {
     while (true)
@@ -268,7 +275,7 @@ void print_chat_completion_response(const std::string &response)
     ::print_separator();
 }
 
-void write_message_to_file(const std::string &message)
+void write_message_to_file(const Completion &completion)
 {
     std::string path_completion = ::get_proj_home_dir() + "/completions.gpt";
 
@@ -284,7 +291,7 @@ void write_message_to_file(const std::string &message)
     st_filename << separator + '\n';
     st_filename << "[GPTifier] Results:\n";
     st_filename << separator + '\n';
-    st_filename << message << '\n';
+    st_filename << completion.content << '\n';
 
     st_filename.close();
 }
@@ -324,7 +331,9 @@ void export_chat_completion_response(const std::string &response)
     }
     else
     {
-        ::write_message_to_file(results["choices"][0]["message"]["content"]);
+        Completion completion;
+        completion.content = results["choices"][0]["message"]["content"];
+        ::write_message_to_file(completion);
     }
 
     ::print_separator();
