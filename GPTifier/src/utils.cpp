@@ -44,3 +44,12 @@ std::string get_proj_home_dir()
 
     return proj_home_dir;
 }
+
+std::string datetime_from_unix_timestamp(const std::time_t &timestamp)
+{
+    std::tm *datetime = std::gmtime(&timestamp);
+    char buffer[80];
+
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", datetime);
+    return buffer;
+}

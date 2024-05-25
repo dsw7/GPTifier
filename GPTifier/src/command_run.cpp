@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <cstdlib>
+#include <ctime>
 #include <curl/curl.h>
 #include <fstream>
 #include <getopt.h>
@@ -27,6 +28,14 @@ struct Params
     std::string prompt_file;
     std::string temperature = "1";
 } params;
+
+struct Completion
+{
+    std::string _id;
+    std::string content;
+    std::string model;
+    std::time_t created = 0;
+};
 
 void read_cli_run(const int argc, char **argv)
 {
@@ -268,7 +277,7 @@ void print_chat_completion_response(const std::string &response)
     ::print_separator();
 }
 
-void write_message_to_file(const std::string &message)
+void write_message_to_file(const Completion &completion)
 {
     std::string path_completion = ::get_proj_home_dir() + "/completions.gpt";
 
@@ -280,11 +289,16 @@ void write_message_to_file(const std::string &message)
         throw std::runtime_error("Unable to open " + path_completion);
     }
 
+    std::string created = ::datetime_from_unix_timestamp(completion.created);
     std::string separator(110, '=');
+
     st_filename << separator + '\n';
-    st_filename << "[GPTifier] Results:\n";
-    st_filename << separator + '\n';
-    st_filename << message << '\n';
+    st_filename << "Created at: " + created + "(GMT) \n";
+    st_filename << "ID: " + completion._id + '\n';
+    st_filename << "Model: " + completion.model + '\n';
+    st_filename << "Results:\n\n";
+    st_filename << completion.content << '\n';
+    st_filename << separator + "\n\n";
 
     st_filename.close();
 }
@@ -321,12 +335,26 @@ void export_chat_completion_response(const std::string &response)
     if (choice.compare("n") == 0)
     {
         std::cout << "> Not exporting response.\n";
-    }
-    else
-    {
-        ::write_message_to_file(results["choices"][0]["message"]["content"]);
+        ::print_separator();
+        return;
     }
 
+    Completion completion;
+
+    try
+    {
+        completion._id = results["id"];
+        completion.content = results["choices"][0]["message"]["content"];
+        completion.created = results["created"];
+        completion.model = results["model"];
+    }
+    catch (const nlohmann::json::type_error &e)
+    {
+        std::string errmsg = "Failed to parse completion. Error was: '" + std::string(e.what()) + "'";
+        throw std::runtime_error(errmsg);
+    }
+
+    ::write_message_to_file(completion);
     ::print_separator();
 }
 
