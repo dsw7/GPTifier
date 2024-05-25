@@ -293,7 +293,7 @@ void write_message_to_file(const Completion &completion)
     std::string separator(110, '=');
 
     st_filename << separator + '\n';
-    st_filename << "Created at: " + created + '\n';
+    st_filename << "Created at: " + created + "(GMT) \n";
     st_filename << "ID: " + completion._id + '\n';
     st_filename << "Model: " + completion.model + '\n';
     st_filename << "Results:\n\n";
