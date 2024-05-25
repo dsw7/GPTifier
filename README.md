@@ -7,6 +7,7 @@ A beautiful C++ libcurl / ChatGPT interface
 ## Table of Contents
 - [Motivation](#motivation)
 - [Setup](#setup)
+  - [Prerequisites](#prerequisites)
   - [Get specific release](#get-specific-release)
   - [Compile binary](#compile-binary)
   - [Get `json.hpp`](#get-jsonhpp)
@@ -33,6 +34,12 @@ There are numerous ChatGPT command line programs currently available. Many of th
 wanted something a bit quicker and a bit easier to install, so I wrote this program in C++.
 
 ## Setup
+### Prerequisites
+Ensure that you have access to a valid OpenAI API key and ensure that this API key is set as the following
+environment variable:
+```
+OPENAI_API_KEY="<your-api-key>"
+```
 ### Get specific release
 Interested in a specific release? To download `1.0.0`, for example:
 ```console
