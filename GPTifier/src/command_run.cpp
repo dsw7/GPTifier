@@ -27,7 +27,7 @@ struct Params
     std::string prompt;
     std::string prompt_file;
     std::string temperature = "1";
-} params;
+};
 
 struct Completion
 {
@@ -37,7 +37,7 @@ struct Completion
     std::time_t created = 0;
 };
 
-void read_cli_run(const int argc, char **argv)
+void read_cli_run(const int argc, char **argv, Params &params)
 {
     while (true)
     {
@@ -63,25 +63,25 @@ void read_cli_run(const int argc, char **argv)
         switch (c)
         {
         case 'h':
-            ::params.print_help = true;
+            params.print_help = true;
             break;
         case 'u':
-            ::params.enable_export = false;
+            params.enable_export = false;
             break;
         case 'd':
-            ::params.dump = ::optarg;
+            params.dump = ::optarg;
             break;
         case 'p':
-            ::params.prompt = ::optarg;
+            params.prompt = ::optarg;
             break;
         case 't':
-            ::params.temperature = ::optarg;
+            params.temperature = ::optarg;
             break;
         case 'r':
-            ::params.prompt_file = ::optarg;
+            params.prompt_file = ::optarg;
             break;
         case 'm':
-            ::params.model = ::optarg;
+            params.model = ::optarg;
             break;
         default:
             std::cerr << "Try running with -h or --help for more information\n";
@@ -90,66 +90,68 @@ void read_cli_run(const int argc, char **argv)
     };
 }
 
-void read_prompt_from_file()
+void read_prompt_from_file(const std::string &prompt_file, std::string &prompt)
 {
     ::print_separator();
-    std::cout << "Reading prompt from file: " + ::params.prompt_file + '\n';
+    std::cout << "Reading prompt from file: " + prompt_file + '\n';
 
-    std::ifstream file(::params.prompt_file);
+    std::ifstream file(prompt_file);
 
     if (not file.is_open())
     {
-        throw std::runtime_error("Could not open file '" + ::params.prompt_file + "'");
+        throw std::runtime_error("Could not open file '" + prompt_file + "'");
     }
 
     std::stringstream buffer;
     buffer << file.rdbuf();
-    ::params.prompt = buffer.str();
+    prompt = buffer.str();
 
     file.close();
 }
 
-void read_prompt_interactively()
+void read_prompt_interactively(std::string &prompt)
 {
     ::print_separator();
     std::cout << "\033[1mInput:\033[0m ";
 
-    std::getline(std::cin, ::params.prompt);
+    std::getline(std::cin, prompt);
 }
 
-void get_prompt()
+void get_prompt(Params &params)
 {
     // Prompt was passed via command line
-    if (not ::params.prompt.empty())
+    if (not params.prompt.empty())
     {
         return;
     }
 
     // Prompt was passed via file
-    if (not ::params.prompt_file.empty())
+    if (not params.prompt_file.empty())
     {
-        ::read_prompt_from_file();
+        ::read_prompt_from_file(params.prompt_file, params.prompt);
         return;
     }
 
     // Otherwise default to reading from stdin
-    ::read_prompt_interactively();
+    ::read_prompt_interactively(params.prompt);
 
     // If still empty then we cannot proceed
-    if (::params.prompt.empty())
+    if (params.prompt.empty())
     {
         throw std::runtime_error("Prompt cannot be empty");
     }
 }
 
-void select_model(nlohmann::json &body)
+void select_model(nlohmann::json &body, const std::string &model)
 {
-    if (not ::params.model.empty())
+    // I.e. model was passed via command line option
+    if (not model.empty())
     {
-        body["model"] = ::params.model;
+        body["model"] = model;
         return;
     }
 
+    // I.e. default to using low cost model since we are running unit tests
     const char *pytest_current_test = std::getenv("PYTEST_CURRENT_TEST");
 
     if (pytest_current_test)
@@ -163,6 +165,7 @@ void select_model(nlohmann::json &body)
         return;
     }
 
+    // I.e. load default model from configuration file
     if (not ::configs.model.empty())
     {
         body["model"] = ::configs.model;
@@ -172,24 +175,24 @@ void select_model(nlohmann::json &body)
     throw std::runtime_error("No model provided via configuration file or command line");
 }
 
-void get_post_fields(std::string &post_fields)
+void get_post_fields(std::string &post_fields, const Params &params)
 {
     nlohmann::json body = {};
-    ::select_model(body);
+    ::select_model(body, params.model);
 
     try
     {
-        body["temperature"] = std::stof(::params.temperature);
+        body["temperature"] = std::stof(params.temperature);
     }
     catch (std::invalid_argument &e)
     {
-        std::string errmsg = std::string(e.what()) + ". Failed to convert '" + ::params.temperature + "' to float";
+        std::string errmsg = std::string(e.what()) + ". Failed to convert '" + params.temperature + "' to float";
         throw std::runtime_error(errmsg);
     }
 
     nlohmann::json messages = {};
     messages["role"] = "user";
-    messages["content"] = ::params.prompt;
+    messages["content"] = params.prompt;
 
     body["messages"] = nlohmann::json::array({messages});
     post_fields = body.dump(2);
@@ -293,7 +296,7 @@ void write_message_to_file(const Completion &completion)
     std::string separator(110, '=');
 
     st_filename << separator + '\n';
-    st_filename << "Created at: " + created + "(GMT) \n";
+    st_filename << "Created at: " + created + " (GMT) \n";
     st_filename << "ID: " + completion._id + '\n';
     st_filename << "Model: " + completion.model + '\n';
     st_filename << "Results:\n\n";
@@ -358,14 +361,14 @@ void export_chat_completion_response(const std::string &response)
     ::print_separator();
 }
 
-void dump_chat_completion_response(const std::string &response)
+void dump_chat_completion_response(const std::string &response, const std::string &json_dump_location)
 {
-    std::cout << "Dumping results to " + ::params.dump + '\n';
-    std::ofstream st_filename(::params.dump);
+    std::cout << "Dumping results to " + json_dump_location + '\n';
+    std::ofstream st_filename(json_dump_location);
 
     if (not st_filename.is_open())
     {
-        throw std::runtime_error("Unable to open '" + ::params.dump + "'");
+        throw std::runtime_error("Unable to open '" + json_dump_location + "'");
     }
 
     nlohmann::json results = nlohmann::json::parse(response);
@@ -377,34 +380,35 @@ void dump_chat_completion_response(const std::string &response)
 
 void command_run(const int argc, char **argv)
 {
-    ::read_cli_run(argc, argv);
+    Params params;
+    ::read_cli_run(argc, argv, params);
 
-    if (::params.print_help)
+    if (params.print_help)
     {
         help::command_run();
         return;
     }
 
-    ::get_prompt();
-    std::string post_fields;
+    ::get_prompt(params);
 
-    ::get_post_fields(post_fields);
+    std::string post_fields;
+    ::get_post_fields(post_fields, params);
     ::log_post_fields(post_fields);
 
     Curl curl;
     std::string response;
     ::query_chat_completion_api(curl.handle, post_fields, response);
 
-    if (::params.dump.empty())
+    if (params.dump.empty())
     {
         ::print_chat_completion_response(response);
-        if (::params.enable_export)
+        if (params.enable_export)
         {
             ::export_chat_completion_response(response);
         }
     }
     else
     {
-        ::dump_chat_completion_response(response);
+        ::dump_chat_completion_response(response, params.dump);
     }
 }
