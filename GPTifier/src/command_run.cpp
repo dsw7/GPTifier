@@ -31,9 +31,9 @@ struct RunParameters
 
 struct Completion
 {
-    std::string _id;
     std::string content;
     std::string model;
+    std::string prompt;
     std::time_t created = 0;
 };
 
@@ -293,20 +293,24 @@ void write_message_to_file(const Completion &completion)
     }
 
     std::string created = ::datetime_from_unix_timestamp(completion.created);
-    std::string separator(110, '=');
 
-    st_filename << separator + '\n';
+    static int column_width = 110;
+    std::string sep_outer(column_width, '=');
+    std::string sep_inner(column_width, '-');
+
+    st_filename << sep_outer + '\n';
     st_filename << "Created at: " + created + " (GMT) \n";
-    st_filename << "ID: " + completion._id + '\n';
     st_filename << "Model: " + completion.model + '\n';
-    st_filename << "Results:\n\n";
+    st_filename << sep_inner + '\n';
+    st_filename << completion.prompt << '\n';
+    st_filename << sep_inner + '\n';
     st_filename << completion.content << '\n';
-    st_filename << separator + "\n\n";
+    st_filename << sep_outer + "\n\n";
 
     st_filename.close();
 }
 
-void export_chat_completion_response(const std::string &response)
+void export_chat_completion_response(const std::string &response, const std::string &prompt)
 {
     nlohmann::json results = nlohmann::json::parse(response);
 
@@ -343,10 +347,10 @@ void export_chat_completion_response(const std::string &response)
     }
 
     Completion completion;
+    completion.prompt = prompt;
 
     try
     {
-        completion._id = results["id"];
         completion.content = results["choices"][0]["message"]["content"];
         completion.created = results["created"];
         completion.model = results["model"];
@@ -404,7 +408,7 @@ void command_run(const int argc, char **argv)
         ::print_chat_completion_response(response);
         if (run_parameters.enable_export)
         {
-            ::export_chat_completion_response(response);
+            ::export_chat_completion_response(response, run_parameters.prompt);
         }
     }
     else
