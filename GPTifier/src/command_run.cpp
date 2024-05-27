@@ -18,11 +18,11 @@
 #include <string>
 #include <thread>
 
-struct Params
+struct RunParameters
 {
     bool enable_export = true;
     bool print_help = false;
-    std::string dump;
+    std::string json_dump_file;
     std::string model;
     std::string prompt;
     std::string prompt_file;
@@ -37,7 +37,7 @@ struct Completion
     std::time_t created = 0;
 };
 
-void read_cli_run(const int argc, char **argv, Params &params)
+void read_cli_run(const int argc, char **argv, RunParameters &params)
 {
     while (true)
     {
@@ -69,7 +69,7 @@ void read_cli_run(const int argc, char **argv, Params &params)
             params.enable_export = false;
             break;
         case 'd':
-            params.dump = ::optarg;
+            params.json_dump_file = ::optarg;
             break;
         case 'p':
             params.prompt = ::optarg;
@@ -117,7 +117,7 @@ void read_prompt_interactively(std::string &prompt)
     std::getline(std::cin, prompt);
 }
 
-void get_prompt(Params &params)
+void get_prompt(RunParameters &params)
 {
     // Prompt was passed via command line
     if (not params.prompt.empty())
@@ -175,7 +175,7 @@ void select_model(nlohmann::json &body, const std::string &model)
     throw std::runtime_error("No model provided via configuration file or command line");
 }
 
-void get_post_fields(std::string &post_fields, const Params &params)
+void get_post_fields(std::string &post_fields, const RunParameters &params)
 {
     nlohmann::json body = {};
     ::select_model(body, params.model);
@@ -361,14 +361,14 @@ void export_chat_completion_response(const std::string &response)
     ::print_separator();
 }
 
-void dump_chat_completion_response(const std::string &response, const std::string &json_dump_location)
+void dump_chat_completion_response(const std::string &response, const std::string &json_dump_file)
 {
-    std::cout << "Dumping results to " + json_dump_location + '\n';
-    std::ofstream st_filename(json_dump_location);
+    std::cout << "Dumping results to " + json_dump_file + '\n';
+    std::ofstream st_filename(json_dump_file);
 
     if (not st_filename.is_open())
     {
-        throw std::runtime_error("Unable to open '" + json_dump_location + "'");
+        throw std::runtime_error("Unable to open '" + json_dump_file + "'");
     }
 
     nlohmann::json results = nlohmann::json::parse(response);
@@ -380,35 +380,35 @@ void dump_chat_completion_response(const std::string &response, const std::strin
 
 void command_run(const int argc, char **argv)
 {
-    Params params;
-    ::read_cli_run(argc, argv, params);
+    RunParameters run_parameters;
+    ::read_cli_run(argc, argv, run_parameters);
 
-    if (params.print_help)
+    if (run_parameters.print_help)
     {
         help::command_run();
         return;
     }
 
-    ::get_prompt(params);
+    ::get_prompt(run_parameters);
 
     std::string post_fields;
-    ::get_post_fields(post_fields, params);
+    ::get_post_fields(post_fields, run_parameters);
     ::log_post_fields(post_fields);
 
     Curl curl;
     std::string response;
     ::query_chat_completion_api(curl.handle, post_fields, response);
 
-    if (params.dump.empty())
+    if (run_parameters.json_dump_file.empty())
     {
         ::print_chat_completion_response(response);
-        if (params.enable_export)
+        if (run_parameters.enable_export)
         {
             ::export_chat_completion_response(response);
         }
     }
     else
     {
-        ::dump_chat_completion_response(response, params.dump);
+        ::dump_chat_completion_response(response, run_parameters.json_dump_file);
     }
 }
