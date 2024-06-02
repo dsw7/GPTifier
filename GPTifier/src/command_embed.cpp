@@ -4,20 +4,23 @@
 
 #include <getopt.h>
 #include <iostream>
+#include <string>
 
 struct EmbeddingParameters
 {
     bool print_help = false;
+    std::string model;
 };
 
 void read_cli_embed(const int argc, char **argv, EmbeddingParameters &params)
 {
     while (true)
     {
-        static struct option long_options[] = {{"help", no_argument, 0, 'h'}, {0, 0, 0, 0}};
+        static struct option long_options[] = {
+            {"help", no_argument, 0, 'h'}, {"model", required_argument, 0, 'm'}, {0, 0, 0, 0}};
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "h", long_options, &option_index);
+        int c = ::getopt_long(argc, argv, "hm:", long_options, &option_index);
 
         if (c == -1)
         {
@@ -28,6 +31,9 @@ void read_cli_embed(const int argc, char **argv, EmbeddingParameters &params)
         {
         case 'h':
             params.print_help = true;
+            break;
+        case 'm':
+            params.model = ::optarg;
             break;
         default:
             std::cerr << "Try running with -h or --help for more information\n";
