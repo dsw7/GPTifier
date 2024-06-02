@@ -96,7 +96,9 @@ void command_embed()
                       "  \033[2m-m <model-name>, --model=<model-name>\033[0m\n"
                       "    -> Specify a valid model such as \"text-embedding-3-small\"\n"
                       "  \033[2m-i <text>, --input=<text>\033[0m\n"
-                      "    -> Input text to embed\n\n";
+                      "    -> Input text to embed\n"
+                      "  \033[2m-r <filename>, --read-from-file=<filename>\033[0m\n"
+                      "    -> Read input text to embed from a file\n\n";
 
     std::cout << doc;
 }
