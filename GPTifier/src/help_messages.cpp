@@ -25,8 +25,9 @@ void root_messages()
                       "  \033[2m-v, --version\033[0m\n"
                       "    Print version and exit.\n\n"
                       "\033[1mCOMMANDS:\033[0m\n"
-                      "  \033[2mrun\033[0m - Run a query against a model.\n"
-                      "  \033[2mmodels\033[0m - List available OpenAI models.\n\n"
+                      "  \033[2mrun\033[0m    -> Run a query against an appropriate model.\n"
+                      "  \033[2mmodels\033[0m -> List available OpenAI models.\n"
+                      "  \033[2membed\033[0m  -> Get embedding representing a block of text.\n\n"
                       "  Try gpt <subcommand> [-h | --help] for subcommand specific help.\n\n";
     std::cout << doc;
 }
