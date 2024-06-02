@@ -1,9 +1,13 @@
 #include "command_embed.hpp"
 
 #include "help_messages.hpp"
+#include "utils.hpp"
 
+#include <fstream>
 #include <getopt.h>
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 
 struct EmbeddingParameters
@@ -53,11 +57,37 @@ void read_cli_embed(const int argc, char **argv, EmbeddingParameters &params)
     }
 }
 
+void read_input_text_from_file(const std::string &input_file, std::string &input)
+{
+    ::print_separator();
+    std::cout << "Reading input text from file: " + input_file + '\n';
+
+    std::ifstream file(input_file);
+
+    if (not file.is_open())
+    {
+        throw std::runtime_error("Could not open file '" + input_file + "'");
+    }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    input = buffer.str();
+
+    file.close();
+}
+
 void get_input(EmbeddingParameters &params)
 {
     // Input text was passed via command line
     if (not params.input.empty())
     {
+        return;
+    }
+
+    // Input text was passed via file
+    if (not params.input_file.empty())
+    {
+        ::read_input_text_from_file(params.input_file, params.input);
         return;
     }
 }
