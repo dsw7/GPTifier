@@ -79,7 +79,7 @@ void command_models()
                       "  \033[4mgpt\033[0m models [-h | --help]\n\n"
                       "\033[1mOPTIONS:\033[0m\n"
                       "  \033[2m-h, --help\033[0m\n"
-                      "    Print help information and exit.\n\n";
+                      "    -> Print help information and exit.\n\n";
 
     std::cout << doc;
 }
@@ -92,9 +92,11 @@ void command_embed()
                       "  \033[4mgpt\033[0m embed <options>\n\n"
                       "\033[1mOPTIONS:\033[0m\n"
                       "  \033[2m-h, --help\033[0m\n"
-                      "    Print help information and exit.\n"
+                      "    -> Print help information and exit\n"
                       "  \033[2m-m <model-name>, --model=<model-name>\033[0m\n"
-                      "    Specify a valid model such as \"text-embedding-3-small.\"\n\n";
+                      "    -> Specify a valid model such as \"text-embedding-3-small\"\n"
+                      "  \033[2m-i <text>, --input=<text>\033[0m\n"
+                      "    -> Input text to embed\n\n";
 
     std::cout << doc;
 }
