@@ -83,4 +83,17 @@ void command_models()
 
     std::cout << doc;
 }
+
+void command_embed()
+{
+    std::string doc = "\033[1mDESCRIPTION:\033[0m\n"
+                      "  Get embedding representing a block of text.\n\n"
+                      "\033[1mSYNOPSIS:\033[0m\n"
+                      "  \033[4mgpt\033[0m embed [-h | --help]\n\n"
+                      "\033[1mOPTIONS:\033[0m\n"
+                      "  \033[2m-h, --help\033[0m\n"
+                      "    Print help information and exit.\n\n";
+
+    std::cout << doc;
+}
 } // namespace help

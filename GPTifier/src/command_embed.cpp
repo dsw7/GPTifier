@@ -1,5 +1,7 @@
 #include "command_embed.hpp"
 
+#include "help_messages.hpp"
+
 #include <getopt.h>
 #include <iostream>
 
@@ -38,4 +40,10 @@ void command_embed(const int argc, char **argv)
 {
     EmbeddingParameters embed_parameters;
     ::read_cli_embed(argc, argv, embed_parameters);
+
+    if (embed_parameters.print_help)
+    {
+        help::command_embed();
+        return;
+    }
 }
