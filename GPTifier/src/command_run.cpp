@@ -92,9 +92,7 @@ void read_cli_run(const int argc, char **argv, RunParameters &params)
 
 void read_prompt_from_file(const std::string &prompt_file, std::string &prompt)
 {
-    ::print_separator();
     std::cout << "Reading prompt from file: " + prompt_file + '\n';
-
     std::ifstream file(prompt_file);
 
     if (not file.is_open())
@@ -109,14 +107,6 @@ void read_prompt_from_file(const std::string &prompt_file, std::string &prompt)
     file.close();
 }
 
-void read_prompt_interactively(std::string &prompt)
-{
-    ::print_separator();
-    std::cout << "\033[1mInput:\033[0m ";
-
-    std::getline(std::cin, prompt);
-}
-
 void get_prompt(RunParameters &params)
 {
     // Prompt was passed via command line
@@ -124,6 +114,8 @@ void get_prompt(RunParameters &params)
     {
         return;
     }
+
+    ::print_separator();
 
     // Prompt was passed via file
     if (not params.prompt_file.empty())
@@ -133,7 +125,8 @@ void get_prompt(RunParameters &params)
     }
 
     // Otherwise default to reading from stdin
-    ::read_prompt_interactively(params.prompt);
+    std::cout << "\033[1mInput:\033[0m ";
+    std::getline(std::cin, params.prompt);
 
     // If still empty then we cannot proceed
     if (params.prompt.empty())
