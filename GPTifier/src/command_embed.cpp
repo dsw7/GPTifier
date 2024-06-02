@@ -48,6 +48,15 @@ void read_cli_embed(const int argc, char **argv, EmbeddingParameters &params)
     }
 }
 
+void get_input(EmbeddingParameters &params)
+{
+    // Input text was passed via command line
+    if (not params.input.empty())
+    {
+        return;
+    }
+}
+
 void command_embed(const int argc, char **argv)
 {
     EmbeddingParameters embed_parameters;
@@ -58,4 +67,6 @@ void command_embed(const int argc, char **argv)
         help::command_embed();
         return;
     }
+
+    ::get_input(embed_parameters);
 }
