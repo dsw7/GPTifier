@@ -6,6 +6,7 @@
 #include <fstream>
 #include <getopt.h>
 #include <iostream>
+#include <json.hpp>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -102,6 +103,20 @@ void get_input(EmbeddingParameters &params)
     }
 }
 
+void get_post_fields(std::string &post_fields, const EmbeddingParameters &params)
+{
+    nlohmann::json body = {};
+
+    body["input"] = params.input;
+    body["model"] = params.model;
+
+    post_fields = body.dump(2);
+
+    ::print_separator();
+    std::cout << "\033[1mRequest:\033[0m " + post_fields + '\n';
+    ::print_separator();
+}
+
 void command_embed(const int argc, char **argv)
 {
     EmbeddingParameters embed_parameters;
@@ -114,4 +129,7 @@ void command_embed(const int argc, char **argv)
     }
 
     ::get_input(embed_parameters);
+
+    std::string post_fields;
+    ::get_post_fields(post_fields, embed_parameters);
 }
