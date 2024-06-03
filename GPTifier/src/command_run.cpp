@@ -189,10 +189,7 @@ void get_post_fields(std::string &post_fields, const RunParameters &params)
 
     body["messages"] = nlohmann::json::array({messages});
     post_fields = body.dump(2);
-}
 
-void log_post_fields(const std::string &post_fields)
-{
     ::print_separator();
     std::cout << "\033[1mRequest:\033[0m " + post_fields + '\n';
     ::print_separator();
@@ -390,7 +387,6 @@ void command_run(const int argc, char **argv)
 
     std::string post_fields;
     ::get_post_fields(post_fields, run_parameters);
-    ::log_post_fields(post_fields);
 
     Curl curl;
     std::string response;
