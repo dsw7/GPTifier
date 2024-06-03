@@ -16,7 +16,7 @@ struct EmbeddingParameters
     bool print_help = false;
     std::string input;
     std::string input_file;
-    std::string model;
+    std::string model = "text-embedding-ada-002";
 };
 
 void read_cli_embed(const int argc, char **argv, EmbeddingParameters &params)
