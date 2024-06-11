@@ -8,10 +8,11 @@ RESULTS_JSON = Path.home() / ".gptifier" / "embeddings.gpt"
 
 
 def test_basic(command: list[str], capfd) -> None:
-    model = "text-embedding-ada-002"
     ada_002_vector_dimension = 1536
+    input_text = "What is 3 + 5?"
+    model = "text-embedding-ada-002"
 
-    command.extend(["embed", "-i'What is 3 + 5?'", f"-m{model}"])
+    command.extend(["embed", f"-i{input_text}", f"-m{model}"])
     process = run(command)
 
     print_stdout_stderr(capfd)
@@ -20,6 +21,7 @@ def test_basic(command: list[str], capfd) -> None:
     with open(RESULTS_JSON) as f_json:
         data = loads(f_json.read())
         assert data["model"] == model
+        assert data["input"] == input_text
         assert len(data["data"][0]["embedding"]) == ada_002_vector_dimension
 
 

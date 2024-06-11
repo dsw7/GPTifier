@@ -137,9 +137,10 @@ void query_embeddings_api(::CURL *curl, const std::string &post_fields, std::str
     }
 }
 
-void export_embedding(const std::string &response)
+void export_embedding(const std::string &response, const std::string &input)
 {
     nlohmann::json results = nlohmann::json::parse(response);
+    results["input"] = input;
 
     if (results.contains("error"))
     {
@@ -184,5 +185,5 @@ void command_embed(const int argc, char **argv)
     std::string response;
     ::query_embeddings_api(curl.handle, post_fields, response);
 
-    ::export_embedding(response);
+    ::export_embedding(response, embed_parameters.input);
 }
