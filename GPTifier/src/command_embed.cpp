@@ -144,19 +144,12 @@ void export_embedding(const std::string &response)
     if (results.contains("error"))
     {
         std::string error = results["error"]["message"];
-        results["error"]["message"] = "<See Results section>";
-
-        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
-        ::print_separator();
-
-        std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
-        ::print_separator();
-        return;
+        std::cout << "\033[1mError:\033[31m " + error + "\033[0m\n";
     }
 
     std::string path_embedding_json = ::get_proj_home_dir() + "/embeddings.gpt";
 
-    std::cout << "Dumping results to " + path_embedding_json + '\n';
+    std::cout << "Dumping JSON to " + path_embedding_json + '\n';
     std::ofstream st_filename(path_embedding_json);
 
     if (not st_filename.is_open())
