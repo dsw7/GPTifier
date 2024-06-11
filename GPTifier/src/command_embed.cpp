@@ -137,6 +137,24 @@ void query_embeddings_api(::CURL *curl, const std::string &post_fields, std::str
     }
 }
 
+void export_embedding(const std::string &response)
+{
+    nlohmann::json results = nlohmann::json::parse(response);
+
+    if (results.contains("error"))
+    {
+        std::string error = results["error"]["message"];
+        results["error"]["message"] = "<See Results section>";
+
+        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
+        ::print_separator();
+
+        std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
+    }
+
+    ::print_separator();
+}
+
 void command_embed(const int argc, char **argv)
 {
     EmbeddingParameters embed_parameters;
@@ -157,5 +175,5 @@ void command_embed(const int argc, char **argv)
     std::string response;
     ::query_embeddings_api(curl.handle, post_fields, response);
 
-    std::cout << response << std::endl;
+    ::export_embedding(response);
 }
