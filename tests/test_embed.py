@@ -19,13 +19,10 @@ def test_embed_help(command: list[str], capfd) -> None:
 
 
 def test_basic(command: list[str], capfd) -> None:
-    command.extend(
-        [
-            "embed",
-            "-i'What is 3 + 5?'",
-            "-mtext-embedding-ada-002",
-        ]
-    )
+    model = "text-embedding-ada-002"
+    ada_002_vector_dimension = 1536
+
+    command.extend(["embed", "-i'What is 3 + 5?'", f"-m{model}"])
     process = run(command)
 
     print_stdout_stderr(capfd)
@@ -35,5 +32,5 @@ def test_basic(command: list[str], capfd) -> None:
 
     with open(results_json) as f_json:
         data = loads(f_json.read())
-        assert data["model"] == "text-embedding-ada-002"
-        assert len(data["data"][0]["embedding"]) == 1536
+        assert data["model"] == model
+        assert len(data["data"][0]["embedding"]) == ada_002_vector_dimension
