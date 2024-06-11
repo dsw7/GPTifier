@@ -195,14 +195,14 @@ void get_post_fields(std::string &post_fields, const RunParameters &params)
     ::print_separator();
 }
 
-bool run_timer = false;
+bool RUN_TIMER = false;
 
 void time_api_call()
 {
     auto delay = std::chrono::milliseconds(250);
     auto start = std::chrono::high_resolution_clock::now();
 
-    while (::run_timer)
+    while (::RUN_TIMER)
     {
         std::this_thread::sleep_for(delay);
 
@@ -227,12 +227,12 @@ void query_chat_completion_api(::CURL *curl, const std::string &post_fields, std
 
     ::curl_easy_setopt(curl, ::CURLOPT_WRITEDATA, &response);
 
-    ::run_timer = true;
+    ::RUN_TIMER = true;
     std::thread timer(::time_api_call);
 
     ::CURLcode rv = ::curl_easy_perform(curl);
 
-    ::run_timer = false;
+    ::RUN_TIMER = false;
     timer.join();
 
     if (rv != ::CURLE_OK)
