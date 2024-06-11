@@ -1,3 +1,4 @@
+#include "command_embed.hpp"
 #include "command_models.hpp"
 #include "command_run.hpp"
 #include "configs.hpp"
@@ -60,6 +61,10 @@ int main(int argc, char **argv)
         else if (command.compare("models") == 0)
         {
             ::command_models(argc, argv);
+        }
+        else if (command.compare("embed") == 0)
+        {
+            ::command_embed(argc, argv);
         }
         else
         {

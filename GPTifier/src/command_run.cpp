@@ -92,9 +92,7 @@ void read_cli_run(const int argc, char **argv, RunParameters &params)
 
 void read_prompt_from_file(const std::string &prompt_file, std::string &prompt)
 {
-    ::print_separator();
     std::cout << "Reading prompt from file: " + prompt_file + '\n';
-
     std::ifstream file(prompt_file);
 
     if (not file.is_open())
@@ -109,14 +107,6 @@ void read_prompt_from_file(const std::string &prompt_file, std::string &prompt)
     file.close();
 }
 
-void read_prompt_interactively(std::string &prompt)
-{
-    ::print_separator();
-    std::cout << "\033[1mInput:\033[0m ";
-
-    std::getline(std::cin, prompt);
-}
-
 void get_prompt(RunParameters &params)
 {
     // Prompt was passed via command line
@@ -124,6 +114,8 @@ void get_prompt(RunParameters &params)
     {
         return;
     }
+
+    ::print_separator();
 
     // Prompt was passed via file
     if (not params.prompt_file.empty())
@@ -133,7 +125,8 @@ void get_prompt(RunParameters &params)
     }
 
     // Otherwise default to reading from stdin
-    ::read_prompt_interactively(params.prompt);
+    std::cout << "\033[1mInput:\033[0m ";
+    std::getline(std::cin, params.prompt);
 
     // If still empty then we cannot proceed
     if (params.prompt.empty())
@@ -196,23 +189,20 @@ void get_post_fields(std::string &post_fields, const RunParameters &params)
 
     body["messages"] = nlohmann::json::array({messages});
     post_fields = body.dump(2);
-}
 
-void log_post_fields(const std::string &post_fields)
-{
     ::print_separator();
     std::cout << "\033[1mRequest:\033[0m " + post_fields + '\n';
     ::print_separator();
 }
 
-bool run_timer = false;
+bool RUN_TIMER = false;
 
 void time_api_call()
 {
     auto delay = std::chrono::milliseconds(250);
     auto start = std::chrono::high_resolution_clock::now();
 
-    while (::run_timer)
+    while (::RUN_TIMER)
     {
         std::this_thread::sleep_for(delay);
 
@@ -237,12 +227,12 @@ void query_chat_completion_api(::CURL *curl, const std::string &post_fields, std
 
     ::curl_easy_setopt(curl, ::CURLOPT_WRITEDATA, &response);
 
-    ::run_timer = true;
+    ::RUN_TIMER = true;
     std::thread timer(::time_api_call);
 
     ::CURLcode rv = ::curl_easy_perform(curl);
 
-    ::run_timer = false;
+    ::RUN_TIMER = false;
     timer.join();
 
     if (rv != ::CURLE_OK)
@@ -397,7 +387,6 @@ void command_run(const int argc, char **argv)
 
     std::string post_fields;
     ::get_post_fields(post_fields, run_parameters);
-    ::log_post_fields(post_fields);
 
     Curl curl;
     std::string response;

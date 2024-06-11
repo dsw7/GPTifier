@@ -25,8 +25,9 @@ void root_messages()
                       "  \033[2m-v, --version\033[0m\n"
                       "    Print version and exit.\n\n"
                       "\033[1mCOMMANDS:\033[0m\n"
-                      "  \033[2mrun\033[0m - Run a query against a model.\n"
-                      "  \033[2mmodels\033[0m - List available OpenAI models.\n\n"
+                      "  \033[2mrun\033[0m    -> Run a query against an appropriate model.\n"
+                      "  \033[2mmodels\033[0m -> List available OpenAI models.\n"
+                      "  \033[2membed\033[0m  -> Get embedding representing a block of text.\n\n"
                       "  Try gpt <subcommand> [-h | --help] for subcommand specific help.\n\n";
     std::cout << doc;
 }
@@ -78,7 +79,26 @@ void command_models()
                       "  \033[4mgpt\033[0m models [-h | --help]\n\n"
                       "\033[1mOPTIONS:\033[0m\n"
                       "  \033[2m-h, --help\033[0m\n"
-                      "    Print help information and exit.\n\n";
+                      "    -> Print help information and exit.\n\n";
+
+    std::cout << doc;
+}
+
+void command_embed()
+{
+    std::string doc = "\033[1mDESCRIPTION:\033[0m\n"
+                      "  Get embedding representing a block of text.\n\n"
+                      "\033[1mSYNOPSIS:\033[0m\n"
+                      "  \033[4mgpt\033[0m embed <options>\n\n"
+                      "\033[1mOPTIONS:\033[0m\n"
+                      "  \033[2m-h, --help\033[0m\n"
+                      "    -> Print help information and exit\n"
+                      "  \033[2m-m <model-name>, --model=<model-name>\033[0m\n"
+                      "    -> Specify a valid model such as \"text-embedding-3-small\"\n"
+                      "  \033[2m-i <text>, --input=<text>\033[0m\n"
+                      "    -> Input text to embed\n"
+                      "  \033[2m-r <filename>, --read-from-file=<filename>\033[0m\n"
+                      "    -> Read input text to embed from a file\n\n";
 
     std::cout << doc;
 }
