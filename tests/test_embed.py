@@ -25,6 +25,22 @@ def test_basic(command: list[str], capfd) -> None:
         assert len(data["data"][0]["embedding"]) == ada_002_vector_dimension
 
 
+def test_read_from_file(command: list[str], capfd) -> None:
+    input_text_file = Path(__file__).resolve().parent / "prompt_basic.txt"
+    model = "text-embedding-3-small"
+
+    command.extend(["embed", f"-r{input_text_file}", f"-m{model}"])
+    process = run(command)
+
+    print_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
+
+    with open(RESULTS_JSON) as f_json:
+        data = loads(f_json.read())
+        assert data["model"] == model
+        assert data["input"] == input_text_file.read_text()
+
+
 def test_invalid_model(command: list[str], capfd) -> None:
     command.extend(["embed", "-i'What is 3 + 5?'", "-mfoobar"])
     process = run(command)
