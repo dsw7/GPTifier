@@ -4,7 +4,7 @@ from utils import print_stdout, print_stderr
 
 
 def test_embed_help(command: list[str], capfd) -> None:
-    command.extend(["models", "--help"])
+    command.extend(["embed", "--help"])
     process = run(command)
 
     capture = capfd.readouterr()
