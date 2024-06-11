@@ -2,7 +2,7 @@ from json import loads
 from os import EX_OK
 from pathlib import Path
 from subprocess import run
-from utils import print_stdout, print_stderr, print_stdout_stderr, EX_MEM_LEAK
+import utils
 
 RESULTS_JSON = Path.home() / ".gptifier" / "embeddings.gpt"
 
@@ -15,7 +15,7 @@ def test_basic(command: list[str], capfd) -> None:
     command.extend(["embed", f"-i{input_text}", f"-m{model}"])
     process = run(command)
 
-    print_stdout_stderr(capfd)
+    utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
 
     with open(RESULTS_JSON) as f_json:
@@ -32,7 +32,7 @@ def test_read_from_file(command: list[str], capfd) -> None:
     command.extend(["embed", f"-r{input_text_file}", f"-m{model}"])
     process = run(command)
 
-    print_stdout_stderr(capfd)
+    utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
 
     with open(RESULTS_JSON) as f_json:
@@ -47,10 +47,10 @@ def test_missing_input_file(command: list[str], capfd) -> None:
 
     capture = capfd.readouterr()
     print()
-    print_stdout(capture.out)
-    print_stderr(capture.err)
+    utils.print_stdout(capture.out)
+    utils.print_stderr(capture.err)
 
-    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
+    assert process.returncode not in (EX_OK, utils.EX_MEM_LEAK)
     assert "Could not open file '/tmp/yU8nnkRs.txt'" in capture.err
 
 
@@ -58,7 +58,7 @@ def test_invalid_model(command: list[str], capfd) -> None:
     command.extend(["embed", "-i'What is 3 + 5?'", "-mfoobar"])
     process = run(command)
 
-    print_stdout_stderr(capfd)
+    utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
 
     with open(RESULTS_JSON) as f_json:
@@ -75,8 +75,8 @@ def test_embed_help(command: list[str], capfd) -> None:
 
     capture = capfd.readouterr()
     print()
-    print_stdout(capture.out)
-    print_stderr(capture.err)
+    utils.print_stdout(capture.out)
+    utils.print_stderr(capture.err)
 
     assert process.returncode == EX_OK
     assert "SYNOPSIS" in capture.out
