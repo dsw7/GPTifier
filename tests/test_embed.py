@@ -2,7 +2,7 @@ from json import loads
 from os import EX_OK
 from pathlib import Path
 from subprocess import run
-from utils import print_stdout, print_stderr, print_stdout_stderr
+from utils import print_stdout, print_stderr, print_stdout_stderr, EX_MEM_LEAK
 
 RESULTS_JSON = Path.home() / ".gptifier" / "embeddings.gpt"
 
@@ -39,6 +39,19 @@ def test_read_from_file(command: list[str], capfd) -> None:
         data = loads(f_json.read())
         assert data["model"] == model
         assert data["input"] == input_text_file.read_text()
+
+
+def test_missing_input_file(command: list[str], capfd) -> None:
+    command.extend(["embed", "--read-from-file=/tmp/yU8nnkRs.txt"])
+    process = run(command)
+
+    capture = capfd.readouterr()
+    print()
+    print_stdout(capture.out)
+    print_stderr(capture.err)
+
+    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
+    assert "Could not open file '/tmp/yU8nnkRs.txt'" in capture.err
 
 
 def test_invalid_model(command: list[str], capfd) -> None:
