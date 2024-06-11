@@ -1,8 +1,10 @@
 #include "command_embed.hpp"
 
+#include "api.hpp"
 #include "help_messages.hpp"
 #include "utils.hpp"
 
+#include <curl/curl.h>
 #include <fstream>
 #include <getopt.h>
 #include <iostream>
@@ -117,6 +119,24 @@ void get_post_fields(std::string &post_fields, const EmbeddingParameters &params
     ::print_separator();
 }
 
+void query_embeddings_api(::CURL *curl, const std::string &post_fields, std::string &response)
+{
+    static std::string url_embeddings = "https://api.openai.com/v1/embeddings";
+    ::curl_easy_setopt(curl, ::CURLOPT_URL, url_embeddings.c_str());
+
+    ::curl_easy_setopt(curl, ::CURLOPT_POST, 1L);
+    ::curl_easy_setopt(curl, ::CURLOPT_POSTFIELDS, post_fields.c_str());
+
+    ::curl_easy_setopt(curl, ::CURLOPT_WRITEDATA, &response);
+    ::CURLcode rv = ::curl_easy_perform(curl);
+
+    if (rv != ::CURLE_OK)
+    {
+        std::string errmsg = "Failed to run query. " + std::string(::curl_easy_strerror(rv));
+        throw std::runtime_error(errmsg);
+    }
+}
+
 void command_embed(const int argc, char **argv)
 {
     EmbeddingParameters embed_parameters;
@@ -132,4 +152,10 @@ void command_embed(const int argc, char **argv)
 
     std::string post_fields;
     ::get_post_fields(post_fields, embed_parameters);
+
+    Curl curl;
+    std::string response;
+    ::query_embeddings_api(curl.handle, post_fields, response);
+
+    std::cout << response << std::endl;
 }
