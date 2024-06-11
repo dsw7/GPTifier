@@ -150,7 +150,23 @@ void export_embedding(const std::string &response)
         ::print_separator();
 
         std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
+        ::print_separator();
+        return;
     }
+
+    std::string path_embedding_json = ::get_proj_home_dir() + "/embeddings.gpt";
+
+    std::cout << "Dumping results to " + path_embedding_json + '\n';
+    std::ofstream st_filename(path_embedding_json);
+
+    if (not st_filename.is_open())
+    {
+        throw std::runtime_error("Unable to open '" + path_embedding_json + "'");
+    }
+
+    static short int indent_pretty_print = 2;
+    st_filename << std::setw(indent_pretty_print) << results;
+    st_filename.close();
 
     ::print_separator();
 }
