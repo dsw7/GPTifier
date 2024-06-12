@@ -159,9 +159,9 @@ void select_model(nlohmann::json &body, const std::string &model)
     }
 
     // I.e. load default model from configuration file
-    if (not ::configs.model.empty())
+    if (not ::configs.chat.model.empty())
     {
-        body["model"] = ::configs.model;
+        body["model"] = ::configs.chat.model;
         return;
     }
 
