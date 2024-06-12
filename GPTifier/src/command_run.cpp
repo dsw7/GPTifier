@@ -135,7 +135,7 @@ void get_prompt(RunParameters &params)
     }
 }
 
-void select_model(nlohmann::json &body, const std::string &model)
+void select_chat_model(nlohmann::json &body, const std::string &model)
 {
     // I.e. model was passed via command line option
     if (not model.empty())
@@ -159,9 +159,9 @@ void select_model(nlohmann::json &body, const std::string &model)
     }
 
     // I.e. load default model from configuration file
-    if (not ::configs.model.empty())
+    if (not ::configs.chat.model.empty())
     {
-        body["model"] = ::configs.model;
+        body["model"] = ::configs.chat.model;
         return;
     }
 
@@ -171,7 +171,7 @@ void select_model(nlohmann::json &body, const std::string &model)
 void get_post_fields(std::string &post_fields, const RunParameters &params)
 {
     nlohmann::json body = {};
-    ::select_model(body, params.model);
+    ::select_chat_model(body, params.model);
 
     try
     {

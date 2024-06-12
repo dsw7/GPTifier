@@ -5,9 +5,14 @@
 # --------------------------------------------------
 
 [profile]
-# Specify a default model to use such as "gpt-3.5-turbo" or "gpt-4"
-model = "<model-name>"
-
 # Specify project ID
 # See https://platform.openai.com/settings/
 project-id = "<project-id>"
+
+[chat]
+# Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
+model = "<model-name>"
+
+[embeddings]
+# Specify a default embeddings model to use such as "text-embedding-ada-002"
+model = "<model-name>"

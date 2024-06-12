@@ -25,6 +25,7 @@ void Configs::load_configs_from_config_file()
         throw std::runtime_error(e);
     }
 
-    this->model = table["profile"]["model"].value_or("");
     this->project_id = table["profile"]["project-id"].value_or("");
+    this->chat.model = table["chat"]["model"].value_or("");
+    this->embeddings.model = table["embeddings"]["model"].value_or("");
 }
