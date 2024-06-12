@@ -19,6 +19,7 @@ A beautiful C++ libcurl / ChatGPT interface
     - [Basic example](#basic-example)
     - [Exporting a result](#exporting-a-result)
     - [Specifying a model](#specifying-a-model)
+  - [The `embed` command](#the-embed-command)
   - [The `models` command](#the-models-command)
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
@@ -162,6 +163,32 @@ A chat completion can be run against an available model by specifying the model 
 gpt run --model gpt-4 --prompt "What is 3 + 5?"
 ```
 A full list of models can be found by running the [models command](#the-models-command).
+
+### The `embed` command
+This command converts some input text into a vector representation of the text. To use the command, run:
+```console
+gpt embed
+------------------------------------------------------------------------------------------
+Input: Convert me to a vector!
+```
+And hit <kbd>Enter</kbd>. The program will dispatch a request and return:
+```
+------------------------------------------------------------------------------------------
+Request: {
+  "input": "Convert me to a vector!",
+  "model": "text-embedding-ada-002"
+}
+...
+```
+The results will be exported to a JSON file: `~/.gptifier/embeddings.gpt`. In a nutshell, the `embeddings.gpt`
+file will contain a vector:
+
+$$
+\begin{bmatrix}a\_1 & a\_2 & \dots & a_{1536}\end{bmatrix},
+$$
+
+Where 1536 is the dimension of the output vector corresponding to model `text-embedding-ada-002`. The cosine
+similarity of a set of such vectors can be used to evaluate the similarity between text.
 
 ### The `models` command
 This command returns a list of currently available models. Simply run:
