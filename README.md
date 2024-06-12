@@ -163,6 +163,25 @@ gpt run --model gpt-4 --prompt "What is 3 + 5?"
 ```
 A full list of models can be found by running the [models command](#the-models-command).
 
+### The `embed` command
+This command converts some input text into a vector representation of the text. To use the command, run:
+```console
+gpt embed
+------------------------------------------------------------------------------------------
+Input: Convert me to a vector!
+```
+And hit <kbd>Enter</kbd>. The program will dispatch a request and return:
+```
+------------------------------------------------------------------------------------------
+Request: {
+  "input": "Convert me to a vector!",
+  "model": "text-embedding-ada-002"
+}
+...
+```
+The results will be exported to a JSON file: `~/.gptifier/embeddings.gpt`.
+
+
 ### The `models` command
 This command returns a list of currently available models. Simply run:
 ```console
