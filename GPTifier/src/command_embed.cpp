@@ -131,8 +131,6 @@ void get_post_fields(std::string &post_fields, const EmbeddingParameters &params
     ::select_embedding_model(body, params.model);
 
     body["input"] = params.input;
-    body["model"] = params.model;
-
     post_fields = body.dump(2);
 
     ::print_separator();
