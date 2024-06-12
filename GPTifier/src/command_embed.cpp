@@ -1,6 +1,7 @@
 #include "command_embed.hpp"
 
 #include "api.hpp"
+#include "configs.hpp"
 #include "help_messages.hpp"
 #include "utils.hpp"
 
@@ -105,9 +106,29 @@ void get_input(EmbeddingParameters &params)
     }
 }
 
+void select_model(nlohmann::json &body, const std::string &model)
+{
+    // I.e. model was passed via command line option
+    if (not model.empty())
+    {
+        body["model"] = model;
+        return;
+    }
+
+    // I.e. load default model from configuration file
+    if (not ::configs.embeddings.model.empty())
+    {
+        body["model"] = ::configs.embeddings.model;
+        return;
+    }
+
+    throw std::runtime_error("No model provided via configuration file or command line");
+}
+
 void get_post_fields(std::string &post_fields, const EmbeddingParameters &params)
 {
     nlohmann::json body = {};
+    ::select_model(body, params.model);
 
     body["input"] = params.input;
     body["model"] = params.model;
