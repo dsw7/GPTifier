@@ -11,7 +11,13 @@ struct Configs
         std::string model;
     };
 
+    struct Embeddings
+    {
+        std::string model;
+    };
+
     Chat chat;
+    Embeddings embeddings;
     std::string project_id;
 };
 
