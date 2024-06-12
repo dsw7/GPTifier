@@ -19,6 +19,7 @@ A beautiful C++ libcurl / ChatGPT interface
     - [Basic example](#basic-example)
     - [Exporting a result](#exporting-a-result)
     - [Specifying a model](#specifying-a-model)
+  - [The `embed` command](#the-embed-command)
   - [The `models` command](#the-models-command)
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
