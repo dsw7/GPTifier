@@ -180,8 +180,15 @@ Request: {
 }
 ...
 ```
-The results will be exported to a JSON file: `~/.gptifier/embeddings.gpt`.
+The results will be exported to a JSON file: `~/.gptifier/embeddings.gpt`. In a nutshell, the `embeddings.gpt` file
+will contain a vector:
 
+$$
+\begin{bmatrix}a_1 & a_2 & \dots & a_{1536}\end{bmatrix},
+$$
+
+Where 1536 is the dimension of the output vector corresponding to model `text-embedding-ada-002`. The cosine similarity of a set of such vectors can be
+used to evaluate the similarity between text.
 
 ### The `models` command
 This command returns a list of currently available models. Simply run:
