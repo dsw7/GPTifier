@@ -2,6 +2,7 @@ from json import loads
 from os import EX_OK
 from pathlib import Path
 from subprocess import run
+from pytest import mark
 import utils
 
 
@@ -25,8 +26,17 @@ def test_basic(json_file: str, command: list[str], capfd) -> None:
         assert data["choices"][0]["message"]["content"] == ">>>8<<<"
 
 
-def test_invalid_temp_low(json_file: str, command: list[str], capfd) -> None:
-    command.extend(["run", "-p'Running a test!'", "-t-2.5", f"-d{json_file}", "-u"])
+MESSAGES_BAD_TEMP = [
+    (-2.5, "decimal below minimum value. Expected a value >= 0, but got -2.5 instead."),
+    (2.5, "decimal above maximum value. Expected a value <= 2, but got 2.5 instead."),
+]
+
+
+@mark.parametrize("temp, message", MESSAGES_BAD_TEMP)
+def test_invalid_temp(
+    json_file: str, command: list[str], temp: float, message: str, capfd
+) -> None:
+    command.extend(["run", "-p'Running a test!'", f"-t{temp}", f"-d{json_file}", "-u"])
     process = run(command)
 
     utils.print_stdout_stderr(capfd)
@@ -34,25 +44,7 @@ def test_invalid_temp_low(json_file: str, command: list[str], capfd) -> None:
 
     with open(json_file) as f_json:
         data = loads(f_json.read())
-        assert (
-            data["error"]["message"]
-            == "Invalid 'temperature': decimal below minimum value. Expected a value >= 0, but got -2.5 instead."
-        )
-
-
-def test_invalid_temp_high(json_file: str, command: list[str], capfd) -> None:
-    command.extend(["run", "-p'Running a test!'", "-t2.5", f"-d{json_file}", "-u"])
-    process = run(command)
-
-    utils.print_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
-        assert (
-            data["error"]["message"]
-            == "Invalid 'temperature': decimal above maximum value. Expected a value <= 2, but got 2.5 instead."
-        )
+        assert data["error"]["message"] == "Invalid 'temperature': " + message
 
 
 def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
