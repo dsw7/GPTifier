@@ -60,6 +60,7 @@ add_executable(
   "src/command_run.cpp"
   "src/configs.cpp"
   "src/help_messages.cpp"
+  "src/input_selection.cpp"
   "src/main.cpp"
   "src/utils.cpp"
 )

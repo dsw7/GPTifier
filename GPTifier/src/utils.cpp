@@ -2,7 +2,9 @@
 
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -52,4 +54,21 @@ std::string datetime_from_unix_timestamp(const std::time_t &timestamp)
 
     std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", datetime);
     return buffer;
+}
+
+void read_text_from_file(const std::string &filename, std::string &text)
+{
+    std::cout << "Reading text from file: " + filename + '\n';
+    std::ifstream file(filename);
+
+    if (not file.is_open())
+    {
+        throw std::runtime_error("Could not open file '" + filename + "'");
+    }
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    text = buffer.str();
+
+    file.close();
 }

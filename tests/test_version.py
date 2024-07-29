@@ -2,11 +2,13 @@ from datetime import datetime
 from json import loads
 from os import EX_OK
 from subprocess import run
+from pytest import mark
 from utils import print_stdout, print_stderr
 
 
-def test_version(command: list[str], capfd) -> None:
-    command.extend(["--version"])
+@mark.parametrize("option", ["-v", "--version"])
+def test_version(command: list[str], option: str, capfd) -> None:
+    command.extend([option])
     process = run(command)
 
     capture = capfd.readouterr()

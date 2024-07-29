@@ -2,19 +2,28 @@ from json import loads
 from os import EX_OK
 from pathlib import Path
 from subprocess import run
+from pytest import mark
 import utils
+
+PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
+
+
+@mark.parametrize("option", ["-h", "--help"])
+def test_run_help(command: list[str], option: str, capfd) -> None:
+    command.extend(["run", option])
+    process = run(command)
+
+    capture = capfd.readouterr()
+    print()
+    utils.print_stdout(capture.out)
+    utils.print_stderr(capture.err)
+
+    assert process.returncode == EX_OK
+    assert "SYNOPSIS" in capture.out
 
 
 def test_basic(json_file: str, command: list[str], capfd) -> None:
-    command.extend(
-        [
-            "run",
-            "-p'What is 3 + 5? Format the result as follows: >>>{result}<<<'",
-            "-t0",
-            f"-d{json_file}",
-            "-u",
-        ]
-    )
+    command.extend(["run", f"-p'{PROMPT}'", "-t0", f"-d{json_file}", "-u"])
     process = run(command)
 
     utils.print_stdout_stderr(capfd)
@@ -25,8 +34,17 @@ def test_basic(json_file: str, command: list[str], capfd) -> None:
         assert data["choices"][0]["message"]["content"] == ">>>8<<<"
 
 
-def test_invalid_temp_low(json_file: str, command: list[str], capfd) -> None:
-    command.extend(["run", "-p'Running a test!'", "-t-2.5", f"-d{json_file}", "-u"])
+MESSAGES_BAD_TEMP = [
+    (-2.5, "decimal below minimum value. Expected a value >= 0, but got -2.5 instead."),
+    (2.5, "decimal above maximum value. Expected a value <= 2, but got 2.5 instead."),
+]
+
+
+@mark.parametrize("temp, message", MESSAGES_BAD_TEMP)
+def test_invalid_temp(
+    json_file: str, command: list[str], temp: float, message: str, capfd
+) -> None:
+    command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", f"-d{json_file}", "-u"])
     process = run(command)
 
     utils.print_stdout_stderr(capfd)
@@ -34,25 +52,7 @@ def test_invalid_temp_low(json_file: str, command: list[str], capfd) -> None:
 
     with open(json_file) as f_json:
         data = loads(f_json.read())
-        assert (
-            data["error"]["message"]
-            == "Invalid 'temperature': decimal below minimum value. Expected a value >= 0, but got -2.5 instead."
-        )
-
-
-def test_invalid_temp_high(json_file: str, command: list[str], capfd) -> None:
-    command.extend(["run", "-p'Running a test!'", "-t2.5", f"-d{json_file}", "-u"])
-    process = run(command)
-
-    utils.print_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
-        assert (
-            data["error"]["message"]
-            == "Invalid 'temperature': decimal above maximum value. Expected a value <= 2, but got 2.5 instead."
-        )
+        assert data["error"]["message"] == "Invalid 'temperature': " + message
 
 
 def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
@@ -69,6 +69,21 @@ def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
         assert data["choices"][0]["message"]["content"] == ">>>8<<<"
 
 
+def test_read_from_inputfile(command: list[str], inputfile: Path, capfd) -> None:
+    inputfile.write_text(PROMPT)
+
+    command.extend(["run", "-u"])
+    process = run(command)
+
+    capture = capfd.readouterr()
+    print()
+    utils.print_stdout(capture.out)
+    utils.print_stderr(capture.err)
+
+    assert process.returncode == EX_OK
+    assert "Found an Inputfile in current working directory!" in capture.out
+
+
 def test_missing_prompt_file(command: list[str], capfd) -> None:
     command.extend(["run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u"])
     process = run(command)
@@ -83,7 +98,7 @@ def test_missing_prompt_file(command: list[str], capfd) -> None:
 
 
 def test_invalid_dump_location(command: list[str], capfd) -> None:
-    command.extend(["run", "--prompt='What is 3 + 5?'", "--dump=/tmp/a/b/c", "-u"])
+    command.extend(["run", f"--prompt='{PROMPT}'", "--dump=/tmp/a/b/c", "-u"])
     process = run(command)
 
     capture = capfd.readouterr()
@@ -96,7 +111,7 @@ def test_invalid_dump_location(command: list[str], capfd) -> None:
 
 
 def test_invalid_model(json_file: str, command: list[str], capfd) -> None:
-    command.extend(["run", "-p'What is 3 + 5?'", "-mfoobar", f"-d{json_file}", "-u"])
+    command.extend(["run", f"-p'{PROMPT}'", "-mfoobar", f"-d{json_file}", "-u"])
     process = run(command)
 
     utils.print_stdout_stderr(capfd)
@@ -108,16 +123,3 @@ def test_invalid_model(json_file: str, command: list[str], capfd) -> None:
             data["error"]["message"]
             == "The model `foobar` does not exist or you do not have access to it."
         )
-
-
-def test_run_help(command: list[str], capfd) -> None:
-    command.extend(["run", "--help"])
-    process = run(command)
-
-    capture = capfd.readouterr()
-    print()
-    utils.print_stdout(capture.out)
-    utils.print_stderr(capture.err)
-
-    assert process.returncode == EX_OK
-    assert "SYNOPSIS" in capture.out

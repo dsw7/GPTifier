@@ -3,6 +3,7 @@
 #include "api.hpp"
 #include "configs.hpp"
 #include "help_messages.hpp"
+#include "input_selection.hpp"
 #include "utils.hpp"
 
 #include <curl/curl.h>
@@ -10,7 +11,6 @@
 #include <getopt.h>
 #include <iostream>
 #include <json.hpp>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -58,51 +58,6 @@ void read_cli_embed(const int argc, char **argv, EmbeddingParameters &params)
             std::cerr << "Try running with -h or --help for more information\n";
             ::exit(EXIT_FAILURE);
         }
-    }
-}
-
-void read_input_text_from_file(const std::string &input_file, std::string &input)
-{
-    std::cout << "Reading input text from file: " + input_file + '\n';
-    std::ifstream file(input_file);
-
-    if (not file.is_open())
-    {
-        throw std::runtime_error("Could not open file '" + input_file + "'");
-    }
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    input = buffer.str();
-
-    file.close();
-}
-
-void get_input(EmbeddingParameters &params)
-{
-    // Input text was passed via command line
-    if (not params.input.empty())
-    {
-        return;
-    }
-
-    ::print_separator();
-
-    // Input text was passed via file
-    if (not params.input_file.empty())
-    {
-        ::read_input_text_from_file(params.input_file, params.input);
-        return;
-    }
-
-    // Otherwise default to reading the input text from stdin
-    std::cout << "\033[1mInput:\033[0m ";
-    std::getline(std::cin, params.input);
-
-    // If still empty then we cannot proceed
-    if (params.input.empty())
-    {
-        throw std::runtime_error("No input text provided anywhere. Cannot proceed");
     }
 }
 
@@ -186,23 +141,27 @@ void export_embedding(const std::string &response, const std::string &input)
 
 void command_embed(const int argc, char **argv)
 {
-    EmbeddingParameters embed_parameters;
-    ::read_cli_embed(argc, argv, embed_parameters);
+    EmbeddingParameters params;
+    ::read_cli_embed(argc, argv, params);
 
-    if (embed_parameters.print_help)
+    if (params.print_help)
     {
         help::command_embed();
         return;
     }
 
-    ::get_input(embed_parameters);
+    if (params.input.empty())
+    {
+        ::print_separator();
+        ::load_input_text(params.input, params.input_file);
+    }
 
     std::string post_fields;
-    ::get_post_fields(post_fields, embed_parameters);
+    ::get_post_fields(post_fields, params);
 
     Curl curl;
     std::string response;
     ::query_embeddings_api(curl.handle, post_fields, response);
 
-    ::export_embedding(response, embed_parameters.input);
+    ::export_embedding(response, params.input);
 }

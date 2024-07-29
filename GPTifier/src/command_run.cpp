@@ -3,6 +3,7 @@
 #include "api.hpp"
 #include "configs.hpp"
 #include "help_messages.hpp"
+#include "input_selection.hpp"
 #include "utils.hpp"
 
 #include <chrono>
@@ -13,7 +14,6 @@
 #include <getopt.h>
 #include <iostream>
 #include <json.hpp>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -88,51 +88,6 @@ void read_cli_run(const int argc, char **argv, RunParameters &params)
             ::exit(EXIT_FAILURE);
         }
     };
-}
-
-void read_prompt_from_file(const std::string &prompt_file, std::string &prompt)
-{
-    std::cout << "Reading prompt from file: " + prompt_file + '\n';
-    std::ifstream file(prompt_file);
-
-    if (not file.is_open())
-    {
-        throw std::runtime_error("Could not open file '" + prompt_file + "'");
-    }
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    prompt = buffer.str();
-
-    file.close();
-}
-
-void get_prompt(RunParameters &params)
-{
-    // Prompt was passed via command line
-    if (not params.prompt.empty())
-    {
-        return;
-    }
-
-    ::print_separator();
-
-    // Prompt was passed via file
-    if (not params.prompt_file.empty())
-    {
-        ::read_prompt_from_file(params.prompt_file, params.prompt);
-        return;
-    }
-
-    // Otherwise default to reading from stdin
-    std::cout << "\033[1mInput:\033[0m ";
-    std::getline(std::cin, params.prompt);
-
-    // If still empty then we cannot proceed
-    if (params.prompt.empty())
-    {
-        throw std::runtime_error("Prompt cannot be empty");
-    }
 }
 
 void select_chat_model(nlohmann::json &body, const std::string &model)
@@ -374,34 +329,38 @@ void dump_chat_completion_response(const std::string &response, const std::strin
 
 void command_run(const int argc, char **argv)
 {
-    RunParameters run_parameters;
-    ::read_cli_run(argc, argv, run_parameters);
+    RunParameters params;
+    ::read_cli_run(argc, argv, params);
 
-    if (run_parameters.print_help)
+    if (params.print_help)
     {
         help::command_run();
         return;
     }
 
-    ::get_prompt(run_parameters);
+    if (params.prompt.empty())
+    {
+        ::print_separator();
+        ::load_input_text(params.prompt, params.prompt_file);
+    }
 
     std::string post_fields;
-    ::get_post_fields(post_fields, run_parameters);
+    ::get_post_fields(post_fields, params);
 
     Curl curl;
     std::string response;
     ::query_chat_completion_api(curl.handle, post_fields, response);
 
-    if (run_parameters.json_dump_file.empty())
+    if (params.json_dump_file.empty())
     {
         ::print_chat_completion_response(response);
-        if (run_parameters.enable_export)
+        if (params.enable_export)
         {
-            ::export_chat_completion_response(response, run_parameters.prompt);
+            ::export_chat_completion_response(response, params.prompt);
         }
     }
     else
     {
-        ::dump_chat_completion_response(response, run_parameters.json_dump_file);
+        ::dump_chat_completion_response(response, params.json_dump_file);
     }
 }
