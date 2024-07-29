@@ -56,6 +56,21 @@ def test_read_from_file(command: list[str], capfd) -> None:
         assert data["input"] == input_text_file.read_text()
 
 
+def test_read_from_inputfile(command: list[str], inputfile: Path, capfd) -> None:
+    inputfile.write_text("A foo that bars!")
+
+    command.extend(["embed"])
+    process = run(command)
+
+    capture = capfd.readouterr()
+    print()
+    utils.print_stdout(capture.out)
+    utils.print_stderr(capture.err)
+
+    assert process.returncode == EX_OK
+    assert "Found an Inputfile in current working directory!" in capture.out
+
+
 def test_missing_input_file(command: list[str], capfd) -> None:
     command.extend(["embed", "--read-from-file=/tmp/yU8nnkRs.txt"])
     process = run(command)
