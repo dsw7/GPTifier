@@ -13,7 +13,6 @@
 #include <getopt.h>
 #include <iostream>
 #include <json.hpp>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -90,23 +89,6 @@ void read_cli_run(const int argc, char **argv, RunParameters &params)
     };
 }
 
-void read_prompt_from_file(const std::string &prompt_file, std::string &prompt)
-{
-    std::cout << "Reading prompt from file: " + prompt_file + '\n';
-    std::ifstream file(prompt_file);
-
-    if (not file.is_open())
-    {
-        throw std::runtime_error("Could not open file '" + prompt_file + "'");
-    }
-
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    prompt = buffer.str();
-
-    file.close();
-}
-
 void get_prompt(RunParameters &params)
 {
     // Prompt was passed via command line
@@ -120,7 +102,7 @@ void get_prompt(RunParameters &params)
     // Prompt was passed via file
     if (not params.prompt_file.empty())
     {
-        ::read_prompt_from_file(params.prompt_file, params.prompt);
+        ::read_text_from_file(params.prompt_file, params.prompt);
         return;
     }
 
