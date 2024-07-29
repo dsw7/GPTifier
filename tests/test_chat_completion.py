@@ -69,6 +69,21 @@ def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
         assert data["choices"][0]["message"]["content"] == ">>>8<<<"
 
 
+def test_read_from_inputfile(command: list[str], inputfile: Path, capfd) -> None:
+    inputfile.write_text(PROMPT)
+
+    command.extend(["run", "-u"])
+    process = run(command)
+
+    capture = capfd.readouterr()
+    print()
+    utils.print_stdout(capture.out)
+    utils.print_stderr(capture.err)
+
+    assert process.returncode == EX_OK
+    assert "Found an Inputfile in current working directory!" in capture.out
+
+
 def test_missing_prompt_file(command: list[str], capfd) -> None:
     command.extend(["run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u"])
     process = run(command)
