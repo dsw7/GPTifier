@@ -7,7 +7,7 @@ from utils import print_stdout, print_stderr
 
 
 @mark.parametrize("option", ["-v", "--version"])
-def test_version(command: list[str], capfd) -> None:
+def test_version(command: list[str], option: str, capfd) -> None:
     command.extend([option])
     process = run(command)
 
