@@ -5,17 +5,11 @@ from subprocess import run
 from pytest import mark
 import utils
 
+PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
+
 
 def test_basic(json_file: str, command: list[str], capfd) -> None:
-    command.extend(
-        [
-            "run",
-            "-p'What is 3 + 5? Format the result as follows: >>>{result}<<<'",
-            "-t0",
-            f"-d{json_file}",
-            "-u",
-        ]
-    )
+    command.extend(["run", f"-p'{PROMPT}'", "-t0", f"-d{json_file}", "-u"])
     process = run(command)
 
     utils.print_stdout_stderr(capfd)
@@ -36,7 +30,7 @@ MESSAGES_BAD_TEMP = [
 def test_invalid_temp(
     json_file: str, command: list[str], temp: float, message: str, capfd
 ) -> None:
-    command.extend(["run", "-p'Running a test!'", f"-t{temp}", f"-d{json_file}", "-u"])
+    command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", f"-d{json_file}", "-u"])
     process = run(command)
 
     utils.print_stdout_stderr(capfd)
@@ -75,7 +69,7 @@ def test_missing_prompt_file(command: list[str], capfd) -> None:
 
 
 def test_invalid_dump_location(command: list[str], capfd) -> None:
-    command.extend(["run", "--prompt='What is 3 + 5?'", "--dump=/tmp/a/b/c", "-u"])
+    command.extend(["run", f"--prompt='{PROMPT}'", "--dump=/tmp/a/b/c", "-u"])
     process = run(command)
 
     capture = capfd.readouterr()
@@ -88,7 +82,7 @@ def test_invalid_dump_location(command: list[str], capfd) -> None:
 
 
 def test_invalid_model(json_file: str, command: list[str], capfd) -> None:
-    command.extend(["run", "-p'What is 3 + 5?'", "-mfoobar", f"-d{json_file}", "-u"])
+    command.extend(["run", f"-p'{PROMPT}'", "-mfoobar", f"-d{json_file}", "-u"])
     process = run(command)
 
     utils.print_stdout_stderr(capfd)
