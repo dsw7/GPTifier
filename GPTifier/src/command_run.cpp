@@ -3,6 +3,7 @@
 #include "api.hpp"
 #include "configs.hpp"
 #include "help_messages.hpp"
+#include "input_selection.hpp"
 #include "utils.hpp"
 
 #include <chrono>
@@ -87,34 +88,6 @@ void read_cli_run(const int argc, char **argv, RunParameters &params)
             ::exit(EXIT_FAILURE);
         }
     };
-}
-
-void get_prompt(RunParameters &params)
-{
-    // Prompt was passed via command line
-    if (not params.prompt.empty())
-    {
-        return;
-    }
-
-    ::print_separator();
-
-    // Prompt was passed via file
-    if (not params.prompt_file.empty())
-    {
-        ::read_text_from_file(params.prompt_file, params.prompt);
-        return;
-    }
-
-    // Otherwise default to reading from stdin
-    std::cout << "\033[1mInput:\033[0m ";
-    std::getline(std::cin, params.prompt);
-
-    // If still empty then we cannot proceed
-    if (params.prompt.empty())
-    {
-        throw std::runtime_error("Prompt cannot be empty");
-    }
 }
 
 void select_chat_model(nlohmann::json &body, const std::string &model)
@@ -365,7 +338,11 @@ void command_run(const int argc, char **argv)
         return;
     }
 
-    ::get_prompt(params);
+    if (params.prompt.empty())
+    {
+        ::load_input_text(params.prompt, params.prompt_file);
+        ::print_separator();
+    }
 
     std::string post_fields;
     ::get_post_fields(post_fields, params);
