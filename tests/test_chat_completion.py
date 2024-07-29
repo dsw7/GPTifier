@@ -8,6 +8,20 @@ import utils
 PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
 
 
+@mark.parametrize("option", ["-h", "--help"])
+def test_run_help(command: list[str], option: str, capfd) -> None:
+    command.extend(["run", option])
+    process = run(command)
+
+    capture = capfd.readouterr()
+    print()
+    utils.print_stdout(capture.out)
+    utils.print_stderr(capture.err)
+
+    assert process.returncode == EX_OK
+    assert "SYNOPSIS" in capture.out
+
+
 def test_basic(json_file: str, command: list[str], capfd) -> None:
     command.extend(["run", f"-p'{PROMPT}'", "-t0", f"-d{json_file}", "-u"])
     process = run(command)
@@ -94,16 +108,3 @@ def test_invalid_model(json_file: str, command: list[str], capfd) -> None:
             data["error"]["message"]
             == "The model `foobar` does not exist or you do not have access to it."
         )
-
-
-def test_run_help(command: list[str], capfd) -> None:
-    command.extend(["run", "--help"])
-    process = run(command)
-
-    capture = capfd.readouterr()
-    print()
-    utils.print_stdout(capture.out)
-    utils.print_stderr(capture.err)
-
-    assert process.returncode == EX_OK
-    assert "SYNOPSIS" in capture.out
