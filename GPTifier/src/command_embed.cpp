@@ -141,27 +141,27 @@ void export_embedding(const std::string &response, const std::string &input)
 
 void command_embed(const int argc, char **argv)
 {
-    EmbeddingParameters embed_parameters;
-    ::read_cli_embed(argc, argv, embed_parameters);
+    EmbeddingParameters params;
+    ::read_cli_embed(argc, argv, params);
 
-    if (embed_parameters.print_help)
+    if (params.print_help)
     {
         help::command_embed();
         return;
     }
 
-    if (embed_parameters.input.empty())
+    if (params.input.empty())
     {
-        ::load_input_text(embed_parameters.input, embed_parameters.input_file);
+        ::load_input_text(params.input, params.input_file);
         ::print_separator();
     }
 
     std::string post_fields;
-    ::get_post_fields(post_fields, embed_parameters);
+    ::get_post_fields(post_fields, params);
 
     Curl curl;
     std::string response;
     ::query_embeddings_api(curl.handle, post_fields, response);
 
-    ::export_embedding(response, embed_parameters.input);
+    ::export_embedding(response, params.input);
 }
