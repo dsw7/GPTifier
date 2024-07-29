@@ -356,34 +356,34 @@ void dump_chat_completion_response(const std::string &response, const std::strin
 
 void command_run(const int argc, char **argv)
 {
-    RunParameters run_parameters;
-    ::read_cli_run(argc, argv, run_parameters);
+    RunParameters params;
+    ::read_cli_run(argc, argv, params);
 
-    if (run_parameters.print_help)
+    if (params.print_help)
     {
         help::command_run();
         return;
     }
 
-    ::get_prompt(run_parameters);
+    ::get_prompt(params);
 
     std::string post_fields;
-    ::get_post_fields(post_fields, run_parameters);
+    ::get_post_fields(post_fields, params);
 
     Curl curl;
     std::string response;
     ::query_chat_completion_api(curl.handle, post_fields, response);
 
-    if (run_parameters.json_dump_file.empty())
+    if (params.json_dump_file.empty())
     {
         ::print_chat_completion_response(response);
-        if (run_parameters.enable_export)
+        if (params.enable_export)
         {
-            ::export_chat_completion_response(response, run_parameters.prompt);
+            ::export_chat_completion_response(response, params.prompt);
         }
     }
     else
     {
-        ::dump_chat_completion_response(response, run_parameters.json_dump_file);
+        ::dump_chat_completion_response(response, params.json_dump_file);
     }
 }
