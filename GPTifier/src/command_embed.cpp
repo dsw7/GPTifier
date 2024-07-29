@@ -152,8 +152,8 @@ void command_embed(const int argc, char **argv)
 
     if (params.input.empty())
     {
-        ::load_input_text(params.input, params.input_file);
         ::print_separator();
+        ::load_input_text(params.input, params.input_file);
     }
 
     std::string post_fields;

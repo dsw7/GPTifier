@@ -340,8 +340,8 @@ void command_run(const int argc, char **argv)
 
     if (params.prompt.empty())
     {
-        ::load_input_text(params.prompt, params.prompt_file);
         ::print_separator();
+        ::load_input_text(params.prompt, params.prompt_file);
     }
 
     std::string post_fields;
