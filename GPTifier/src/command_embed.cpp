@@ -3,6 +3,7 @@
 #include "api.hpp"
 #include "configs.hpp"
 #include "help_messages.hpp"
+#include "input_selection.hpp"
 #include "utils.hpp"
 
 #include <curl/curl.h>
@@ -57,34 +58,6 @@ void read_cli_embed(const int argc, char **argv, EmbeddingParameters &params)
             std::cerr << "Try running with -h or --help for more information\n";
             ::exit(EXIT_FAILURE);
         }
-    }
-}
-
-void get_input(EmbeddingParameters &params)
-{
-    // Input text was passed via command line
-    if (not params.input.empty())
-    {
-        return;
-    }
-
-    ::print_separator();
-
-    // Input text was passed via file
-    if (not params.input_file.empty())
-    {
-        ::read_text_from_file(params.input_file, params.input);
-        return;
-    }
-
-    // Otherwise default to reading the input text from stdin
-    std::cout << "\033[1mInput:\033[0m ";
-    std::getline(std::cin, params.input);
-
-    // If still empty then we cannot proceed
-    if (params.input.empty())
-    {
-        throw std::runtime_error("No input text provided anywhere. Cannot proceed");
     }
 }
 
@@ -177,7 +150,11 @@ void command_embed(const int argc, char **argv)
         return;
     }
 
-    ::get_input(embed_parameters);
+    if (embed_parameters.input.empty())
+    {
+        ::load_input_text(embed_parameters.input, embed_parameters.input_file);
+        ::print_separator();
+    }
 
     std::string post_fields;
     ::get_post_fields(post_fields, embed_parameters);
