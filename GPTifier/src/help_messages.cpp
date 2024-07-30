@@ -4,8 +4,13 @@
 
 #include <iostream>
 #include <string>
+#include <tuple>
+#include <vector>
+
+typedef std::vector<std::tuple<std::string, std::string>> type_opts;
 
 const std::string ws_2 = std::string(2, ' ');
+const std::string ws_4 = std::string(4, ' ');
 
 std::string add_description(const std::string &text)
 {
@@ -15,6 +20,19 @@ std::string add_description(const std::string &text)
 std::string add_synopsis(const std::string &text)
 {
     return fmt::format("\033[1mSYNOPSIS:\033[0m\n{}\033[4mgpt\033[0m {}\n\n", ::ws_2, text);
+}
+
+std::string add_options(const type_opts &options)
+{
+    std::string list_opts = "\033[1mOPTIONS:\033[0m\n";
+
+    for (auto it = options.begin(); it != options.end(); it++)
+    {
+        list_opts += fmt::format("{}\033[2m{}\033[0m\n{}{}\n", ::ws_2, std::get<0>(*it), ::ws_4, std::get<1>(*it));
+    }
+
+    list_opts += '\n';
+    return list_opts;
 }
 
 namespace help
@@ -33,12 +51,12 @@ void root_messages()
     body += ::add_description(description);
     body += ::add_synopsis("[-v | --version] [-h | --help] [run] [models] [embed]");
 
-    body += "\033[1mOPTIONS:\033[0m\n"
-            "  \033[2m-h, --help\033[0m\n"
-            "    Print help information and exit.\n\n"
-            "  \033[2m-v, --version\033[0m\n"
-            "    Print version and exit.\n\n"
-            "\033[1mCOMMANDS:\033[0m\n"
+    type_opts options = {};
+    options.push_back({"-h, --help", "Print help information and exit."});
+    options.push_back({"-v, --version", "Print version and exit."});
+
+    body += ::add_options(options);
+    body += "\033[1mCOMMANDS:\033[0m\n"
             "  \033[2mrun\033[0m    -> Run a query against an appropriate model.\n"
             "  \033[2mmodels\033[0m -> List available OpenAI models.\n"
             "  \033[2membed\033[0m  -> Get embedding representing a block of text.\n\n"
