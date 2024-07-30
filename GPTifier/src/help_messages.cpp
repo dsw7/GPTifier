@@ -10,6 +10,11 @@ std::string get_description(const std::string &text)
     return "\033[1mDESCRIPTION:\033[0m\n" + ws_a + text + "\n\n";
 }
 
+std::string get_synopsis(const std::string &text)
+{
+    return "\033[1mSYNOPSIS:\033[0m\n" + ws_a + "\033[4mgpt\033[0m " + text + "\n\n";
+}
+
 namespace help
 {
 void root_messages()
@@ -42,9 +47,8 @@ void root_messages()
 void command_run()
 {
     std::string body = get_description("Create a chat completion.");
-    body += "\033[1mSYNOPSIS:\033[0m\n"
-            "  \033[4mgpt\033[0m run <options>\n\n"
-            "\033[1mOPTIONS:\033[0m\n"
+    body += get_synopsis("run <options>");
+    body += "\033[1mOPTIONS:\033[0m\n"
             "  \033[2m-h, --help\033[0m\n"
             "    Print help information and exit.\n\n"
             "  \033[2m-m <model-name>, --model=<model-name>\033[0m\n"
@@ -79,9 +83,8 @@ void command_run()
 void command_models()
 {
     std::string body = get_description("List available OpenAI models.");
-    body += "\033[1mSYNOPSIS:\033[0m\n"
-            "  \033[4mgpt\033[0m models [-h | --help]\n\n"
-            "\033[1mOPTIONS:\033[0m\n"
+    body += get_synopsis("models [-h | --help]");
+    body += "\033[1mOPTIONS:\033[0m\n"
             "  \033[2m-h, --help\033[0m\n"
             "    -> Print help information and exit.\n\n";
 
@@ -91,9 +94,8 @@ void command_models()
 void command_embed()
 {
     std::string body = get_description("Get embedding representing a block of text.");
-    body += "\033[1mSYNOPSIS:\033[0m\n"
-            "  \033[4mgpt\033[0m embed <options>\n\n"
-            "\033[1mOPTIONS:\033[0m\n"
+    body += get_synopsis("embed <options>");
+    body += "\033[1mOPTIONS:\033[0m\n"
             "  \033[2m-h, --help\033[0m\n"
             "    -> Print help information and exit\n"
             "  \033[2m-m <model-name>, --model=<model-name>\033[0m\n"
