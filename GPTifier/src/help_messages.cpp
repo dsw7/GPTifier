@@ -115,15 +115,13 @@ void command_embed()
 {
     std::string body = ::add_description("Get embedding representing a block of text.");
     body += ::add_synopsis("embed <options>");
-    body += "\033[1mOPTIONS:\033[0m\n"
-            "  \033[2m-h, --help\033[0m\n"
-            "    -> Print help information and exit\n"
-            "  \033[2m-m <model-name>, --model=<model-name>\033[0m\n"
-            "    -> Specify a valid model such as \"text-embedding-3-small\"\n"
-            "  \033[2m-i <text>, --input=<text>\033[0m\n"
-            "    -> Input text to embed\n"
-            "  \033[2m-r <filename>, --read-from-file=<filename>\033[0m\n"
-            "    -> Read input text to embed from a file\n\n";
+
+    type_opts options = {};
+    options.push_back({"-h, --help", "-> Print help information and exit"});
+    options.push_back({"-m <model-name>, --model=<model-name>", "-> Specify a valid embedding model"});
+    options.push_back({"-i <text>, --input=<text>", "-> Input text to embed"});
+    options.push_back({"-r <filename>, --read-from-file=<filename>", "-> Read input text to embed from a file"});
+    body += ::add_options(options);
 
     std::cout << body;
 }
