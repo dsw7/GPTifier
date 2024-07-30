@@ -24,25 +24,25 @@ void root_messages()
     std::string name = std::string(PROJECT_NAME);
     std::string version = std::string(PROJECT_VERSION);
 
-    std::string body = "\033[1mNAME:\033[0m\n"
-                       "  \033[4m" +
-                       name + " v" + version +
-                       "\033[0m\n\n"
-                       "\033[1mDESCRIPTION:\033[0m\n"
-                       "  A command line program for interactively querying OpenAI via the OpenAI API. See\n"
-                       "  \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.\n\n"
-                       "\033[1mSYNOPSIS:\033[0m\n"
-                       "  \033[4mgpt\033[0m [-v | --version] [-h | --help] [run] [models]\n\n"
-                       "\033[1mTOP LEVEL OPTIONS:\033[0m\n"
-                       "  \033[2m-h, --help\033[0m\n"
-                       "    Print help information and exit.\n\n"
-                       "  \033[2m-v, --version\033[0m\n"
-                       "    Print version and exit.\n\n"
-                       "\033[1mCOMMANDS:\033[0m\n"
-                       "  \033[2mrun\033[0m    -> Run a query against an appropriate model.\n"
-                       "  \033[2mmodels\033[0m -> List available OpenAI models.\n"
-                       "  \033[2membed\033[0m  -> Get embedding representing a block of text.\n\n"
-                       "  Try gpt <subcommand> [-h | --help] for subcommand specific help.\n\n";
+    std::string body = "\033[1mNAME:\033[0m\n";
+    body += fmt::format("{}\033[4m{} v{}\033[0m\n\n", ::ws_2, name, version);
+
+    std::string description = "A command line program for interactively querying OpenAI via the OpenAI API.\n";
+    description += ::ws_2 + "See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.";
+
+    body += ::add_description(description);
+    body += ::add_synopsis("[-v | --version] [-h | --help] [run] [models] [embed]");
+
+    body += "\033[1mOPTIONS:\033[0m\n"
+            "  \033[2m-h, --help\033[0m\n"
+            "    Print help information and exit.\n\n"
+            "  \033[2m-v, --version\033[0m\n"
+            "    Print version and exit.\n\n"
+            "\033[1mCOMMANDS:\033[0m\n"
+            "  \033[2mrun\033[0m    -> Run a query against an appropriate model.\n"
+            "  \033[2mmodels\033[0m -> List available OpenAI models.\n"
+            "  \033[2membed\033[0m  -> Get embedding representing a block of text.\n\n"
+            "  Try gpt <subcommand> [-h | --help] for subcommand specific help.\n\n";
     std::cout << body;
 }
 
