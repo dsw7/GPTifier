@@ -49,6 +49,9 @@ if(TOMLPLUSPLUS_NOT_FOUND)
   message(FATAL_ERROR "Could not find ${TOMLPLUSPLUS} in any include directory")
 endif()
 
+message(STATUS "Locating {fmt} library")
+find_package(fmt)
+
 include_directories(
   "include"
 )
@@ -68,6 +71,7 @@ target_link_libraries(
   "gpt"
   "curl"
   "pthread"
+  "fmt::fmt"
 )
 
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local")

@@ -1,5 +1,7 @@
 #include "help_messages.hpp"
 
+#include <fmt/core.h>
+
 #include <iostream>
 #include <string>
 
@@ -7,7 +9,7 @@ const std::string ws_a = std::string(2, ' ');
 
 std::string add_description(const std::string &text)
 {
-    return "\033[1mDESCRIPTION:\033[0m\n" + ws_a + text + "\n\n";
+    return fmt::format("\033[1mDESCRIPTION:\033[0m\n{}{}\n\n", ws_a, text);
 }
 
 std::string add_synopsis(const std::string &text)
