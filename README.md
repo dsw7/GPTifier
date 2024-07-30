@@ -12,6 +12,7 @@ A beautiful C++ libcurl / ChatGPT interface
   - [Compile binary](#compile-binary)
   - [Get `json.hpp`](#get-jsonhpp)
   - [Get `toml.hpp`](#get-tomlhpp)
+  - [Get `{fmt}`](#get-fmt)
   - [Set up project files](#set-up-project-files)
   - [Clean up](#clean-up)
 - [Usage](#usage)
@@ -107,6 +108,10 @@ Which is identical [`json.hpp`](#get-jsonhpp) case. As before, simply run the co
 ./get_dependencies /usr/include/
 ```
 Running the script may require elevated privileges.
+### Get `{fmt}`
+This project uses [{fmt}](https://fmt.dev/latest/) for string formatting. The compiler will abort if `{fmt}`
+cannot be found anywhere. See [Get Started](https://fmt.dev/latest/get-started/) for instructions on
+installing `{fmt}`.
 ### Set up project files
 This project makes reference to a "home directory" (`~/.gptifier`, specifically) that must be set up prior to
 running the program. To set up `~/.gptifier`, run:

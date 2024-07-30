@@ -52,6 +52,10 @@ endif()
 message(STATUS "Locating {fmt} library")
 find_package(fmt)
 
+if(NOT fmt_FOUND)
+  message(FATAL_ERROR "Is the {fmt} package installed?")
+endif()
+
 include_directories(
   "include"
 )
