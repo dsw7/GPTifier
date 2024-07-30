@@ -103,10 +103,12 @@ void command_run()
 void command_models()
 {
     std::string body = ::add_description("List available OpenAI models.");
+
     body += ::add_synopsis("models [-h | --help]");
-    body += "\033[1mOPTIONS:\033[0m\n"
-            "  \033[2m-h, --help\033[0m\n"
-            "    -> Print help information and exit.\n\n";
+    type_opts options = {};
+
+    options.push_back({"-h, --help", "-> Print help information and exit"});
+    body += ::add_options(options);
 
     std::cout << body;
 }
