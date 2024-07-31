@@ -8,6 +8,7 @@
 #include <vector>
 
 typedef std::vector<std::tuple<std::string, std::string>> type_opts;
+typedef std::vector<std::tuple<std::string, std::string>> type_examples;
 
 const std::string ws_2 = std::string(2, ' ');
 const std::string ws_4 = std::string(4, ' ');
@@ -33,6 +34,25 @@ std::string add_options(const type_opts &options)
 
     list_opts += '\n';
     return list_opts;
+}
+
+std::string bash_block(const std::string &command)
+{
+    return fmt::format("\033[1;32m{}```bash\n{}{}\n{}```\n\033[0m", ::ws_2, ::ws_2, command, ::ws_2);
+}
+
+std::string add_examples(const type_examples &examples)
+{
+    std::string block = "\033[1mEXAMPLES:\033[0m\n";
+
+    for (auto it = examples.begin(); it != examples.end(); it++)
+    {
+        block += fmt::format("{}{}:\n", ::ws_2, std::get<0>(*it));
+        block += ::bash_block(std::get<1>(*it));
+    }
+
+    block += '\n';
+    return block;
 }
 
 namespace help
@@ -79,12 +99,12 @@ void command_run()
     options.push_back({"-t <temp>, --temperature=<temperature>", "Provide a sampling temperature between 0 and 2"});
     body += ::add_options(options);
 
-    body += "\033[1mEXAMPLES:\033[0m\n"
-            "  1. Run an interactive session:\n"
-            "    $ gpt run\n\n"
-            "  2. Run a query non-interactively and export results:\n"
-            "    $ gpt run --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\"\n\n";
+    type_examples examples = {};
+    examples.push_back({"Run an interactive session", "gpt run"});
+    examples.push_back({"Run a query non-interactively and export results",
+                        "gpt run --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\""});
 
+    body += ::add_examples(examples);
     std::cout << body;
 }
 
