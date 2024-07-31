@@ -28,7 +28,7 @@ std::string add_options(const type_opts &options)
 
     for (auto it = options.begin(); it != options.end(); it++)
     {
-        list_opts += fmt::format("{}\033[2m{}\033[0m\n{}{}\n", ::ws_2, std::get<0>(*it), ::ws_4, std::get<1>(*it));
+        list_opts += fmt::format("{}\033[2m{}\033[0m\n{} -> {}\n", ::ws_2, std::get<0>(*it), ::ws_4, std::get<1>(*it));
     }
 
     list_opts += '\n';
@@ -107,7 +107,7 @@ void command_models()
     body += ::add_synopsis("models [-h | --help]");
     type_opts options = {};
 
-    options.push_back({"-h, --help", "-> Print help information and exit"});
+    options.push_back({"-h, --help", "Print help information and exit"});
     body += ::add_options(options);
 
     std::cout << body;
@@ -119,10 +119,10 @@ void command_embed()
     body += ::add_synopsis("embed <options>");
 
     type_opts options = {};
-    options.push_back({"-h, --help", "-> Print help information and exit"});
-    options.push_back({"-m <model-name>, --model=<model-name>", "-> Specify a valid embedding model"});
-    options.push_back({"-i <text>, --input=<text>", "-> Input text to embed"});
-    options.push_back({"-r <filename>, --read-from-file=<filename>", "-> Read input text to embed from a file"});
+    options.push_back({"-h, --help", "Print help information and exit"});
+    options.push_back({"-m <model-name>, --model=<model-name>", "Specify a valid embedding model"});
+    options.push_back({"-i <text>, --input=<text>", "Input text to embed"});
+    options.push_back({"-r <filename>, --read-from-file=<filename>", "Read input text to embed from a file"});
     body += ::add_options(options);
 
     std::cout << body;
