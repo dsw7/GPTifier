@@ -38,7 +38,7 @@ std::string add_options(const type_opts &options)
 
 std::string bash_block(const std::string &command)
 {
-    return fmt::format("\033[1;32m{}```bash\n{}{}\n{}```\n\033[0m", ::ws_2, ::ws_2, command, ::ws_2);
+    return fmt::format("\033[1;32m{0}```bash\n{0}{1}\n{0}```\n\033[0m", ::ws_2, command);
 }
 
 std::string add_examples(const type_examples &examples)
