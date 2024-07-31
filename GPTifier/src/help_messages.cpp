@@ -23,7 +23,7 @@ std::string add_synopsis(const std::string &text)
     return fmt::format("\033[1mSYNOPSIS:\033[0m\n{}\033[4mgpt\033[0m {}\n\n", ::ws_2, text);
 }
 
-std::string add_options(const type_opts &options)
+std::string add_options(const ::type_opts &options)
 {
     std::string list_opts = "\033[1mOPTIONS:\033[0m\n";
 
@@ -41,7 +41,7 @@ std::string bash_block(const std::string &command)
     return fmt::format("\033[1;32m{0}```bash\n{0}{1}\n{0}```\n\033[0m", ::ws_2, command);
 }
 
-std::string add_examples(const type_examples &examples)
+std::string add_examples(const ::type_examples &examples)
 {
     std::string block = "\033[1mEXAMPLES:\033[0m\n";
 
@@ -71,7 +71,7 @@ void root_messages()
     body += ::add_description(description);
     body += ::add_synopsis("[-v | --version] [-h | --help] [run] [models] [embed]");
 
-    type_opts options = {};
+    ::type_opts options = {};
     options.push_back({"-h, --help", "Print help information and exit"});
     options.push_back({"-v, --version", "Print version and exit"});
 
@@ -89,7 +89,7 @@ void command_run()
     std::string body = ::add_description("Create a chat completion.");
     body += ::add_synopsis("run <options>");
 
-    type_opts options = {};
+    ::type_opts options = {};
     options.push_back({"-h, --help", "Print help information and exit"});
     options.push_back({"-m <model-name>, --model=<model-name>", "Specify a valid chat model"});
     options.push_back({"-u , --no-interactive-export", "Disable [y/n] prompt that asks whether to export results"});
@@ -99,7 +99,7 @@ void command_run()
     options.push_back({"-t <temp>, --temperature=<temperature>", "Provide a sampling temperature between 0 and 2"});
     body += ::add_options(options);
 
-    type_examples examples = {};
+    ::type_examples examples = {};
     examples.push_back({"Run an interactive session", "gpt run"});
     examples.push_back({"Run a query non-interactively and export results",
                         "gpt run --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\""});
@@ -113,7 +113,7 @@ void command_models()
     std::string body = ::add_description("List available OpenAI models.");
 
     body += ::add_synopsis("models [-h | --help]");
-    type_opts options = {};
+    ::type_opts options = {};
 
     options.push_back({"-h, --help", "Print help information and exit"});
     body += ::add_options(options);
@@ -126,7 +126,7 @@ void command_embed()
     std::string body = ::add_description("Get embedding representing a block of text.");
     body += ::add_synopsis("embed <options>");
 
-    type_opts options = {};
+    ::type_opts options = {};
     options.push_back({"-h, --help", "Print help information and exit"});
     options.push_back({"-m <model-name>, --model=<model-name>", "Specify a valid embedding model"});
     options.push_back({"-i <text>, --input=<text>", "Input text to embed"});
