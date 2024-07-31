@@ -25,15 +25,15 @@ std::string add_synopsis(const std::string &text)
 
 std::string add_options(const ::type_opts &options)
 {
-    std::string list_opts = "\033[1mOPTIONS:\033[0m\n";
+    std::string body = "\033[1mOPTIONS:\033[0m\n";
 
     for (auto it = options.begin(); it != options.end(); it++)
     {
-        list_opts += fmt::format("{}\033[2m{}\033[0m\n{} -> {}\n", ::ws_2, std::get<0>(*it), ::ws_4, std::get<1>(*it));
+        body += fmt::format("{}\033[2m{}\033[0m\n{} -> {}\n", ::ws_2, std::get<0>(*it), ::ws_4, std::get<1>(*it));
     }
 
-    list_opts += '\n';
-    return list_opts;
+    body += '\n';
+    return body;
 }
 
 std::string bash_block(const std::string &command)
@@ -43,16 +43,16 @@ std::string bash_block(const std::string &command)
 
 std::string add_examples(const ::type_examples &examples)
 {
-    std::string block = "\033[1mEXAMPLES:\033[0m\n";
+    std::string body = "\033[1mEXAMPLES:\033[0m\n";
 
     for (auto it = examples.begin(); it != examples.end(); it++)
     {
-        block += fmt::format("{}{}:\n", ::ws_2, std::get<0>(*it));
-        block += ::bash_block(std::get<1>(*it));
+        body += fmt::format("{}{}:\n", ::ws_2, std::get<0>(*it));
+        body += ::bash_block(std::get<1>(*it));
     }
 
-    block += '\n';
-    return block;
+    body += '\n';
+    return body;
 }
 
 namespace help
