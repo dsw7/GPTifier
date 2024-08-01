@@ -7,8 +7,9 @@
 #include <utility>
 #include <vector>
 
-typedef std::vector<std::pair<std::string, std::string>> type_opts;
+typedef std::vector<std::pair<std::string, std::string>> type_commands;
 typedef std::vector<std::pair<std::string, std::string>> type_examples;
+typedef std::vector<std::pair<std::string, std::string>> type_opts;
 
 const std::string ws_2 = std::string(2, ' ');
 const std::string ws_4 = std::string(4, ' ');
@@ -33,6 +34,19 @@ std::string add_options(const ::type_opts &options)
     }
 
     body += '\n';
+    return body;
+}
+
+std::string add_commands(const ::type_commands &commands)
+{
+    std::string body = "\033[1mCOMMANDS:\033[0m\n";
+
+    for (auto it = commands.begin(); it != commands.end(); it++)
+    {
+        body += fmt::format("{}\033[2m{}\033[0m\n{} -> {}\n", ::ws_2, it->first, ::ws_4, it->second);
+    }
+
+    body += fmt::format("\n{}Try gpt <subcommand> [-h | --help] for subcommand specific help.\n\n", ::ws_2);
     return body;
 }
 
@@ -74,13 +88,14 @@ void root_messages()
     ::type_opts options = {};
     options.push_back({"-h, --help", "Print help information and exit"});
     options.push_back({"-v, --version", "Print version and exit"});
-
     body += ::add_options(options);
-    body += "\033[1mCOMMANDS:\033[0m\n"
-            "  \033[2mrun\033[0m    -> Run a query against an appropriate model.\n"
-            "  \033[2mmodels\033[0m -> List available OpenAI models.\n"
-            "  \033[2membed\033[0m  -> Get embedding representing a block of text.\n\n"
-            "  Try gpt <subcommand> [-h | --help] for subcommand specific help.\n\n";
+
+    ::type_commands commands = {};
+    commands.push_back({"run", "Run a query against an appropriate model"});
+    commands.push_back({"models", "List available OpenAI models"});
+    commands.push_back({"embed", "Get embedding representing a block of text"});
+    body += ::add_commands(commands);
+
     std::cout << body;
 }
 
