@@ -4,11 +4,11 @@
 
 #include <iostream>
 #include <string>
-#include <tuple>
+#include <utility>
 #include <vector>
 
-typedef std::vector<std::tuple<std::string, std::string>> type_opts;
-typedef std::vector<std::tuple<std::string, std::string>> type_examples;
+typedef std::vector<std::pair<std::string, std::string>> type_opts;
+typedef std::vector<std::pair<std::string, std::string>> type_examples;
 
 const std::string ws_2 = std::string(2, ' ');
 const std::string ws_4 = std::string(4, ' ');
@@ -29,7 +29,7 @@ std::string add_options(const ::type_opts &options)
 
     for (auto it = options.begin(); it != options.end(); it++)
     {
-        body += fmt::format("{}\033[2m{}\033[0m\n{} -> {}\n", ::ws_2, std::get<0>(*it), ::ws_4, std::get<1>(*it));
+        body += fmt::format("{}\033[2m{}\033[0m\n{} -> {}\n", ::ws_2, it->first, ::ws_4, it->second);
     }
 
     body += '\n';
@@ -47,8 +47,8 @@ std::string add_examples(const ::type_examples &examples)
 
     for (auto it = examples.begin(); it != examples.end(); it++)
     {
-        body += fmt::format("{}{}:\n", ::ws_2, std::get<0>(*it));
-        body += ::bash_block(std::get<1>(*it));
+        body += fmt::format("{}{}:\n", ::ws_2, it->first);
+        body += ::bash_block(it->second);
     }
 
     body += '\n';
