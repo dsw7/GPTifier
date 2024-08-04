@@ -8,14 +8,14 @@ import utils
 PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
 
 
-def load_completion_content(json_file: str) -> str:
+def load_content(json_file: str) -> str:
     with open(json_file) as f:
         contents = loads(f.read())
 
     return contents["choices"][0]["message"]["content"]
 
 
-def load_completion_error(json_file: str) -> str:
+def load_error(json_file: str) -> str:
     with open(json_file) as f:
         contents = loads(f.read())
 
@@ -42,7 +42,7 @@ def test_read_from_command_line(json_file: str, command: list[str], capfd) -> No
 
     utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-    assert load_completion_content(json_file) == ">>>8<<<"
+    assert load_content(json_file) == ">>>8<<<"
 
 
 def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
@@ -53,7 +53,7 @@ def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
 
     utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-    assert load_completion_content(json_file) == ">>>8<<<"
+    assert load_content(json_file) == ">>>8<<<"
 
 
 def test_read_from_inputfile(
@@ -70,7 +70,7 @@ def test_read_from_inputfile(
     utils.print_stderr(capture.err)
 
     assert process.returncode == EX_OK
-    assert load_completion_content(json_file) == ">>>8<<<"
+    assert load_content(json_file) == ">>>8<<<"
 
 
 MESSAGES_BAD_TEMP = [
@@ -88,7 +88,7 @@ def test_invalid_temp(
 
     utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-    assert load_completion_error(json_file) == f"Invalid 'temperature': {message}"
+    assert load_error(json_file) == f"Invalid 'temperature': {message}"
 
 
 def test_missing_prompt_file(command: list[str], capfd) -> None:
@@ -124,6 +124,6 @@ def test_invalid_model(json_file: str, command: list[str], capfd) -> None:
     utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
     assert (
-        load_completion_error(json_file)
+        load_error(json_file)
         == "The model `foobar` does not exist or you do not have access to it."
     )
