@@ -3,7 +3,7 @@ from os import EX_OK
 from pathlib import Path
 from subprocess import run
 from pytest import mark
-from utils import unpack_stdout_stderr, EX_MEM_LEAK
+from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error
 
 PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
 
@@ -13,13 +13,6 @@ def load_content(json_file: str) -> str:
         contents = loads(f.read())
 
     return contents["choices"][0]["message"]["content"]
-
-
-def load_error(json_file: str) -> str:
-    with open(json_file) as f:
-        contents = loads(f.read())
-
-    return contents["error"]["message"]
 
 
 @mark.parametrize("option", ["-h", "--help"])

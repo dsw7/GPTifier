@@ -3,7 +3,7 @@ from os import EX_OK
 from pathlib import Path
 from subprocess import run
 from pytest import mark
-from utils import unpack_stdout_stderr, EX_MEM_LEAK
+from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error
 
 RESULTS_JSON = Path.home() / ".gptifier" / "embeddings.gpt"
 
@@ -78,10 +78,7 @@ def test_invalid_model(command: list[str], capfd) -> None:
 
     unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-
-    with open(RESULTS_JSON) as f_json:
-        data = loads(f_json.read())
-        assert (
-            data["error"]["message"]
-            == "The model `foobar` does not exist or you do not have access to it."
-        )
+    assert (
+        load_error(RESULTS_JSON)
+        == "The model `foobar` does not exist or you do not have access to it."
+    )
