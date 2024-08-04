@@ -10,9 +10,16 @@ PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
 
 def load_completion_content(json_file: str) -> str:
     with open(json_file) as f:
-        data = loads(f.read())
+        contents = loads(f.read())
 
-    return data["choices"][0]["message"]["content"]
+    return contents["choices"][0]["message"]["content"]
+
+
+def load_completion_error(json_file: str) -> str:
+    with open(json_file) as f:
+        contents = loads(f.read())
+
+    return contents["error"]["message"]
 
 
 @mark.parametrize("option", ["-h", "--help"])
@@ -81,10 +88,7 @@ def test_invalid_temp(
 
     utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
-        assert data["error"]["message"] == "Invalid 'temperature': " + message
+    assert load_completion_error(json_file) == f"Invalid 'temperature': {message}"
 
 
 def test_missing_prompt_file(command: list[str], capfd) -> None:
@@ -119,10 +123,7 @@ def test_invalid_model(json_file: str, command: list[str], capfd) -> None:
 
     utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
-        assert (
-            data["error"]["message"]
-            == "The model `foobar` does not exist or you do not have access to it."
-        )
+    assert (
+        load_completion_error(json_file)
+        == "The model `foobar` does not exist or you do not have access to it."
+    )
