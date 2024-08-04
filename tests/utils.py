@@ -1,3 +1,4 @@
+from json import loads
 from colorama import Fore, Style
 
 PREFIX_STDOUT = Fore.GREEN + "stdout >>> " + Style.RESET_ALL
