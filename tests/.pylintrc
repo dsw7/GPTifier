@@ -1,0 +1,10 @@
+[MAIN]
+exit-zero=yes
+
+[MESSAGES CONTROL]
+disable=
+  missing-docstring,
+  subprocess-run-check
+
+[REPORTS]
+output-format=colorized
