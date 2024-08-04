@@ -8,6 +8,13 @@ import utils
 PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
 
 
+def load_completion_content(json_file: str) -> str:
+    with open(json_file) as f:
+        data = loads(f.read())
+
+    return data["choices"][0]["message"]["content"]
+
+
 @mark.parametrize("option", ["-h", "--help"])
 def test_run_help(command: list[str], option: str, capfd) -> None:
     command.extend(["run", option])
@@ -28,10 +35,7 @@ def test_read_from_command_line(json_file: str, command: list[str], capfd) -> No
 
     utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
-        assert data["choices"][0]["message"]["content"] == ">>>8<<<"
+    assert load_completion_content(json_file) == ">>>8<<<"
 
 
 def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
@@ -42,16 +46,15 @@ def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
 
     utils.print_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
-        assert data["choices"][0]["message"]["content"] == ">>>8<<<"
+    assert load_completion_content(json_file) == ">>>8<<<"
 
 
-def test_read_from_inputfile(command: list[str], inputfile: Path, capfd) -> None:
+def test_read_from_inputfile(
+    json_file: str, command: list[str], inputfile: Path, capfd
+) -> None:
     inputfile.write_text(PROMPT)
 
-    command.extend(["run", "-u"])
+    command.extend(["run", "-t0", f"-d{json_file}", "-u"])
     process = run(command)
 
     capture = capfd.readouterr()
@@ -60,7 +63,7 @@ def test_read_from_inputfile(command: list[str], inputfile: Path, capfd) -> None
     utils.print_stderr(capture.err)
 
     assert process.returncode == EX_OK
-    assert "Found an Inputfile in current working directory!" in capture.out
+    assert load_completion_content(json_file) == ">>>8<<<"
 
 
 MESSAGES_BAD_TEMP = [
