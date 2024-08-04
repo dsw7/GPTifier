@@ -13,10 +13,13 @@ def pytest_addoption(parser):
 
 
 @fixture(scope="session", autouse=True)
-def check_platform(pytestconfig) -> None:
+def pre_test_checks(pytestconfig) -> None:
     if pytestconfig.getoption("memory"):
         if system() == "Darwin":
             exit("Valgrind not supported on MacOS")
+
+    if not Path("build/gpt").exists():
+        exit("Was the GPTifier binary compiled?")
 
 
 @fixture(scope="function")
