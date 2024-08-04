@@ -22,7 +22,7 @@ def test_run_help(command: list[str], option: str, capfd) -> None:
     assert "SYNOPSIS" in capture.out
 
 
-def test_basic(json_file: str, command: list[str], capfd) -> None:
+def test_read_from_command_line(json_file: str, command: list[str], capfd) -> None:
     command.extend(["run", f"-p'{PROMPT}'", "-t0", f"-d{json_file}", "-u"])
     process = run(command)
 
@@ -32,27 +32,6 @@ def test_basic(json_file: str, command: list[str], capfd) -> None:
     with open(json_file) as f_json:
         data = loads(f_json.read())
         assert data["choices"][0]["message"]["content"] == ">>>8<<<"
-
-
-MESSAGES_BAD_TEMP = [
-    (-2.5, "decimal below minimum value. Expected a value >= 0, but got -2.5 instead."),
-    (2.5, "decimal above maximum value. Expected a value <= 2, but got 2.5 instead."),
-]
-
-
-@mark.parametrize("temp, message", MESSAGES_BAD_TEMP)
-def test_invalid_temp(
-    json_file: str, command: list[str], temp: float, message: str, capfd
-) -> None:
-    command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", f"-d{json_file}", "-u"])
-    process = run(command)
-
-    utils.print_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
-        assert data["error"]["message"] == "Invalid 'temperature': " + message
 
 
 def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
@@ -82,6 +61,27 @@ def test_read_from_inputfile(command: list[str], inputfile: Path, capfd) -> None
 
     assert process.returncode == EX_OK
     assert "Found an Inputfile in current working directory!" in capture.out
+
+
+MESSAGES_BAD_TEMP = [
+    (-2.5, "decimal below minimum value. Expected a value >= 0, but got -2.5 instead."),
+    (2.5, "decimal above maximum value. Expected a value <= 2, but got 2.5 instead."),
+]
+
+
+@mark.parametrize("temp, message", MESSAGES_BAD_TEMP)
+def test_invalid_temp(
+    json_file: str, command: list[str], temp: float, message: str, capfd
+) -> None:
+    command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", f"-d{json_file}", "-u"])
+    process = run(command)
+
+    utils.print_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
+
+    with open(json_file) as f_json:
+        data = loads(f_json.read())
+        assert data["error"]["message"] == "Invalid 'temperature': " + message
 
 
 def test_missing_prompt_file(command: list[str], capfd) -> None:
