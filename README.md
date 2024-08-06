@@ -212,7 +212,7 @@ This command returns a list of currently available models. Simply run:
 gpt models
 ```
 Which will return:
-```console
+```
 ------------------------------------------------------------------------------------------
 Model ID                      Owner                         Creation time
 ------------------------------------------------------------------------------------------
