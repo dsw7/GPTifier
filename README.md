@@ -22,6 +22,7 @@ A beautiful C++ libcurl / ChatGPT interface
     - [Specifying a model](#specifying-a-model)
   - [The `embed` command](#the-embed-command)
   - [The `models` command](#the-models-command)
+  - [Input selection](#input-selection)
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
   - [GPTifier administration via OpenAI platform](#gptifier-administration-via-openai-platform)
@@ -70,7 +71,7 @@ The binary will be installed into whatever install directory is resolved by CMak
 ### Get `json.hpp`
 This project uses the [nlohmann/json](https://github.com/nlohmann/json) library. The compiler must be able to
 locate the `json.hpp` header file. If the `json.hpp` file does not exist anywhere, `cmake` will print out:
-```console
+```
 -- Checking if json.hpp exists anywhere
 -- Checking directory: /usr/include/c++/10
 -- Checking directory: /usr/include/x86_64-linux-gnu/c++/10
@@ -91,7 +92,7 @@ Running the script may require elevated privileges.
 This project uses the [TOML++](https://marzer.github.io/tomlplusplus/) configuration parser. The compiler must
 be able to locate the `toml.hpp` header file. If the `toml.hpp` file does not exist anywhere, `cmake` will
 print out:
-```console
+```
 -- Checking if toml.hpp exists anywhere
 -- Checking directory: /usr/include/c++/10
 -- Checking directory: /usr/include/x86_64-linux-gnu/c++/10
@@ -167,7 +168,13 @@ A chat completion can be run against an available model by specifying the model 
 ```console
 gpt run --model gpt-4 --prompt "What is 3 + 5?"
 ```
-A full list of models can be found by running the [models command](#the-models-command).
+
+> [!TIP]
+> A full list of models can be found by running the [models command](#the-models-command)
+
+> [!NOTE]
+> See [Input selection](#input-selection) for more information regarding how to pass
+> a prompt into this command
 
 ### The `embed` command
 This command converts some input text into a vector representation of the text. To use the command, run:
@@ -195,13 +202,17 @@ $$
 Where 1536 is the dimension of the output vector corresponding to model `text-embedding-ada-002`. The cosine
 similarity of a set of such vectors can be used to evaluate the similarity between text.
 
+> [!NOTE]
+> See [Input selection](#input-selection) for more information regarding how to pass
+> embedding text into this command
+
 ### The `models` command
 This command returns a list of currently available models. Simply run:
 ```console
 gpt models
 ```
 Which will return:
-```console
+```
 ------------------------------------------------------------------------------------------
 Model ID                      Owner                         Creation time
 ------------------------------------------------------------------------------------------
@@ -210,6 +221,25 @@ whisper-1                     openai-internal               2023-02-27 21:13:04
 davinci-002                   system                        2023-08-21 16:11:41
 ...                           ...                           ...
 ```
+
+### Input selection
+For certain commands, a hierarchy exists for choosing where input text comes from. The hierarchy roughly
+follows:
+
+1. **Check for raw input via command line option**:
+   - If raw input is provided through a command line option, use this input
+   - Example: `gpt run -p "What is 3 + 5?"` or `gpt embed -i "A foo that bars"`
+
+2. **Check for input file specified via command line**:
+   - If a file path is provided as a command line argument, read from this file
+   - Example: `gpt [run | embed] -r <filename>`
+
+3. **Check for a default input file in the current working directory**:
+   - If a file named `Inputfile` exists in the current directory, read from this file
+   - This is analogous to a `Makefile` or perhaps a `Dockerfile`
+
+4. **Read from stdin**:
+   - If none of the above conditions are met, read input from standard input (stdin)
 
 ## Integrations
 ### Coupling with `vim`

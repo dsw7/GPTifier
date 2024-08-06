@@ -3,9 +3,16 @@ from os import EX_OK
 from pathlib import Path
 from subprocess import run
 from pytest import mark
-import utils
+from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error
 
 PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
+
+
+def load_content(json_file: str) -> str:
+    with open(json_file) as f:
+        contents = loads(f.read())
+
+    return contents["choices"][0]["message"]["content"]
 
 
 @mark.parametrize("option", ["-h", "--help"])
@@ -13,25 +20,42 @@ def test_run_help(command: list[str], option: str, capfd) -> None:
     command.extend(["run", option])
     process = run(command)
 
-    capture = capfd.readouterr()
-    print()
-    utils.print_stdout(capture.out)
-    utils.print_stderr(capture.err)
-
+    stdout, _ = unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-    assert "SYNOPSIS" in capture.out
+    assert "SYNOPSIS" in stdout
 
 
-def test_basic(json_file: str, command: list[str], capfd) -> None:
+def test_read_from_command_line(json_file: str, command: list[str], capfd) -> None:
     command.extend(["run", f"-p'{PROMPT}'", "-t0", f"-d{json_file}", "-u"])
     process = run(command)
 
-    utils.print_stdout_stderr(capfd)
+    unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
+    assert load_content(json_file) == ">>>8<<<"
 
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
-        assert data["choices"][0]["message"]["content"] == ">>>8<<<"
+
+def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
+    prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
+
+    command.extend(["run", f"-r{prompt}", "-t0", f"-d{json_file}", "-u"])
+    process = run(command)
+
+    unpack_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
+    assert load_content(json_file) == ">>>8<<<"
+
+
+def test_read_from_inputfile(
+    json_file: str, command: list[str], inputfile: Path, capfd
+) -> None:
+    inputfile.write_text(PROMPT)
+
+    command.extend(["run", "-t0", f"-d{json_file}", "-u"])
+    process = run(command)
+
+    unpack_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
+    assert load_content(json_file) == ">>>8<<<"
 
 
 MESSAGES_BAD_TEMP = [
@@ -47,79 +71,36 @@ def test_invalid_temp(
     command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", f"-d{json_file}", "-u"])
     process = run(command)
 
-    utils.print_stdout_stderr(capfd)
+    unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
-        assert data["error"]["message"] == "Invalid 'temperature': " + message
-
-
-def test_read_from_file(json_file: str, command: list[str], capfd) -> None:
-    prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
-
-    command.extend(["run", f"-r{prompt}", "-t0", f"-d{json_file}", "-u"])
-    process = run(command)
-
-    utils.print_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
-        assert data["choices"][0]["message"]["content"] == ">>>8<<<"
-
-
-def test_read_from_inputfile(command: list[str], inputfile: Path, capfd) -> None:
-    inputfile.write_text(PROMPT)
-
-    command.extend(["run", "-u"])
-    process = run(command)
-
-    capture = capfd.readouterr()
-    print()
-    utils.print_stdout(capture.out)
-    utils.print_stderr(capture.err)
-
-    assert process.returncode == EX_OK
-    assert "Found an Inputfile in current working directory!" in capture.out
+    assert load_error(json_file) == f"Invalid 'temperature': {message}"
 
 
 def test_missing_prompt_file(command: list[str], capfd) -> None:
     command.extend(["run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u"])
     process = run(command)
 
-    capture = capfd.readouterr()
-    print()
-    utils.print_stdout(capture.out)
-    utils.print_stderr(capture.err)
-
-    assert process.returncode not in (EX_OK, utils.EX_MEM_LEAK)
-    assert "Could not open file '/tmp/yU8nnkRs.txt'" in capture.err
+    _, stderr = unpack_stdout_stderr(capfd)
+    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
+    assert "Could not open file '/tmp/yU8nnkRs.txt'" in stderr
 
 
 def test_invalid_dump_location(command: list[str], capfd) -> None:
     command.extend(["run", f"--prompt='{PROMPT}'", "--dump=/tmp/a/b/c", "-u"])
     process = run(command)
 
-    capture = capfd.readouterr()
-    print()
-    utils.print_stdout(capture.out)
-    utils.print_stderr(capture.err)
-
-    assert process.returncode not in (EX_OK, utils.EX_MEM_LEAK)
-    assert "Unable to open '/tmp/a/b/c'" in capture.err
+    _, stderr = unpack_stdout_stderr(capfd)
+    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
+    assert "Unable to open '/tmp/a/b/c'" in stderr
 
 
 def test_invalid_model(json_file: str, command: list[str], capfd) -> None:
     command.extend(["run", f"-p'{PROMPT}'", "-mfoobar", f"-d{json_file}", "-u"])
     process = run(command)
 
-    utils.print_stdout_stderr(capfd)
+    unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
-        assert (
-            data["error"]["message"]
-            == "The model `foobar` does not exist or you do not have access to it."
-        )
+    assert (
+        load_error(json_file)
+        == "The model `foobar` does not exist or you do not have access to it."
+    )

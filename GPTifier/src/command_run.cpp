@@ -4,10 +4,10 @@
 #include "configs.hpp"
 #include "help_messages.hpp"
 #include "input_selection.hpp"
+#include "testing.hpp"
 #include "utils.hpp"
 
 #include <chrono>
-#include <cstdlib>
 #include <ctime>
 #include <curl/curl.h>
 #include <fstream>
@@ -100,16 +100,12 @@ void select_chat_model(nlohmann::json &body, const std::string &model)
     }
 
     // I.e. default to using low cost model since we are running unit tests
-    const char *pytest_current_test = std::getenv("PYTEST_CURRENT_TEST");
-
-    if (pytest_current_test)
+    if (::is_test_running())
     {
-        std::cout << "Detected pytest run (" << pytest_current_test << ")\n";
         static std::string low_cost_model = "gpt-3.5-turbo";
-
         std::cout << "Defaulting to using a low cost model: " << low_cost_model << '\n';
-        body["model"] = low_cost_model;
 
+        body["model"] = low_cost_model;
         return;
     }
 
