@@ -195,6 +195,9 @@ $$
 
 Where 1536 is the dimension of the output vector corresponding to model `text-embedding-ada-002`. The cosine
 similarity of a set of such vectors can be used to evaluate the similarity between text.
+> [!NOTE]
+> See [Input selection](#input-selection) for more information regarding how to pass
+> embedding text into this command
 
 ### The `models` command
 This command returns a list of currently available models. Simply run:
