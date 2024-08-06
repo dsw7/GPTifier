@@ -70,7 +70,7 @@ The binary will be installed into whatever install directory is resolved by CMak
 ### Get `json.hpp`
 This project uses the [nlohmann/json](https://github.com/nlohmann/json) library. The compiler must be able to
 locate the `json.hpp` header file. If the `json.hpp` file does not exist anywhere, `cmake` will print out:
-```console
+```
 -- Checking if json.hpp exists anywhere
 -- Checking directory: /usr/include/c++/10
 -- Checking directory: /usr/include/x86_64-linux-gnu/c++/10
@@ -91,7 +91,7 @@ Running the script may require elevated privileges.
 This project uses the [TOML++](https://marzer.github.io/tomlplusplus/) configuration parser. The compiler must
 be able to locate the `toml.hpp` header file. If the `toml.hpp` file does not exist anywhere, `cmake` will
 print out:
-```console
+```
 -- Checking if toml.hpp exists anywhere
 -- Checking directory: /usr/include/c++/10
 -- Checking directory: /usr/include/x86_64-linux-gnu/c++/10
