@@ -171,6 +171,7 @@ gpt run --model gpt-4 --prompt "What is 3 + 5?"
 
 > [!TIP]
 > A full list of models can be found by running the [models command](#the-models-command)
+
 > [!NOTE]
 > See [Input selection](#input-selection) for more information regarding how to pass
 > a prompt into this command
