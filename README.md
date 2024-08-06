@@ -168,7 +168,12 @@ A chat completion can be run against an available model by specifying the model 
 ```console
 gpt run --model gpt-4 --prompt "What is 3 + 5?"
 ```
-A full list of models can be found by running the [models command](#the-models-command).
+
+> [!TIP]
+> A full list of models can be found by running the [models command](#the-models-command)
+> [!NOTE]
+> See [Input selection](#input-selection) for more information regarding how to pass
+> a prompt into this command
 
 ### The `embed` command
 This command converts some input text into a vector representation of the text. To use the command, run:
@@ -195,6 +200,7 @@ $$
 
 Where 1536 is the dimension of the output vector corresponding to model `text-embedding-ada-002`. The cosine
 similarity of a set of such vectors can be used to evaluate the similarity between text.
+
 > [!NOTE]
 > See [Input selection](#input-selection) for more information regarding how to pass
 > embedding text into this command
