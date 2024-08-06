@@ -22,6 +22,7 @@ A beautiful C++ libcurl / ChatGPT interface
     - [Specifying a model](#specifying-a-model)
   - [The `embed` command](#the-embed-command)
   - [The `models` command](#the-models-command)
+  - [Input selection](#input-selection)
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
   - [GPTifier administration via OpenAI platform](#gptifier-administration-via-openai-platform)
@@ -210,6 +211,24 @@ whisper-1                     openai-internal               2023-02-27 21:13:04
 davinci-002                   system                        2023-08-21 16:11:41
 ...                           ...                           ...
 ```
+
+### Input selection
+For certain commands, a hierarchy exists for choosing where input text comes from. The hierarchy roughly
+follows:
+
+1. **Check for raw input via command line option**:
+    - If raw input is provided through a command line option, use this input.
+      Example: `gpt run -p "What is 3 + 5?"` or `gpt embed -i "A foo that bars"`
+
+2. **Check for input file specified via command line**:
+    - If a file path is provided as a command line argument, read from this file.
+      Example: `gpt [run | embed] -r <filename>`
+
+3. **Check for a default input file in the current working directory**:
+    - If a file named `Inputfile` exists in the current directory, read from this file. Analogous to a `Makefile`.
+
+4. **Read from stdin**:
+    - If none of the above conditions are met, read input from standard input (stdin).
 
 ## Integrations
 ### Coupling with `vim`
