@@ -5,8 +5,8 @@
 #include "utils.hpp"
 
 #include <curl/curl.h>
+#include <fmt/core.h>
 #include <getopt.h>
-#include <iomanip>
 #include <iostream>
 #include <json.hpp>
 #include <stdexcept>
@@ -56,6 +56,11 @@ void query_models_api(::CURL *curl, std::string &response)
     }
 }
 
+void print_row(const std::string &id, const std::string &owned_by, const std::string &creation_time)
+{
+    std::cout << fmt::format("{:<30}{:<30}{}\n", id, owned_by, creation_time);
+}
+
 void print_models_response(const std::string &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
@@ -68,8 +73,7 @@ void print_models_response(const std::string &response)
     }
 
     ::print_separator();
-    std::cout << std::setw(30) << std::left << "Model ID" << std::setw(30) << std::left << "Owner"
-              << "Creation time\n";
+    ::print_row("Model ID", "Owner", "Creation time");
     ::print_separator();
 
     for (const auto &entry : results["data"])
@@ -77,8 +81,7 @@ void print_models_response(const std::string &response)
         std::string id = entry["id"];
         std::string owned_by = entry["owned_by"];
         std::string creation_time = ::datetime_from_unix_timestamp(entry["created"]);
-        std::cout << std::setw(30) << std::left << id << std::setw(30) << std::left << owned_by << creation_time
-                  << "\n";
+        ::print_row(id, owned_by, creation_time);
     }
 
     ::print_separator();
