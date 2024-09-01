@@ -140,8 +140,6 @@ void command_embed(const int argc, char **argv)
     std::string post_fields;
     ::get_post_fields(post_fields, params);
 
-    std::string response;
-    ::query_embeddings_api(post_fields, response);
-
+    std::string response = query_embeddings_api(post_fields);
     ::export_embedding(response, params.input);
 }

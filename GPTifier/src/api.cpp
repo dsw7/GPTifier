@@ -95,9 +95,10 @@ const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
 const std::string URL_MODELS = "https://api.openai.com/v1/models";
 } // namespace Endpoints
 
-void query_models_api(std::string &response)
+std::string query_models_api()
 {
     Curl curl;
+    std::string response;
 
     curl_easy_setopt(curl.handle, CURLOPT_URL, Endpoints::URL_MODELS.c_str());
     curl_easy_setopt(curl.handle, CURLOPT_HTTPGET, 1L);
@@ -110,11 +111,13 @@ void query_models_api(std::string &response)
         std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
         throw std::runtime_error(errmsg);
     }
+    return response;
 }
 
-void query_embeddings_api(const std::string &post_fields, std::string &response)
+std::string query_embeddings_api(const std::string &post_fields)
 {
     Curl curl;
+    std::string response;
 
     curl_easy_setopt(curl.handle, CURLOPT_URL, Endpoints::URL_EMBEDDINGS.c_str());
     curl_easy_setopt(curl.handle, CURLOPT_POST, 1L);
@@ -128,11 +131,13 @@ void query_embeddings_api(const std::string &post_fields, std::string &response)
         std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
         throw std::runtime_error(errmsg);
     }
+    return response;
 }
 
-void query_chat_completion_api(const std::string &post_fields, std::string &response)
+std::string query_chat_completion_api(const std::string &post_fields)
 {
     Curl curl;
+    std::string response;
 
     curl_easy_setopt(curl.handle, CURLOPT_URL, Endpoints::URL_CHAT_COMPLETIONS.c_str());
     curl_easy_setopt(curl.handle, CURLOPT_POST, 1L);
@@ -146,4 +151,5 @@ void query_chat_completion_api(const std::string &post_fields, std::string &resp
         std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
         throw std::runtime_error(errmsg);
     }
+    return response;
 }

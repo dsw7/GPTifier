@@ -317,15 +317,15 @@ void command_run(const int argc, char **argv)
     std::string post_fields;
     ::get_post_fields(post_fields, params);
 
-    std::string response;
-
     ::RUN_TIMER = true;
     std::thread timer(::time_api_call);
+
     bool query_failed = false;
+    std::string response;
 
     try
     {
-        ::query_chat_completion_api(post_fields, response);
+        response = query_chat_completion_api(post_fields);
     }
     catch (std::runtime_error &e)
     {

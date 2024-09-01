@@ -80,8 +80,6 @@ void command_models(const int argc, char **argv)
         return;
     }
 
-    std::string response;
-
-    query_models_api(response);
+    std::string response = query_models_api();
     ::print_models_response(response);
 }
