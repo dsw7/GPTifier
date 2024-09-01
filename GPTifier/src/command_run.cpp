@@ -9,7 +9,6 @@
 
 #include <chrono>
 #include <ctime>
-#include <curl/curl.h>
 #include <fstream>
 #include <getopt.h>
 #include <iostream>
@@ -168,31 +167,6 @@ void time_api_call()
     ::print_separator();
 }
 
-void query_chat_completion_api(::CURL *curl, const std::string &post_fields, std::string &response)
-{
-    static std::string url_chat_completions = "https://api.openai.com/v1/chat/completions";
-    ::curl_easy_setopt(curl, ::CURLOPT_URL, url_chat_completions.c_str());
-
-    ::curl_easy_setopt(curl, ::CURLOPT_POST, 1L);
-    ::curl_easy_setopt(curl, ::CURLOPT_POSTFIELDS, post_fields.c_str());
-
-    ::curl_easy_setopt(curl, ::CURLOPT_WRITEDATA, &response);
-
-    ::RUN_TIMER = true;
-    std::thread timer(::time_api_call);
-
-    ::CURLcode rv = ::curl_easy_perform(curl);
-
-    ::RUN_TIMER = false;
-    timer.join();
-
-    if (rv != ::CURLE_OK)
-    {
-        std::string errmsg = "Failed to run query. " + std::string(::curl_easy_strerror(rv));
-        throw std::runtime_error(errmsg);
-    }
-}
-
 void print_chat_completion_response(const std::string &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
@@ -343,9 +317,29 @@ void command_run(const int argc, char **argv)
     std::string post_fields;
     ::get_post_fields(post_fields, params);
 
-    Curl curl;
     std::string response;
-    ::query_chat_completion_api(curl.handle, post_fields, response);
+
+    ::RUN_TIMER = true;
+    std::thread timer(::time_api_call);
+    bool query_failed = false;
+
+    try
+    {
+        ::query_chat_completion_api(post_fields, response);
+    }
+    catch (std::runtime_error &e)
+    {
+        query_failed = true;
+        std::cerr << e.what() << '\n';
+    }
+
+    ::RUN_TIMER = false;
+    timer.join();
+
+    if (query_failed)
+    {
+        throw std::runtime_error("Cannot proceed");
+    }
 
     if (params.json_dump_file.empty())
     {

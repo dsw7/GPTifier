@@ -113,3 +113,23 @@ void query_embeddings_api(const std::string &post_fields, std::string &response)
         throw std::runtime_error(errmsg);
     }
 }
+
+void query_chat_completion_api(const std::string &post_fields, std::string &response)
+{
+    static std::string url_chat_completions = "https://api.openai.com/v1/chat/completions";
+
+    Curl curl;
+
+    curl_easy_setopt(curl.handle, CURLOPT_URL, url_chat_completions.c_str());
+    curl_easy_setopt(curl.handle, CURLOPT_POST, 1L);
+    curl_easy_setopt(curl.handle, CURLOPT_POSTFIELDS, post_fields.c_str());
+    curl_easy_setopt(curl.handle, CURLOPT_WRITEDATA, &response);
+
+    CURLcode rv = curl_easy_perform(curl.handle);
+
+    if (rv != CURLE_OK)
+    {
+        std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
+        throw std::runtime_error(errmsg);
+    }
+}
