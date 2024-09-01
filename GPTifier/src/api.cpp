@@ -88,13 +88,18 @@ Curl::~Curl()
 
 } // namespace
 
+namespace Endpoints
+{
+const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
+const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
+const std::string URL_MODELS = "https://api.openai.com/v1/models";
+} // namespace Endpoints
+
 void query_models_api(std::string &response)
 {
-    static std::string url_get_models = "https://api.openai.com/v1/models";
-
     Curl curl;
 
-    curl_easy_setopt(curl.handle, CURLOPT_URL, url_get_models.c_str());
+    curl_easy_setopt(curl.handle, CURLOPT_URL, Endpoints::URL_MODELS.c_str());
     curl_easy_setopt(curl.handle, CURLOPT_HTTPGET, 1L);
     curl_easy_setopt(curl.handle, CURLOPT_WRITEDATA, &response);
 
@@ -109,11 +114,9 @@ void query_models_api(std::string &response)
 
 void query_embeddings_api(const std::string &post_fields, std::string &response)
 {
-    static std::string url_embeddings = "https://api.openai.com/v1/embeddings";
-
     Curl curl;
 
-    curl_easy_setopt(curl.handle, CURLOPT_URL, url_embeddings.c_str());
+    curl_easy_setopt(curl.handle, CURLOPT_URL, Endpoints::URL_EMBEDDINGS.c_str());
     curl_easy_setopt(curl.handle, CURLOPT_POST, 1L);
     curl_easy_setopt(curl.handle, CURLOPT_POSTFIELDS, post_fields.c_str());
     curl_easy_setopt(curl.handle, CURLOPT_WRITEDATA, &response);
@@ -129,11 +132,9 @@ void query_embeddings_api(const std::string &post_fields, std::string &response)
 
 void query_chat_completion_api(const std::string &post_fields, std::string &response)
 {
-    static std::string url_chat_completions = "https://api.openai.com/v1/chat/completions";
-
     Curl curl;
 
-    curl_easy_setopt(curl.handle, CURLOPT_URL, url_chat_completions.c_str());
+    curl_easy_setopt(curl.handle, CURLOPT_URL, Endpoints::URL_CHAT_COMPLETIONS.c_str());
     curl_easy_setopt(curl.handle, CURLOPT_POST, 1L);
     curl_easy_setopt(curl.handle, CURLOPT_POSTFIELDS, post_fields.c_str());
     curl_easy_setopt(curl.handle, CURLOPT_WRITEDATA, &response);
