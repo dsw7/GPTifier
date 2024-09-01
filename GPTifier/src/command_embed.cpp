@@ -92,7 +92,6 @@ void get_post_fields(std::string &post_fields, const EmbeddingParameters &params
     ::print_separator();
 }
 
-
 void export_embedding(const std::string &response, const std::string &input)
 {
     nlohmann::json results = nlohmann::json::parse(response);
