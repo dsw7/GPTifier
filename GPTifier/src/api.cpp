@@ -32,6 +32,8 @@ class Curl
 public:
     Curl();
     ~Curl();
+    std::string get(const std::string &endpoint);
+    std::string post(const std::string &endpoint, const std::string &post_fields);
 
     CURL *handle = NULL;
 
@@ -86,6 +88,43 @@ Curl::~Curl()
     curl_global_cleanup();
 }
 
+std::string Curl::get(const std::string &endpoint)
+{
+    std::string response;
+
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
+    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+
+    CURLcode rv = curl_easy_perform(this->handle);
+    if (rv != CURLE_OK)
+    {
+        std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
+        throw std::runtime_error(errmsg);
+    }
+
+    return response;
+}
+
+std::string Curl::post(const std::string &endpoint, const std::string &post_fields)
+{
+    std::string response;
+
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
+    curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+
+    CURLcode rv = curl_easy_perform(this->handle);
+    if (rv != CURLE_OK)
+    {
+        std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
+        throw std::runtime_error(errmsg);
+    }
+
+    return response;
+}
+
 } // namespace
 
 namespace Endpoints
@@ -98,58 +137,17 @@ const std::string URL_MODELS = "https://api.openai.com/v1/models";
 std::string query_models_api()
 {
     Curl curl;
-    std::string response;
-
-    curl_easy_setopt(curl.handle, CURLOPT_URL, Endpoints::URL_MODELS.c_str());
-    curl_easy_setopt(curl.handle, CURLOPT_HTTPGET, 1L);
-    curl_easy_setopt(curl.handle, CURLOPT_WRITEDATA, &response);
-
-    CURLcode rv = curl_easy_perform(curl.handle);
-
-    if (rv != CURLE_OK)
-    {
-        std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
-        throw std::runtime_error(errmsg);
-    }
-    return response;
+    return curl.get(Endpoints::URL_MODELS);
 }
 
 std::string query_embeddings_api(const std::string &post_fields)
 {
     Curl curl;
-    std::string response;
-
-    curl_easy_setopt(curl.handle, CURLOPT_URL, Endpoints::URL_EMBEDDINGS.c_str());
-    curl_easy_setopt(curl.handle, CURLOPT_POST, 1L);
-    curl_easy_setopt(curl.handle, CURLOPT_POSTFIELDS, post_fields.c_str());
-    curl_easy_setopt(curl.handle, CURLOPT_WRITEDATA, &response);
-
-    CURLcode rv = curl_easy_perform(curl.handle);
-
-    if (rv != CURLE_OK)
-    {
-        std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
-        throw std::runtime_error(errmsg);
-    }
-    return response;
+    return curl.post(Endpoints::URL_EMBEDDINGS, post_fields);
 }
 
 std::string query_chat_completion_api(const std::string &post_fields)
 {
     Curl curl;
-    std::string response;
-
-    curl_easy_setopt(curl.handle, CURLOPT_URL, Endpoints::URL_CHAT_COMPLETIONS.c_str());
-    curl_easy_setopt(curl.handle, CURLOPT_POST, 1L);
-    curl_easy_setopt(curl.handle, CURLOPT_POSTFIELDS, post_fields.c_str());
-    curl_easy_setopt(curl.handle, CURLOPT_WRITEDATA, &response);
-
-    CURLcode rv = curl_easy_perform(curl.handle);
-
-    if (rv != CURLE_OK)
-    {
-        std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
-        throw std::runtime_error(errmsg);
-    }
-    return response;
+    return curl.post(Endpoints::URL_CHAT_COMPLETIONS, post_fields);
 }
