@@ -1,6 +1,7 @@
 #pragma once
 
 #include <curl/curl.h>
+#include <string>
 
 class Curl
 {
@@ -13,3 +14,5 @@ public:
 
     ::CURL *handle = NULL;
 };
+
+void query_models_api(std::string &response);

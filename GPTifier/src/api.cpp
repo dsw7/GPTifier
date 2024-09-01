@@ -74,3 +74,22 @@ Curl::~Curl()
 
     curl_global_cleanup();
 }
+
+void query_models_api(std::string &response)
+{
+    static std::string url_get_models = "https://api.openai.com/v1/models";
+
+    Curl curl;
+
+    curl_easy_setopt(curl.handle, CURLOPT_URL, url_get_models.c_str());
+    curl_easy_setopt(curl.handle, CURLOPT_HTTPGET, 1L);
+    curl_easy_setopt(curl.handle, CURLOPT_WRITEDATA, &response);
+
+    CURLcode rv = curl_easy_perform(curl.handle);
+
+    if (rv != CURLE_OK)
+    {
+        std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
+        throw std::runtime_error(errmsg);
+    }
+}

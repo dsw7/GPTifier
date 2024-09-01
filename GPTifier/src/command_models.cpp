@@ -4,7 +4,6 @@
 #include "help_messages.hpp"
 #include "utils.hpp"
 
-#include <curl/curl.h>
 #include <fmt/core.h>
 #include <getopt.h>
 #include <iostream>
@@ -37,22 +36,6 @@ void read_cli_models(const int argc, char **argv)
             std::cerr << "Try running with -h or --help for more information\n";
             ::exit(EXIT_FAILURE);
         }
-    }
-}
-
-void query_models_api(::CURL *curl, std::string &response)
-{
-    static std::string url_get_models = "https://api.openai.com/v1/models";
-    ::curl_easy_setopt(curl, ::CURLOPT_URL, url_get_models.c_str());
-
-    ::curl_easy_setopt(curl, ::CURLOPT_HTTPGET, 1L);
-    ::curl_easy_setopt(curl, ::CURLOPT_WRITEDATA, &response);
-
-    ::CURLcode rv = ::curl_easy_perform(curl);
-    if (rv != ::CURLE_OK)
-    {
-        std::string errmsg = "Failed to run query. " + std::string(::curl_easy_strerror(rv));
-        throw std::runtime_error(errmsg);
     }
 }
 
@@ -97,9 +80,8 @@ void command_models(const int argc, char **argv)
         return;
     }
 
-    Curl curl;
     std::string response;
 
-    ::query_models_api(curl.handle, response);
+    query_models_api(response);
     ::print_models_response(response);
 }
