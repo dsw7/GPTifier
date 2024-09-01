@@ -13,7 +13,10 @@
 #include <stdexcept>
 #include <string>
 
-struct EmbeddingParameters
+namespace
+{
+
+struct ParamsEmbedding
 {
     bool print_help = false;
     std::string input;
@@ -21,8 +24,10 @@ struct EmbeddingParameters
     std::string model;
 };
 
-void read_cli_embed(const int argc, char **argv, EmbeddingParameters &params)
+ParamsEmbedding read_cli_embed(const int argc, char **argv)
 {
+    ParamsEmbedding params;
+
     while (true)
     {
         static struct option long_options[] = {{"help", no_argument, 0, 'h'},
@@ -32,7 +37,7 @@ void read_cli_embed(const int argc, char **argv, EmbeddingParameters &params)
                                                {0, 0, 0, 0}};
 
         int option_index = 0;
-        int c = ::getopt_long(argc, argv, "hm:i:r:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hm:i:r:", long_options, &option_index);
 
         if (c == -1)
         {
@@ -45,51 +50,56 @@ void read_cli_embed(const int argc, char **argv, EmbeddingParameters &params)
             params.print_help = true;
             break;
         case 'm':
-            params.model = ::optarg;
+            params.model = optarg;
             break;
         case 'i':
-            params.input = ::optarg;
+            params.input = optarg;
             break;
         case 'r':
-            params.input_file = ::optarg;
+            params.input_file = optarg;
             break;
         default:
             std::cerr << "Try running with -h or --help for more information\n";
-            ::exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         }
     }
+
+    return params;
 }
 
-void select_embedding_model(nlohmann::json &body, const std::string &model)
+nlohmann::json select_embedding_model(const std::string &model)
 {
+    nlohmann::json body = {};
+
     // I.e. model was passed via command line option
     if (not model.empty())
     {
         body["model"] = model;
-        return;
+        return body;
     }
 
     // I.e. load default model from configuration file
-    if (not ::configs.embeddings.model.empty())
+    if (not configs.embeddings.model.empty())
     {
-        body["model"] = ::configs.embeddings.model;
-        return;
+        body["model"] = configs.embeddings.model;
+        return body;
     }
 
     throw std::runtime_error("No model provided via configuration file or command line");
 }
 
-void get_post_fields(std::string &post_fields, const EmbeddingParameters &params)
+std::string get_post_fields(const ParamsEmbedding &params)
 {
-    nlohmann::json body = {};
-    ::select_embedding_model(body, params.model);
+    nlohmann::json body = select_embedding_model(params.model);
 
     body["input"] = params.input;
-    post_fields = body.dump(2);
+    std::string post_fields = body.dump(2);
 
-    ::print_separator();
+    print_separator();
     std::cout << "\033[1mRequest:\033[0m " + post_fields + '\n';
-    ::print_separator();
+    print_separator();
+
+    return post_fields;
 }
 
 void export_embedding(const std::string &response, const std::string &input)
@@ -103,7 +113,7 @@ void export_embedding(const std::string &response, const std::string &input)
         std::cerr << "\033[1mError:\033[31m " + error + "\033[0m\n";
     }
 
-    std::string path_embedding_json = ::get_proj_home_dir() + "/embeddings.gpt";
+    std::string path_embedding_json = get_proj_home_dir() + "/embeddings.gpt";
 
     std::cout << "Dumping JSON to " + path_embedding_json + '\n';
     std::ofstream st_filename(path_embedding_json);
@@ -113,17 +123,17 @@ void export_embedding(const std::string &response, const std::string &input)
         throw std::runtime_error("Unable to open '" + path_embedding_json + "'");
     }
 
-    static short int indent_pretty_print = 2;
-    st_filename << std::setw(indent_pretty_print) << results;
+    st_filename << std::setw(2) << results;
     st_filename.close();
 
-    ::print_separator();
+    print_separator();
 }
+
+} // namespace
 
 void command_embed(const int argc, char **argv)
 {
-    EmbeddingParameters params;
-    ::read_cli_embed(argc, argv, params);
+    ParamsEmbedding params = read_cli_embed(argc, argv);
 
     if (params.print_help)
     {
@@ -133,13 +143,11 @@ void command_embed(const int argc, char **argv)
 
     if (params.input.empty())
     {
-        ::print_separator();
-        ::load_input_text(params.input, params.input_file);
+        print_separator();
+        load_input_text(params.input, params.input_file);
     }
 
-    std::string post_fields;
-    ::get_post_fields(post_fields, params);
-
+    std::string post_fields = get_post_fields(params);
     std::string response = query_embeddings_api(post_fields);
-    ::export_embedding(response, params.input);
+    export_embedding(response, params.input);
 }
