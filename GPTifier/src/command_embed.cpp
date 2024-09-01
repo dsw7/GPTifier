@@ -110,7 +110,7 @@ void export_embedding(const std::string &response, const std::string &input)
     if (results.contains("error"))
     {
         std::string error = results["error"]["message"];
-        std::cerr << "\033[1mError:\033[31m " + error + "\033[0m\n";
+        print_error_from_api(error);
     }
 
     std::string path_embedding_json = get_proj_home_dir() + "/embeddings.gpt";

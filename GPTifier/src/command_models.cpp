@@ -56,7 +56,7 @@ void print_models_response(const std::string &response)
     if (results.contains("error"))
     {
         std::string error = results["error"]["message"];
-        std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
+        print_error_from_api(error);
         return;
     }
 
