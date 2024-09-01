@@ -2,6 +2,7 @@
 #include "configs.hpp"
 
 #include <cstdlib>
+#include <curl/curl.h>
 #include <stdexcept>
 #include <string>
 
@@ -26,7 +27,17 @@ const std::string get_api_key()
     return std::string();
 }
 
-} // namespace
+class Curl
+{
+public:
+    Curl();
+    ~Curl();
+
+    CURL *handle = NULL;
+
+private:
+    struct curl_slist *headers = NULL;
+};
 
 Curl::Curl()
 {
@@ -74,6 +85,8 @@ Curl::~Curl()
 
     curl_global_cleanup();
 }
+
+} // namespace
 
 void query_models_api(std::string &response)
 {
