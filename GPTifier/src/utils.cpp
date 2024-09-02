@@ -2,7 +2,6 @@
 
 #include <cstdlib>
 #include <filesystem>
-#include <fmt/core.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -27,11 +26,6 @@ void print_separator()
 {
     static unsigned short columns = ::get_terminal_columns();
     std::cout << std::string(columns, '-') + "\n";
-}
-
-void print_error_from_api(const std::string &message)
-{
-    std::cout << fmt::format("\033[1mError:\033[31m {}\033[0m\n", message);
 }
 
 std::string get_proj_home_dir()

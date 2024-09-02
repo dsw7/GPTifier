@@ -2,6 +2,7 @@
 
 #include "api.hpp"
 #include "help_messages.hpp"
+#include "reporting.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -56,7 +57,7 @@ void print_models_response(const std::string &response)
     if (results.contains("error"))
     {
         std::string error = results["error"]["message"];
-        print_error_from_api(error);
+        Reporting::print_error(error);
         return;
     }
 

@@ -69,6 +69,7 @@ add_executable(
   "src/help_messages.cpp"
   "src/input_selection.cpp"
   "src/main.cpp"
+  "src/reporting.cpp"
   "src/testing.cpp"
   "src/utils.cpp"
 )

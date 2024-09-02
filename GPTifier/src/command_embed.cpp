@@ -4,6 +4,7 @@
 #include "configs.hpp"
 #include "help_messages.hpp"
 #include "input_selection.hpp"
+#include "reporting.hpp"
 #include "utils.hpp"
 
 #include <fstream>
@@ -110,7 +111,7 @@ void export_embedding(const std::string &response, const std::string &input)
     if (results.contains("error"))
     {
         std::string error = results["error"]["message"];
-        print_error_from_api(error);
+        Reporting::print_error(error);
     }
 
     std::string path_embedding_json = get_proj_home_dir() + "/embeddings.gpt";
