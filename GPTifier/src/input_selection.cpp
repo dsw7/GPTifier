@@ -12,7 +12,7 @@ namespace
 
 std::string get_text_from_cli_specified_file(const std::string &filename)
 {
-    log_test("Loaded input text from custom file");
+    testing::log_test("Loaded input text from custom file");
     return read_text_from_file(filename);
 }
 
@@ -32,7 +32,7 @@ std::string get_text_from_inputfile()
         return text;
     }
 
-    log_test("Loaded input text from Inputfile");
+    testing::log_test("Loaded input text from Inputfile");
     std::cout << "Found an Inputfile in current working directory!\n";
 
     text = read_text_from_file(inputfile);
@@ -45,7 +45,7 @@ std::string get_text_from_stdin()
     std::string text;
 
     std::getline(std::cin, text);
-    log_test("Loaded input text from stdin");
+    testing::log_test("Loaded input text from stdin");
 
     return text;
 }

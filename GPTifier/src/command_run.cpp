@@ -108,7 +108,7 @@ nlohmann::json select_chat_model(const std::string &model)
     }
 
     // I.e. default to using low cost model since we are running unit tests
-    if (::is_test_running())
+    if (testing::is_test_running())
     {
         static std::string low_cost_model = "gpt-3.5-turbo";
         std::cout << "Defaulting to using a low cost model: " << low_cost_model << '\n';
