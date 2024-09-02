@@ -161,18 +161,16 @@ void print_chat_completion_response(const std::string &response)
 
     if (results.contains("error"))
     {
-        std::string error = results["error"]["message"];
-        results["error"]["message"] = "<See Results section>";
-
         Reporting::print_response(results.dump(2));
         print_separator();
 
-        std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
+        std::string error = results["error"]["message"];
+        Reporting::print_error(error);
     }
     else
     {
         std::string content = results["choices"][0]["message"]["content"];
-        results["choices"][0]["message"]["content"] = "<See Results section>";
+        results["choices"][0]["message"]["content"] = "...";
 
         Reporting::print_response(results.dump(2));
         print_separator();
