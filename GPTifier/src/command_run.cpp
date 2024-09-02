@@ -17,7 +17,10 @@
 #include <string>
 #include <thread>
 
-struct RunParameters
+namespace
+{
+
+struct ParamsRun
 {
     bool enable_export = true;
     bool print_help = false;
@@ -36,8 +39,9 @@ struct Completion
     std::time_t created = 0;
 };
 
-void read_cli_run(const int argc, char **argv, RunParameters &params)
+ParamsRun read_cli_run(const int argc, char **argv)
 {
+    ParamsRun params;
     while (true)
     {
         static struct option long_options[] = {
@@ -52,7 +56,7 @@ void read_cli_run(const int argc, char **argv, RunParameters &params)
         };
 
         int option_index = 0;
-        int c = ::getopt_long(argc, argv, "hud:m:p:r:t:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hud:m:p:r:t:", long_options, &option_index);
 
         if (c == -1)
         {
@@ -68,34 +72,38 @@ void read_cli_run(const int argc, char **argv, RunParameters &params)
             params.enable_export = false;
             break;
         case 'd':
-            params.json_dump_file = ::optarg;
+            params.json_dump_file = optarg;
             break;
         case 'p':
-            params.prompt = ::optarg;
+            params.prompt = optarg;
             break;
         case 't':
-            params.temperature = ::optarg;
+            params.temperature = optarg;
             break;
         case 'r':
-            params.prompt_file = ::optarg;
+            params.prompt_file = optarg;
             break;
         case 'm':
-            params.model = ::optarg;
+            params.model = optarg;
             break;
         default:
             std::cerr << "Try running with -h or --help for more information\n";
-            ::exit(EXIT_FAILURE);
+            exit(EXIT_FAILURE);
         }
     };
+
+    return params;
 }
 
-void select_chat_model(nlohmann::json &body, const std::string &model)
+nlohmann::json select_chat_model(const std::string &model)
 {
+    nlohmann::json body = {};
+
     // I.e. model was passed via command line option
     if (not model.empty())
     {
         body["model"] = model;
-        return;
+        return body;
     }
 
     // I.e. default to using low cost model since we are running unit tests
@@ -105,23 +113,22 @@ void select_chat_model(nlohmann::json &body, const std::string &model)
         std::cout << "Defaulting to using a low cost model: " << low_cost_model << '\n';
 
         body["model"] = low_cost_model;
-        return;
+        return body;
     }
 
     // I.e. load default model from configuration file
-    if (not ::configs.chat.model.empty())
+    if (not configs.chat.model.empty())
     {
-        body["model"] = ::configs.chat.model;
-        return;
+        body["model"] = configs.chat.model;
+        return body;
     }
 
     throw std::runtime_error("No model provided via configuration file or command line");
 }
 
-void get_post_fields(std::string &post_fields, const RunParameters &params)
+std::string get_post_fields(const ParamsRun &params)
 {
-    nlohmann::json body = {};
-    ::select_chat_model(body, params.model);
+    nlohmann::json body = select_chat_model(params.model);
 
     try
     {
@@ -138,33 +145,13 @@ void get_post_fields(std::string &post_fields, const RunParameters &params)
     messages["content"] = params.prompt;
 
     body["messages"] = nlohmann::json::array({messages});
-    post_fields = body.dump(2);
+    std::string post_fields = body.dump(2);
 
-    ::print_separator();
+    print_separator();
     std::cout << "\033[1mRequest:\033[0m " + post_fields + '\n';
-    ::print_separator();
-}
+    print_separator();
 
-bool RUN_TIMER = false;
-
-void time_api_call()
-{
-    auto delay = std::chrono::milliseconds(250);
-    auto start = std::chrono::high_resolution_clock::now();
-
-    while (::RUN_TIMER)
-    {
-        std::this_thread::sleep_for(delay);
-
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> duration = end - start;
-
-        std::cout << "\033[1mTime (s):\033[0m " << duration.count() << "\r";
-        std::cout.flush();
-    }
-
-    std::cout << "\n";
-    ::print_separator();
+    return post_fields;
 }
 
 void print_chat_completion_response(const std::string &response)
@@ -177,7 +164,7 @@ void print_chat_completion_response(const std::string &response)
         results["error"]["message"] = "<See Results section>";
 
         std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
-        ::print_separator();
+        print_separator();
 
         std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
     }
@@ -187,17 +174,17 @@ void print_chat_completion_response(const std::string &response)
         results["choices"][0]["message"]["content"] = "<See Results section>";
 
         std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
-        ::print_separator();
+        print_separator();
 
         std::cout << "\033[1mResults:\033[32m " + content + "\033[0m\n";
     }
 
-    ::print_separator();
+    print_separator();
 }
 
 void write_message_to_file(const Completion &completion)
 {
-    std::string path_completion = ::get_proj_home_dir() + "/completions.gpt";
+    std::string path_completion = get_proj_home_dir() + "/completions.gpt";
 
     std::cout << "> Writing reply to file " + path_completion + '\n';
 
@@ -207,7 +194,7 @@ void write_message_to_file(const Completion &completion)
         throw std::runtime_error("Unable to open " + path_completion);
     }
 
-    std::string created = ::datetime_from_unix_timestamp(completion.created);
+    std::string created = datetime_from_unix_timestamp(completion.created);
 
     static int column_width = 110;
     std::string sep_outer(column_width, '=');
@@ -232,7 +219,7 @@ void export_chat_completion_response(const std::string &response, const std::str
     if (results.contains("error"))
     {
         std::cerr << "Cannot export results as error occurred\n";
-        ::print_separator();
+        print_separator();
         return;
     }
 
@@ -257,7 +244,7 @@ void export_chat_completion_response(const std::string &response, const std::str
     if (choice.compare("n") == 0)
     {
         std::cout << "> Not exporting response.\n";
-        ::print_separator();
+        print_separator();
         return;
     }
 
@@ -276,8 +263,8 @@ void export_chat_completion_response(const std::string &response, const std::str
         throw std::runtime_error(errmsg);
     }
 
-    ::write_message_to_file(completion);
-    ::print_separator();
+    write_message_to_file(completion);
+    print_separator();
 }
 
 void dump_chat_completion_response(const std::string &response, const std::string &json_dump_file)
@@ -291,16 +278,38 @@ void dump_chat_completion_response(const std::string &response, const std::strin
     }
 
     nlohmann::json results = nlohmann::json::parse(response);
-    static short int indent_pretty_print = 2;
 
-    st_filename << std::setw(indent_pretty_print) << results;
+    st_filename << std::setw(2) << results;
     st_filename.close();
 }
 
+bool timer_enabled = false;
+
+void time_api_call()
+{
+    auto delay = std::chrono::milliseconds(250);
+    auto start = std::chrono::high_resolution_clock::now();
+
+    while (timer_enabled)
+    {
+        std::this_thread::sleep_for(delay);
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = end - start;
+
+        std::cout << "\033[1mTime (s):\033[0m " << duration.count() << "\r";
+        std::cout.flush();
+    }
+
+    std::cout << "\n";
+    print_separator();
+}
+
+} // namespace
+
 void command_run(const int argc, char **argv)
 {
-    RunParameters params;
-    ::read_cli_run(argc, argv, params);
+    ParamsRun params = read_cli_run(argc, argv);
 
     if (params.print_help)
     {
@@ -310,15 +319,14 @@ void command_run(const int argc, char **argv)
 
     if (params.prompt.empty())
     {
-        ::print_separator();
-        ::load_input_text(params.prompt, params.prompt_file);
+        print_separator();
+        load_input_text(params.prompt, params.prompt_file);
     }
 
-    std::string post_fields;
-    ::get_post_fields(post_fields, params);
+    std::string post_fields = get_post_fields(params);
 
-    ::RUN_TIMER = true;
-    std::thread timer(::time_api_call);
+    timer_enabled = true;
+    std::thread timer(time_api_call);
 
     bool query_failed = false;
     std::string response;
@@ -333,7 +341,7 @@ void command_run(const int argc, char **argv)
         std::cerr << e.what() << '\n';
     }
 
-    ::RUN_TIMER = false;
+    timer_enabled = false;
     timer.join();
 
     if (query_failed)
@@ -343,14 +351,14 @@ void command_run(const int argc, char **argv)
 
     if (params.json_dump_file.empty())
     {
-        ::print_chat_completion_response(response);
+        print_chat_completion_response(response);
         if (params.enable_export)
         {
-            ::export_chat_completion_response(response, params.prompt);
+            export_chat_completion_response(response, params.prompt);
         }
     }
     else
     {
-        ::dump_chat_completion_response(response, params.json_dump_file);
+        dump_chat_completion_response(response, params.json_dump_file);
     }
 }
