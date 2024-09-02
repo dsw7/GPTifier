@@ -7,7 +7,7 @@
 
 void Configs::load_configs_from_config_file()
 {
-    static std::string path_toml = ::get_proj_home_dir() + "/gptifier.toml";
+    static std::string path_toml = get_proj_home_dir() + "/gptifier.toml";
 
     if (not std::filesystem::exists(path_toml))
     {
