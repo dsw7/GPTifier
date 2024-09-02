@@ -19,4 +19,9 @@ void print_response(const std::string &response)
     std::cout << fmt::format("\033[1mResponse:\033[0m {}\n", response);
 }
 
+void print_results(const std::string &results)
+{
+    std::cout << fmt::format("\033[1mResults:\033[32m {}\033[0m\n", results);
+}
+
 } // namespace Reporting

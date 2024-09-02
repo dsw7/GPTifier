@@ -176,8 +176,7 @@ void print_chat_completion_response(const std::string &response)
 
         Reporting::print_response(results.dump(2));
         print_separator();
-
-        std::cout << "\033[1mResults:\033[32m " + content + "\033[0m\n";
+        Reporting::print_results(content);
     }
 
     print_separator();
