@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <filesystem>
+#include <fmt/core.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -20,7 +21,8 @@ std::string get_proj_home_dir()
 
     if (not std::filesystem::exists(proj_home_dir))
     {
-        throw std::runtime_error("Could not locate '~/.gptifier' project home directory!");
+        std::string errmsg = fmt::format("Could not locate '{}'", proj_home_dir);
+        throw std::runtime_error(errmsg);
     }
 
     return proj_home_dir;
@@ -35,19 +37,21 @@ std::string datetime_from_unix_timestamp(const std::time_t &timestamp)
     return buffer;
 }
 
-void read_text_from_file(const std::string &filename, std::string &text)
+std::string read_text_from_file(const std::string &filename)
 {
-    std::cout << "Reading text from file: " + filename + '\n';
+    std::cout << fmt::format("Reading text from file: '{}'\n", filename);
     std::ifstream file(filename);
 
     if (not file.is_open())
     {
-        throw std::runtime_error("Could not open file '" + filename + "'");
+        std::string errmsg = fmt::format("Could not open file '{}'", filename);
+        throw std::runtime_error(errmsg);
     }
 
     std::stringstream buffer;
     buffer << file.rdbuf();
-    text = buffer.str();
+    std::string text = buffer.str();
 
     file.close();
+    return text;
 }

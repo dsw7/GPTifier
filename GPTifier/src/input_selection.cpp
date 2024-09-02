@@ -10,7 +10,7 @@
 void get_text_from_cli_specified_file(std::string &text, const std::string &filename)
 {
     ::log_test("Loaded input text from custom file");
-    ::read_text_from_file(filename, text);
+    text = read_text_from_file(filename);
 }
 
 void get_text_from_inputfile(std::string &text)
@@ -29,7 +29,7 @@ void get_text_from_inputfile(std::string &text)
 
     ::log_test("Loaded input text from Inputfile");
     std::cout << "Found an Inputfile in current working directory!\n";
-    ::read_text_from_file(inputfile, text);
+    text = read_text_from_file(inputfile);
 }
 
 void get_text_from_stdin(std::string &text)
