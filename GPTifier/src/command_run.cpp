@@ -4,6 +4,7 @@
 #include "configs.hpp"
 #include "help_messages.hpp"
 #include "input_selection.hpp"
+#include "reporting.hpp"
 #include "testing.hpp"
 #include "utils.hpp"
 
@@ -148,7 +149,7 @@ std::string get_post_fields(const ParamsRun &params)
     std::string post_fields = body.dump(2);
 
     print_separator();
-    std::cout << "\033[1mRequest:\033[0m " + post_fields + '\n';
+    Reporting::print_request(post_fields);
     print_separator();
 
     return post_fields;

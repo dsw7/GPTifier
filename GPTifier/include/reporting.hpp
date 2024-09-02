@@ -6,5 +6,6 @@ namespace Reporting
 {
 
 void print_error(const std::string &message);
+void print_request(const std::string &request);
 
 }
