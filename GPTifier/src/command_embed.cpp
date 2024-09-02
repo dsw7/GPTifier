@@ -96,9 +96,9 @@ std::string get_post_fields(const ParamsEmbedding &params)
     body["input"] = params.input;
     std::string post_fields = body.dump(2);
 
-    print_separator();
+    Reporting::print_sep();
     Reporting::print_request(post_fields);
-    print_separator();
+    Reporting::print_sep();
 
     return post_fields;
 }
@@ -127,7 +127,7 @@ void export_embedding(const std::string &response, const std::string &input)
     st_filename << std::setw(2) << results;
     st_filename.close();
 
-    print_separator();
+    Reporting::print_sep();
 }
 
 } // namespace
@@ -144,7 +144,7 @@ void command_embed(const int argc, char **argv)
 
     if (params.input.empty())
     {
-        print_separator();
+        Reporting::print_sep();
         load_input_text(params.input, params.input_file);
     }
 

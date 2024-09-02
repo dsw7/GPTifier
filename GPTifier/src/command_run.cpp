@@ -148,9 +148,9 @@ std::string get_post_fields(const ParamsRun &params)
     body["messages"] = nlohmann::json::array({messages});
     std::string post_fields = body.dump(2);
 
-    print_separator();
+    Reporting::print_sep();
     Reporting::print_request(post_fields);
-    print_separator();
+    Reporting::print_sep();
 
     return post_fields;
 }
@@ -162,7 +162,7 @@ void print_chat_completion_response(const std::string &response)
     if (results.contains("error"))
     {
         Reporting::print_response(results.dump(2));
-        print_separator();
+        Reporting::print_sep();
 
         std::string error = results["error"]["message"];
         Reporting::print_error(error);
@@ -173,11 +173,11 @@ void print_chat_completion_response(const std::string &response)
         results["choices"][0]["message"]["content"] = "...";
 
         Reporting::print_response(results.dump(2));
-        print_separator();
+        Reporting::print_sep();
         Reporting::print_results(content);
     }
 
-    print_separator();
+    Reporting::print_sep();
 }
 
 void write_message_to_file(const Completion &completion)
@@ -217,7 +217,7 @@ void export_chat_completion_response(const std::string &response, const std::str
     if (results.contains("error"))
     {
         std::cerr << "Cannot export results as error occurred\n";
-        print_separator();
+        Reporting::print_sep();
         return;
     }
 
@@ -242,7 +242,7 @@ void export_chat_completion_response(const std::string &response, const std::str
     if (choice.compare("n") == 0)
     {
         std::cout << "> Not exporting response.\n";
-        print_separator();
+        Reporting::print_sep();
         return;
     }
 
@@ -262,7 +262,7 @@ void export_chat_completion_response(const std::string &response, const std::str
     }
 
     write_message_to_file(completion);
-    print_separator();
+    Reporting::print_sep();
 }
 
 void dump_chat_completion_response(const std::string &response, const std::string &json_dump_file)
@@ -300,7 +300,7 @@ void time_api_call()
     }
 
     std::cout << "\n";
-    print_separator();
+    Reporting::print_sep();
 }
 
 } // namespace
@@ -317,7 +317,7 @@ void command_run(const int argc, char **argv)
 
     if (params.prompt.empty())
     {
-        print_separator();
+        Reporting::print_sep();
         load_input_text(params.prompt, params.prompt_file);
     }
 

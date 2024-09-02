@@ -61,9 +61,9 @@ void print_models_response(const std::string &response)
         return;
     }
 
-    print_separator();
+    Reporting::print_sep();
     print_row("Model ID", "Owner", "Creation time");
-    print_separator();
+    Reporting::print_sep();
 
     for (const auto &entry : results["data"])
     {
@@ -73,7 +73,7 @@ void print_models_response(const std::string &response)
         print_row(id, owned_by, creation_time);
     }
 
-    print_separator();
+    Reporting::print_sep();
 }
 
 } // namespace
