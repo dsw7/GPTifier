@@ -2,7 +2,7 @@
 
 #include "api.hpp"
 #include "configs.hpp"
-#include "data_dir.hpp"
+#include "datadir.hpp"
 #include "help_messages.hpp"
 #include "input_selection.hpp"
 #include "reporting.hpp"
