@@ -164,7 +164,7 @@ void print_chat_completion_response(const std::string &response)
         std::string error = results["error"]["message"];
         results["error"]["message"] = "<See Results section>";
 
-        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
+        Reporting::print_response(results.dump(2));
         print_separator();
 
         std::cout << "\033[1mResults:\033[31m " + error + "\033[0m\n";
@@ -174,7 +174,7 @@ void print_chat_completion_response(const std::string &response)
         std::string content = results["choices"][0]["message"]["content"];
         results["choices"][0]["message"]["content"] = "<See Results section>";
 
-        std::cout << "\033[1mResponse:\033[0m " + results.dump(2) + "\n";
+        Reporting::print_response(results.dump(2));
         print_separator();
 
         std::cout << "\033[1mResults:\033[32m " + content + "\033[0m\n";
