@@ -129,9 +129,11 @@ std::string Curl::post(const std::string &endpoint, const std::string &post_fiel
 
 namespace Endpoints
 {
+
 const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
 const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
 const std::string URL_MODELS = "https://api.openai.com/v1/models";
+
 } // namespace Endpoints
 
 std::string query_models_api()
