@@ -2,11 +2,12 @@
 
 #include "api.hpp"
 #include "configs.hpp"
+#include "data_dir.hpp"
 #include "help_messages.hpp"
 #include "input_selection.hpp"
 #include "reporting.hpp"
-#include "utils.hpp"
 
+#include <fmt/core.h>
 #include <fstream>
 #include <getopt.h>
 #include <iostream>
@@ -114,14 +115,13 @@ void export_embedding(const std::string &response, const std::string &input)
         reporting::print_error(error);
     }
 
-    std::string path_embedding_json = get_proj_home_dir() + "/embeddings.gpt";
-
-    std::cout << "Dumping JSON to " + path_embedding_json + '\n';
-    std::ofstream st_filename(path_embedding_json);
+    std::cout << fmt::format("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS);
+    std::ofstream st_filename(datadir::GPT_EMBEDDINGS);
 
     if (not st_filename.is_open())
     {
-        throw std::runtime_error("Unable to open '" + path_embedding_json + "'");
+        std::string errmsg = fmt::format("Unable to open '{}'", datadir::GPT_EMBEDDINGS);
+        throw std::runtime_error(errmsg);
     }
 
     st_filename << std::setw(2) << results;

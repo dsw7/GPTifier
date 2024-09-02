@@ -2,6 +2,7 @@
 
 #include "api.hpp"
 #include "configs.hpp"
+#include "data_dir.hpp"
 #include "help_messages.hpp"
 #include "input_selection.hpp"
 #include "reporting.hpp"
@@ -10,6 +11,7 @@
 
 #include <chrono>
 #include <ctime>
+#include <fmt/core.h>
 #include <fstream>
 #include <getopt.h>
 #include <iostream>
@@ -182,14 +184,12 @@ void print_chat_completion_response(const std::string &response)
 
 void write_message_to_file(const Completion &completion)
 {
-    std::string path_completion = get_proj_home_dir() + "/completions.gpt";
+    std::cout << fmt::format("> Writing completion to file {}\n", datadir::GPT_COMPLETIONS);
 
-    std::cout << "> Writing reply to file " + path_completion + '\n';
-
-    std::ofstream st_filename(path_completion, std::ios::app);
+    std::ofstream st_filename(datadir::GPT_COMPLETIONS, std::ios::app);
     if (not st_filename.is_open())
     {
-        throw std::runtime_error("Unable to open " + path_completion);
+        throw std::runtime_error("Unable to open " + datadir::GPT_COMPLETIONS);
     }
 
     std::string created = datetime_from_unix_timestamp(completion.created);
