@@ -21,7 +21,7 @@ unsigned short get_terminal_columns()
 
 } // namespace
 
-namespace Reporting
+namespace reporting
 {
 
 void print_sep()
@@ -50,4 +50,4 @@ void print_results(const std::string &results)
     std::cout << fmt::format("\033[1mResults:\033[32m {}\033[0m\n", results);
 }
 
-} // namespace Reporting
+} // namespace reporting

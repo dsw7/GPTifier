@@ -57,13 +57,13 @@ void print_models_response(const std::string &response)
     if (results.contains("error"))
     {
         std::string error = results["error"]["message"];
-        Reporting::print_error(error);
+        reporting::print_error(error);
         return;
     }
 
-    Reporting::print_sep();
+    reporting::print_sep();
     print_row("Model ID", "Owner", "Creation time");
-    Reporting::print_sep();
+    reporting::print_sep();
 
     for (const auto &entry : results["data"])
     {
@@ -73,7 +73,7 @@ void print_models_response(const std::string &response)
         print_row(id, owned_by, creation_time);
     }
 
-    Reporting::print_sep();
+    reporting::print_sep();
 }
 
 } // namespace

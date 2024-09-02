@@ -96,9 +96,9 @@ std::string get_post_fields(const ParamsEmbedding &params)
     body["input"] = params.input;
     std::string post_fields = body.dump(2);
 
-    Reporting::print_sep();
-    Reporting::print_request(post_fields);
-    Reporting::print_sep();
+    reporting::print_sep();
+    reporting::print_request(post_fields);
+    reporting::print_sep();
 
     return post_fields;
 }
@@ -111,7 +111,7 @@ void export_embedding(const std::string &response, const std::string &input)
     if (results.contains("error"))
     {
         std::string error = results["error"]["message"];
-        Reporting::print_error(error);
+        reporting::print_error(error);
     }
 
     std::string path_embedding_json = get_proj_home_dir() + "/embeddings.gpt";
@@ -127,7 +127,7 @@ void export_embedding(const std::string &response, const std::string &input)
     st_filename << std::setw(2) << results;
     st_filename.close();
 
-    Reporting::print_sep();
+    reporting::print_sep();
 }
 
 } // namespace
@@ -144,7 +144,7 @@ void command_embed(const int argc, char **argv)
 
     if (params.input.empty())
     {
-        Reporting::print_sep();
+        reporting::print_sep();
         params.input = load_input_text(params.input_file);
     }
 

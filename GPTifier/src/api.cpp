@@ -127,29 +127,29 @@ std::string Curl::post(const std::string &endpoint, const std::string &post_fiel
 
 } // namespace
 
-namespace Endpoints
+namespace endpoints
 {
 
 const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
 const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
 const std::string URL_MODELS = "https://api.openai.com/v1/models";
 
-} // namespace Endpoints
+} // namespace endpoints
 
 std::string query_models_api()
 {
     Curl curl;
-    return curl.get(Endpoints::URL_MODELS);
+    return curl.get(endpoints::URL_MODELS);
 }
 
 std::string query_embeddings_api(const std::string &post_fields)
 {
     Curl curl;
-    return curl.post(Endpoints::URL_EMBEDDINGS, post_fields);
+    return curl.post(endpoints::URL_EMBEDDINGS, post_fields);
 }
 
 std::string query_chat_completion_api(const std::string &post_fields)
 {
     Curl curl;
-    return curl.post(Endpoints::URL_CHAT_COMPLETIONS, post_fields);
+    return curl.post(endpoints::URL_CHAT_COMPLETIONS, post_fields);
 }

@@ -148,9 +148,9 @@ std::string get_post_fields(const ParamsRun &params)
     body["messages"] = nlohmann::json::array({messages});
     std::string post_fields = body.dump(2);
 
-    Reporting::print_sep();
-    Reporting::print_request(post_fields);
-    Reporting::print_sep();
+    reporting::print_sep();
+    reporting::print_request(post_fields);
+    reporting::print_sep();
 
     return post_fields;
 }
@@ -161,23 +161,23 @@ void print_chat_completion_response(const std::string &response)
 
     if (results.contains("error"))
     {
-        Reporting::print_response(results.dump(2));
-        Reporting::print_sep();
+        reporting::print_response(results.dump(2));
+        reporting::print_sep();
 
         std::string error = results["error"]["message"];
-        Reporting::print_error(error);
+        reporting::print_error(error);
     }
     else
     {
         std::string content = results["choices"][0]["message"]["content"];
         results["choices"][0]["message"]["content"] = "...";
 
-        Reporting::print_response(results.dump(2));
-        Reporting::print_sep();
-        Reporting::print_results(content);
+        reporting::print_response(results.dump(2));
+        reporting::print_sep();
+        reporting::print_results(content);
     }
 
-    Reporting::print_sep();
+    reporting::print_sep();
 }
 
 void write_message_to_file(const Completion &completion)
@@ -217,7 +217,7 @@ void export_chat_completion_response(const std::string &response, const std::str
     if (results.contains("error"))
     {
         std::cerr << "Cannot export results as error occurred\n";
-        Reporting::print_sep();
+        reporting::print_sep();
         return;
     }
 
@@ -242,7 +242,7 @@ void export_chat_completion_response(const std::string &response, const std::str
     if (choice.compare("n") == 0)
     {
         std::cout << "> Not exporting response.\n";
-        Reporting::print_sep();
+        reporting::print_sep();
         return;
     }
 
@@ -262,7 +262,7 @@ void export_chat_completion_response(const std::string &response, const std::str
     }
 
     write_message_to_file(completion);
-    Reporting::print_sep();
+    reporting::print_sep();
 }
 
 void dump_chat_completion_response(const std::string &response, const std::string &json_dump_file)
@@ -300,7 +300,7 @@ void time_api_call()
     }
 
     std::cout << "\n";
-    Reporting::print_sep();
+    reporting::print_sep();
 }
 
 } // namespace
@@ -317,7 +317,7 @@ void command_run(const int argc, char **argv)
 
     if (params.prompt.empty())
     {
-        Reporting::print_sep();
+        reporting::print_sep();
         params.prompt = load_input_text(params.prompt_file);
     }
 

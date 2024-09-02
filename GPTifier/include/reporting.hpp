@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Reporting
+namespace reporting
 {
 
 void print_sep();
@@ -11,4 +11,4 @@ void print_request(const std::string &request);
 void print_response(const std::string &response);
 void print_results(const std::string &results);
 
-} // namespace Reporting
+} // namespace reporting
