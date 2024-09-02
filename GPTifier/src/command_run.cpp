@@ -318,7 +318,7 @@ void command_run(const int argc, char **argv)
     if (params.prompt.empty())
     {
         Reporting::print_sep();
-        load_input_text(params.prompt, params.prompt_file);
+        params.prompt = load_input_text(params.prompt_file);
     }
 
     std::string post_fields = get_post_fields(params);

@@ -145,7 +145,7 @@ void command_embed(const int argc, char **argv)
     if (params.input.empty())
     {
         Reporting::print_sep();
-        load_input_text(params.input, params.input_file);
+        params.input = load_input_text(params.input_file);
     }
 
     std::string post_fields = get_post_fields(params);

@@ -7,57 +7,71 @@
 #include <iostream>
 #include <stdexcept>
 
-void get_text_from_cli_specified_file(std::string &text, const std::string &filename)
+namespace
 {
-    ::log_test("Loaded input text from custom file");
-    text = read_text_from_file(filename);
+
+std::string get_text_from_cli_specified_file(const std::string &filename)
+{
+    log_test("Loaded input text from custom file");
+    return read_text_from_file(filename);
 }
 
-void get_text_from_inputfile(std::string &text)
+std::string get_text_from_inputfile()
 {
     static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
 
+    std::string text;
+
     if (not std::filesystem::exists(inputfile))
     {
-        return;
+        return text;
     }
 
     if (std::filesystem::is_empty(inputfile))
     {
-        return;
+        return text;
     }
 
-    ::log_test("Loaded input text from Inputfile");
+    log_test("Loaded input text from Inputfile");
     std::cout << "Found an Inputfile in current working directory!\n";
+
     text = read_text_from_file(inputfile);
+    return text;
 }
 
-void get_text_from_stdin(std::string &text)
+std::string get_text_from_stdin()
 {
-    ::log_test("Loaded input text from stdin");
     std::cout << "\033[1mInput:\033[0m ";
+    std::string text;
+
     std::getline(std::cin, text);
+    log_test("Loaded input text from stdin");
+
+    return text;
 }
 
-void load_input_text(std::string &input, const std::string &input_file)
+} // namespace
+
+std::string load_input_text(const std::string &input_file)
 {
     if (not input_file.empty())
     {
-        ::get_text_from_cli_specified_file(input, input_file);
-        return;
+        return get_text_from_cli_specified_file(input_file);
     }
 
-    ::get_text_from_inputfile(input);
+    std::string text_from_inputfile = get_text_from_inputfile();
 
-    if (not input.empty())
+    if (not text_from_inputfile.empty())
     {
-        return;
+        return text_from_inputfile;
     }
 
-    ::get_text_from_stdin(input);
+    std::string text_from_stdin = get_text_from_stdin();
 
-    if (input.empty())
+    if (text_from_stdin.empty())
     {
         throw std::runtime_error("No input text provided anywhere. Cannot proceed");
     }
+
+    return text_from_stdin;
 }
