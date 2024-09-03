@@ -29,7 +29,6 @@ def _print_stderr(raw_stderr: str) -> None:
 
 
 def unpack_stdout_stderr(capture: Capture) -> tuple[str, str]:
-    print(type(capture))
     output = capture.readouterr()
     print()
 
