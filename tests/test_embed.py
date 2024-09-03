@@ -2,7 +2,8 @@ from json import loads
 from os import EX_OK
 from pathlib import Path
 from subprocess import run
-from pytest import mark, LogCaptureFixture
+from typing import Any
+from pytest import mark, CaptureFixture
 from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error, Command
 
 RESULTS_JSON = Path.home() / ".gptifier" / "embeddings.gpt"
@@ -16,7 +17,7 @@ def load_embedding(json_file: Path) -> tuple[str, str, list[float]]:
 
 
 @mark.parametrize("option", ["-h", "--help"])
-def test_embed_help(command: Command, option: str, capfd: LogCaptureFixture) -> None:
+def test_embed_help(command: Command, option: str, capfd: CaptureFixture[Any]) -> None:
     command.extend(["embed", option])
     process = run(command)
 
@@ -25,7 +26,7 @@ def test_embed_help(command: Command, option: str, capfd: LogCaptureFixture) -> 
     assert "SYNOPSIS" in stdout
 
 
-def test_basic(command: Command, capfd: LogCaptureFixture) -> None:
+def test_basic(command: Command, capfd: CaptureFixture[Any]) -> None:
     input_text = "What is 3 + 5?"
     model = "text-embedding-ada-002"
 
@@ -41,7 +42,7 @@ def test_basic(command: Command, capfd: LogCaptureFixture) -> None:
     assert len(embedding) == 1536  # text-embedding-ada-002 dimension
 
 
-def test_read_from_file(command: Command, capfd: LogCaptureFixture) -> None:
+def test_read_from_file(command: Command, capfd: CaptureFixture[Any]) -> None:
     input_text_file = Path(__file__).resolve().parent / "prompt_basic.txt"
     model = "text-embedding-3-small"
 
@@ -57,7 +58,7 @@ def test_read_from_file(command: Command, capfd: LogCaptureFixture) -> None:
 
 
 def test_read_from_inputfile(
-    command: Command, inputfile: Path, capfd: LogCaptureFixture
+    command: Command, inputfile: Path, capfd: CaptureFixture[Any]
 ) -> None:
     inputfile.write_text("A foo that bars!")
 
@@ -69,7 +70,7 @@ def test_read_from_inputfile(
     assert "Found an Inputfile in current working directory!" in stdout
 
 
-def test_missing_input_file(command: Command, capfd: LogCaptureFixture) -> None:
+def test_missing_input_file(command: Command, capfd: CaptureFixture[Any]) -> None:
     command.extend(["embed", "--read-from-file=/tmp/yU8nnkRs.txt"])
     process = run(command)
 
@@ -78,7 +79,7 @@ def test_missing_input_file(command: Command, capfd: LogCaptureFixture) -> None:
     assert "Could not open file '/tmp/yU8nnkRs.txt'" in stderr
 
 
-def test_invalid_model(command: Command, capfd: LogCaptureFixture) -> None:
+def test_invalid_model(command: Command, capfd: CaptureFixture[Any]) -> None:
     command.extend(["embed", "-i'What is 3 + 5?'", "-mfoobar"])
     process = run(command)
 
