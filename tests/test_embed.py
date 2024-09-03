@@ -2,9 +2,8 @@ from json import loads
 from os import EX_OK
 from pathlib import Path
 from subprocess import run
-from typing import Any
-from pytest import mark, CaptureFixture
-from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error, Command
+from pytest import mark
+from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error, Command, Capture
 
 RESULTS_JSON = Path.home() / ".gptifier" / "embeddings.gpt"
 
@@ -17,7 +16,7 @@ def load_embedding(json_file: Path) -> tuple[str, str, list[float]]:
 
 
 @mark.parametrize("option", ["-h", "--help"])
-def test_embed_help(command: Command, option: str, capfd: CaptureFixture[Any]) -> None:
+def test_embed_help(command: Command, option: str, capfd: Capture) -> None:
     command.extend(["embed", option])
     process = run(command)
 
@@ -26,7 +25,7 @@ def test_embed_help(command: Command, option: str, capfd: CaptureFixture[Any]) -
     assert "SYNOPSIS" in stdout
 
 
-def test_basic(command: Command, capfd: CaptureFixture[Any]) -> None:
+def test_basic(command: Command, capfd: Capture) -> None:
     input_text = "What is 3 + 5?"
     model = "text-embedding-ada-002"
 
@@ -42,7 +41,7 @@ def test_basic(command: Command, capfd: CaptureFixture[Any]) -> None:
     assert len(embedding) == 1536  # text-embedding-ada-002 dimension
 
 
-def test_read_from_file(command: Command, capfd: CaptureFixture[Any]) -> None:
+def test_read_from_file(command: Command, capfd: Capture) -> None:
     input_text_file = Path(__file__).resolve().parent / "prompt_basic.txt"
     model = "text-embedding-3-small"
 
@@ -57,9 +56,7 @@ def test_read_from_file(command: Command, capfd: CaptureFixture[Any]) -> None:
     assert input_from_payload == input_text_file.read_text()
 
 
-def test_read_from_inputfile(
-    command: Command, inputfile: Path, capfd: CaptureFixture[Any]
-) -> None:
+def test_read_from_inputfile(command: Command, inputfile: Path, capfd: Capture) -> None:
     inputfile.write_text("A foo that bars!")
 
     command.extend(["embed"])
@@ -70,7 +67,7 @@ def test_read_from_inputfile(
     assert "Found an Inputfile in current working directory!" in stdout
 
 
-def test_missing_input_file(command: Command, capfd: CaptureFixture[Any]) -> None:
+def test_missing_input_file(command: Command, capfd: Capture) -> None:
     command.extend(["embed", "--read-from-file=/tmp/yU8nnkRs.txt"])
     process = run(command)
 
@@ -79,7 +76,7 @@ def test_missing_input_file(command: Command, capfd: CaptureFixture[Any]) -> Non
     assert "Could not open file '/tmp/yU8nnkRs.txt'" in stderr
 
 
-def test_invalid_model(command: Command, capfd: CaptureFixture[Any]) -> None:
+def test_invalid_model(command: Command, capfd: Capture) -> None:
     command.extend(["embed", "-i'What is 3 + 5?'", "-mfoobar"])
     process = run(command)
 

@@ -2,13 +2,12 @@ from datetime import datetime
 from json import loads
 from os import EX_OK
 from subprocess import run
-from typing import Any
-from pytest import mark, CaptureFixture
-from utils import unpack_stdout_stderr, Command
+from pytest import mark
+from utils import unpack_stdout_stderr, Command, Capture
 
 
 @mark.parametrize("option", ["-v", "--version"])
-def test_version(command: Command, option: str, capfd: CaptureFixture[Any]) -> None:
+def test_version(command: Command, option: str, capfd: Capture) -> None:
     command.extend([option])
     process = run(command)
 

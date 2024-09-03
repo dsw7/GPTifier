@@ -1,8 +1,9 @@
 from json import loads
-from typing import NewType, Any
+from typing import NewType, Any, TypeAlias
 from colorama import Fore, Style
 from pytest import CaptureFixture
 
+Capture: TypeAlias = CaptureFixture[Any]
 Command = NewType("Command", list[str])
 PrefixStderr = Fore.RED + "stderr >>> " + Style.RESET_ALL
 PrefixStdout = Fore.GREEN + "stdout >>> " + Style.RESET_ALL
@@ -27,7 +28,7 @@ def _print_stderr(raw_stderr: str) -> None:
         print(PrefixStderr + line)
 
 
-def unpack_stdout_stderr(capture: CaptureFixture[Any]) -> tuple[str, str]:
+def unpack_stdout_stderr(capture: Capture) -> tuple[str, str]:
     print(type(capture))
     output = capture.readouterr()
     print()
