@@ -1,11 +1,11 @@
 from os import EX_OK
 from subprocess import run
-from pytest import mark
+from pytest import mark, LogCaptureFixture
 from utils import unpack_stdout_stderr, Command
 
 
 @mark.parametrize("option", ["-h", "--help"])
-def test_models_help(command: Command, option: str, capfd) -> None:
+def test_models_help(command: Command, option: str, capfd: LogCaptureFixture) -> None:
     command.extend(["models", option])
     process = run(command)
 
@@ -14,7 +14,7 @@ def test_models_help(command: Command, option: str, capfd) -> None:
     assert "SYNOPSIS" in stdout
 
 
-def test_models(command: Command, capfd) -> None:
+def test_models(command: Command, capfd: LogCaptureFixture) -> None:
     command.extend(["models"])
     process = run(command)
 

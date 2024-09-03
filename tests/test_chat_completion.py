@@ -2,7 +2,7 @@ from json import loads
 from os import EX_OK
 from pathlib import Path
 from subprocess import run
-from pytest import mark
+from pytest import mark, LogCaptureFixture
 from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error, Command
 
 PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
@@ -16,7 +16,7 @@ def load_content(json_file: str) -> str:
 
 
 @mark.parametrize("option", ["-h", "--help"])
-def test_run_help(command: Command, option: str, capfd) -> None:
+def test_run_help(command: Command, option: str, capfd: LogCaptureFixture) -> None:
     command.extend(["run", option])
     process = run(command)
 
@@ -25,7 +25,9 @@ def test_run_help(command: Command, option: str, capfd) -> None:
     assert "SYNOPSIS" in stdout
 
 
-def test_read_from_command_line(json_file: str, command: Command, capfd) -> None:
+def test_read_from_command_line(
+    json_file: str, command: Command, capfd: LogCaptureFixture
+) -> None:
     command.extend(["run", f"-p'{PROMPT}'", "-t0", f"-d{json_file}", "-u"])
     process = run(command)
 
@@ -34,7 +36,9 @@ def test_read_from_command_line(json_file: str, command: Command, capfd) -> None
     assert load_content(json_file) == ">>>8<<<"
 
 
-def test_read_from_file(json_file: str, command: Command, capfd) -> None:
+def test_read_from_file(
+    json_file: str, command: Command, capfd: LogCaptureFixture
+) -> None:
     prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
 
     command.extend(["run", f"-r{prompt}", "-t0", f"-d{json_file}", "-u"])
@@ -46,7 +50,7 @@ def test_read_from_file(json_file: str, command: Command, capfd) -> None:
 
 
 def test_read_from_inputfile(
-    json_file: str, command: Command, inputfile: Path, capfd
+    json_file: str, command: Command, inputfile: Path, capfd: LogCaptureFixture
 ) -> None:
     inputfile.write_text(PROMPT)
 
@@ -66,7 +70,11 @@ MESSAGES_BAD_TEMP = [
 
 @mark.parametrize("temp, message", MESSAGES_BAD_TEMP)
 def test_invalid_temp(
-    json_file: str, command: Command, temp: float, message: str, capfd
+    json_file: str,
+    command: Command,
+    temp: float,
+    message: str,
+    capfd: LogCaptureFixture,
 ) -> None:
     command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", f"-d{json_file}", "-u"])
     process = run(command)
@@ -76,7 +84,7 @@ def test_invalid_temp(
     assert load_error(json_file) == f"Invalid 'temperature': {message}"
 
 
-def test_missing_prompt_file(command: Command, capfd) -> None:
+def test_missing_prompt_file(command: Command, capfd: LogCaptureFixture) -> None:
     command.extend(["run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u"])
     process = run(command)
 
@@ -85,7 +93,7 @@ def test_missing_prompt_file(command: Command, capfd) -> None:
     assert "Could not open file '/tmp/yU8nnkRs.txt'" in stderr
 
 
-def test_invalid_dump_location(command: Command, capfd) -> None:
+def test_invalid_dump_location(command: Command, capfd: LogCaptureFixture) -> None:
     command.extend(["run", f"--prompt='{PROMPT}'", "--dump=/tmp/a/b/c", "-u"])
     process = run(command)
 
@@ -94,7 +102,9 @@ def test_invalid_dump_location(command: Command, capfd) -> None:
     assert "Unable to open '/tmp/a/b/c'" in stderr
 
 
-def test_invalid_model(json_file: str, command: Command, capfd) -> None:
+def test_invalid_model(
+    json_file: str, command: Command, capfd: LogCaptureFixture
+) -> None:
     command.extend(["run", f"-p'{PROMPT}'", "-mfoobar", f"-d{json_file}", "-u"])
     process = run(command)
 
