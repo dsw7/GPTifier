@@ -2,13 +2,14 @@ from json import loads
 from os import EX_OK
 from pathlib import Path
 from subprocess import run
+from typing import Any
 from pytest import mark, LogCaptureFixture
 from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error, Command
 
 PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
 
 
-def load_content(json_file: str) -> str:
+def load_content(json_file: str) -> Any:
     with open(json_file) as f:
         contents = loads(f.read())
 
