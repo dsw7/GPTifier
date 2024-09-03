@@ -3,11 +3,11 @@ from json import loads
 from os import EX_OK
 from subprocess import run
 from pytest import mark
-from utils import unpack_stdout_stderr
+from utils import unpack_stdout_stderr, Command
 
 
 @mark.parametrize("option", ["-v", "--version"])
-def test_version(command: list[str], option: str, capfd) -> None:
+def test_version(command: Command, option: str, capfd) -> None:
     command.extend([option])
     process = run(command)
 

@@ -3,7 +3,7 @@ from os import EX_OK
 from pathlib import Path
 from subprocess import run
 from pytest import mark
-from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error
+from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error, Command
 
 RESULTS_JSON = Path.home() / ".gptifier" / "embeddings.gpt"
 
@@ -16,7 +16,7 @@ def load_embedding(json_file) -> tuple[str, str, list[float]]:
 
 
 @mark.parametrize("option", ["-h", "--help"])
-def test_embed_help(command: list[str], option: str, capfd) -> None:
+def test_embed_help(command: Command, option: str, capfd) -> None:
     command.extend(["embed", option])
     process = run(command)
 
@@ -25,7 +25,7 @@ def test_embed_help(command: list[str], option: str, capfd) -> None:
     assert "SYNOPSIS" in stdout
 
 
-def test_basic(command: list[str], capfd) -> None:
+def test_basic(command: Command, capfd) -> None:
     input_text = "What is 3 + 5?"
     model = "text-embedding-ada-002"
 
@@ -41,7 +41,7 @@ def test_basic(command: list[str], capfd) -> None:
     assert len(embedding) == 1536  # text-embedding-ada-002 dimension
 
 
-def test_read_from_file(command: list[str], capfd) -> None:
+def test_read_from_file(command: Command, capfd) -> None:
     input_text_file = Path(__file__).resolve().parent / "prompt_basic.txt"
     model = "text-embedding-3-small"
 
@@ -56,7 +56,7 @@ def test_read_from_file(command: list[str], capfd) -> None:
     assert input_from_payload == input_text_file.read_text()
 
 
-def test_read_from_inputfile(command: list[str], inputfile: Path, capfd) -> None:
+def test_read_from_inputfile(command: Command, inputfile: Path, capfd) -> None:
     inputfile.write_text("A foo that bars!")
 
     command.extend(["embed"])
@@ -67,7 +67,7 @@ def test_read_from_inputfile(command: list[str], inputfile: Path, capfd) -> None
     assert "Found an Inputfile in current working directory!" in stdout
 
 
-def test_missing_input_file(command: list[str], capfd) -> None:
+def test_missing_input_file(command: Command, capfd) -> None:
     command.extend(["embed", "--read-from-file=/tmp/yU8nnkRs.txt"])
     process = run(command)
 
@@ -76,7 +76,7 @@ def test_missing_input_file(command: list[str], capfd) -> None:
     assert "Could not open file '/tmp/yU8nnkRs.txt'" in stderr
 
 
-def test_invalid_model(command: list[str], capfd) -> None:
+def test_invalid_model(command: Command, capfd) -> None:
     command.extend(["embed", "-i'What is 3 + 5?'", "-mfoobar"])
     process = run(command)
 

@@ -3,7 +3,7 @@ from platform import system
 from tempfile import TemporaryDirectory, NamedTemporaryFile, gettempdir
 from typing import Generator
 from pytest import fixture, exit
-from utils import EX_MEM_LEAK
+from utils import EX_MEM_LEAK, Command
 
 
 def pytest_addoption(parser):
@@ -23,7 +23,7 @@ def pre_test_checks(pytestconfig) -> None:
 
 
 @fixture(scope="function")
-def command(pytestconfig) -> list[str]:
+def command(pytestconfig) -> Command:
     if not pytestconfig.getoption("memory"):
         return ["build/gpt"]
 

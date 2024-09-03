@@ -1,5 +1,8 @@
 from json import loads
+from typing import NewType
 from colorama import Fore, Style
+
+Command = NewType("Command", list[str])
 
 PREFIX_STDOUT = Fore.GREEN + "stdout >>> " + Style.RESET_ALL
 PREFIX_STDERR = Fore.RED + "stderr >>> " + Style.RESET_ALL
