@@ -8,9 +8,9 @@ from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error, Command
 RESULTS_JSON = Path.home() / ".gptifier" / "embeddings.gpt"
 
 
-def load_embedding(json_file) -> tuple[str, str, list[float]]:
-    with open(json_file) as f_json:
-        data = loads(f_json.read())
+def load_embedding(json_file: Path) -> tuple[str, str, list[float]]:
+    with json_file.open() as f:
+        data = loads(f.read())
 
     return data["model"], data["input"], data["data"][0]["embedding"]
 
