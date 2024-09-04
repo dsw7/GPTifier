@@ -1,6 +1,7 @@
 #include "command_run.hpp"
 
 #include "api.hpp"
+#include "cli.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "help_messages.hpp"
@@ -13,7 +14,6 @@
 #include <ctime>
 #include <fmt/core.h>
 #include <fstream>
-#include <getopt.h>
 #include <iostream>
 #include <json.hpp>
 #include <stdexcept>
@@ -23,17 +23,6 @@
 namespace
 {
 
-struct ParamsRun
-{
-    bool enable_export = true;
-    bool print_help = false;
-    std::string json_dump_file;
-    std::string model;
-    std::string prompt;
-    std::string prompt_file;
-    std::string temperature = "1";
-};
-
 struct Completion
 {
     std::string content;
@@ -41,62 +30,6 @@ struct Completion
     std::string prompt;
     std::time_t created = 0;
 };
-
-ParamsRun read_cli_run(const int argc, char **argv)
-{
-    ParamsRun params;
-    while (true)
-    {
-        static struct option long_options[] = {
-            {"help", no_argument, 0, 'h'},
-            {"no-interactive-export", no_argument, 0, 'u'},
-            {"dump", required_argument, 0, 'd'},
-            {"model", required_argument, 0, 'm'},
-            {"prompt", required_argument, 0, 'p'},
-            {"read-from-file", required_argument, 0, 'r'},
-            {"temperature", required_argument, 0, 't'},
-            {0, 0, 0, 0},
-        };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "hud:m:p:r:t:", long_options, &option_index);
-
-        if (c == -1)
-        {
-            break;
-        }
-
-        switch (c)
-        {
-        case 'h':
-            params.print_help = true;
-            break;
-        case 'u':
-            params.enable_export = false;
-            break;
-        case 'd':
-            params.json_dump_file = optarg;
-            break;
-        case 'p':
-            params.prompt = optarg;
-            break;
-        case 't':
-            params.temperature = optarg;
-            break;
-        case 'r':
-            params.prompt_file = optarg;
-            break;
-        case 'm':
-            params.model = optarg;
-            break;
-        default:
-            std::cerr << "Try running with -h or --help for more information\n";
-            exit(EXIT_FAILURE);
-        }
-    };
-
-    return params;
-}
 
 nlohmann::json select_chat_model(const std::string &model)
 {
@@ -129,7 +62,7 @@ nlohmann::json select_chat_model(const std::string &model)
     throw std::runtime_error("No model provided via configuration file or command line");
 }
 
-std::string get_post_fields(const ParamsRun &params)
+std::string get_post_fields(const cli::ParamsRun &params)
 {
     nlohmann::json body = select_chat_model(params.model);
 
@@ -307,7 +240,7 @@ void time_api_call()
 
 void command_run(const int argc, char **argv)
 {
-    ParamsRun params = read_cli_run(argc, argv);
+    cli::ParamsRun params = cli::get_opts_run(argc, argv);
 
     if (params.print_help)
     {

@@ -88,4 +88,60 @@ ParamsEmbedding get_opts_embed(const int argc, char **argv)
     return params;
 }
 
+ParamsRun get_opts_run(const int argc, char **argv)
+{
+    ParamsRun params;
+
+    while (true)
+    {
+        static struct option long_options[] = {
+            {"help", no_argument, 0, 'h'},
+            {"no-interactive-export", no_argument, 0, 'u'},
+            {"dump", required_argument, 0, 'd'},
+            {"model", required_argument, 0, 'm'},
+            {"prompt", required_argument, 0, 'p'},
+            {"read-from-file", required_argument, 0, 'r'},
+            {"temperature", required_argument, 0, 't'},
+            {0, 0, 0, 0},
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hud:m:p:r:t:", long_options, &option_index);
+
+        if (c == -1)
+        {
+            break;
+        }
+
+        switch (c)
+        {
+        case 'h':
+            params.print_help = true;
+            break;
+        case 'u':
+            params.enable_export = false;
+            break;
+        case 'd':
+            params.json_dump_file = optarg;
+            break;
+        case 'p':
+            params.prompt = optarg;
+            break;
+        case 't':
+            params.temperature = optarg;
+            break;
+        case 'r':
+            params.prompt_file = optarg;
+            break;
+        case 'm':
+            params.model = optarg;
+            break;
+        default:
+            exit_on_failure();
+        }
+    };
+
+    return params;
+}
+
 } // namespace cli
