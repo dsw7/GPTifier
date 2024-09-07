@@ -114,8 +114,8 @@ ParamsRun get_opts_run(const int argc, char **argv)
         switch (c)
         {
         case 'h':
-            params.print_help = true;
-            break;
+            help::command_run();
+            exit(EXIT_SUCCESS);
         case 'u':
             params.enable_export = false;
             break;

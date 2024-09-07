@@ -4,7 +4,6 @@
 #include "cli.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
-#include "help_messages.hpp"
 #include "input_selection.hpp"
 #include "reporting.hpp"
 #include "testing.hpp"
@@ -241,12 +240,6 @@ void time_api_call()
 void command_run(const int argc, char **argv)
 {
     cli::ParamsRun params = cli::get_opts_run(argc, argv);
-
-    if (params.print_help)
-    {
-        help::command_run();
-        return;
-    }
 
     if (params.prompt.empty())
     {

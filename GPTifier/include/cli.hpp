@@ -15,7 +15,6 @@ struct ParamsEmbedding
 struct ParamsRun
 {
     bool enable_export = true;
-    bool print_help = false;
     std::string json_dump_file;
     std::string model;
     std::string prompt;
