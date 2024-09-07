@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 {
     if (argc < 2)
     {
-        help::root_messages();
+        cli::root_messages();
         return EXIT_FAILURE;
     }
 
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 
     if (command.compare("-h") == 0 or command.compare("--help") == 0)
     {
-        help::root_messages();
+        cli::root_messages();
         return EXIT_SUCCESS;
     }
 

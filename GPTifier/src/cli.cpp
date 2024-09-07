@@ -36,7 +36,7 @@ void get_opts_models(const int argc, char **argv)
         switch (c)
         {
         case 'h':
-            help::command_models();
+            command_models();
             exit(EXIT_SUCCESS);
         default:
             exit_on_failure();
@@ -67,7 +67,7 @@ ParamsEmbedding get_opts_embed(const int argc, char **argv)
         switch (c)
         {
         case 'h':
-            help::command_embed();
+            cli::command_embed();
             exit(EXIT_SUCCESS);
         case 'm':
             params.model = optarg;
@@ -114,7 +114,7 @@ ParamsRun get_opts_run(const int argc, char **argv)
         switch (c)
         {
         case 'h':
-            help::command_run();
+            cli::command_run();
             exit(EXIT_SUCCESS);
         case 'u':
             params.enable_export = false;

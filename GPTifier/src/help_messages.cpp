@@ -72,7 +72,7 @@ std::string add_examples(const str_pair &examples)
 
 } // namespace
 
-namespace help
+namespace cli
 {
 
 void root_messages()
@@ -155,4 +155,4 @@ void command_embed()
     std::cout << body;
 }
 
-} // namespace help
+} // namespace cli
