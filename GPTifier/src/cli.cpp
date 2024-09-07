@@ -67,8 +67,8 @@ ParamsEmbedding get_opts_embed(const int argc, char **argv)
         switch (c)
         {
         case 'h':
-            params.print_help = true;
-            break;
+            help::command_embed();
+            exit(EXIT_SUCCESS);
         case 'm':
             params.model = optarg;
             break;

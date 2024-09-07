@@ -4,7 +4,6 @@
 #include "cli.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
-#include "help_messages.hpp"
 #include "input_selection.hpp"
 #include "reporting.hpp"
 
@@ -84,12 +83,6 @@ void export_embedding(const std::string &response, const std::string &input)
 void command_embed(const int argc, char **argv)
 {
     cli::ParamsEmbedding params = cli::get_opts_embed(argc, argv);
-
-    if (params.print_help)
-    {
-        help::command_embed();
-        return;
-    }
 
     if (params.input.empty())
     {

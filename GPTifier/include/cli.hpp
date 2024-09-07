@@ -7,7 +7,6 @@ namespace cli
 
 struct ParamsEmbedding
 {
-    bool print_help = false;
     std::string input;
     std::string input_file;
     std::string model;
