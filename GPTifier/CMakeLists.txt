@@ -62,13 +62,16 @@ include_directories(
 add_executable(
   "gpt"
   "src/api.cpp"
+  "src/cli.cpp"
   "src/command_embed.cpp"
   "src/command_models.cpp"
   "src/command_run.cpp"
   "src/configs.cpp"
+  "src/datadir.cpp"
   "src/help_messages.cpp"
   "src/input_selection.cpp"
   "src/main.cpp"
+  "src/reporting.cpp"
   "src/testing.cpp"
   "src/utils.cpp"
 )

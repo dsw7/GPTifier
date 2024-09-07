@@ -1,8 +1,12 @@
 from json import loads
+from typing import NewType, Any, TypeAlias
 from colorama import Fore, Style
+from pytest import CaptureFixture
 
-PREFIX_STDOUT = Fore.GREEN + "stdout >>> " + Style.RESET_ALL
-PREFIX_STDERR = Fore.RED + "stderr >>> " + Style.RESET_ALL
+Capture: TypeAlias = CaptureFixture[Any]
+Command = NewType("Command", list[str])
+PrefixStderr = Fore.RED + "stderr >>> " + Style.RESET_ALL
+PrefixStdout = Fore.GREEN + "stdout >>> " + Style.RESET_ALL
 
 # Custom Valgrind exit code such that we can delimit stderr being tested from Valgrind stderr
 EX_MEM_LEAK = 3
@@ -13,7 +17,7 @@ def _print_stdout(raw_stdout: str) -> None:
         return
 
     for line in raw_stdout.split("\n"):
-        print(PREFIX_STDOUT + line)
+        print(PrefixStdout + line)
 
 
 def _print_stderr(raw_stderr: str) -> None:
@@ -21,10 +25,10 @@ def _print_stderr(raw_stderr: str) -> None:
         return
 
     for line in raw_stderr.split("\n"):
-        print(PREFIX_STDERR + line)
+        print(PrefixStderr + line)
 
 
-def unpack_stdout_stderr(capture) -> tuple[str, str]:
+def unpack_stdout_stderr(capture: Capture) -> tuple[str, str]:
     output = capture.readouterr()
     print()
 
@@ -33,7 +37,7 @@ def unpack_stdout_stderr(capture) -> tuple[str, str]:
     return output.out, output.err
 
 
-def load_error(json_file: str) -> str:
+def load_error(json_file: str) -> Any:
     with open(json_file) as f:
         contents = loads(f.read())
 

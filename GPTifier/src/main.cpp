@@ -8,7 +8,7 @@
 #include <json.hpp>
 #include <stdexcept>
 
-::Configs configs;
+Configs configs;
 
 void print_build_information()
 {
@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 {
     if (argc < 2)
     {
-        help::root_messages();
+        cli::root_messages();
         return EXIT_FAILURE;
     }
 
@@ -32,19 +32,19 @@ int main(int argc, char **argv)
 
     if (command.compare("-h") == 0 or command.compare("--help") == 0)
     {
-        help::root_messages();
+        cli::root_messages();
         return EXIT_SUCCESS;
     }
 
     if (command.compare("-v") == 0 or command.compare("--version") == 0)
     {
-        ::print_build_information();
+        print_build_information();
         return EXIT_SUCCESS;
     }
 
     try
     {
-        ::configs.load_configs_from_config_file();
+        configs.load_configs_from_config_file();
     }
     catch (std::runtime_error &e)
     {
@@ -56,15 +56,15 @@ int main(int argc, char **argv)
     {
         if (command.compare("run") == 0)
         {
-            ::command_run(argc, argv);
+            command_run(argc, argv);
         }
         else if (command.compare("models") == 0)
         {
-            ::command_models(argc, argv);
+            command_models(argc, argv);
         }
         else if (command.compare("embed") == 0)
         {
-            ::command_embed(argc, argv);
+            command_embed(argc, argv);
         }
         else
         {

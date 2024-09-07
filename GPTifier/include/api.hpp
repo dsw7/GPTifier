@@ -1,15 +1,7 @@
 #pragma once
 
-#include <curl/curl.h>
+#include <string>
 
-class Curl
-{
-private:
-    struct ::curl_slist *headers = NULL;
-
-public:
-    Curl();
-    ~Curl();
-
-    ::CURL *handle = NULL;
-};
+std::string query_models_api();
+std::string query_embeddings_api(const std::string &post_fields);
+std::string query_chat_completion_api(const std::string &post_fields);
