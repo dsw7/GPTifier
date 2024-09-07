@@ -24,7 +24,7 @@ struct ParamsRun
     std::string temperature = "1";
 };
 
-bool get_opts_models(const int argc, char **argv);
+void get_opts_models(const int argc, char **argv);
 ParamsEmbedding get_opts_embed(const int argc, char **argv);
 ParamsRun get_opts_run(const int argc, char **argv);
 

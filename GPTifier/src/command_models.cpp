@@ -2,7 +2,6 @@
 
 #include "api.hpp"
 #include "cli.hpp"
-#include "help_messages.hpp"
 #include "reporting.hpp"
 #include "utils.hpp"
 
@@ -49,13 +48,7 @@ void print_models_response(const std::string &response)
 
 void command_models(const int argc, char **argv)
 {
-    bool print_help = cli::get_opts_models(argc, argv);
-
-    if (print_help)
-    {
-        help::command_models();
-        return;
-    }
+    cli::get_opts_models(argc, argv);
 
     std::string response = query_models_api();
     print_models_response(response);

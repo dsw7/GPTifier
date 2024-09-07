@@ -1,5 +1,7 @@
 #include "cli.hpp"
 
+#include "help_messages.hpp"
+
 #include <getopt.h>
 #include <iostream>
 
@@ -17,10 +19,8 @@ void exit_on_failure()
 namespace cli
 {
 
-bool get_opts_models(const int argc, char **argv)
+void get_opts_models(const int argc, char **argv)
 {
-    bool print_help = false;
-
     while (true)
     {
         static struct option long_options[] = {{"help", no_argument, 0, 'h'}, {0, 0, 0, 0}};
@@ -36,14 +36,12 @@ bool get_opts_models(const int argc, char **argv)
         switch (c)
         {
         case 'h':
-            print_help = true;
-            break;
+            help::command_models();
+            exit(EXIT_SUCCESS);
         default:
             exit_on_failure();
         }
     }
-
-    return print_help;
 }
 
 ParamsEmbedding get_opts_embed(const int argc, char **argv)
