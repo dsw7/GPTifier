@@ -96,6 +96,7 @@ void root_messages()
 
     str_pair commands = {};
     commands.push_back({"run", "Run a query against an appropriate model"});
+    commands.push_back({"short", "Run a query against an appropriate model but with no threading and limited verbosity"});
     commands.push_back({"models", "List available OpenAI models"});
     commands.push_back({"embed", "Get embedding representing a block of text"});
     body += add_commands(commands);
