@@ -96,6 +96,8 @@ void root_messages()
 
     str_pair commands = {};
     commands.push_back({"run", "Run a query against an appropriate model"});
+    commands.push_back(
+        {"short", "Run a query against an appropriate model but with no threading and limited verbosity"});
     commands.push_back({"models", "List available OpenAI models"});
     commands.push_back({"embed", "Get embedding representing a block of text"});
     body += add_commands(commands);
@@ -123,6 +125,22 @@ void command_run()
     examples.push_back({"Run a query non-interactively and export results",
                         "gpt run --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\""});
 
+    body += add_examples(examples);
+    std::cout << body;
+}
+
+void command_short()
+{
+    std::string body = add_description("Create a chat completion but without threading or verbosity.");
+    body += add_synopsis("short <options>");
+
+    str_pair options = {};
+    options.push_back({"-h, --help", "Print help information and exit"});
+    options.push_back({"-p <prompt>, --prompt=<prompt>", "Provide prompt via command line"});
+    body += add_options(options);
+
+    str_pair examples = {};
+    examples.push_back({"Create a chat completion", "gpt short --prompt=\"What is 2 + 2?\""});
     body += add_examples(examples);
     std::cout << body;
 }

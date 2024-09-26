@@ -23,6 +23,7 @@ struct ParamsRun
 };
 
 void get_opts_models(const int argc, char **argv);
+std::string get_opts_short(const int argc, char **argv);
 ParamsEmbedding get_opts_embed(const int argc, char **argv);
 ParamsRun get_opts_run(const int argc, char **argv);
 

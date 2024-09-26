@@ -20,6 +20,7 @@ A beautiful C++ libcurl / ChatGPT interface
     - [Basic example](#basic-example)
     - [Exporting a result](#exporting-a-result)
     - [Specifying a model](#specifying-a-model)
+  - [The `short` command](#the-short-command)
   - [The `embed` command](#the-embed-command)
   - [The `models` command](#the-models-command)
   - [Input selection](#input-selection)
@@ -175,6 +176,26 @@ gpt run --model gpt-4 --prompt "What is 3 + 5?"
 > [!NOTE]
 > See [Input selection](#input-selection) for more information regarding how to pass
 > a prompt into this command
+
+### The `short` command
+The `short` command is almost identical to the [the `run` command](#the-run-command), but this command returns
+a chat completion under the following conditions:
+
+1. Threading is disabled; that is, no timer will run in the background to time the round trip
+2. Verbosity is disabled; either the raw chat completion or an error will be printed to the console
+3. Text colorization is disabled; this is to prevent ANSI escape code artifact clutter
+
+An example follows:
+```console
+gpt short --prompt "What is 2 + 2?"
+```
+Which will print out:
+```
+2 + 2 equals 4.
+```
+
+> [!TIP]
+> Use this command if running GPTifier via something like `vim`'s `system()` function
 
 ### The `embed` command
 This command converts some input text into a vector representation of the text. To use the command, run:

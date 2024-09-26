@@ -66,6 +66,7 @@ add_executable(
   "src/command_embed.cpp"
   "src/command_models.cpp"
   "src/command_run.cpp"
+  "src/command_short.cpp"
   "src/configs.cpp"
   "src/datadir.cpp"
   "src/help_messages.cpp"

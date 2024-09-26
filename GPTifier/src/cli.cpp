@@ -44,6 +44,45 @@ void get_opts_models(const int argc, char **argv)
     }
 }
 
+std::string get_opts_short(const int argc, char **argv)
+{
+    std::string prompt;
+
+    while (true)
+    {
+        static struct option long_options[] = {
+            {"help", no_argument, 0, 'h'}, {"prompt", required_argument, 0, 'p'}, {0, 0, 0, 0}};
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hp:", long_options, &option_index);
+
+        if (c == -1)
+        {
+            break;
+        }
+
+        switch (c)
+        {
+        case 'h':
+            command_short();
+            exit(EXIT_SUCCESS);
+        case 'p':
+            prompt = optarg;
+            break;
+        default:
+            exit_on_failure();
+        }
+    }
+
+    if (prompt.empty())
+    {
+        std::cerr << "Prompt is empty\n";
+        exit_on_failure();
+    }
+
+    return prompt;
+}
+
 ParamsEmbedding get_opts_embed(const int argc, char **argv)
 {
     ParamsEmbedding params;
