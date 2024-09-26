@@ -48,6 +48,24 @@ std::string get_post_fields(const std::string &model, const std::string &prompt)
     return post_fields;
 }
 
+void print_chat_completion_response(const std::string &response)
+{
+    nlohmann::json results = nlohmann::json::parse(response);
+
+    if (results.contains("error"))
+    {
+        std::string error = results["error"]["message"];
+        std::cout << error;
+    }
+    else
+    {
+        std::string content = results["choices"][0]["message"]["content"];
+        std::cout << content;
+    }
+
+    std::cout << '\n';
+}
+
 } // namespace
 
 void command_short(const int argc, char **argv)
@@ -67,5 +85,5 @@ void command_short(const int argc, char **argv)
         throw std::runtime_error(errmsg);
     }
 
-    std::cout << response;
+    print_chat_completion_response(response);
 }
