@@ -1,6 +1,7 @@
 #include "command_embed.hpp"
 #include "command_models.hpp"
 #include "command_run.hpp"
+#include "command_short.hpp"
 #include "configs.hpp"
 #include "help_messages.hpp"
 
@@ -57,6 +58,10 @@ int main(int argc, char **argv)
         if (command.compare("run") == 0)
         {
             command_run(argc, argv);
+        }
+        else if (command.compare("short") == 0)
+        {
+            command_short(argc, argv);
         }
         else if (command.compare("models") == 0)
         {
