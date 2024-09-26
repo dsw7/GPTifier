@@ -127,6 +127,22 @@ void command_run()
     std::cout << body;
 }
 
+void command_short()
+{
+    std::string body = add_description("Create a chat completion but without threading or verbosity.");
+    body += add_synopsis("short <options>");
+
+    str_pair options = {};
+    options.push_back({"-h, --help", "Print help information and exit"});
+    options.push_back({"-p <prompt>, --prompt=<prompt>", "Provide prompt via command line"});
+    body += add_options(options);
+
+    str_pair examples = {};
+    examples.push_back({"Create a chat completion", "gpt short --prompt=\"What is 2 + 2?\""});
+    body += add_examples(examples);
+    std::cout << body;
+}
+
 void command_models()
 {
     std::string body = add_description("List available OpenAI models.");
