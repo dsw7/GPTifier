@@ -24,3 +24,13 @@ def test_short_prompt(command: Command, option: str, capfd: Capture) -> None:
 
     assert process.returncode == EX_OK
     assert ">>>4<<<" in stdout
+
+
+def test_missing_prompt(command: Command, capfd: Capture) -> None:
+    command.extend(["short"])
+
+    process = run(command)
+    _, stderr = unpack_stdout_stderr(capfd)
+
+    assert process.returncode != EX_OK
+    assert "Prompt is empty" in stderr
