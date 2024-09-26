@@ -194,6 +194,9 @@ Which will print out:
 2 + 2 equals 4.
 ```
 
+> [!TIP]
+> Use this command if running GPTifier via something like `vim`'s `system()` function
+
 ### The `embed` command
 This command converts some input text into a vector representation of the text. To use the command, run:
 ```console
