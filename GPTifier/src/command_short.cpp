@@ -1,9 +1,11 @@
 #include "command_short.hpp"
 
+#include "api.hpp"
 #include "cli.hpp"
 #include "configs.hpp"
 #include "reporting.hpp"
 #include "testing.hpp"
+#include <fmt/core.h>
 #include <iostream>
 #include <json.hpp>
 #include <stdexcept>
@@ -52,5 +54,18 @@ void command_short(const int argc, char **argv)
 {
     std::string prompt = cli::get_opts_short(argc, argv);
     std::string model = select_chat_model();
-    std::cout << get_post_fields(model, prompt);
+    std::string post_fields = get_post_fields(model, prompt);
+
+    std::string response;
+    try
+    {
+        response = query_chat_completion_api(post_fields);
+    }
+    catch (std::runtime_error &e)
+    {
+        std::string errmsg = fmt::format("Query failed. {}", e.what());
+        throw std::runtime_error(errmsg);
+    }
+
+    std::cout << response;
 }
