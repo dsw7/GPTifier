@@ -76,6 +76,7 @@ std::string get_opts_short(const int argc, char **argv)
 
     if (prompt.empty())
     {
+        std::cerr << "Prompt is empty\n";
         exit_on_failure();
     }
 
