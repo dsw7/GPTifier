@@ -37,8 +37,7 @@ std::string build_chat_completion_request_body(const std::string &model, const s
     nlohmann::json messages = {{"role", "user"}, {"content", prompt}};
     nlohmann::json body = {{"model", model}, {"temperature", 1.00}, {"messages", nlohmann::json::array({messages})}};
 
-    std::string post_fields = body.dump(2);
-    return post_fields;
+    return body.dump(2);
 }
 
 void print_chat_completion_response(const std::string &response)
