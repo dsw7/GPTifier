@@ -30,14 +30,8 @@ struct Completion
     std::time_t created = 0;
 };
 
-std::string select_chat_model(const std::string &model)
+std::string select_chat_model()
 {
-    // I.e. model was passed via command line option
-    if (not model.empty())
-    {
-        return model;
-    }
-
     // I.e. default to using low cost model since we are running unit tests
     if (testing::is_test_running())
     {
@@ -58,31 +52,41 @@ std::string select_chat_model(const std::string &model)
 
 std::string build_chat_completion_request_body(const cli::ParamsRun &params)
 {
-    nlohmann::json body = {};
-    body["model"] = select_chat_model(params.model);
+    float temperature = 1.00;
 
     try
     {
-        body["temperature"] = std::stof(params.temperature);
+        temperature = std::stof(params.temperature);
     }
     catch (std::invalid_argument &e)
     {
-        std::string errmsg = std::string(e.what()) + ". Failed to convert '" + params.temperature + "' to float";
+        std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), params.temperature);
         throw std::runtime_error(errmsg);
     }
 
-    nlohmann::json messages = {};
-    messages["role"] = "user";
-    messages["content"] = params.prompt;
+    std::string model;
 
-    body["messages"] = nlohmann::json::array({messages});
-    std::string post_fields = body.dump(2);
+    if (params.model.empty())
+    {
+        model = select_chat_model();
+    }
+    else
+    {
+        // Model was passed via CLI
+        model = params.model;
+    }
+
+    nlohmann::json messages = {{"role", "user"}, {"content", params.prompt}};
+    nlohmann::json body = {
+        {"model", model}, {"temperature", temperature}, {"messages", nlohmann::json::array({messages})}};
+
+    std::string body_stringified = body.dump(2);
 
     reporting::print_sep();
-    reporting::print_request(post_fields);
+    reporting::print_request(body_stringified);
     reporting::print_sep();
 
-    return post_fields;
+    return body_stringified;
 }
 
 void print_chat_completion_response(const std::string &response)
