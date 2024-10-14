@@ -56,7 +56,7 @@ std::string select_chat_model(const std::string &model)
     return configs.chat.model;
 }
 
-std::string get_post_fields(const cli::ParamsRun &params)
+std::string build_chat_completion_request_body(const cli::ParamsRun &params)
 {
     nlohmann::json body = {};
     body["model"] = select_chat_model(params.model);
@@ -243,7 +243,7 @@ void command_run(const int argc, char **argv)
         params.prompt = load_input_text(params.prompt_file);
     }
 
-    std::string post_fields = get_post_fields(params);
+    std::string request_body = build_chat_completion_request_body(params);
 
     timer_enabled = true;
     std::thread timer(time_api_call);
@@ -253,7 +253,7 @@ void command_run(const int argc, char **argv)
 
     try
     {
-        response = query_chat_completion_api(post_fields);
+        response = query_chat_completion_api(request_body);
     }
     catch (std::runtime_error &e)
     {

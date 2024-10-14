@@ -64,12 +64,12 @@ void command_short(const int argc, char **argv)
 {
     std::string prompt = cli::get_opts_short(argc, argv);
     std::string model = select_chat_model();
-    std::string post_fields = build_chat_completion_request_body(model, prompt);
+    std::string request_body = build_chat_completion_request_body(model, prompt);
 
     std::string response;
     try
     {
-        response = query_chat_completion_api(post_fields);
+        response = query_chat_completion_api(request_body);
     }
     catch (std::runtime_error &e)
     {
