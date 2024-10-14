@@ -17,39 +17,36 @@
 namespace
 {
 
-nlohmann::json select_embedding_model(const std::string &model)
+std::string select_embedding_model(const std::string &model)
 {
-    nlohmann::json body = {};
-
     // I.e. model was passed via command line option
     if (not model.empty())
     {
-        body["model"] = model;
-        return body;
+        return model;
     }
 
     // I.e. load default model from configuration file
-    if (not configs.embeddings.model.empty())
+    if (configs.embeddings.model.empty())
     {
-        body["model"] = configs.embeddings.model;
-        return body;
+        throw std::runtime_error("No model provided via configuration file or command line");
     }
 
-    throw std::runtime_error("No model provided via configuration file or command line");
+    return configs.embeddings.model;
 }
 
-std::string get_post_fields(const cli::ParamsEmbedding &params)
+std::string build_embedding_request_body(const cli::ParamsEmbedding &params)
 {
-    nlohmann::json body = select_embedding_model(params.model);
+    nlohmann::json body = {};
+    body["model"] = select_embedding_model(params.model);
 
     body["input"] = params.input;
-    std::string post_fields = body.dump(2);
+    std::string body_stringified = body.dump(2);
 
     reporting::print_sep();
-    reporting::print_request(post_fields);
+    reporting::print_request(body_stringified);
     reporting::print_sep();
 
-    return post_fields;
+    return body_stringified;
 }
 
 void export_embedding(const std::string &response, const std::string &input)
@@ -90,7 +87,7 @@ void command_embed(const int argc, char **argv)
         params.input = load_input_text(params.input_file);
     }
 
-    std::string post_fields = get_post_fields(params);
-    std::string response = query_embeddings_api(post_fields);
+    std::string request_body = build_embedding_request_body(params);
+    std::string response = query_embeddings_api(request_body);
     export_embedding(response, params.input);
 }
