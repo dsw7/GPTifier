@@ -32,17 +32,10 @@ std::string select_chat_model()
     return configs.chat.model;
 }
 
-std::string get_post_fields(const std::string &model, const std::string &prompt)
+std::string build_chat_completion_request_body(const std::string &model, const std::string &prompt)
 {
-    nlohmann::json body = {};
-    body["model"] = model;
-    body["temperature"] = 1.00;
-
-    nlohmann::json messages = {};
-    messages["role"] = "user";
-    messages["content"] = prompt;
-
-    body["messages"] = nlohmann::json::array({messages});
+    nlohmann::json messages = {{"role", "user"}, {"content", prompt}};
+    nlohmann::json body = {{"model", model}, {"temperature", 1.00}, {"messages", nlohmann::json::array({messages})}};
 
     std::string post_fields = body.dump(2);
     return post_fields;
@@ -72,7 +65,7 @@ void command_short(const int argc, char **argv)
 {
     std::string prompt = cli::get_opts_short(argc, argv);
     std::string model = select_chat_model();
-    std::string post_fields = get_post_fields(model, prompt);
+    std::string post_fields = build_chat_completion_request_body(model, prompt);
 
     std::string response;
     try
