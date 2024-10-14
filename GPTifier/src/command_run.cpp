@@ -30,15 +30,12 @@ struct Completion
     std::time_t created = 0;
 };
 
-nlohmann::json select_chat_model(const std::string &model)
+std::string select_chat_model(const std::string &model)
 {
-    nlohmann::json body = {};
-
     // I.e. model was passed via command line option
     if (not model.empty())
     {
-        body["model"] = model;
-        return body;
+        return model;
     }
 
     // I.e. default to using low cost model since we are running unit tests
@@ -47,23 +44,22 @@ nlohmann::json select_chat_model(const std::string &model)
         static std::string low_cost_model = "gpt-3.5-turbo";
         std::cout << "Defaulting to using a low cost model: " << low_cost_model << '\n';
 
-        body["model"] = low_cost_model;
-        return body;
+        return low_cost_model;
     }
 
-    // I.e. load default model from configuration file
-    if (not configs.chat.model.empty())
+    // I.e. try to load default model from configuration file
+    if (configs.chat.model.empty())
     {
-        body["model"] = configs.chat.model;
-        return body;
+        throw std::runtime_error("No model provided via configuration file or command line");
     }
 
-    throw std::runtime_error("No model provided via configuration file or command line");
+    return configs.chat.model;
 }
 
 std::string get_post_fields(const cli::ParamsRun &params)
 {
-    nlohmann::json body = select_chat_model(params.model);
+    nlohmann::json body = {};
+    body["model"] = select_chat_model(params.model);
 
     try
     {
