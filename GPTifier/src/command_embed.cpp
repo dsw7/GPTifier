@@ -34,12 +34,11 @@ std::string select_embedding_model(const std::string &model)
     return configs.embeddings.model;
 }
 
-std::string build_embedding_request_body(const cli::ParamsEmbedding &params)
+std::string build_embedding_request_body(const std::string &model, const std::string &input)
 {
     nlohmann::json body = {};
-    body["model"] = select_embedding_model(params.model);
-
-    body["input"] = params.input;
+    body["model"] = model;
+    body["input"] = input;
     std::string body_stringified = body.dump(2);
 
     reporting::print_sep();
@@ -86,8 +85,9 @@ void command_embed(const int argc, char **argv)
         reporting::print_sep();
         params.input = load_input_text(params.input_file);
     }
+    std::string model = select_embedding_model(params.model);
 
-    std::string request_body = build_embedding_request_body(params);
+    std::string request_body = build_embedding_request_body(model, params.input);
     std::string response = query_embeddings_api(request_body);
     export_embedding(response, params.input);
 }
