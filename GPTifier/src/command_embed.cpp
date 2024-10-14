@@ -36,9 +36,7 @@ std::string select_embedding_model(const std::string &model)
 
 std::string build_embedding_request_body(const std::string &model, const std::string &input)
 {
-    nlohmann::json body = {};
-    body["model"] = model;
-    body["input"] = input;
+    nlohmann::json body = {{"model", model}, {"input", input}};
     std::string body_stringified = body.dump(2);
 
     reporting::print_sep();
