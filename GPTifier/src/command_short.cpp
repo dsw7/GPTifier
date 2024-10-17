@@ -4,6 +4,7 @@
 #include "cli.hpp"
 #include "configs.hpp"
 #include "reporting.hpp"
+#include "request_bodies.hpp"
 #include "testing.hpp"
 #include <fmt/core.h>
 #include <iostream>
@@ -32,14 +33,6 @@ std::string select_chat_model()
     return configs.chat.model;
 }
 
-std::string build_chat_completion_request_body(const std::string &model, const std::string &prompt)
-{
-    nlohmann::json messages = {{"role", "user"}, {"content", prompt}};
-    nlohmann::json body = {{"model", model}, {"temperature", 1.00}, {"messages", nlohmann::json::array({messages})}};
-
-    return body.dump(2);
-}
-
 void print_chat_completion_response(const std::string &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
@@ -64,7 +57,7 @@ void command_short(const int argc, char **argv)
 {
     std::string prompt = cli::get_opts_short(argc, argv);
     std::string model = select_chat_model();
-    std::string request_body = build_chat_completion_request_body(model, prompt);
+    std::string request_body = get_chat_completion_request_body(model, prompt, 1.00);
 
     std::string response;
     try

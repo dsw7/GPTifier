@@ -6,6 +6,7 @@
 #include "datadir.hpp"
 #include "input_selection.hpp"
 #include "reporting.hpp"
+#include "request_bodies.hpp"
 #include "testing.hpp"
 #include "utils.hpp"
 
@@ -76,17 +77,13 @@ std::string build_chat_completion_request_body(const cli::ParamsRun &params)
         model = params.model;
     }
 
-    nlohmann::json messages = {{"role", "user"}, {"content", params.prompt}};
-    nlohmann::json body = {
-        {"model", model}, {"temperature", temperature}, {"messages", nlohmann::json::array({messages})}};
-
-    std::string body_stringified = body.dump(2);
+    std::string request_body = get_chat_completion_request_body(model, params.prompt, temperature);
 
     reporting::print_sep();
-    reporting::print_request(body_stringified);
+    reporting::print_request(request_body);
     reporting::print_sep();
 
-    return body_stringified;
+    return request_body;
 }
 
 void print_chat_completion_response(const std::string &response)
