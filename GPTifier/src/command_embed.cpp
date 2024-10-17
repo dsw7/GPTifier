@@ -6,6 +6,7 @@
 #include "datadir.hpp"
 #include "input_selection.hpp"
 #include "reporting.hpp"
+#include "request_bodies.hpp"
 
 #include <fmt/core.h>
 #include <fstream>
@@ -32,18 +33,6 @@ std::string select_embedding_model(const std::string &model)
     }
 
     return configs.embeddings.model;
-}
-
-std::string build_embedding_request_body(const std::string &model, const std::string &input)
-{
-    nlohmann::json body = {{"model", model}, {"input", input}};
-    std::string body_stringified = body.dump(2);
-
-    reporting::print_sep();
-    reporting::print_request(body_stringified);
-    reporting::print_sep();
-
-    return body_stringified;
 }
 
 void export_embedding(const std::string &response, const std::string &input)
@@ -83,9 +72,14 @@ void command_embed(const int argc, char **argv)
         reporting::print_sep();
         params.input = load_input_text(params.input_file);
     }
-    std::string model = select_embedding_model(params.model);
 
-    std::string request_body = build_embedding_request_body(model, params.input);
+    std::string model = select_embedding_model(params.model);
+    std::string request_body = get_embedding_request_body(model, params.input);
+
+    reporting::print_sep();
+    reporting::print_request(request_body);
+    reporting::print_sep();
+
     std::string response = query_embeddings_api(request_body);
     export_embedding(response, params.input);
 }
