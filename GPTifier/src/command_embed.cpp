@@ -5,13 +5,13 @@
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "input_selection.hpp"
+#include "json.hpp"
 #include "reporting.hpp"
 #include "request_bodies.hpp"
 
 #include <fmt/core.h>
 #include <fstream>
 #include <iostream>
-#include <json.hpp>
 #include <stdexcept>
 #include <string>
 

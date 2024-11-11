@@ -58,6 +58,7 @@ if(NOT fmt_FOUND)
 endif()
 
 include_directories(
+  "external"
   "include"
 )
 add_executable(
