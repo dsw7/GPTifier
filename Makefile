@@ -32,7 +32,7 @@ lint:
 	@cppcheck GPTifier --enable=all
 
 sc:
-	@shellcheck --shell=bash setup get_dependencies
+	@shellcheck --shell=bash setup
 
 test: compile
 	@python3 -m pytest -vs tests

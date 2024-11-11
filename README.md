@@ -10,8 +10,6 @@ A beautiful C++ libcurl / ChatGPT interface
   - [Prerequisites](#prerequisites)
   - [Get specific release](#get-specific-release)
   - [Compile binary](#compile-binary)
-  - [Get `json.hpp`](#get-jsonhpp)
-  - [Get `toml.hpp`](#get-tomlhpp)
   - [Get `{fmt}`](#get-fmt)
   - [Set up project files](#set-up-project-files)
   - [Clean up](#clean-up)
@@ -69,47 +67,6 @@ make compile
 ```
 The binary will be installed into whatever install directory is resolved by CMake's
 [install()](https://cmake.org/cmake/help/latest/command/install.html#command:install).
-### Get `json.hpp`
-This project uses the [nlohmann/json](https://github.com/nlohmann/json) library. The compiler must be able to
-locate the `json.hpp` header file. If the `json.hpp` file does not exist anywhere, `cmake` will print out:
-```
--- Checking if json.hpp exists anywhere
--- Checking directory: /usr/include/c++/10
--- Checking directory: /usr/include/x86_64-linux-gnu/c++/10
--- Checking directory: /usr/include/c++/10/backward
--- Checking directory: /usr/lib/gcc/x86_64-linux-gnu/10/include
--- Checking directory: /usr/local/include
--- Checking directory: /usr/include/x86_64-linux-gnu
--- Checking directory: /usr/include
-CMake Error at CMakeLists.txt:<line-number> (message):
-  Could not find json.hpp in any include directory
-```
-To install `json.hpp` into say `/usr/include`, simply run the convenience script:
-```console
-./get_dependencies /usr/include/
-```
-Running the script may require elevated privileges.
-### Get `toml.hpp`
-This project uses the [TOML++](https://marzer.github.io/tomlplusplus/) configuration parser. The compiler must
-be able to locate the `toml.hpp` header file. If the `toml.hpp` file does not exist anywhere, `cmake` will
-print out:
-```
--- Checking if toml.hpp exists anywhere
--- Checking directory: /usr/include/c++/10
--- Checking directory: /usr/include/x86_64-linux-gnu/c++/10
--- Checking directory: /usr/include/c++/10/backward
--- Checking directory: /usr/lib/gcc/x86_64-linux-gnu/10/include
--- Checking directory: /usr/local/include
--- Checking directory: /usr/include/x86_64-linux-gnu
--- Checking directory: /usr/include
-CMake Error at CMakeLists.txt:<line-number> (message):
-  Could not find toml.hpp in any include directory
-```
-Which is identical [`json.hpp`](#get-jsonhpp) case. As before, simply run the convenience script:
-```console
-./get_dependencies /usr/include/
-```
-Running the script may require elevated privileges.
 ### Get `{fmt}`
 This project uses [{fmt}](https://fmt.dev/latest/) for string formatting. The compiler will abort if `{fmt}`
 cannot be found anywhere. See [Get Started](https://fmt.dev/latest/get-started/) for instructions on
