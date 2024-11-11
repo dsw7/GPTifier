@@ -32,23 +32,27 @@ else()
   message(STATUS "nlohmann/json.hpp already exists. Skipping download")
 endif()
 
-set(TOMLPLUSPLUS "toml.hpp")
-set(TOMLPLUSPLUS_NOT_FOUND BOOL TRUE)
+# -----------------------------------------------------------------------------------------------------------
+# toml++
 
-message(STATUS "Checking if ${TOMLPLUSPLUS} exists anywhere")
+message(STATUS "Checking for toml++ header file")
 
-foreach(dir ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
-  message(STATUS "Checking directory: ${dir}")
-  if(EXISTS "${dir}/${TOMLPLUSPLUS}")
-    message(STATUS "File ${TOMLPLUSPLUS} found in ${dir}")
-    set(TOMLPLUSPLUS_NOT_FOUND FALSE)
-    break()
-  endif()
-endforeach()
+set(TOMLPLUSPLUS_HPP "${CMAKE_SOURCE_DIR}/external/toml.hpp")
 
-if(TOMLPLUSPLUS_NOT_FOUND)
-  message(FATAL_ERROR "Could not find ${TOMLPLUSPLUS} in any include directory")
+if(NOT EXISTS ${TOMLPLUSPLUS_HPP})
+  message(STATUS "Downloading toml.hpp")
+  file(
+    DOWNLOAD
+    "https://raw.githubusercontent.com/marzer/tomlplusplus/master/toml.hpp"
+    ${TOMLPLUSPLUS_HPP}
+    SHOW_PROGRESS
+  )
+else()
+  message(STATUS "toml.hpp already exists. Skipping download")
 endif()
+
+# -----------------------------------------------------------------------------------------------------------
+# {fmt}
 
 message(STATUS "Locating {fmt} library")
 find_package(fmt)
@@ -56,6 +60,8 @@ find_package(fmt)
 if(NOT fmt_FOUND)
   message(FATAL_ERROR "Is the {fmt} package installed?")
 endif()
+
+# -----------------------------------------------------------------------------------------------------------
 
 include_directories(
   "external"
