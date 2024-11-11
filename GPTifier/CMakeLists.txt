@@ -13,22 +13,23 @@ add_compile_definitions(BUILD_DATE="${BUILD_DATE}")
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
-set(NLOHMANN_JSON "json.hpp")
-set(NLOHMANN_JSON_NOT_FOUND BOOL TRUE)
+# -----------------------------------------------------------------------------------------------------------
+# nlohmann/json.hpp
 
-message(STATUS "Checking if ${NLOHMANN_JSON} exists anywhere")
+message(STATUS "Checking for nlohmann/json.hpp")
 
-foreach(dir ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
-  message(STATUS "Checking directory: ${dir}")
-  if(EXISTS "${dir}/${NLOHMANN_JSON}")
-    message(STATUS "File ${NLOHMANN_JSON} found in ${dir}")
-    set(NLOHMANN_JSON_NOT_FOUND FALSE)
-    break()
-  endif()
-endforeach()
+set(NLOHMANN_JSON_HPP "${CMAKE_SOURCE_DIR}/external/json.hpp")
 
-if(NLOHMANN_JSON_NOT_FOUND)
-  message(FATAL_ERROR "Could not find ${NLOHMANN_JSON} in any include directory")
+if(NOT EXISTS ${NLOHMANN_JSON_HPP})
+  message(STATUS "Downloading nlohmann/json.hpp")
+  file(
+    DOWNLOAD
+    "https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp"
+    ${NLOHMANN_JSON_HPP}
+    SHOW_PROGRESS
+  )
+else()
+  message(STATUS "nlohmann/json.hpp already exists. Skipping download")
 endif()
 
 set(TOMLPLUSPLUS "toml.hpp")
