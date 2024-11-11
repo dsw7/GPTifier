@@ -1,9 +1,9 @@
 #include "configs.hpp"
 #include "datadir.hpp"
+#include "toml.hpp"
 
 #include <filesystem>
 #include <stdexcept>
-#include <toml.hpp>
 
 void Configs::load_configs_from_config_file()
 {
