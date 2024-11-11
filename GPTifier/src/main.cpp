@@ -4,9 +4,9 @@
 #include "command_short.hpp"
 #include "configs.hpp"
 #include "help_messages.hpp"
+#include "json.hpp"
 
 #include <iostream>
-#include <json.hpp>
 #include <stdexcept>
 
 Configs configs;

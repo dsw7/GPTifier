@@ -3,12 +3,13 @@
 #include "api.hpp"
 #include "cli.hpp"
 #include "configs.hpp"
+#include "json.hpp"
 #include "reporting.hpp"
 #include "request_bodies.hpp"
 #include "testing.hpp"
+
 #include <fmt/core.h>
 #include <iostream>
-#include <json.hpp>
 #include <stdexcept>
 #include <string>
 
