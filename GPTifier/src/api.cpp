@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <curl/curl.h>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -14,7 +15,7 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
     return size * nmemb;
 }
 
-const std::string get_api_key()
+std::optional<std::string> get_api_key()
 {
     const char *api_key = std::getenv("OPENAI_API_KEY");
 
@@ -22,7 +23,7 @@ const std::string get_api_key()
         return std::string(api_key);
     }
 
-    return std::string();
+    return std::nullopt;
 }
 
 class Curl {
@@ -44,9 +45,9 @@ Curl::Curl()
         throw std::runtime_error("Something went wrong when initializing libcurl");
     }
 
-    const std::string api_key = get_api_key();
+    const std::optional<std::string> api_key = get_api_key();
 
-    if (api_key.empty()) {
+    if (not api_key.has_value()) {
         throw std::runtime_error("OPENAI_API_KEY environment variable not set");
     }
 
@@ -56,7 +57,7 @@ Curl::Curl()
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
 
-    const std::string header_auth = "Authorization: Bearer " + api_key;
+    const std::string header_auth = "Authorization: Bearer " + api_key.value();
 
     this->headers = curl_slist_append(this->headers, header_auth.c_str());
 
