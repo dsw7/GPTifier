@@ -40,13 +40,17 @@ std::optional<std::string> get_text_from_inputfile()
     return text;
 }
 
-std::string get_text_from_stdin()
+std::optional<std::string> get_text_from_stdin()
 {
     std::cout << "\033[1mInput:\033[0m ";
     std::string text;
 
     std::getline(std::cin, text);
     testing::log_test("Loaded input text from stdin");
+
+    if (text.empty()) {
+        return std::nullopt;
+    }
 
     return text;
 }
@@ -65,11 +69,11 @@ std::string load_input_text(const std::string &input_file)
         return text_from_inputfile.value();
     }
 
-    std::string text_from_stdin = get_text_from_stdin();
+    std::optional<std::string> text_from_stdin = get_text_from_stdin();
 
-    if (text_from_stdin.empty()) {
+    if (not text_from_stdin.has_value()) {
         throw std::runtime_error("No input text provided anywhere. Cannot proceed");
     }
 
-    return text_from_stdin;
+    return text_from_stdin.value();
 }
