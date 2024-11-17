@@ -3,7 +3,6 @@
 
 #include <cstdlib>
 #include <curl/curl.h>
-#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -15,7 +14,7 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
     return size * nmemb;
 }
 
-std::optional<std::string> get_api_key()
+const std::string get_api_key()
 {
     const char *api_key = std::getenv("OPENAI_API_KEY");
 
@@ -23,7 +22,7 @@ std::optional<std::string> get_api_key()
         return std::string(api_key);
     }
 
-    return std::nullopt;
+    return std::string();
 }
 
 class Curl {
@@ -47,7 +46,7 @@ Curl::Curl()
 
     const std::string api_key = get_api_key();
 
-    if (not api_key.has_value()) {
+    if (api_key.empty()) {
         throw std::runtime_error("OPENAI_API_KEY environment variable not set");
     }
 
