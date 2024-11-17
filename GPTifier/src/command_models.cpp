@@ -14,7 +14,7 @@ namespace {
 
 void print_row(const std::string &id, const std::string &owned_by, const std::string &creation_time)
 {
-    std::cout << fmt::format("{:<30}{:<30}{}\n", id, owned_by, creation_time);
+    std::cout << fmt::format("{:<40}{:<30}{}\n", id, owned_by, creation_time);
 }
 
 void print_models_response(const std::string &response)
