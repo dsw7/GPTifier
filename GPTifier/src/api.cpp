@@ -44,7 +44,7 @@ Curl::Curl()
         throw std::runtime_error("Something went wrong when initializing libcurl");
     }
 
-    std::string api_key = get_api_key();
+    const std::string api_key = get_api_key();
 
     if (api_key.empty()) {
         throw std::runtime_error("OPENAI_API_KEY environment variable not set");
@@ -56,11 +56,12 @@ Curl::Curl()
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
 
-    std::string header_auth = "Authorization: Bearer " + api_key;
+    const std::string header_auth = "Authorization: Bearer " + api_key;
+
     this->headers = curl_slist_append(this->headers, header_auth.c_str());
 
     if (not configs.project_id.empty()) {
-        std::string header_project_id = "OpenAI-Project: " + configs.project_id;
+        const std::string header_project_id = "OpenAI-Project: " + configs.project_id;
         this->headers = curl_slist_append(this->headers, header_project_id.c_str());
     }
 
@@ -89,8 +90,9 @@ std::string Curl::get(const std::string &endpoint)
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
     CURLcode rv = curl_easy_perform(this->handle);
+
     if (rv != CURLE_OK) {
-        std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
+        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
         throw std::runtime_error(errmsg);
     }
 
@@ -107,8 +109,9 @@ std::string Curl::post(const std::string &endpoint, const std::string &post_fiel
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
     CURLcode rv = curl_easy_perform(this->handle);
+
     if (rv != CURLE_OK) {
-        std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
+        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
         throw std::runtime_error(errmsg);
     }
 
