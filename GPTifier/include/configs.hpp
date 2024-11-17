@@ -2,17 +2,14 @@
 
 #include <string>
 
-struct Configs
-{
+struct Configs {
     void load_configs_from_config_file();
 
-    struct Chat
-    {
+    struct Chat {
         std::string model;
     };
 
-    struct Embeddings
-    {
+    struct Embeddings {
         std::string model;
     };
 

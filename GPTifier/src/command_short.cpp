@@ -13,21 +13,18 @@
 #include <stdexcept>
 #include <string>
 
-namespace
-{
+namespace {
 
 std::string select_chat_model()
 {
-    if (testing::is_test_running())
-    {
+    if (testing::is_test_running()) {
         static std::string low_cost_model = "gpt-3.5-turbo";
         std::cout << "Defaulting to using a low cost model: " << low_cost_model << '\n';
 
         return low_cost_model;
     }
 
-    if (configs.chat.model.empty())
-    {
+    if (configs.chat.model.empty()) {
         throw std::runtime_error("No model provided via configuration file!");
     }
 
@@ -38,13 +35,10 @@ void print_chat_completion_response(const std::string &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
 
-    if (results.contains("error"))
-    {
+    if (results.contains("error")) {
         std::string error = results["error"]["message"];
         std::cout << error;
-    }
-    else
-    {
+    } else {
         std::string content = results["choices"][0]["message"]["content"];
         std::cout << content;
     }
@@ -61,12 +55,9 @@ void command_short(const int argc, char **argv)
     std::string request_body = get_chat_completion_request_body(model, prompt, 1.00);
 
     std::string response;
-    try
-    {
+    try {
         response = query_chat_completion_api(request_body);
-    }
-    catch (std::runtime_error &e)
-    {
+    } catch (std::runtime_error &e) {
         std::string errmsg = fmt::format("Query failed. {}", e.what());
         throw std::runtime_error(errmsg);
     }

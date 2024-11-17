@@ -2,8 +2,7 @@
 
 #include <string>
 
-namespace datadir
-{
+namespace datadir {
 
 extern const std::string GPT_DATADIR;
 extern const std::string GPT_COMPLETIONS;

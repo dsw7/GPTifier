@@ -23,61 +23,43 @@ void print_build_information()
 
 int main(int argc, char **argv)
 {
-    if (argc < 2)
-    {
+    if (argc < 2) {
         cli::root_messages();
         return EXIT_FAILURE;
     }
 
     std::string command = std::string(argv[1]);
 
-    if (command.compare("-h") == 0 or command.compare("--help") == 0)
-    {
+    if (command.compare("-h") == 0 or command.compare("--help") == 0) {
         cli::root_messages();
         return EXIT_SUCCESS;
     }
 
-    if (command.compare("-v") == 0 or command.compare("--version") == 0)
-    {
+    if (command.compare("-v") == 0 or command.compare("--version") == 0) {
         print_build_information();
         return EXIT_SUCCESS;
     }
 
-    try
-    {
+    try {
         configs.load_configs_from_config_file();
-    }
-    catch (std::runtime_error &e)
-    {
+    } catch (std::runtime_error &e) {
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
 
-    try
-    {
-        if (command.compare("run") == 0)
-        {
+    try {
+        if (command.compare("run") == 0) {
             command_run(argc, argv);
-        }
-        else if (command.compare("short") == 0)
-        {
+        } else if (command.compare("short") == 0) {
             command_short(argc, argv);
-        }
-        else if (command.compare("models") == 0)
-        {
+        } else if (command.compare("models") == 0) {
             command_models(argc, argv);
-        }
-        else if (command.compare("embed") == 0)
-        {
+        } else if (command.compare("embed") == 0) {
             command_embed(argc, argv);
-        }
-        else
-        {
+        } else {
             std::cerr << "Received unknown command: \"" + command + "\"\n";
         }
-    }
-    catch (std::runtime_error &e)
-    {
+    } catch (std::runtime_error &e) {
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }

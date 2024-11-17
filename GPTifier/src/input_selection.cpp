@@ -7,8 +7,7 @@
 #include <iostream>
 #include <stdexcept>
 
-namespace
-{
+namespace {
 
 std::string get_text_from_cli_specified_file(const std::string &filename)
 {
@@ -22,13 +21,11 @@ std::string get_text_from_inputfile()
 
     std::string text;
 
-    if (not std::filesystem::exists(inputfile))
-    {
+    if (not std::filesystem::exists(inputfile)) {
         return text;
     }
 
-    if (std::filesystem::is_empty(inputfile))
-    {
+    if (std::filesystem::is_empty(inputfile)) {
         return text;
     }
 
@@ -54,22 +51,19 @@ std::string get_text_from_stdin()
 
 std::string load_input_text(const std::string &input_file)
 {
-    if (not input_file.empty())
-    {
+    if (not input_file.empty()) {
         return get_text_from_cli_specified_file(input_file);
     }
 
     std::string text_from_inputfile = get_text_from_inputfile();
 
-    if (not text_from_inputfile.empty())
-    {
+    if (not text_from_inputfile.empty()) {
         return text_from_inputfile;
     }
 
     std::string text_from_stdin = get_text_from_stdin();
 
-    if (text_from_stdin.empty())
-    {
+    if (text_from_stdin.empty()) {
         throw std::runtime_error("No input text provided anywhere. Cannot proceed");
     }
 

@@ -7,8 +7,7 @@
 #include <utility>
 #include <vector>
 
-namespace
-{
+namespace {
 
 typedef std::vector<std::pair<std::string, std::string>> str_pair;
 
@@ -29,8 +28,7 @@ std::string add_options(const str_pair &options)
 {
     std::string body = "\033[1mOPTIONS:\033[0m\n";
 
-    for (auto it = options.begin(); it != options.end(); it++)
-    {
+    for (auto it = options.begin(); it != options.end(); it++) {
         body += fmt::format("{}\033[2m{}\033[0m\n{} -> {}\n", ws_2, it->first, ws_4, it->second);
     }
 
@@ -42,8 +40,7 @@ std::string add_commands(const str_pair &commands)
 {
     std::string body = "\033[1mCOMMANDS:\033[0m\n";
 
-    for (auto it = commands.begin(); it != commands.end(); it++)
-    {
+    for (auto it = commands.begin(); it != commands.end(); it++) {
         body += fmt::format("{}\033[2m{}\033[0m\n{} -> {}\n", ws_2, it->first, ws_4, it->second);
     }
 
@@ -60,8 +57,7 @@ std::string add_examples(const str_pair &examples)
 {
     std::string body = "\033[1mEXAMPLES:\033[0m\n";
 
-    for (auto it = examples.begin(); it != examples.end(); it++)
-    {
+    for (auto it = examples.begin(); it != examples.end(); it++) {
         body += fmt::format("{}{}:\n", ws_2, it->first);
         body += bash_block(it->second);
     }
@@ -72,8 +68,7 @@ std::string add_examples(const str_pair &examples)
 
 } // namespace
 
-namespace cli
-{
+namespace cli {
 
 void root_messages()
 {
@@ -90,16 +85,16 @@ void root_messages()
     body += add_synopsis("[-v | --version] [-h | --help] [run] [models] [embed]");
 
     str_pair options = {};
-    options.push_back({"-h, --help", "Print help information and exit"});
-    options.push_back({"-v, --version", "Print version and exit"});
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    options.push_back({ "-v, --version", "Print version and exit" });
     body += add_options(options);
 
     str_pair commands = {};
-    commands.push_back({"run", "Run a query against an appropriate model"});
+    commands.push_back({ "run", "Run a query against an appropriate model" });
     commands.push_back(
-        {"short", "Run a query against an appropriate model but with no threading and limited verbosity"});
-    commands.push_back({"models", "List available OpenAI models"});
-    commands.push_back({"embed", "Get embedding representing a block of text"});
+        { "short", "Run a query against an appropriate model but with no threading and limited verbosity" });
+    commands.push_back({ "models", "List available OpenAI models" });
+    commands.push_back({ "embed", "Get embedding representing a block of text" });
     body += add_commands(commands);
 
     std::cout << body;
@@ -111,19 +106,19 @@ void command_run()
     body += add_synopsis("run <options>");
 
     str_pair options = {};
-    options.push_back({"-h, --help", "Print help information and exit"});
-    options.push_back({"-m <model-name>, --model=<model-name>", "Specify a valid chat model"});
-    options.push_back({"-u , --no-interactive-export", "Disable [y/n] prompt that asks whether to export results"});
-    options.push_back({"-d <json-file>, --dump=<json-file>", "Export results to a JSON file"});
-    options.push_back({"-p <prompt>, --prompt=<prompt>", "Provide prompt via command line"});
-    options.push_back({"-r <filename>, --read-from-file=<filename>", "Read prompt from a custom file"});
-    options.push_back({"-t <temp>, --temperature=<temperature>", "Provide a sampling temperature between 0 and 2"});
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    options.push_back({ "-m <model-name>, --model=<model-name>", "Specify a valid chat model" });
+    options.push_back({ "-u , --no-interactive-export", "Disable [y/n] prompt that asks whether to export results" });
+    options.push_back({ "-d <json-file>, --dump=<json-file>", "Export results to a JSON file" });
+    options.push_back({ "-p <prompt>, --prompt=<prompt>", "Provide prompt via command line" });
+    options.push_back({ "-r <filename>, --read-from-file=<filename>", "Read prompt from a custom file" });
+    options.push_back({ "-t <temp>, --temperature=<temperature>", "Provide a sampling temperature between 0 and 2" });
     body += add_options(options);
 
     str_pair examples = {};
-    examples.push_back({"Run an interactive session", "gpt run"});
-    examples.push_back({"Run a query non-interactively and export results",
-                        "gpt run --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\""});
+    examples.push_back({ "Run an interactive session", "gpt run" });
+    examples.push_back({ "Run a query non-interactively and export results",
+        "gpt run --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\"" });
 
     body += add_examples(examples);
     std::cout << body;
@@ -135,12 +130,12 @@ void command_short()
     body += add_synopsis("short <options>");
 
     str_pair options = {};
-    options.push_back({"-h, --help", "Print help information and exit"});
-    options.push_back({"-p <prompt>, --prompt=<prompt>", "Provide prompt via command line"});
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    options.push_back({ "-p <prompt>, --prompt=<prompt>", "Provide prompt via command line" });
     body += add_options(options);
 
     str_pair examples = {};
-    examples.push_back({"Create a chat completion", "gpt short --prompt=\"What is 2 + 2?\""});
+    examples.push_back({ "Create a chat completion", "gpt short --prompt=\"What is 2 + 2?\"" });
     body += add_examples(examples);
     std::cout << body;
 }
@@ -152,7 +147,7 @@ void command_models()
     body += add_synopsis("models [-h | --help]");
     str_pair options = {};
 
-    options.push_back({"-h, --help", "Print help information and exit"});
+    options.push_back({ "-h, --help", "Print help information and exit" });
     body += add_options(options);
 
     std::cout << body;
@@ -164,10 +159,10 @@ void command_embed()
     body += add_synopsis("embed <options>");
 
     str_pair options = {};
-    options.push_back({"-h, --help", "Print help information and exit"});
-    options.push_back({"-m <model-name>, --model=<model-name>", "Specify a valid embedding model"});
-    options.push_back({"-i <text>, --input=<text>", "Input text to embed"});
-    options.push_back({"-r <filename>, --read-from-file=<filename>", "Read input text to embed from a file"});
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    options.push_back({ "-m <model-name>, --model=<model-name>", "Specify a valid embedding model" });
+    options.push_back({ "-i <text>, --input=<text>", "Input text to embed" });
+    options.push_back({ "-r <filename>, --read-from-file=<filename>", "Read input text to embed from a file" });
     body += add_options(options);
 
     std::cout << body;

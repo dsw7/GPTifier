@@ -3,16 +3,14 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-namespace
-{
+namespace {
 
 unsigned short get_terminal_columns()
 {
     static struct winsize window_size;
     window_size.ws_col = 0;
 
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &window_size) == 0)
-    {
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &window_size) == 0) {
         return window_size.ws_col;
     }
 
@@ -21,8 +19,7 @@ unsigned short get_terminal_columns()
 
 } // namespace
 
-namespace reporting
-{
+namespace reporting {
 
 void print_sep()
 {

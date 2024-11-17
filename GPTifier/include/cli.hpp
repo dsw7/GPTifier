@@ -2,18 +2,15 @@
 
 #include <string>
 
-namespace cli
-{
+namespace cli {
 
-struct ParamsEmbedding
-{
+struct ParamsEmbedding {
     std::string input;
     std::string input_file;
     std::string model;
 };
 
-struct ParamsRun
-{
+struct ParamsRun {
     bool enable_export = true;
     std::string json_dump_file;
     std::string model;

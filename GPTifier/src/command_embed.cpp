@@ -15,20 +15,17 @@
 #include <stdexcept>
 #include <string>
 
-namespace
-{
+namespace {
 
 std::string select_embedding_model(const std::string &model)
 {
     // I.e. model was passed via command line option
-    if (not model.empty())
-    {
+    if (not model.empty()) {
         return model;
     }
 
     // I.e. load default model from configuration file
-    if (configs.embeddings.model.empty())
-    {
+    if (configs.embeddings.model.empty()) {
         throw std::runtime_error("No model provided via configuration file or command line");
     }
 
@@ -40,8 +37,7 @@ void export_embedding(const std::string &response, const std::string &input)
     nlohmann::json results = nlohmann::json::parse(response);
     results["input"] = input;
 
-    if (results.contains("error"))
-    {
+    if (results.contains("error")) {
         std::string error = results["error"]["message"];
         reporting::print_error(error);
     }
@@ -49,8 +45,7 @@ void export_embedding(const std::string &response, const std::string &input)
     std::cout << fmt::format("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS);
     std::ofstream st_filename(datadir::GPT_EMBEDDINGS);
 
-    if (not st_filename.is_open())
-    {
+    if (not st_filename.is_open()) {
         std::string errmsg = fmt::format("Unable to open '{}'", datadir::GPT_EMBEDDINGS);
         throw std::runtime_error(errmsg);
     }
@@ -67,8 +62,7 @@ void command_embed(const int argc, char **argv)
 {
     cli::ParamsEmbedding params = cli::get_opts_embed(argc, argv);
 
-    if (params.input.empty())
-    {
+    if (params.input.empty()) {
         reporting::print_sep();
         params.input = load_input_text(params.input_file);
     }

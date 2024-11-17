@@ -10,8 +10,7 @@
 #include <iostream>
 #include <string>
 
-namespace
-{
+namespace {
 
 void print_row(const std::string &id, const std::string &owned_by, const std::string &creation_time)
 {
@@ -22,8 +21,7 @@ void print_models_response(const std::string &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
 
-    if (results.contains("error"))
-    {
+    if (results.contains("error")) {
         std::string error = results["error"]["message"];
         reporting::print_error(error);
         return;
@@ -33,8 +31,7 @@ void print_models_response(const std::string &response)
     print_row("Model ID", "Owner", "Creation time");
     reporting::print_sep();
 
-    for (const auto &entry : results["data"])
-    {
+    for (const auto &entry: results["data"]) {
         std::string id = entry["id"];
         std::string owned_by = entry["owned_by"];
         std::string creation_time = datetime_from_unix_timestamp(entry["created"]);

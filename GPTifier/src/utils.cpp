@@ -20,8 +20,7 @@ std::string read_text_from_file(const std::string &filename)
     std::cout << fmt::format("Reading text from file: '{}'\n", filename);
     std::ifstream file(filename);
 
-    if (not file.is_open())
-    {
+    if (not file.is_open()) {
         std::string errmsg = fmt::format("Could not open file '{}'", filename);
         throw std::runtime_error(errmsg);
     }
