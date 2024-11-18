@@ -6,9 +6,9 @@
 namespace cli {
 
 struct ParamsEmbedding {
-    std::string input;
-    std::string input_file;
-    std::string model;
+    std::optional<std::string> input = std::nullopt;
+    std::optional<std::string> input_file = std::nullopt;
+    std::optional<std::string> model = std::nullopt;
 };
 
 struct ParamsRun {

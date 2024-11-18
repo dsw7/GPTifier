@@ -17,20 +17,6 @@
 
 namespace {
 
-std::string select_embedding_model(const std::string &model)
-{
-    // I.e. model was passed via command line option
-    if (not model.empty()) {
-        return model;
-    }
-
-    if (configs.embeddings.model.has_value()) {
-        return configs.embeddings.model.value();
-    }
-
-    throw std::runtime_error("No model provided via configuration file or command line");
-}
-
 void export_embedding(const std::string &response, const std::string &input)
 {
     nlohmann::json results = nlohmann::json::parse(response);
@@ -61,18 +47,34 @@ void command_embed(const int argc, char **argv)
 {
     cli::ParamsEmbedding params = cli::get_opts_embed(argc, argv);
 
-    if (params.input.empty()) {
+    if (not params.input.has_value()) {
         reporting::print_sep();
-        params.input = load_input_text(params.input_file);
+
+        if (params.input_file.has_value()) {
+            params.input = load_input_text(params.input_file.value());
+        } else {
+            throw std::runtime_error("No input provided via stdin or input file");
+        }
     }
 
-    std::string model = select_embedding_model(params.model);
-    std::string request_body = get_embedding_request_body(model, params.input);
+    std::string model;
+
+    if (params.model.has_value()) {
+        model = params.model.value();
+    } else {
+        if (configs.embeddings.model.has_value()) {
+            model = configs.embeddings.model.value();
+        } else {
+            throw std::runtime_error("No model provided via configuration file or command line");
+        }
+    }
+
+    std::string request_body = get_embedding_request_body(model, params.input.value());
 
     reporting::print_sep();
     reporting::print_request(request_body);
     reporting::print_sep();
 
     std::string response = query_embeddings_api(request_body);
-    export_embedding(response, params.input);
+    export_embedding(response, params.input.value());
 }
