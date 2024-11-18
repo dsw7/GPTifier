@@ -239,12 +239,12 @@ void command_run(const int argc, char **argv)
         throw std::runtime_error("Cannot proceed");
     }
 
-    if (params.json_dump_file.empty()) {
+    if (params.json_dump_file.has_value()) {
+        dump_chat_completion_response(response, params.json_dump_file.value());
+    } else {
         print_chat_completion_response(response);
         if (params.enable_export) {
             export_chat_completion_response(response, params.prompt);
         }
-    } else {
-        dump_chat_completion_response(response, params.json_dump_file);
     }
 }
