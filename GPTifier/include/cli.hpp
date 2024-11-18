@@ -14,7 +14,7 @@ struct ParamsEmbedding {
 struct ParamsRun {
     bool enable_export = true;
     std::optional<std::string> json_dump_file = std::nullopt;
-    std::string model;
+    std::optional<std::string> model = std::nullopt;
     std::string prompt;
     std::string prompt_file;
     std::string temperature = "1";

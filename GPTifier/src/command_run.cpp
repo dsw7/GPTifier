@@ -31,7 +31,6 @@ struct Completion {
 
 std::string select_chat_model()
 {
-    // I.e. default to using low cost model since we are running unit tests
     if (testing::is_test_running()) {
         static std::string low_cost_model = "gpt-3.5-turbo";
         std::cout << "Defaulting to using a low cost model: " << low_cost_model << '\n';
@@ -59,11 +58,10 @@ std::string build_chat_completion_request_body(const cli::ParamsRun &params)
 
     std::string model;
 
-    if (params.model.empty()) {
-        model = select_chat_model();
+    if (params.model.has_value()) {
+        model = params.model.value();
     } else {
-        // Model was passed via CLI
-        model = params.model;
+        model = select_chat_model();
     }
 
     std::string request_body = get_chat_completion_request_body(model, params.prompt, temperature);
