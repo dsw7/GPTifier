@@ -24,11 +24,11 @@ std::string select_chat_model()
         return low_cost_model;
     }
 
-    if (configs.chat.model.empty()) {
-        throw std::runtime_error("No model provided via configuration file!");
+    if (configs.chat.model.has_value()) {
+        return configs.chat.model.value();
     }
 
-    return configs.chat.model;
+    throw std::runtime_error("No model provided via configuration file!");
 }
 
 void print_chat_completion_response(const std::string &response)

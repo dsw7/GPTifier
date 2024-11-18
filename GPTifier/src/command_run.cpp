@@ -39,12 +39,11 @@ std::string select_chat_model()
         return low_cost_model;
     }
 
-    // I.e. try to load default model from configuration file
-    if (configs.chat.model.empty()) {
-        throw std::runtime_error("No model provided via configuration file or command line");
+    if (configs.chat.model.has_value()) {
+        return configs.chat.model.value();
     }
 
-    return configs.chat.model;
+    throw std::runtime_error("No model provided via configuration file or command line");
 }
 
 std::string build_chat_completion_request_body(const cli::ParamsRun &params)

@@ -7,7 +7,7 @@ struct Configs {
     void load_configs_from_config_file();
 
     struct Chat {
-        std::string model;
+        std::optional<std::string> model = std::nullopt;
     };
 
     struct Embeddings {
