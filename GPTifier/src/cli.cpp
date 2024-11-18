@@ -39,9 +39,9 @@ void get_opts_models(const int argc, char **argv)
     }
 }
 
-std::string get_opts_short(const int argc, char **argv)
+std::optional<std::string> get_opts_short(const int argc, char **argv)
 {
-    std::string prompt;
+    std::optional<std::string> prompt = std::nullopt;
 
     while (true) {
         static struct option long_options[] = {
@@ -65,11 +65,6 @@ std::string get_opts_short(const int argc, char **argv)
             default:
                 exit_on_failure();
         }
-    }
-
-    if (prompt.empty()) {
-        std::cerr << "Prompt is empty\n";
-        exit_on_failure();
     }
 
     return prompt;

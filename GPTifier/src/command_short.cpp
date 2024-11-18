@@ -10,6 +10,7 @@
 
 #include <fmt/core.h>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -50,15 +51,20 @@ void print_chat_completion_response(const std::string &response)
 
 void command_short(const int argc, char **argv)
 {
-    std::string prompt = cli::get_opts_short(argc, argv);
+    std::optional<std::string> prompt = cli::get_opts_short(argc, argv);
+
+    if (not prompt.has_value()) {
+        throw std::runtime_error("Prompt is empty");
+    }
+
     std::string model = select_chat_model();
-    std::string request_body = get_chat_completion_request_body(model, prompt, 1.00);
+    std::string request_body = get_chat_completion_request_body(model, prompt.value(), 1.00);
 
     std::string response;
     try {
         response = query_chat_completion_api(request_body);
     } catch (std::runtime_error &e) {
-        std::string errmsg = fmt::format("Query failed. {}", e.what());
+        const std::string errmsg = fmt::format("Query failed. {}", e.what());
         throw std::runtime_error(errmsg);
     }
 
