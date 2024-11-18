@@ -64,7 +64,7 @@ std::string build_chat_completion_request_body(const cli::ParamsRun &params)
         model = select_chat_model();
     }
 
-    std::string request_body = get_chat_completion_request_body(model, params.prompt, temperature);
+    std::string request_body = get_chat_completion_request_body(model, params.prompt.value(), temperature);
 
     reporting::print_sep();
     reporting::print_request(request_body);
@@ -210,7 +210,7 @@ void command_run(const int argc, char **argv)
 {
     cli::ParamsRun params = cli::get_opts_run(argc, argv);
 
-    if (params.prompt.empty()) {
+    if (not params.prompt.has_value()) {
         reporting::print_sep();
         params.prompt = load_input_text(params.prompt_file);
     }
@@ -242,7 +242,7 @@ void command_run(const int argc, char **argv)
     } else {
         print_chat_completion_response(response);
         if (params.enable_export) {
-            export_chat_completion_response(response, params.prompt);
+            export_chat_completion_response(response, params.prompt.value());
         }
     }
 }

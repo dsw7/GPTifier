@@ -15,7 +15,7 @@ struct ParamsRun {
     bool enable_export = true;
     std::optional<std::string> json_dump_file = std::nullopt;
     std::optional<std::string> model = std::nullopt;
-    std::string prompt;
+    std::optional<std::string> prompt = std::nullopt;
     std::string prompt_file;
     std::string temperature = "1";
 };
