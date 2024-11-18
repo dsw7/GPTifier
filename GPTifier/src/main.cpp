@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <string_view>
 
 Configs configs;
 
@@ -28,14 +29,14 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    std::string command = std::string(argv[1]);
+    std::string_view command = argv[1];
 
-    if (command.compare("-h") == 0 or command.compare("--help") == 0) {
+    if (command == "-h" or command == "--help") {
         cli::root_messages();
         return EXIT_SUCCESS;
     }
 
-    if (command.compare("-v") == 0 or command.compare("--version") == 0) {
+    if (command == "-v" or command == "--version") {
         print_build_information();
         return EXIT_SUCCESS;
     }
@@ -48,16 +49,16 @@ int main(int argc, char **argv)
     }
 
     try {
-        if (command.compare("run") == 0) {
+        if (command == "run") {
             command_run(argc, argv);
-        } else if (command.compare("short") == 0) {
+        } else if (command == "short") {
             command_short(argc, argv);
-        } else if (command.compare("models") == 0) {
+        } else if (command == "models") {
             command_models(argc, argv);
-        } else if (command.compare("embed") == 0) {
+        } else if (command == "embed") {
             command_embed(argc, argv);
         } else {
-            std::cerr << "Received unknown command: \"" + command + "\"\n";
+            std::cerr << "Received unknown command. Re-run with -h or --help\n";
         }
     } catch (std::runtime_error &e) {
         std::cerr << e.what() << '\n';

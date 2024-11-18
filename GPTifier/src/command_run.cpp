@@ -141,14 +141,14 @@ void export_chat_completion_response(const std::string &response, const std::str
         std::cout << "> Write reply to file? [y/n]: ";
         std::cin >> choice;
 
-        if (choice.compare("y") == 0 or choice.compare("n") == 0) {
+        if (choice == "y" or choice == "n") {
             break;
         } else {
             std::cout << "> Invalid choice. Input either 'y' or 'n'!\n";
         }
     }
 
-    if (choice.compare("n") == 0) {
+    if (choice == "n") {
         std::cout << "> Not exporting response.\n";
         reporting::print_sep();
         return;
