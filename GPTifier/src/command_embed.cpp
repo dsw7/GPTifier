@@ -49,12 +49,7 @@ void command_embed(const int argc, char **argv)
 
     if (not params.input.has_value()) {
         reporting::print_sep();
-
-        if (params.input_file.has_value()) {
-            params.input = load_input_text(params.input_file.value());
-        } else {
-            throw std::runtime_error("No input provided via stdin or input file");
-        }
+        params.input = load_input_text(params.input_file);
     }
 
     std::string model;

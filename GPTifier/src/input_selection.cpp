@@ -5,7 +5,6 @@
 
 #include <filesystem>
 #include <iostream>
-#include <optional>
 #include <stdexcept>
 
 namespace {
@@ -57,10 +56,10 @@ std::optional<std::string> get_text_from_stdin()
 
 } // namespace
 
-std::string load_input_text(const std::string &input_file)
+std::string load_input_text(const std::optional<std::string> &input_file)
 {
-    if (not input_file.empty()) {
-        return get_text_from_cli_specified_file(input_file);
+    if (input_file.has_value()) {
+        return get_text_from_cli_specified_file(input_file.value());
     }
 
     std::optional<std::string> text_from_inputfile = get_text_from_inputfile();
@@ -71,9 +70,9 @@ std::string load_input_text(const std::string &input_file)
 
     std::optional<std::string> text_from_stdin = get_text_from_stdin();
 
-    if (not text_from_stdin.has_value()) {
-        throw std::runtime_error("No input text provided anywhere. Cannot proceed");
+    if (text_from_stdin.has_value()) {
+        return text_from_stdin.value();
     }
 
-    return text_from_stdin.value();
+    throw std::runtime_error("No input text provided anywhere. Cannot proceed");
 }
