@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 
 struct Configs {
@@ -15,7 +16,7 @@ struct Configs {
 
     Chat chat;
     Embeddings embeddings;
-    std::string project_id;
+    std::optional<std::string> project_id = std::nullopt;
 };
 
 extern Configs configs;

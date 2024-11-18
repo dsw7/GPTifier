@@ -61,8 +61,8 @@ Curl::Curl()
 
     this->headers = curl_slist_append(this->headers, header_auth.c_str());
 
-    if (not configs.project_id.empty()) {
-        const std::string header_project_id = "OpenAI-Project: " + configs.project_id;
+    if (configs.project_id.has_value()) {
+        const std::string header_project_id = "OpenAI-Project: " + configs.project_id.value();
         this->headers = curl_slist_append(this->headers, header_project_id.c_str());
     }
 
