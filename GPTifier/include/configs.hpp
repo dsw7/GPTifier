@@ -11,7 +11,7 @@ struct Configs {
     };
 
     struct Embeddings {
-        std::string model;
+        std::optional<std::string> model = std::nullopt;
     };
 
     Chat chat;

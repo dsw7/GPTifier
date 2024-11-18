@@ -24,12 +24,11 @@ std::string select_embedding_model(const std::string &model)
         return model;
     }
 
-    // I.e. load default model from configuration file
-    if (configs.embeddings.model.empty()) {
-        throw std::runtime_error("No model provided via configuration file or command line");
+    if (configs.embeddings.model.has_value()) {
+        return configs.embeddings.model.value();
     }
 
-    return configs.embeddings.model;
+    throw std::runtime_error("No model provided via configuration file or command line");
 }
 
 void export_embedding(const std::string &response, const std::string &input)

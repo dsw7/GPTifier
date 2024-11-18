@@ -21,5 +21,5 @@ void Configs::load_configs_from_config_file()
 
     this->project_id = table["profile"]["project-id"].value<std::string>();
     this->chat.model = table["chat"]["model"].value<std::string>();
-    this->embeddings.model = table["embeddings"]["model"].value_or("");
+    this->embeddings.model = table["embeddings"]["model"].value<std::string>();
 }
