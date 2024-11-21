@@ -17,7 +17,7 @@ void exit_on_failure()
 
 namespace cli {
 
-void get_opts_models(const int argc, char **argv)
+void get_opts_models(int argc, char **argv)
 {
     while (true) {
         static struct option long_options[] = { { "help", no_argument, 0, 'h' }, { 0, 0, 0, 0 } };
@@ -39,7 +39,7 @@ void get_opts_models(const int argc, char **argv)
     }
 }
 
-std::optional<std::string> get_opts_short(const int argc, char **argv)
+std::optional<std::string> get_opts_short(int argc, char **argv)
 {
     std::optional<std::string> prompt = std::nullopt;
 
@@ -70,7 +70,7 @@ std::optional<std::string> get_opts_short(const int argc, char **argv)
     return prompt;
 }
 
-ParamsEmbedding get_opts_embed(const int argc, char **argv)
+ParamsEmbedding get_opts_embed(int argc, char **argv)
 {
     ParamsEmbedding params;
 
@@ -109,7 +109,7 @@ ParamsEmbedding get_opts_embed(const int argc, char **argv)
     return params;
 }
 
-ParamsRun get_opts_run(const int argc, char **argv)
+ParamsRun get_opts_run(int argc, char **argv)
 {
     ParamsRun params;
 

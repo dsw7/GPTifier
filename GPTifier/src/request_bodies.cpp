@@ -4,8 +4,8 @@
 
 std::string get_chat_completion_request_body(const std::string &model, const std::string &prompt, float temperature)
 {
-    nlohmann::json messages = { { "role", "user" }, { "content", prompt } };
-    nlohmann::json body = {
+    const nlohmann::json messages = { { "role", "user" }, { "content", prompt } };
+    const nlohmann::json body = {
         { "model", model }, { "temperature", temperature }, { "messages", nlohmann::json::array({ messages }) }
     };
 
@@ -14,6 +14,6 @@ std::string get_chat_completion_request_body(const std::string &model, const std
 
 std::string get_embedding_request_body(const std::string &model, const std::string &input)
 {
-    nlohmann::json body = { { "model", model }, { "input", input } };
+    const nlohmann::json body = { { "model", model }, { "input", input } };
     return body.dump(2);
 }

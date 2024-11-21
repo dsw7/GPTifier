@@ -23,7 +23,7 @@ void export_embedding(const std::string &response, const std::string &input)
     results["input"] = input;
 
     if (results.contains("error")) {
-        std::string error = results["error"]["message"];
+        const std::string error = results["error"]["message"];
         reporting::print_error(error);
     }
 
@@ -31,7 +31,7 @@ void export_embedding(const std::string &response, const std::string &input)
     std::ofstream st_filename(datadir::GPT_EMBEDDINGS);
 
     if (not st_filename.is_open()) {
-        std::string errmsg = fmt::format("Unable to open '{}'", datadir::GPT_EMBEDDINGS);
+        const std::string errmsg = fmt::format("Unable to open '{}'", datadir::GPT_EMBEDDINGS);
         throw std::runtime_error(errmsg);
     }
 
@@ -43,7 +43,7 @@ void export_embedding(const std::string &response, const std::string &input)
 
 } // namespace
 
-void command_embed(const int argc, char **argv)
+void command_embed(int argc, char **argv)
 {
     cli::ParamsEmbedding params = cli::get_opts_embed(argc, argv);
 
@@ -64,12 +64,12 @@ void command_embed(const int argc, char **argv)
         }
     }
 
-    std::string request_body = get_embedding_request_body(model, params.input.value());
+    const std::string request_body = get_embedding_request_body(model, params.input.value());
 
     reporting::print_sep();
     reporting::print_request(request_body);
     reporting::print_sep();
 
-    std::string response = query_embeddings_api(request_body);
+    const std::string response = query_embeddings_api(request_body);
     export_embedding(response, params.input.value());
 }

@@ -1,3 +1,3 @@
 #pragma once
 
-void command_models(const int argc, char **argv);
+void command_models(int argc, char **argv);

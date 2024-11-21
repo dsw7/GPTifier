@@ -22,7 +22,7 @@ void print_models_response(const std::string &response)
     nlohmann::json results = nlohmann::json::parse(response);
 
     if (results.contains("error")) {
-        std::string error = results["error"]["message"];
+        const std::string error = results["error"]["message"];
         reporting::print_error(error);
         return;
     }
@@ -32,9 +32,9 @@ void print_models_response(const std::string &response)
     reporting::print_sep();
 
     for (const auto &entry: results["data"]) {
-        std::string id = entry["id"];
-        std::string owned_by = entry["owned_by"];
-        std::string creation_time = datetime_from_unix_timestamp(entry["created"]);
+        const std::string id = entry["id"];
+        const std::string owned_by = entry["owned_by"];
+        const std::string creation_time = datetime_from_unix_timestamp(entry["created"]);
         print_row(id, owned_by, creation_time);
     }
 
@@ -43,10 +43,10 @@ void print_models_response(const std::string &response)
 
 } // namespace
 
-void command_models(const int argc, char **argv)
+void command_models(int argc, char **argv)
 {
     cli::get_opts_models(argc, argv);
 
-    std::string response = query_models_api();
+    const std::string response = query_models_api();
     print_models_response(response);
 }

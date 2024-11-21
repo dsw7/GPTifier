@@ -15,10 +15,10 @@ std::string get_proj_data_dir()
         throw std::runtime_error("Could not locate user home directory!");
     }
 
-    std::string data_dir = std::string(home_dir) + "/.gptifier";
+    const std::string data_dir = std::string(home_dir) + "/.gptifier";
 
     if (not std::filesystem::exists(data_dir)) {
-        std::string errmsg = fmt::format("Could not locate '{}'", data_dir);
+        const std::string errmsg = fmt::format("Could not locate '{}'", data_dir);
         throw std::runtime_error(errmsg);
     }
 

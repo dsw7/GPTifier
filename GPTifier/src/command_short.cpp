@@ -34,13 +34,13 @@ std::string select_chat_model()
 
 void print_chat_completion_response(const std::string &response)
 {
-    nlohmann::json results = nlohmann::json::parse(response);
+    const nlohmann::json results = nlohmann::json::parse(response);
 
     if (results.contains("error")) {
-        std::string error = results["error"]["message"];
+        const std::string error = results["error"]["message"];
         std::cout << error;
     } else {
-        std::string content = results["choices"][0]["message"]["content"];
+        const std::string content = results["choices"][0]["message"]["content"];
         std::cout << content;
     }
 
@@ -49,7 +49,7 @@ void print_chat_completion_response(const std::string &response)
 
 } // namespace
 
-void command_short(const int argc, char **argv)
+void command_short(int argc, char **argv)
 {
     std::optional<std::string> prompt = cli::get_opts_short(argc, argv);
 
@@ -57,7 +57,7 @@ void command_short(const int argc, char **argv)
         throw std::runtime_error("Prompt is empty");
     }
 
-    std::string model = select_chat_model();
+    const std::string model = select_chat_model();
     std::string request_body = get_chat_completion_request_body(model, prompt.value(), 1.00);
 
     std::string response;

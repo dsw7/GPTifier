@@ -84,13 +84,13 @@ Curl::~Curl()
 
 std::string Curl::get(const std::string &endpoint)
 {
-    std::string response;
-
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
+
+    std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    CURLcode rv = curl_easy_perform(this->handle);
+    const CURLcode rv = curl_easy_perform(this->handle);
 
     if (rv != CURLE_OK) {
         const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
@@ -102,14 +102,14 @@ std::string Curl::get(const std::string &endpoint)
 
 std::string Curl::post(const std::string &endpoint, const std::string &post_fields)
 {
-    std::string response;
-
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
     curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
+
+    std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    CURLcode rv = curl_easy_perform(this->handle);
+    const CURLcode rv = curl_easy_perform(this->handle);
 
     if (rv != CURLE_OK) {
         const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));

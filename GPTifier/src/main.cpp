@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <string_view>
+#include <string>
 
 Configs configs;
 
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    std::string_view command = argv[1];
+    const std::string command = argv[1];
 
     if (command == "-h" or command == "--help") {
         cli::root_messages();

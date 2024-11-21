@@ -72,8 +72,8 @@ namespace cli {
 
 void root_messages()
 {
-    std::string name = std::string(PROJECT_NAME);
-    std::string version = std::string(PROJECT_VERSION);
+    const std::string name = std::string(PROJECT_NAME);
+    const std::string version = std::string(PROJECT_VERSION);
 
     std::string body = "\033[1mNAME:\033[0m\n";
     body += fmt::format("{}\033[4m{} v{}\033[0m\n\n", ws_2, name, version);

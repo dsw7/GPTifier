@@ -30,7 +30,7 @@ std::optional<std::string> get_text_from_inputfile()
     testing::log_test("Loaded input text from Inputfile");
     std::cout << "Found an Inputfile in current working directory!\n";
 
-    std::string text = read_text_from_file(inputfile);
+    const std::string text = read_text_from_file(inputfile);
 
     if (text.empty()) {
         return std::nullopt;

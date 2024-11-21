@@ -52,7 +52,7 @@ std::string build_chat_completion_request_body(const cli::ParamsRun &params)
     try {
         temperature = std::stof(params.temperature);
     } catch (std::invalid_argument &e) {
-        std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), params.temperature);
+        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), params.temperature);
         throw std::runtime_error(errmsg);
     }
 
@@ -64,7 +64,7 @@ std::string build_chat_completion_request_body(const cli::ParamsRun &params)
         model = select_chat_model();
     }
 
-    std::string request_body = get_chat_completion_request_body(model, params.prompt.value(), temperature);
+    const std::string request_body = get_chat_completion_request_body(model, params.prompt.value(), temperature);
 
     reporting::print_sep();
     reporting::print_request(request_body);
@@ -81,10 +81,10 @@ void print_chat_completion_response(const std::string &response)
         reporting::print_response(results.dump(2));
         reporting::print_sep();
 
-        std::string error = results["error"]["message"];
+        const std::string error = results["error"]["message"];
         reporting::print_error(error);
     } else {
-        std::string content = results["choices"][0]["message"]["content"];
+        const std::string content = results["choices"][0]["message"]["content"];
         results["choices"][0]["message"]["content"] = "...";
 
         reporting::print_response(results.dump(2));
@@ -104,7 +104,7 @@ void write_message_to_file(const Completion &completion)
         throw std::runtime_error("Unable to open " + datadir::GPT_COMPLETIONS);
     }
 
-    std::string created = datetime_from_unix_timestamp(completion.created);
+    const std::string created = datetime_from_unix_timestamp(completion.created);
 
     static int column_width = 110;
     std::string sep_outer(column_width, '=');
@@ -160,7 +160,7 @@ void export_chat_completion_response(const std::string &response, const std::str
         completion.created = results["created"];
         completion.model = results["model"];
     } catch (const nlohmann::json::type_error &e) {
-        std::string errmsg = "Failed to parse completion. Error was: '" + std::string(e.what()) + "'";
+        const std::string errmsg = "Failed to parse completion. Error was: '" + std::string(e.what()) + "'";
         throw std::runtime_error(errmsg);
     }
 
@@ -177,7 +177,7 @@ void dump_chat_completion_response(const std::string &response, const std::strin
         throw std::runtime_error("Unable to open '" + json_dump_file + "'");
     }
 
-    nlohmann::json results = nlohmann::json::parse(response);
+    const nlohmann::json results = nlohmann::json::parse(response);
 
     st_filename << std::setw(2) << results;
     st_filename.close();
@@ -206,7 +206,7 @@ void time_api_call()
 
 } // namespace
 
-void command_run(const int argc, char **argv)
+void command_run(int argc, char **argv)
 {
     cli::ParamsRun params = cli::get_opts_run(argc, argv);
 
@@ -215,7 +215,7 @@ void command_run(const int argc, char **argv)
         params.prompt = load_input_text(params.prompt_file);
     }
 
-    std::string request_body = build_chat_completion_request_body(params);
+    const std::string request_body = build_chat_completion_request_body(params);
 
     timer_enabled = true;
     std::thread timer(time_api_call);
