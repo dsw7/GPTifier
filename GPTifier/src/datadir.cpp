@@ -7,7 +7,7 @@
 
 namespace {
 
-std::string get_proj_data_dir()
+std::filesystem::path get_proj_data_dir()
 {
     const char *home_dir = std::getenv("HOME");
 
@@ -15,7 +15,7 @@ std::string get_proj_data_dir()
         throw std::runtime_error("Could not locate user home directory!");
     }
 
-    const std::string data_dir = std::string(home_dir) + "/.gptifier";
+    const std::filesystem::path data_dir = std::string(home_dir) / ".gptifier";
 
     if (not std::filesystem::exists(data_dir)) {
         const std::string errmsg = fmt::format("Could not locate '{}'", data_dir);
