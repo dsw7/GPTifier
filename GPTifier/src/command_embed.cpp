@@ -27,11 +27,11 @@ void export_embedding(const std::string &response, const std::string &input)
         reporting::print_error(error);
     }
 
-    std::cout << fmt::format("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS);
+    std::cout << fmt::format("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS.string());
     std::ofstream st_filename(datadir::GPT_EMBEDDINGS);
 
     if (not st_filename.is_open()) {
-        const std::string errmsg = fmt::format("Unable to open '{}'", datadir::GPT_EMBEDDINGS);
+        const std::string errmsg = fmt::format("Unable to open '{}'", datadir::GPT_EMBEDDINGS.string());
         throw std::runtime_error(errmsg);
     }
 

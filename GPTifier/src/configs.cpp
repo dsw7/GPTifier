@@ -14,7 +14,7 @@ void Configs::load_configs_from_config_file()
     toml::table table;
 
     try {
-        table = toml::parse_file(datadir::GPT_CONFIG);
+        table = toml::parse_file(datadir::GPT_CONFIG.string());
     } catch (const toml::parse_error &e) {
         throw std::runtime_error(e);
     }

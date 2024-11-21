@@ -97,11 +97,13 @@ void print_chat_completion_response(const std::string &response)
 
 void write_message_to_file(const Completion &completion)
 {
-    std::cout << fmt::format("> Writing completion to file {}\n", datadir::GPT_COMPLETIONS);
+    const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
 
-    std::ofstream st_filename(datadir::GPT_COMPLETIONS, std::ios::app);
+    std::cout << fmt::format("> Writing completion to file {}\n", path_completions_file);
+    std::ofstream st_filename(path_completions_file, std::ios::app);
+
     if (not st_filename.is_open()) {
-        throw std::runtime_error("Unable to open " + datadir::GPT_COMPLETIONS);
+        throw std::runtime_error("Unable to open " + path_completions_file);
     }
 
     const std::string created = datetime_from_unix_timestamp(completion.created);
