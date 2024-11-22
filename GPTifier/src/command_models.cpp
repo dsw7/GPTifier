@@ -7,14 +7,20 @@
 #include "utils.hpp"
 
 #include <fmt/core.h>
-#include <iostream>
+#include <map>
 #include <string>
 
 namespace {
 
-void print_row(const std::string &id, const std::string &owned_by, const std::string &creation_time)
+struct Model {
+    std::string id;
+    std::string owned_by;
+};
+
+void print_row(int creation_time, const Model &model)
 {
-    std::cout << fmt::format("{:<40}{:<30}{}\n", id, owned_by, creation_time);
+    const std::string datetime = datetime_from_unix_timestamp(creation_time);
+    fmt::print("{:<40}{:<30}{}\n", model.id, model.owned_by, datetime);
 }
 
 void print_models_response(const std::string &response)
@@ -28,14 +34,20 @@ void print_models_response(const std::string &response)
     }
 
     reporting::print_sep();
-    print_row("Model ID", "Owner", "Creation time");
+    fmt::print("{:<40}{:<30}{}\n", "Model ID", "Owner", "Creation time");
+
     reporting::print_sep();
+    std::map<int, Model> models = {};
 
     for (const auto &entry: results["data"]) {
-        const std::string id = entry["id"];
-        const std::string owned_by = entry["owned_by"];
-        const std::string creation_time = datetime_from_unix_timestamp(entry["created"]);
-        print_row(id, owned_by, creation_time);
+        Model model;
+        model.id = entry["id"];
+        model.owned_by = entry["owned_by"];
+        models[entry["created"]] = model;
+    }
+
+    for (auto it = models.begin(); it != models.end(); ++it) {
+        print_row(it->first, it->second);
     }
 
     reporting::print_sep();
