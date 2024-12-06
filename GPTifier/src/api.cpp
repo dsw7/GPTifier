@@ -3,11 +3,11 @@
 
 #include <cstdlib>
 #include <curl/curl.h>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
-namespace
-{
+namespace {
 
 size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
 {
@@ -15,20 +15,18 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
     return size * nmemb;
 }
 
-const std::string get_api_key()
+std::optional<std::string> get_api_key()
 {
     const char *api_key = std::getenv("OPENAI_API_KEY");
 
-    if (api_key)
-    {
+    if (api_key) {
         return std::string(api_key);
     }
 
-    return std::string();
+    return std::nullopt;
 }
 
-class Curl
-{
+class Curl {
 public:
     Curl();
     ~Curl();
@@ -43,31 +41,28 @@ private:
 
 Curl::Curl()
 {
-    if (curl_global_init(CURL_GLOBAL_DEFAULT) != 0)
-    {
+    if (curl_global_init(CURL_GLOBAL_DEFAULT) != 0) {
         throw std::runtime_error("Something went wrong when initializing libcurl");
     }
 
-    std::string api_key = get_api_key();
+    const std::optional<std::string> api_key = get_api_key();
 
-    if (api_key.empty())
-    {
+    if (not api_key.has_value()) {
         throw std::runtime_error("OPENAI_API_KEY environment variable not set");
     }
 
     this->handle = curl_easy_init();
 
-    if (this->handle == NULL)
-    {
+    if (this->handle == NULL) {
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
 
-    std::string header_auth = "Authorization: Bearer " + api_key;
+    const std::string header_auth = "Authorization: Bearer " + api_key.value();
+
     this->headers = curl_slist_append(this->headers, header_auth.c_str());
 
-    if (not configs.project_id.empty())
-    {
-        std::string header_project_id = "OpenAI-Project: " + configs.project_id;
+    if (configs.project_id.has_value()) {
+        const std::string header_project_id = "OpenAI-Project: " + configs.project_id.value();
         this->headers = curl_slist_append(this->headers, header_project_id.c_str());
     }
 
@@ -79,8 +74,7 @@ Curl::Curl()
 
 Curl::~Curl()
 {
-    if (this->handle)
-    {
+    if (this->handle) {
         curl_slist_free_all(this->headers);
         curl_easy_cleanup(this->handle);
     }
@@ -90,16 +84,16 @@ Curl::~Curl()
 
 std::string Curl::get(const std::string &endpoint)
 {
-    std::string response;
-
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
+
+    std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    CURLcode rv = curl_easy_perform(this->handle);
-    if (rv != CURLE_OK)
-    {
-        std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
+    const CURLcode rv = curl_easy_perform(this->handle);
+
+    if (rv != CURLE_OK) {
+        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
         throw std::runtime_error(errmsg);
     }
 
@@ -108,17 +102,17 @@ std::string Curl::get(const std::string &endpoint)
 
 std::string Curl::post(const std::string &endpoint, const std::string &post_fields)
 {
-    std::string response;
-
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
     curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
+
+    std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    CURLcode rv = curl_easy_perform(this->handle);
-    if (rv != CURLE_OK)
-    {
-        std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
+    const CURLcode rv = curl_easy_perform(this->handle);
+
+    if (rv != CURLE_OK) {
+        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
         throw std::runtime_error(errmsg);
     }
 
@@ -127,8 +121,7 @@ std::string Curl::post(const std::string &endpoint, const std::string &post_fiel
 
 } // namespace
 
-namespace endpoints
-{
+namespace endpoints {
 
 const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
 const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";

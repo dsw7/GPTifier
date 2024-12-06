@@ -1,3 +1,3 @@
 #pragma once
 
-void command_short(const int argc, char **argv);
+void command_short(int argc, char **argv);

@@ -1,13 +1,12 @@
 #pragma once
 
-#include <string>
+#include <filesystem>
 
-namespace datadir
-{
+namespace datadir {
 
-extern const std::string GPT_DATADIR;
-extern const std::string GPT_COMPLETIONS;
-extern const std::string GPT_CONFIG;
-extern const std::string GPT_EMBEDDINGS;
+extern const std::filesystem::path GPT_DATADIR;
+extern const std::filesystem::path GPT_COMPLETIONS;
+extern const std::filesystem::path GPT_CONFIG;
+extern const std::filesystem::path GPT_EMBEDDINGS;
 
 } // namespace datadir

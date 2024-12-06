@@ -15,43 +15,23 @@
 #include <stdexcept>
 #include <string>
 
-namespace
-{
-
-std::string select_embedding_model(const std::string &model)
-{
-    // I.e. model was passed via command line option
-    if (not model.empty())
-    {
-        return model;
-    }
-
-    // I.e. load default model from configuration file
-    if (configs.embeddings.model.empty())
-    {
-        throw std::runtime_error("No model provided via configuration file or command line");
-    }
-
-    return configs.embeddings.model;
-}
+namespace {
 
 void export_embedding(const std::string &response, const std::string &input)
 {
     nlohmann::json results = nlohmann::json::parse(response);
     results["input"] = input;
 
-    if (results.contains("error"))
-    {
-        std::string error = results["error"]["message"];
+    if (results.contains("error")) {
+        const std::string error = results["error"]["message"];
         reporting::print_error(error);
     }
 
-    std::cout << fmt::format("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS);
+    std::cout << fmt::format("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS.string());
     std::ofstream st_filename(datadir::GPT_EMBEDDINGS);
 
-    if (not st_filename.is_open())
-    {
-        std::string errmsg = fmt::format("Unable to open '{}'", datadir::GPT_EMBEDDINGS);
+    if (not st_filename.is_open()) {
+        const std::string errmsg = fmt::format("Unable to open '{}'", datadir::GPT_EMBEDDINGS.string());
         throw std::runtime_error(errmsg);
     }
 
@@ -63,23 +43,33 @@ void export_embedding(const std::string &response, const std::string &input)
 
 } // namespace
 
-void command_embed(const int argc, char **argv)
+void command_embed(int argc, char **argv)
 {
     cli::ParamsEmbedding params = cli::get_opts_embed(argc, argv);
 
-    if (params.input.empty())
-    {
+    if (not params.input.has_value()) {
         reporting::print_sep();
         params.input = load_input_text(params.input_file);
     }
 
-    std::string model = select_embedding_model(params.model);
-    std::string request_body = get_embedding_request_body(model, params.input);
+    std::string model;
+
+    if (params.model.has_value()) {
+        model = params.model.value();
+    } else {
+        if (configs.embeddings.model.has_value()) {
+            model = configs.embeddings.model.value();
+        } else {
+            throw std::runtime_error("No model provided via configuration file or command line");
+        }
+    }
+
+    const std::string request_body = get_embedding_request_body(model, params.input.value());
 
     reporting::print_sep();
     reporting::print_request(request_body);
     reporting::print_sep();
 
-    std::string response = query_embeddings_api(request_body);
-    export_embedding(response, params.input);
+    const std::string response = query_embeddings_api(request_body);
+    export_embedding(response, params.input.value());
 }

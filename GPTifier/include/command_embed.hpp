@@ -1,3 +1,3 @@
 #pragma once
 
-void command_embed(const int argc, char **argv);
+void command_embed(int argc, char **argv);

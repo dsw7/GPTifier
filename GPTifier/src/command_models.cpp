@@ -7,38 +7,47 @@
 #include "utils.hpp"
 
 #include <fmt/core.h>
-#include <iostream>
+#include <map>
 #include <string>
 
-namespace
-{
+namespace {
 
-void print_row(const std::string &id, const std::string &owned_by, const std::string &creation_time)
+struct Model {
+    std::string id;
+    std::string owned_by;
+};
+
+void print_row(int creation_time, const Model &model)
 {
-    std::cout << fmt::format("{:<30}{:<30}{}\n", id, owned_by, creation_time);
+    const std::string datetime = datetime_from_unix_timestamp(creation_time);
+    fmt::print("{:<40}{:<30}{}\n", model.id, model.owned_by, datetime);
 }
 
 void print_models_response(const std::string &response)
 {
     nlohmann::json results = nlohmann::json::parse(response);
 
-    if (results.contains("error"))
-    {
-        std::string error = results["error"]["message"];
+    if (results.contains("error")) {
+        const std::string error = results["error"]["message"];
         reporting::print_error(error);
         return;
     }
 
     reporting::print_sep();
-    print_row("Model ID", "Owner", "Creation time");
-    reporting::print_sep();
+    fmt::print("{:<40}{:<30}{}\n", "Model ID", "Owner", "Creation time");
 
-    for (const auto &entry : results["data"])
-    {
-        std::string id = entry["id"];
-        std::string owned_by = entry["owned_by"];
-        std::string creation_time = datetime_from_unix_timestamp(entry["created"]);
-        print_row(id, owned_by, creation_time);
+    reporting::print_sep();
+    std::map<int, Model> models = {};
+
+    for (const auto &entry: results["data"]) {
+        Model model;
+        model.id = entry["id"];
+        model.owned_by = entry["owned_by"];
+        models[entry["created"]] = model;
+    }
+
+    for (auto it = models.begin(); it != models.end(); ++it) {
+        print_row(it->first, it->second);
     }
 
     reporting::print_sep();
@@ -46,10 +55,10 @@ void print_models_response(const std::string &response)
 
 } // namespace
 
-void command_models(const int argc, char **argv)
+void command_models(int argc, char **argv)
 {
     cli::get_opts_models(argc, argv);
 
-    std::string response = query_models_api();
+    const std::string response = query_models_api();
     print_models_response(response);
 }
