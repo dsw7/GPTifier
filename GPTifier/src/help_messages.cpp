@@ -185,4 +185,16 @@ void help_command_files()
     std::cout << body;
 }
 
+void help_command_files_list()
+{
+    std::string body = add_description("List uploaded files.");
+    body += add_synopsis("files list <options>");
+
+    str_pair options = {};
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    body += add_options(options);
+
+    std::cout << body;
+}
+
 } // namespace cli

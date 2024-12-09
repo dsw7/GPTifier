@@ -26,8 +26,17 @@ void print_file(int created_at, const File &file)
     fmt::print("{:<30}{:<30}{:<30}{}\n", file.id, file.filename, datetime, file.purpose);
 }
 
-void command_files_list()
+void command_files_list(int argc, char **argv)
 {
+    if (argc >= 4) {
+        const std::string option = argv[3];
+
+        if (option == "-h" or option == "--help") {
+            cli::help_command_files_list();
+            return;
+        }
+    }
+
     const std::string response = query_list_files_api();
 
     nlohmann::json results = nlohmann::json::parse(response);
@@ -76,9 +85,9 @@ void command_files(int argc, char **argv)
     }
 
     if (subcommand == "list") {
-        command_files_list();
+        command_files_list(argc, argv);
     } else {
         cli::help_command_files();
-        exit(EXIT_SUCCESS);
+        exit(EXIT_FAILURE);
     }
 }
