@@ -12,3 +12,12 @@ def test_files_help(command: Command, option: str, capfd: Capture) -> None:
     stdout, _ = unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
     assert "SYNOPSIS" in stdout
+
+
+def test_files_list(command: Command, capfd: Capture) -> None:
+    command.extend(["files", "list"])
+    process = run(command)
+
+    stdout, _ = unpack_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
+    assert "File ID" in stdout
