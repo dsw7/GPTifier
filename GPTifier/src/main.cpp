@@ -26,14 +26,14 @@ void print_build_information()
 int main(int argc, char **argv)
 {
     if (argc < 2) {
-        cli::root_messages();
+        cli::help_root_messages();
         return EXIT_FAILURE;
     }
 
     const std::string command = argv[1];
 
     if (command == "-h" or command == "--help") {
-        cli::root_messages();
+        cli::help_root_messages();
         return EXIT_SUCCESS;
     }
 

@@ -70,7 +70,7 @@ std::string add_examples(const str_pair &examples)
 
 namespace cli {
 
-void root_messages()
+void help_root_messages()
 {
     const std::string name = std::string(PROJECT_NAME);
     const std::string version = std::string(PROJECT_VERSION);
@@ -101,7 +101,7 @@ void root_messages()
     std::cout << body;
 }
 
-void command_run()
+void help_command_run()
 {
     std::string body = add_description("Create a chat completion.");
     body += add_synopsis("run <options>");
@@ -125,7 +125,7 @@ void command_run()
     std::cout << body;
 }
 
-void command_short()
+void help_command_short()
 {
     std::string body = add_description("Create a chat completion but without threading or verbosity.");
     body += add_synopsis("short <options>");
@@ -141,7 +141,7 @@ void command_short()
     std::cout << body;
 }
 
-void command_models()
+void help_command_models()
 {
     std::string body = add_description("List available OpenAI models.");
 
@@ -154,7 +154,7 @@ void command_models()
     std::cout << body;
 }
 
-void command_embed()
+void help_command_embed()
 {
     std::string body = add_description("Get embedding representing a block of text.");
     body += add_synopsis("embed <options>");
@@ -169,7 +169,7 @@ void command_embed()
     std::cout << body;
 }
 
-void command_files()
+void help_command_files()
 {
     std::string body = add_description("Manage files uploaded to OpenAI.");
     body += add_synopsis("files <subcommands>");

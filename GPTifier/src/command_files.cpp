@@ -64,21 +64,21 @@ void command_files_list()
 void command_files(int argc, char **argv)
 {
     if (argc < 3) {
-        cli::command_files();
+        cli::help_command_files();
         exit(EXIT_FAILURE);
     }
 
     std::string subcommand = argv[2];
 
     if (subcommand == "-h" or subcommand == "--help") {
-        cli::command_files();
+        cli::help_command_files();
         exit(EXIT_SUCCESS);
     }
 
     if (subcommand == "list") {
         command_files_list();
     } else {
-        cli::command_files();
+        cli::help_command_files();
         exit(EXIT_SUCCESS);
     }
 }
