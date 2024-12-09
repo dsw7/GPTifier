@@ -95,6 +95,7 @@ void root_messages()
         { "short", "Run a query against an appropriate model but with no threading and limited verbosity" });
     commands.push_back({ "models", "List available OpenAI models" });
     commands.push_back({ "embed", "Get embedding representing a block of text" });
+    commands.push_back({ "files", "Manage files uploaded to OpenAI" });
     body += add_commands(commands);
 
     std::cout << body;
@@ -164,6 +165,22 @@ void command_embed()
     options.push_back({ "-i <text>, --input=<text>", "Input text to embed" });
     options.push_back({ "-r <filename>, --read-from-file=<filename>", "Read input text to embed from a file" });
     body += add_options(options);
+
+    std::cout << body;
+}
+
+void command_files()
+{
+    std::string body = add_description("Manage files uploaded to OpenAI.");
+    body += add_synopsis("files <subcommands>");
+
+    str_pair options = {};
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    body += add_options(options);
+
+    str_pair commands = {};
+    commands.push_back({ "list", "List uploaded files" });
+    body += add_commands(commands);
 
     std::cout << body;
 }
