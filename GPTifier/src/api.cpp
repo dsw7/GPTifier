@@ -5,7 +5,6 @@
 #include <curl/curl.h>
 #include <optional>
 #include <stdexcept>
-#include <string>
 
 namespace endpoints {
 
@@ -47,11 +46,11 @@ class Curl {
 public:
     Curl();
     ~Curl();
-    std::string get_models();
     std::string get_files();
-    std::string post(const std::string &endpoint, const std::string &post_fields);
+    std::string get_models();
+    std::string post_chat_completion(const std::string &post_fields);
     std::string post_generate_embedding(const std::string &post_fields);
-    std::string upload_file(const std::string &endpoint, const std::string &filename, const std::string &purpose);
+    std::string post_upload_file(const std::string &filename, const std::string &purpose);
 
     CURL *handle = NULL;
 
@@ -126,18 +125,16 @@ std::string Curl::get_files()
     return response;
 }
 
-std::string Curl::post(const std::string &endpoint, const std::string &post_fields)
+std::string Curl::post_chat_completion(const std::string &post_fields)
 {
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_CHAT_COMPLETIONS.c_str());
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
     curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
 
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    const CURLcode rv = curl_easy_perform(this->handle);
-    catch_curl_error(rv);
-
+    catch_curl_error(curl_easy_perform(this->handle));
     return response;
 }
 
@@ -154,9 +151,9 @@ std::string Curl::post_generate_embedding(const std::string &post_fields)
     return response;
 }
 
-std::string Curl::upload_file(const std::string &endpoint, const std::string &filename, const std::string &purpose)
+std::string Curl::post_upload_file(const std::string &filename, const std::string &purpose)
 {
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_FILES.c_str());
 
     curl_mime *form = NULL;
     form = curl_mime_init(this->handle);
@@ -185,10 +182,10 @@ std::string Curl::upload_file(const std::string &endpoint, const std::string &fi
 
 } // namespace
 
-std::string query_models_api()
+std::string query_chat_completion_api(const std::string &post_fields)
 {
     Curl curl;
-    return curl.get_models();
+    return curl.post_chat_completion(post_fields);
 }
 
 std::string query_embeddings_api(const std::string &post_fields)
@@ -203,15 +200,15 @@ std::string query_list_files_api()
     return curl.get_files();
 }
 
+std::string query_models_api()
+{
+    Curl curl;
+    return curl.get_models();
+}
+
 std::string query_upload_file_api(const std::string &filename)
 {
     Curl curl;
     const std::string purpose = "fine-tune";
-    return curl.upload_file(endpoints::URL_FILES, filename, purpose);
-}
-
-std::string query_chat_completion_api(const std::string &post_fields)
-{
-    Curl curl;
-    return curl.post(endpoints::URL_CHAT_COMPLETIONS, post_fields);
+    return curl.post_upload_file(filename, purpose);
 }
