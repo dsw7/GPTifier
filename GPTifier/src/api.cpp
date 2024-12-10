@@ -125,7 +125,7 @@ namespace endpoints {
 
 const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
 const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
-const std::string URL_LIST_FILES = "https://api.openai.com/v1/files";
+const std::string URL_FILES = "https://api.openai.com/v1/files";
 const std::string URL_MODELS = "https://api.openai.com/v1/models";
 
 } // namespace endpoints
@@ -145,7 +145,7 @@ std::string query_embeddings_api(const std::string &post_fields)
 std::string query_list_files_api()
 {
     Curl curl;
-    return curl.get(endpoints::URL_LIST_FILES);
+    return curl.get(endpoints::URL_FILES);
 }
 
 std::string query_chat_completion_api(const std::string &post_fields)
