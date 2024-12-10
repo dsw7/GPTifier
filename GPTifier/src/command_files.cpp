@@ -70,14 +70,19 @@ void command_files_list(int argc, char **argv)
 
 void command_files_upload(int argc, char **argv)
 {
-    if (argc >= 4) {
-        const std::string option = argv[3];
-
-        if (option == "-h" or option == "--help") {
-            cli::help_command_files_upload();
-            return;
-        }
+    if (argc < 4) {
+        cli::help_command_files_upload();
+        return;
     }
+
+    const std::string opt_or_filename = argv[3];
+
+    if (opt_or_filename == "-h" or opt_or_filename == "--help") {
+        cli::help_command_files_upload();
+        return;
+    }
+
+    // continue here
 }
 
 } // namespace
