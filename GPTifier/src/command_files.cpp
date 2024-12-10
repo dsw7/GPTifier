@@ -68,6 +68,18 @@ void command_files_list(int argc, char **argv)
     reporting::print_sep();
 }
 
+void command_files_upload(int argc, char **argv)
+{
+    if (argc >= 4) {
+        const std::string option = argv[3];
+
+        if (option == "-h" or option == "--help") {
+            cli::help_command_files_upload();
+            return;
+        }
+    }
+}
+
 } // namespace
 
 void command_files(int argc, char **argv)
@@ -86,6 +98,8 @@ void command_files(int argc, char **argv)
 
     if (subcommand == "list") {
         command_files_list(argc, argv);
+    } else if (subcommand == "upload") {
+        command_files_upload(argc, argv);
     } else {
         cli::help_command_files();
         exit(EXIT_FAILURE);

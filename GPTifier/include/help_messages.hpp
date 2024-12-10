@@ -8,4 +8,5 @@ void help_command_run();
 void help_command_short();
 void help_command_files();
 void help_command_files_list();
+void help_command_files_upload();
 } // namespace cli
