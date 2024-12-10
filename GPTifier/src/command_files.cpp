@@ -82,7 +82,8 @@ void command_files_upload(int argc, char **argv)
         return;
     }
 
-    // continue here
+    const std::string response = query_upload_file_api(opt_or_filename);
+    reporting::print_response(response);
 }
 
 } // namespace

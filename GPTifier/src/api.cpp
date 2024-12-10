@@ -32,6 +32,7 @@ public:
     ~Curl();
     std::string get(const std::string &endpoint);
     std::string post(const std::string &endpoint, const std::string &post_fields);
+    std::string upload_file(const std::string &endpoint, const std::string &filename, const std::string &purpose);
 
     CURL *handle = NULL;
 
@@ -119,6 +120,39 @@ std::string Curl::post(const std::string &endpoint, const std::string &post_fiel
     return response;
 }
 
+std::string Curl::upload_file(const std::string &endpoint, const std::string &filename, const std::string &purpose)
+{
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+
+    curl_mime *form = NULL;
+    form = curl_mime_init(this->handle);
+
+    curl_mimepart *field = NULL;
+
+    field = curl_mime_addpart(form);
+    curl_mime_name(field, "purpose");
+    curl_mime_data(field, purpose.c_str(), CURL_ZERO_TERMINATED);
+
+    field = curl_mime_addpart(form);
+    curl_mime_name(field, "file");
+    curl_mime_filedata(field, filename.c_str());
+
+    curl_easy_setopt(this->handle, CURLOPT_MIMEPOST, form);
+
+    std::string response;
+    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+
+    const CURLcode rv = curl_easy_perform(this->handle);
+    curl_mime_free(form);
+
+    if (rv != CURLE_OK) {
+        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
+        throw std::runtime_error(errmsg);
+    }
+
+    return response;
+}
+
 } // namespace
 
 namespace endpoints {
@@ -146,6 +180,13 @@ std::string query_list_files_api()
 {
     Curl curl;
     return curl.get(endpoints::URL_FILES);
+}
+
+std::string query_upload_file_api(const std::string &filename)
+{
+    Curl curl;
+    const std::string purpose = "fine-tune";
+    return curl.upload_file(endpoints::URL_FILES, filename, purpose);
 }
 
 std::string query_chat_completion_api(const std::string &post_fields)
