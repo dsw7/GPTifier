@@ -26,6 +26,14 @@ std::optional<std::string> get_api_key()
     return std::nullopt;
 }
 
+void catch_curl_error(CURLcode code)
+{
+    if (code != CURLE_OK) {
+        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(code));
+        throw std::runtime_error(errmsg);
+    }
+}
+
 class Curl {
 public:
     Curl();
@@ -92,11 +100,7 @@ std::string Curl::get(const std::string &endpoint)
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
     const CURLcode rv = curl_easy_perform(this->handle);
-
-    if (rv != CURLE_OK) {
-        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
-        throw std::runtime_error(errmsg);
-    }
+    catch_curl_error(rv);
 
     return response;
 }
@@ -111,11 +115,7 @@ std::string Curl::post(const std::string &endpoint, const std::string &post_fiel
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
     const CURLcode rv = curl_easy_perform(this->handle);
-
-    if (rv != CURLE_OK) {
-        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
-        throw std::runtime_error(errmsg);
-    }
+    catch_curl_error(rv);
 
     return response;
 }
@@ -145,11 +145,7 @@ std::string Curl::upload_file(const std::string &endpoint, const std::string &fi
     const CURLcode rv = curl_easy_perform(this->handle);
     curl_mime_free(form);
 
-    if (rv != CURLE_OK) {
-        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(rv));
-        throw std::runtime_error(errmsg);
-    }
-
+    catch_curl_error(rv);
     return response;
 }
 
