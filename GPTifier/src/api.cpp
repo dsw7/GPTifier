@@ -50,6 +50,7 @@ public:
     std::string get_models();
     std::string get_files();
     std::string post(const std::string &endpoint, const std::string &post_fields);
+    std::string post_generate_embedding(const std::string &post_fields);
     std::string upload_file(const std::string &endpoint, const std::string &filename, const std::string &purpose);
 
     CURL *handle = NULL;
@@ -109,9 +110,7 @@ std::string Curl::get_models()
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    const CURLcode rv = curl_easy_perform(this->handle);
-    catch_curl_error(rv);
-
+    catch_curl_error(curl_easy_perform(this->handle));
     return response;
 }
 
@@ -123,9 +122,7 @@ std::string Curl::get_files()
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    const CURLcode rv = curl_easy_perform(this->handle);
-    catch_curl_error(rv);
-
+    catch_curl_error(curl_easy_perform(this->handle));
     return response;
 }
 
@@ -141,6 +138,19 @@ std::string Curl::post(const std::string &endpoint, const std::string &post_fiel
     const CURLcode rv = curl_easy_perform(this->handle);
     catch_curl_error(rv);
 
+    return response;
+}
+
+std::string Curl::post_generate_embedding(const std::string &post_fields)
+{
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_EMBEDDINGS.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
+    curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
+
+    std::string response;
+    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+
+    catch_curl_error(curl_easy_perform(this->handle));
     return response;
 }
 
@@ -184,7 +194,7 @@ std::string query_models_api()
 std::string query_embeddings_api(const std::string &post_fields)
 {
     Curl curl;
-    return curl.post(endpoints::URL_EMBEDDINGS, post_fields);
+    return curl.post_generate_embedding(post_fields);
 }
 
 std::string query_list_files_api()
