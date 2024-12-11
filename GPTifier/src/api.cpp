@@ -75,10 +75,8 @@ Curl::Curl()
     }
 
     this->set_bearer_auth();
-    this->set_content_type("application/json");
     this->set_project_id();
 
-    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
     curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
 }
 
@@ -122,6 +120,9 @@ void Curl::set_project_id()
 
 std::string Curl::get_models()
 {
+    this->set_content_type("application/json");
+    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_MODELS.c_str());
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
 
@@ -134,6 +135,9 @@ std::string Curl::get_models()
 
 std::string Curl::get_files()
 {
+    this->set_content_type("application/json");
+    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_FILES.c_str());
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
 
@@ -146,6 +150,9 @@ std::string Curl::get_files()
 
 std::string Curl::post_chat_completion(const std::string &post_fields)
 {
+    this->set_content_type("application/json");
+    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_CHAT_COMPLETIONS.c_str());
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
     curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
@@ -159,6 +166,9 @@ std::string Curl::post_chat_completion(const std::string &post_fields)
 
 std::string Curl::post_generate_embedding(const std::string &post_fields)
 {
+    this->set_content_type("application/json");
+    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_EMBEDDINGS.c_str());
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
     curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
@@ -172,6 +182,9 @@ std::string Curl::post_generate_embedding(const std::string &post_fields)
 
 std::string Curl::post_upload_file(const std::string &filename, const std::string &purpose)
 {
+    this->set_content_type("multipart/form-data");
+    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_FILES.c_str());
 
     curl_mime *form = NULL;
