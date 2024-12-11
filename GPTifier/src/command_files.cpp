@@ -94,6 +94,21 @@ void command_files_upload(int argc, char **argv)
     fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", results["filename"], results["id"]);
 }
 
+void command_files_delete(int argc, char **argv)
+{
+    if (argc < 4) {
+        cli::help_command_files_delete();
+        return;
+    }
+
+    const std::string opt_or_file_id = argv[3];
+
+    if (opt_or_file_id == "-h" or opt_or_file_id == "--help") {
+        cli::help_command_files_delete();
+        return;
+    }
+}
+
 } // namespace
 
 void command_files(int argc, char **argv)
@@ -114,6 +129,8 @@ void command_files(int argc, char **argv)
         command_files_list(argc, argv);
     } else if (subcommand == "upload") {
         command_files_upload(argc, argv);
+    } else if (subcommand == "delete") {
+        command_files_delete(argc, argv);
     } else {
         cli::help_command_files();
         exit(EXIT_FAILURE);
