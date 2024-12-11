@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <curl/curl.h>
+#include <fmt/core.h>
 #include <optional>
 #include <stdexcept>
 
@@ -51,6 +52,7 @@ public:
     std::string post_chat_completion(const std::string &post_fields);
     std::string post_generate_embedding(const std::string &post_fields);
     std::string post_upload_file(const std::string &filename, const std::string &purpose);
+std::string delete_path(const std::string &file_id);
 
     CURL *handle = NULL;
 
@@ -210,6 +212,22 @@ std::string Curl::post_upload_file(const std::string &filename, const std::strin
     return response;
 }
 
+std::string Curl::delete_path(const std::string &file_id)
+{
+    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+
+    const std::string endpoint = fmt::format("{}/{}", endpoints::URL_FILES, file_id);
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+
+    curl_easy_setopt(this->handle, CURLOPT_CUSTOMREQUEST, "DELETE");
+
+    std::string response;
+    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+
+    catch_curl_error(curl_easy_perform(this->handle));
+    return response;
+}
+
 } // namespace
 
 std::string query_chat_completion_api(const std::string &post_fields)
@@ -241,4 +259,10 @@ std::string query_upload_file_api(const std::string &filename)
     Curl curl;
     const std::string purpose = "fine-tune";
     return curl.post_upload_file(filename, purpose);
+}
+
+std::string query_delete_file_api(const std::string &file_id)
+{
+    Curl curl;
+    return curl.delete_path(file_id);
 }
