@@ -15,7 +15,7 @@ def test_files_help(command: Command, option: str, capfd: Capture) -> None:
 
 
 @mark.parametrize("option", ["-h", "--help"])
-@mark.parametrize("subcommand", ["list", "upload"])
+@mark.parametrize("subcommand", ["list", "upload", "delete"])
 def test_files_subcommand_help(
     command: Command, subcommand: str, option: str, capfd: Capture
 ) -> None:
