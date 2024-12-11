@@ -57,7 +57,6 @@ public:
     CURL *handle = NULL;
 
 private:
-    void set_bearer_auth();
     void set_project_id();
 
     struct curl_slist *headers = NULL;
@@ -75,7 +74,15 @@ Curl::Curl()
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
 
-    this->set_bearer_auth();
+    const std::optional<std::string> api_key = get_api_key();
+
+    if (not api_key.has_value()) {
+        throw std::runtime_error("OPENAI_API_KEY environment variable not set");
+    }
+
+    const std::string header = "Authorization: Bearer " + api_key.value();
+    this->headers = curl_slist_append(this->headers, header.c_str());
+
     this->set_project_id();
 
     curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
@@ -91,20 +98,9 @@ Curl::~Curl()
     curl_global_cleanup();
 }
 
-void Curl::set_bearer_auth()
-{
-    const std::optional<std::string> api_key = get_api_key();
-
-    if (not api_key.has_value()) {
-        throw std::runtime_error("OPENAI_API_KEY environment variable not set");
-    }
-
-    const std::string header = "Authorization: Bearer " + api_key.value();
-    this->headers = curl_slist_append(this->headers, header.c_str());
-}
-
 void Curl::set_project_id()
 {
+    // XXX do we really need this?
     if (not configs.project_id.has_value()) {
         return;
     }
