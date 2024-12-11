@@ -52,7 +52,7 @@ public:
     std::string post_chat_completion(const std::string &post_fields);
     std::string post_generate_embedding(const std::string &post_fields);
     std::string post_upload_file(const std::string &filename, const std::string &purpose);
-std::string delete_path(const std::string &file_id);
+    std::string delete_path(const std::string &file_id);
 
     CURL *handle = NULL;
 

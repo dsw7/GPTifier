@@ -107,6 +107,21 @@ void command_files_delete(int argc, char **argv)
         cli::help_command_files_delete();
         return;
     }
+
+    const std::string response = query_delete_file_api(opt_or_file_id);
+    nlohmann::json results = nlohmann::json::parse(response);
+
+    if (results.contains("error")) {
+        const std::string error = results["error"]["message"];
+        reporting::print_error(error);
+        return;
+    }
+
+    if (results["deleted"]) {
+        fmt::print("Success!\nDeleted file with ID: {}\n", results["id"]);
+    } else {
+        fmt::print("Warning!\nDid not delete file with ID: {}\n", results["id"]);
+    }
 }
 
 } // namespace
