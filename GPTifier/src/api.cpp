@@ -187,9 +187,7 @@ std::string Curl::post_upload_file(const std::string &filename, const std::strin
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_FILES.c_str());
 
-    curl_mime *form = NULL;
-    form = curl_mime_init(this->handle);
-
+    curl_mime *form = curl_mime_init(this->handle);
     curl_mimepart *field = NULL;
 
     field = curl_mime_addpart(form);
