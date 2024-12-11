@@ -55,6 +55,10 @@ public:
     CURL *handle = NULL;
 
 private:
+    void set_bearer_auth();
+    void set_content_type(const std::string &type);
+    void set_project_id();
+
     struct curl_slist *headers = NULL;
 };
 
@@ -64,30 +68,17 @@ Curl::Curl()
         throw std::runtime_error("Something went wrong when initializing libcurl");
     }
 
-    const std::optional<std::string> api_key = get_api_key();
-
-    if (not api_key.has_value()) {
-        throw std::runtime_error("OPENAI_API_KEY environment variable not set");
-    }
-
     this->handle = curl_easy_init();
 
     if (this->handle == NULL) {
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
 
-    const std::string header_auth = "Authorization: Bearer " + api_key.value();
+    this->set_bearer_auth();
+    this->set_content_type("application/json");
+    this->set_project_id();
 
-    this->headers = curl_slist_append(this->headers, header_auth.c_str());
-
-    if (configs.project_id.has_value()) {
-        const std::string header_project_id = "OpenAI-Project: " + configs.project_id.value();
-        this->headers = curl_slist_append(this->headers, header_project_id.c_str());
-    }
-
-    this->headers = curl_slist_append(this->headers, "Content-Type: application/json");
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
-
     curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
 }
 
@@ -99,6 +90,34 @@ Curl::~Curl()
     }
 
     curl_global_cleanup();
+}
+
+void Curl::set_bearer_auth()
+{
+    const std::optional<std::string> api_key = get_api_key();
+
+    if (not api_key.has_value()) {
+        throw std::runtime_error("OPENAI_API_KEY environment variable not set");
+    }
+
+    const std::string header = "Authorization: Bearer " + api_key.value();
+    this->headers = curl_slist_append(this->headers, header.c_str());
+}
+
+void Curl::set_content_type(const std::string &type)
+{
+    const std::string header = "Content-Type: " + type;
+    this->headers = curl_slist_append(this->headers, header.c_str());
+}
+
+void Curl::set_project_id()
+{
+    if (not configs.project_id.has_value()) {
+        return;
+    }
+
+    const std::string header = "OpenAI-Project: " + configs.project_id.value();
+    this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
 std::string Curl::get_models()
