@@ -181,6 +181,7 @@ void help_command_files()
     str_pair commands = {};
     commands.push_back({ "list", "List uploaded files" });
     commands.push_back({ "upload", "Upload a fine-tuning file" });
+    commands.push_back({ "delete", "Delete an uploaded file" });
     body += add_commands(commands);
 
     std::cout << body;
@@ -202,6 +203,18 @@ void help_command_files_upload()
 {
     std::string body = add_description("Upload a fine-tuning file.");
     body += add_synopsis("files upload [FILE] <options>");
+
+    str_pair options = {};
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    body += add_options(options);
+
+    std::cout << body;
+}
+
+void help_command_files_delete()
+{
+    std::string body = add_description("Delete an uploaded file.");
+    body += add_synopsis("files delete [FILE ID] <options>");
 
     str_pair options = {};
     options.push_back({ "-h, --help", "Print help information and exit" });
