@@ -58,7 +58,6 @@ public:
 
 private:
     void set_bearer_auth();
-    void set_content_type(const std::string &type);
     void set_project_id();
 
     struct curl_slist *headers = NULL;
@@ -104,12 +103,6 @@ void Curl::set_bearer_auth()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
-void Curl::set_content_type(const std::string &type)
-{
-    const std::string header = "Content-Type: " + type;
-    this->headers = curl_slist_append(this->headers, header.c_str());
-}
-
 void Curl::set_project_id()
 {
     if (not configs.project_id.has_value()) {
@@ -122,7 +115,6 @@ void Curl::set_project_id()
 
 std::string Curl::get_models()
 {
-    this->set_content_type("application/json");
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_MODELS.c_str());
@@ -137,7 +129,6 @@ std::string Curl::get_models()
 
 std::string Curl::get_files()
 {
-    this->set_content_type("application/json");
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_FILES.c_str());
@@ -152,7 +143,9 @@ std::string Curl::get_files()
 
 std::string Curl::post_chat_completion(const std::string &post_fields)
 {
-    this->set_content_type("application/json");
+    const std::string header = "Content-Type: application/json";
+    this->headers = curl_slist_append(this->headers, header.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_CHAT_COMPLETIONS.c_str());
@@ -168,7 +161,9 @@ std::string Curl::post_chat_completion(const std::string &post_fields)
 
 std::string Curl::post_generate_embedding(const std::string &post_fields)
 {
-    this->set_content_type("application/json");
+    const std::string header = "Content-Type: application/json";
+    this->headers = curl_slist_append(this->headers, header.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_EMBEDDINGS.c_str());
@@ -184,7 +179,9 @@ std::string Curl::post_generate_embedding(const std::string &post_fields)
 
 std::string Curl::post_upload_file(const std::string &filename, const std::string &purpose)
 {
-    this->set_content_type("multipart/form-data");
+    const std::string header = "Content-Type: multipart/form-data";
+    this->headers = curl_slist_append(this->headers, header.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_FILES.c_str());
