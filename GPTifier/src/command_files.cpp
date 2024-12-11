@@ -83,7 +83,15 @@ void command_files_upload(int argc, char **argv)
     }
 
     const std::string response = query_upload_file_api(opt_or_filename);
-    reporting::print_response(response);
+    nlohmann::json results = nlohmann::json::parse(response);
+
+    if (results.contains("error")) {
+        const std::string error = results["error"]["message"];
+        reporting::print_error(error);
+        return;
+    }
+
+    fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", results["filename"], results["id"]);
 }
 
 } // namespace

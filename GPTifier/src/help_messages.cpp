@@ -180,7 +180,7 @@ void help_command_files()
 
     str_pair commands = {};
     commands.push_back({ "list", "List uploaded files" });
-    commands.push_back({ "upload", "Upload a file" });
+    commands.push_back({ "upload", "Upload a fine-tuning file" });
     body += add_commands(commands);
 
     std::cout << body;
@@ -200,7 +200,7 @@ void help_command_files_list()
 
 void help_command_files_upload()
 {
-    std::string body = add_description("Upload a file.");
+    std::string body = add_description("Upload a fine-tuning file.");
     body += add_synopsis("files upload [FILE] <options>");
 
     str_pair options = {};
