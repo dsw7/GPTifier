@@ -12,15 +12,32 @@
 
 namespace {
 
-struct Model {
+struct OpenAIModel {
     std::string id;
     std::string owned_by;
 };
 
-void print_row(int creation_time, const Model &model)
+struct UserModel {
+    int creation_time;
+    std::string id;
+    std::string owned_by;
+};
+
+bool is_fine_tuning_model(const std::string &model)
 {
-    const std::string datetime = datetime_from_unix_timestamp(creation_time);
-    fmt::print("{:<40}{:<30}{}\n", model.id, model.owned_by, datetime);
+    return model.compare(0, 3, "ft:") == 0;
+}
+
+void print_openai_models(const std::map<int, OpenAIModel> &models)
+{
+    reporting::print_sep();
+    fmt::print("{:<40}{:<30}{}\n", "Model ID", "Owner", "Creation time");
+    reporting::print_sep();
+
+    for (auto it = models.begin(); it != models.end(); ++it) {
+        const std::string datetime = datetime_from_unix_timestamp(it->first);
+        fmt::print("{:<40}{:<30}{}\n", it->second.id, it->second.owned_by, datetime);
+    }
 }
 
 void print_models_response(const std::string &response)
@@ -33,21 +50,27 @@ void print_models_response(const std::string &response)
         return;
     }
 
-    reporting::print_sep();
-    fmt::print("{:<40}{:<30}{}\n", "Model ID", "Owner", "Creation time");
-
-    reporting::print_sep();
-    std::map<int, Model> models = {};
+    std::vector<UserModel> ft_models = {};
+    std::map<int, OpenAIModel> models = {};
 
     for (const auto &entry: results["data"]) {
-        Model model;
-        model.id = entry["id"];
-        model.owned_by = entry["owned_by"];
-        models[entry["created"]] = model;
+        if (is_fine_tuning_model(entry["id"])) {
+            UserModel ft_model;
+            ft_model.creation_time = entry["created"];
+            ft_model.id = entry["id"];
+            ft_model.owned_by = entry["owned_by"];
+        } else {
+            OpenAIModel model;
+            model.id = entry["id"];
+            model.owned_by = entry["owned_by"];
+            models[entry["created"]] = model;
+        }
     }
 
-    for (auto it = models.begin(); it != models.end(); ++it) {
-        print_row(it->first, it->second);
+    print_openai_models(models);
+
+    if (not ft_models.empty()) {
+        reporting::print_sep();
     }
 
     reporting::print_sep();
