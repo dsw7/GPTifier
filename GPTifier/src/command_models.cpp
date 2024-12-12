@@ -32,12 +32,12 @@ bool is_fine_tuning_model(const std::string &model)
 void print_openai_models(const std::map<int, OpenAIModel> &models)
 {
     reporting::print_sep();
-    fmt::print("{:<40}{:<30}{}\n", "Model ID", "Owner", "Creation time");
+    fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     reporting::print_sep();
 
     for (auto it = models.begin(); it != models.end(); ++it) {
         const std::string datetime = datetime_from_unix_timestamp(it->first);
-        fmt::print("{:<40}{:<30}{}\n", it->second.id, it->second.owned_by, datetime);
+        fmt::print("{:<25}{:<35}{}\n", datetime, it->second.owned_by, it->second.id);
     }
 
     reporting::print_sep();
@@ -46,12 +46,12 @@ void print_openai_models(const std::map<int, OpenAIModel> &models)
 void print_user_models(const std::vector<UserModel> &models)
 {
     reporting::print_sep();
-    fmt::print("{:<40}{:<30}{}\n", "Model ID", "Owner", "Creation time");
+    fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     reporting::print_sep();
 
     for (auto it = models.begin(); it != models.end(); ++it) {
         const std::string datetime = datetime_from_unix_timestamp(it->creation_time);
-        fmt::print("{:<40}{:<30}{}\n", it->id, it->owned_by, datetime);
+        fmt::print("{:<25}{:<35}{}\n", datetime, it->owned_by, it->id);
     }
 
     reporting::print_sep();
@@ -67,7 +67,7 @@ void print_models_response(const std::string &response)
         return;
     }
 
-    std::vector<UserModel> ft_models = {};
+    std::vector<UserModel> user_models = {};
     std::map<int, OpenAIModel> openai_models = {};
 
     for (const auto &entry: results["data"]) {
@@ -76,7 +76,7 @@ void print_models_response(const std::string &response)
             model.creation_time = entry["created"];
             model.id = entry["id"];
             model.owned_by = entry["owned_by"];
-            ft_models.push_back(model);
+            user_models.push_back(model);
         } else {
             OpenAIModel model;
             model.id = entry["id"];
@@ -85,12 +85,12 @@ void print_models_response(const std::string &response)
         }
     }
 
-    fmt::print("OpenAI models:\n");
+    fmt::print("> OpenAI models:\n");
     print_openai_models(openai_models);
 
-    if (not ft_models.empty()) {
-        fmt::print("\nUser models:\n");
-        print_user_models(ft_models);
+    if (not user_models.empty()) {
+        fmt::print("\n> User models:\n");
+        print_user_models(user_models);
     }
 }
 
