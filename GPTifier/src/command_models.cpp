@@ -9,6 +9,7 @@
 #include <fmt/core.h>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -38,6 +39,22 @@ void print_openai_models(const std::map<int, OpenAIModel> &models)
         const std::string datetime = datetime_from_unix_timestamp(it->first);
         fmt::print("{:<40}{:<30}{}\n", it->second.id, it->second.owned_by, datetime);
     }
+
+    reporting::print_sep();
+}
+
+void print_user_models(const std::vector<UserModel> &models)
+{
+    reporting::print_sep();
+    fmt::print("{:<40}{:<30}{}\n", "Model ID", "Owner", "Creation time");
+    reporting::print_sep();
+
+    for (auto it = models.begin(); it != models.end(); ++it) {
+        const std::string datetime = datetime_from_unix_timestamp(it->creation_time);
+        fmt::print("{:<40}{:<30}{}\n", it->id, it->owned_by, datetime);
+    }
+
+    reporting::print_sep();
 }
 
 void print_models_response(const std::string &response)
@@ -51,29 +68,30 @@ void print_models_response(const std::string &response)
     }
 
     std::vector<UserModel> ft_models = {};
-    std::map<int, OpenAIModel> models = {};
+    std::map<int, OpenAIModel> openai_models = {};
 
     for (const auto &entry: results["data"]) {
         if (is_fine_tuning_model(entry["id"])) {
-            UserModel ft_model;
-            ft_model.creation_time = entry["created"];
-            ft_model.id = entry["id"];
-            ft_model.owned_by = entry["owned_by"];
+            UserModel model;
+            model.creation_time = entry["created"];
+            model.id = entry["id"];
+            model.owned_by = entry["owned_by"];
+            ft_models.push_back(model);
         } else {
             OpenAIModel model;
             model.id = entry["id"];
             model.owned_by = entry["owned_by"];
-            models[entry["created"]] = model;
+            openai_models[entry["created"]] = model;
         }
     }
 
-    print_openai_models(models);
+    fmt::print("OpenAI models:\n");
+    print_openai_models(openai_models);
 
     if (not ft_models.empty()) {
-        reporting::print_sep();
+        fmt::print("\nUser models:\n");
+        print_user_models(ft_models);
     }
-
-    reporting::print_sep();
 }
 
 } // namespace
