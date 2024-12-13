@@ -36,6 +36,24 @@ def test_files_list(command: Command, capfd: Capture) -> None:
     assert "File ID" in stdout
 
 
+def test_files_upload_missing_file(command: Command, capfd: Capture) -> None:
+    command.extend(["files", "upload", "foobar"])
+    process = run(command)
+
+    _, stderr = unpack_stdout_stderr(capfd)
+    assert process.returncode != EX_OK
+    assert "Failed to open/read local data from file/application" in stderr
+
+
+def test_files_upload_invalid_file(command: Command, capfd: Capture) -> None:
+    command.extend(["files", "upload", "tests/prompt_basic.txt"])
+    process = run(command)
+
+    stdout, _ = unpack_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
+    assert "Invalid file format for Fine-Tuning API. Must be .jsonl" in stdout
+
+
 def test_files_delete(command: Command, capfd: Capture) -> None:
     command.extend(["files", "delete", "foobar"])
     process = run(command)
