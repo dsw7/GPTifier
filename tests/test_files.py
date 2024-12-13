@@ -34,3 +34,12 @@ def test_files_list(command: Command, capfd: Capture) -> None:
     stdout, _ = unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
     assert "File ID" in stdout
+
+
+def test_files_delete(command: Command, capfd: Capture) -> None:
+    command.extend(["files", "delete", "foobar"])
+    process = run(command)
+
+    stdout, _ = unpack_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
+    assert "No such File object:" in stdout
