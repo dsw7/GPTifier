@@ -70,7 +70,7 @@ std::string add_examples(const str_pair &examples)
 
 namespace cli {
 
-void root_messages()
+void help_root_messages()
 {
     const std::string name = std::string(PROJECT_NAME);
     const std::string version = std::string(PROJECT_VERSION);
@@ -95,12 +95,13 @@ void root_messages()
         { "short", "Run a query against an appropriate model but with no threading and limited verbosity" });
     commands.push_back({ "models", "List available OpenAI models" });
     commands.push_back({ "embed", "Get embedding representing a block of text" });
+    commands.push_back({ "files", "Manage files uploaded to OpenAI" });
     body += add_commands(commands);
 
     std::cout << body;
 }
 
-void command_run()
+void help_command_run()
 {
     std::string body = add_description("Create a chat completion.");
     body += add_synopsis("run <options>");
@@ -124,7 +125,7 @@ void command_run()
     std::cout << body;
 }
 
-void command_short()
+void help_command_short()
 {
     std::string body = add_description("Create a chat completion but without threading or verbosity.");
     body += add_synopsis("short <options>");
@@ -140,7 +141,7 @@ void command_short()
     std::cout << body;
 }
 
-void command_models()
+void help_command_models()
 {
     std::string body = add_description("List available OpenAI models.");
 
@@ -153,7 +154,7 @@ void command_models()
     std::cout << body;
 }
 
-void command_embed()
+void help_command_embed()
 {
     std::string body = add_description("Get embedding representing a block of text.");
     body += add_synopsis("embed <options>");
@@ -163,6 +164,60 @@ void command_embed()
     options.push_back({ "-m <model-name>, --model=<model-name>", "Specify a valid embedding model" });
     options.push_back({ "-i <text>, --input=<text>", "Input text to embed" });
     options.push_back({ "-r <filename>, --read-from-file=<filename>", "Read input text to embed from a file" });
+    body += add_options(options);
+
+    std::cout << body;
+}
+
+void help_command_files()
+{
+    std::string body = add_description("Manage files uploaded to OpenAI.");
+    body += add_synopsis("files <subcommands>");
+
+    str_pair options = {};
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    body += add_options(options);
+
+    str_pair commands = {};
+    commands.push_back({ "list", "List uploaded files" });
+    commands.push_back({ "upload", "Upload a fine-tuning file" });
+    commands.push_back({ "delete", "Delete an uploaded file" });
+    body += add_commands(commands);
+
+    std::cout << body;
+}
+
+void help_command_files_list()
+{
+    std::string body = add_description("List uploaded files.");
+    body += add_synopsis("files list <options>");
+
+    str_pair options = {};
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    body += add_options(options);
+
+    std::cout << body;
+}
+
+void help_command_files_upload()
+{
+    std::string body = add_description("Upload a fine-tuning file.");
+    body += add_synopsis("files upload [FILE] <options>");
+
+    str_pair options = {};
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    body += add_options(options);
+
+    std::cout << body;
+}
+
+void help_command_files_delete()
+{
+    std::string body = add_description("Delete an uploaded file.");
+    body += add_synopsis("files delete [FILE ID] <options>");
+
+    str_pair options = {};
+    options.push_back({ "-h, --help", "Print help information and exit" });
     body += add_options(options);
 
     std::cout << body;

@@ -1,4 +1,5 @@
 #include "command_embed.hpp"
+#include "command_files.hpp"
 #include "command_models.hpp"
 #include "command_run.hpp"
 #include "command_short.hpp"
@@ -25,14 +26,14 @@ void print_build_information()
 int main(int argc, char **argv)
 {
     if (argc < 2) {
-        cli::root_messages();
+        cli::help_root_messages();
         return EXIT_FAILURE;
     }
 
     const std::string command = argv[1];
 
     if (command == "-h" or command == "--help") {
-        cli::root_messages();
+        cli::help_root_messages();
         return EXIT_SUCCESS;
     }
 
@@ -57,6 +58,8 @@ int main(int argc, char **argv)
             command_models(argc, argv);
         } else if (command == "embed") {
             command_embed(argc, argv);
+        } else if (command == "files") {
+            command_files(argc, argv);
         } else {
             std::cerr << "Received unknown command. Re-run with -h or --help\n";
         }
