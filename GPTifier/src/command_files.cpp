@@ -91,7 +91,10 @@ void command_files_upload(int argc, char **argv)
         return;
     }
 
-    fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", results["filename"], results["id"]);
+    const std::string filename = results["filename"];
+    const std::string id = results["id"];
+
+    fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", filename, id);
 }
 
 void command_files_delete(int argc, char **argv)
@@ -117,10 +120,12 @@ void command_files_delete(int argc, char **argv)
         return;
     }
 
+    const std::string id = results["id"];
+
     if (results["deleted"]) {
-        fmt::print("Success!\nDeleted file with ID: {}\n", results["id"]);
+        fmt::print("Success!\nDeleted file with ID: {}\n", id);
     } else {
-        fmt::print("Warning!\nDid not delete file with ID: {}\n", results["id"]);
+        fmt::print("Warning!\nDid not delete file with ID: {}\n", id);
     }
 }
 
