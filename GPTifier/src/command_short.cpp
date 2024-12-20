@@ -5,7 +5,6 @@
 #include "configs.hpp"
 #include "json.hpp"
 #include "reporting.hpp"
-#include "request_bodies.hpp"
 #include "testing.hpp"
 
 #include <fmt/core.h>
@@ -58,11 +57,10 @@ void command_short(int argc, char **argv)
     }
 
     const std::string model = select_chat_model();
-    std::string request_body = get_chat_completion_request_body(model, prompt.value(), 1.00);
 
     std::string response;
     try {
-        response = query_chat_completion_api(request_body);
+        response = query_chat_completion_api(model, prompt.value(), 1.00);
     } catch (std::runtime_error &e) {
         const std::string errmsg = fmt::format("Query failed. {}", e.what());
         throw std::runtime_error(errmsg);

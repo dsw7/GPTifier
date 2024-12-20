@@ -7,7 +7,6 @@
 #include "input_selection.hpp"
 #include "json.hpp"
 #include "reporting.hpp"
-#include "request_bodies.hpp"
 #include "testing.hpp"
 #include "utils.hpp"
 
@@ -45,32 +44,18 @@ std::string select_chat_model()
     throw std::runtime_error("No model provided via configuration file or command line");
 }
 
-std::string build_chat_completion_request_body(const cli::ParamsRun &params)
+float get_temperature(const std::string &temp_s)
 {
-    float temperature = 1.00;
+    float temp_f = 1.00;
 
     try {
-        temperature = std::stof(params.temperature);
+        temp_f = std::stof(temp_s);
     } catch (std::invalid_argument &e) {
-        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), params.temperature);
+        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), temp_s);
         throw std::runtime_error(errmsg);
     }
 
-    std::string model;
-
-    if (params.model.has_value()) {
-        model = params.model.value();
-    } else {
-        model = select_chat_model();
-    }
-
-    const std::string request_body = get_chat_completion_request_body(model, params.prompt.value(), temperature);
-
-    reporting::print_sep();
-    reporting::print_request(request_body);
-    reporting::print_sep();
-
-    return request_body;
+    return temp_f;
 }
 
 void print_chat_completion_response(const std::string &response)
@@ -217,7 +202,15 @@ void command_run(int argc, char **argv)
         params.prompt = load_input_text(params.prompt_file);
     }
 
-    const std::string request_body = build_chat_completion_request_body(params);
+    std::string model;
+
+    if (params.model.has_value()) {
+        model = params.model.value();
+    } else {
+        model = select_chat_model();
+    }
+
+    float temp = get_temperature(params.temperature);
 
     timer_enabled = true;
     std::thread timer(time_api_call);
@@ -226,7 +219,7 @@ void command_run(int argc, char **argv)
     std::string response;
 
     try {
-        response = query_chat_completion_api(request_body);
+        response = query_chat_completion_api(model, params.prompt.value(), temp);
     } catch (std::runtime_error &e) {
         query_failed = true;
         std::cerr << e.what() << '\n';
