@@ -224,17 +224,23 @@ std::string Curl::delete_path(const std::string &file_id)
 
 } // namespace
 
-std::string query_chat_completion_api(const std::string &post_fields)
+std::string query_chat_completion_api(const std::string &model, const std::string &prompt, float temperature)
 {
+    const nlohmann::json messages = { { "role", "user" }, { "content", prompt } };
+    const nlohmann::json data = {
+        { "model", model }, { "temperature", temperature }, { "messages", nlohmann::json::array({ messages }) }
+    };
+
     Curl curl;
-    return curl.post_chat_completion(post_fields);
+    return curl.post_chat_completion(data.dump());
 }
 
 std::string query_embeddings_api(const std::string &model, const std::string &input)
 {
+    const nlohmann::json data = { { "model", model }, { "input", input } };
+
     Curl curl;
-    const nlohmann::json body = { { "model", model }, { "input", input } };
-    return curl.post_generate_embedding(body.dump());
+    return curl.post_generate_embedding(data.dump());
 }
 
 std::string query_list_files_api()

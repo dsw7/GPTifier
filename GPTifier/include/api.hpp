@@ -2,7 +2,7 @@
 
 #include <string>
 
-std::string query_chat_completion_api(const std::string &post_fields);
+std::string query_chat_completion_api(const std::string &model, const std::string &prompt, float temperature);
 std::string query_embeddings_api(const std::string &model, const std::string &input);
 std::string query_list_files_api();
 std::string query_models_api();
