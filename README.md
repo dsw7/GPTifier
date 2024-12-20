@@ -25,11 +25,6 @@ A beautiful C++ libcurl / ChatGPT interface
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
   - [GPTifier administration via OpenAI platform](#gptifier-administration-via-openai-platform)
-- [Development](#development)
-  - [Testing](#testing)
-  - [Formatting](#formatting)
-  - [Linting C++](#linting-c)
-  - [Linting bash](#linting-bash)
 
 ## Motivation
 There are numerous ChatGPT command line programs currently available. Many of them are written in Python. I
@@ -253,30 +248,3 @@ vim +/project-id ~/.gptifier/gptifier.toml
 And set `project-id` to the project ID associated with the newly created GPTifier project. The ID can be
 obtained from the [General settings](https://platform.openai.com/settings/organization/general) page
 (authentication is required).
-
-## Development
-### Testing
-To run unit tests:
-```console
-make test
-```
-This target will compile the current branch, then run [pytest](https://docs.pytest.org/en/latest/) unit tests
-against the branch. The target will also run [Valgrind](https://valgrind.org/) tests in an attempt to detect
-memory management bugs.
-### Formatting
-Code in this project is formatted using [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html). This
-project uses the **Microsoft** formatting style. To format the code, run:
-```console
-make format
-```
-### Linting C++
-Code in this project is linted using [cppcheck](https://cppcheck.sourceforge.io/). To run the linter:
-```console
-make lint
-```
-### Linting bash
-All bash code in this project is subjected to **shellcheck** static analysis. Run:
-```console
-make sc
-```
-See [shellcheck](https://github.com/koalaman/shellcheck) for more information.
