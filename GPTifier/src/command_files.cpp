@@ -68,35 +68,6 @@ void command_files_list(int argc, char **argv)
     reporting::print_sep();
 }
 
-void command_files_upload(int argc, char **argv)
-{
-    if (argc < 4) {
-        cli::help_command_files_upload();
-        return;
-    }
-
-    const std::string opt_or_filename = argv[3];
-
-    if (opt_or_filename == "-h" or opt_or_filename == "--help") {
-        cli::help_command_files_upload();
-        return;
-    }
-
-    const std::string response = query_upload_file_api(opt_or_filename);
-    nlohmann::json results = nlohmann::json::parse(response);
-
-    if (results.contains("error")) {
-        const std::string error = results["error"]["message"];
-        reporting::print_error(error);
-        return;
-    }
-
-    const std::string filename = results["filename"];
-    const std::string id = results["id"];
-
-    fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", filename, id);
-}
-
 void command_files_delete(int argc, char **argv)
 {
     if (argc < 4) {
@@ -147,8 +118,6 @@ void command_files(int argc, char **argv)
 
     if (subcommand == "list") {
         command_files_list(argc, argv);
-    } else if (subcommand == "upload") {
-        command_files_upload(argc, argv);
     } else if (subcommand == "delete") {
         command_files_delete(argc, argv);
     } else {

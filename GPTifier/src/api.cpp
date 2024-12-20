@@ -247,10 +247,9 @@ std::string query_models_api()
     return curl.get_models();
 }
 
-std::string query_upload_file_api(const std::string &filename)
+std::string query_upload_file_api(const std::string &filename, const std::string &purpose)
 {
     Curl curl;
-    const std::string purpose = "fine-tune";
     return curl.post_upload_file(filename, purpose);
 }
 
