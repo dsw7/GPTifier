@@ -223,4 +223,20 @@ void help_command_files_delete()
     std::cout << body;
 }
 
+void help_command_fine_tune()
+{
+    std::string body = add_description("Manage fine tuning operations.");
+    body += add_synopsis("fine-tune <subcommands>");
+
+    str_pair options = {};
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    body += add_options(options);
+
+    str_pair commands = {};
+    commands.push_back({ "upload-file", "Upload a fine-tuning file" });
+    body += add_commands(commands);
+
+    std::cout << body;
+}
+
 } // namespace cli
