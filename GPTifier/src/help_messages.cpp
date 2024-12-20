@@ -96,6 +96,7 @@ void help_root_messages()
     commands.push_back({ "models", "List available OpenAI models" });
     commands.push_back({ "embed", "Get embedding representing a block of text" });
     commands.push_back({ "files", "Manage files uploaded to OpenAI" });
+    commands.push_back({ "fine-tune", "Manage fine tuning operations" });
     body += add_commands(commands);
 
     std::cout << body;

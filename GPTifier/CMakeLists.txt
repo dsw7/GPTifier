@@ -73,6 +73,7 @@ add_executable(
   "src/cli.cpp"
   "src/command_embed.cpp"
   "src/command_files.cpp"
+  "src/command_fine_tune.cpp"
   "src/command_models.cpp"
   "src/command_run.cpp"
   "src/command_short.cpp"

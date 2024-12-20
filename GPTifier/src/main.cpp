@@ -1,5 +1,6 @@
 #include "command_embed.hpp"
 #include "command_files.hpp"
+#include "command_fine_tune.hpp"
 #include "command_models.hpp"
 #include "command_run.hpp"
 #include "command_short.hpp"
@@ -60,6 +61,8 @@ int main(int argc, char **argv)
             command_embed(argc, argv);
         } else if (command == "files") {
             command_files(argc, argv);
+        } else if (command == "fine-tune") {
+            command_fine_tune(argc, argv);
         } else {
             std::cerr << "Received unknown command. Re-run with -h or --help\n";
         }
