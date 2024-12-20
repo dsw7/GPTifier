@@ -1,4 +1,4 @@
-.PHONY = help compile clean lint sc test format
+.PHONY = help compile clean lint test format
 .DEFAULT_GOAL = help
 
 define HELP_LIST_TARGETS
@@ -8,8 +8,6 @@ To remove build directory:
     $$ make clean
 To run cppcheck linter:
     $$ make lint
-To run shellcheck linter:
-    $$ make sc
 To run unit tests:
     $$ make test
 To format code:
@@ -30,9 +28,6 @@ clean:
 
 lint:
 	@cppcheck GPTifier --enable=all
-
-sc:
-	@shellcheck --shell=bash setup
 
 test: compile
 	@python3 -m pytest -v tests
