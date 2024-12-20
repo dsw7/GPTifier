@@ -83,7 +83,6 @@ add_executable(
   "src/input_selection.cpp"
   "src/main.cpp"
   "src/reporting.cpp"
-  "src/request_bodies.cpp"
   "src/testing.cpp"
   "src/utils.cpp"
 )
