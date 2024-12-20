@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <curl/curl.h>
 #include <fmt/core.h>
+#include <json.hpp>
 #include <optional>
 #include <stdexcept>
 
@@ -229,10 +230,11 @@ std::string query_chat_completion_api(const std::string &post_fields)
     return curl.post_chat_completion(post_fields);
 }
 
-std::string query_embeddings_api(const std::string &post_fields)
+std::string query_embeddings_api(const std::string &model, const std::string &input)
 {
     Curl curl;
-    return curl.post_generate_embedding(post_fields);
+    const nlohmann::json body = { { "model", model }, { "input", input } };
+    return curl.post_generate_embedding(body.dump());
 }
 
 std::string query_list_files_api()

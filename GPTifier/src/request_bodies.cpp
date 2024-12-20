@@ -11,9 +11,3 @@ std::string get_chat_completion_request_body(const std::string &model, const std
 
     return body.dump(2);
 }
-
-std::string get_embedding_request_body(const std::string &model, const std::string &input)
-{
-    const nlohmann::json body = { { "model", model }, { "input", input } };
-    return body.dump(2);
-}

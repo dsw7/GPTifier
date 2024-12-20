@@ -64,12 +64,8 @@ void command_embed(int argc, char **argv)
         }
     }
 
-    const std::string request_body = get_embedding_request_body(model, params.input.value());
+    const std::string response = query_embeddings_api(model, params.input.value());
 
     reporting::print_sep();
-    reporting::print_request(request_body);
-    reporting::print_sep();
-
-    const std::string response = query_embeddings_api(request_body);
     export_embedding(response, params.input.value());
 }
