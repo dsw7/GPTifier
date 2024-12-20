@@ -202,6 +202,7 @@ void command_run(int argc, char **argv)
         params.prompt = load_input_text(params.prompt_file);
     }
 
+    reporting::print_sep();
     std::string model;
 
     if (params.model.has_value()) {
