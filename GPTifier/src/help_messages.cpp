@@ -181,7 +181,6 @@ void help_command_files()
 
     str_pair commands = {};
     commands.push_back({ "list", "List uploaded files" });
-    commands.push_back({ "upload", "Upload a fine-tuning file" });
     commands.push_back({ "delete", "Delete an uploaded file" });
     body += add_commands(commands);
 
