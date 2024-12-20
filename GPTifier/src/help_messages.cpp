@@ -199,18 +199,6 @@ void help_command_files_list()
     std::cout << body;
 }
 
-void help_command_files_upload()
-{
-    std::string body = add_description("Upload a fine-tuning file.");
-    body += add_synopsis("files upload [FILE] <options>");
-
-    str_pair options = {};
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    body += add_options(options);
-
-    std::cout << body;
-}
-
 void help_command_files_delete()
 {
     std::string body = add_description("Delete an uploaded file.");
@@ -235,6 +223,18 @@ void help_command_fine_tune()
     str_pair commands = {};
     commands.push_back({ "upload-file", "Upload a fine-tuning file" });
     body += add_commands(commands);
+
+    std::cout << body;
+}
+
+void help_command_fine_tune_upload_file()
+{
+    std::string body = add_description("Upload a fine-tuning file.");
+    body += add_synopsis("fine-tune upload-file [FILE] <options>");
+
+    str_pair options = {};
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    body += add_options(options);
 
     std::cout << body;
 }

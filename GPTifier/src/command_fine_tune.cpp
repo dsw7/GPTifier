@@ -14,14 +14,14 @@ namespace {
 void upload_fine_tuning_file(int argc, char **argv)
 {
     if (argc < 4) {
-        cli::help_command_files_upload();
+        cli::help_command_fine_tune_upload_file();
         return;
     }
 
     const std::string opt_or_filename = argv[3];
 
     if (opt_or_filename == "-h" or opt_or_filename == "--help") {
-        cli::help_command_files_upload();
+        cli::help_command_fine_tune_upload_file();
         return;
     }
 
