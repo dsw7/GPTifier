@@ -25,7 +25,8 @@ void upload_fine_tuning_file(int argc, char **argv)
         return;
     }
 
-    const std::string response = query_upload_file_api(opt_or_filename);
+    const std::string purpose = "fine-tune";
+    const std::string response = query_upload_file_api(opt_or_filename, purpose);
     nlohmann::json results = nlohmann::json::parse(response);
 
     if (results.contains("error")) {
