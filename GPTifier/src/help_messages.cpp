@@ -247,8 +247,8 @@ void help_command_fine_tune_create_job()
 
     str_pair options = {};
     options.push_back({ "-h, --help", "Print help information and exit" });
-    options.push_back({ "-m, --model", "The name of the model to fine-tune" });
     options.push_back({ "-f, --file-id", "The ID of an uploaded file that contains the training data" });
+    options.push_back({ "-m, --model", "The name of the model to fine-tune" });
     body += add_options(options);
 
     std::cout << body;

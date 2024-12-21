@@ -162,4 +162,41 @@ ParamsRun get_opts_run(int argc, char **argv)
     return params;
 }
 
+ParamsFineTune get_opts_create_fine_tuning_job(int argc, char **argv)
+{
+    ParamsFineTune params;
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' },
+            { "file-id", required_argument, 0, 'f' },
+            { "model", required_argument, 0, 'm' },
+            { 0, 0, 0, 0 },
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hf:m:", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                help_command_fine_tune_create_job();
+                exit(EXIT_SUCCESS);
+            case 'f':
+                params.training_file = optarg;
+                break;
+            case 'm':
+                params.model = optarg;
+                break;
+            default:
+                exit_on_failure();
+        }
+    };
+
+    return params;
+}
+
 } // namespace cli
