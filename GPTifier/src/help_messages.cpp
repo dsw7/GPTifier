@@ -222,6 +222,7 @@ void help_command_fine_tune()
 
     str_pair commands = {};
     commands.push_back({ "upload-file", "Upload a fine-tuning file" });
+    commands.push_back({ "create-job", "Create a fine-tuning job" });
     body += add_commands(commands);
 
     std::cout << body;
@@ -234,6 +235,20 @@ void help_command_fine_tune_upload_file()
 
     str_pair options = {};
     options.push_back({ "-h, --help", "Print help information and exit" });
+    body += add_options(options);
+
+    std::cout << body;
+}
+
+void help_command_fine_tune_create_job()
+{
+    std::string body = add_description("Create a fine-tuning job.");
+    body += add_synopsis("fine-tune create-job <options>");
+
+    str_pair options = {};
+    options.push_back({ "-h, --help", "Print help information and exit" });
+    options.push_back({ "-m, --model", "The name of the model to fine-tune" });
+    options.push_back({ "-f, --file-id", "The ID of an uploaded file that contains the training data" });
     body += add_options(options);
 
     std::cout << body;
