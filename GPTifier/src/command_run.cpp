@@ -6,6 +6,7 @@
 #include "datadir.hpp"
 #include "input_selection.hpp"
 #include "json.hpp"
+#include "parsers.hpp"
 #include "reporting.hpp"
 #include "testing.hpp"
 #include "utils.hpp"
@@ -15,6 +16,7 @@
 #include <fmt/core.h>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -58,24 +60,14 @@ float get_temperature(const std::string &temp_s)
     return temp_f;
 }
 
-void print_chat_completion_response(const std::string &response)
+void print_chat_completion_response(nlohmann::json &results)
 {
-    nlohmann::json results = nlohmann::json::parse(response);
+    const std::string content = results["choices"][0]["message"]["content"];
+    results["choices"][0]["message"]["content"] = "...";
 
-    if (results.contains("error")) {
-        reporting::print_response(results.dump(2));
-        reporting::print_sep();
-
-        const std::string error = results["error"]["message"];
-        reporting::print_error(error);
-    } else {
-        const std::string content = results["choices"][0]["message"]["content"];
-        results["choices"][0]["message"]["content"] = "...";
-
-        reporting::print_response(results.dump(2));
-        reporting::print_sep();
-        reporting::print_results(content);
-    }
+    reporting::print_response(results.dump(2));
+    reporting::print_sep();
+    reporting::print_results(content);
 
     reporting::print_sep();
 }
@@ -109,16 +101,8 @@ void write_message_to_file(const Completion &completion)
     st_filename.close();
 }
 
-void export_chat_completion_response(const std::string &response, const std::string &prompt)
+void export_chat_completion_response(const nlohmann::json &results, const std::string &prompt)
 {
-    nlohmann::json results = nlohmann::json::parse(response);
-
-    if (results.contains("error")) {
-        std::cerr << "Cannot export results as error occurred\n";
-        reporting::print_sep();
-        return;
-    }
-
     std::cout << "\033[1mExport:\033[0m\n";
     std::string choice;
 
@@ -155,7 +139,7 @@ void export_chat_completion_response(const std::string &response, const std::str
     reporting::print_sep();
 }
 
-void dump_chat_completion_response(const std::string &response, const std::string &json_dump_file)
+void dump_chat_completion_response(const nlohmann::json &results, const std::string &json_dump_file)
 {
     std::cout << "Dumping results to " + json_dump_file + '\n';
     std::ofstream st_filename(json_dump_file);
@@ -163,8 +147,6 @@ void dump_chat_completion_response(const std::string &response, const std::strin
     if (not st_filename.is_open()) {
         throw std::runtime_error("Unable to open '" + json_dump_file + "'");
     }
-
-    const nlohmann::json results = nlohmann::json::parse(response);
 
     st_filename << std::setw(2) << results;
     st_filename.close();
@@ -233,12 +215,21 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("Cannot proceed");
     }
 
+    const std::optional<nlohmann::json> results = parse_response(response);
+
+    if (not results.has_value()) {
+        return;
+    }
+
+    nlohmann::json completion = results.value();
+
     if (params.json_dump_file.has_value()) {
-        dump_chat_completion_response(response, params.json_dump_file.value());
+        dump_chat_completion_response(completion, params.json_dump_file.value());
     } else {
-        print_chat_completion_response(response);
+        print_chat_completion_response(completion);
+
         if (params.enable_export) {
-            export_chat_completion_response(response, params.prompt.value());
+            export_chat_completion_response(completion, params.prompt.value());
         }
     }
 }
