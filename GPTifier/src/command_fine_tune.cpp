@@ -54,17 +54,28 @@ void create_fine_tuning_job(int argc, char **argv)
         return;
     }
 
-    std::string model;
-
     if (params.model.has_value()) {
-        model = params.model.value();
+        fmt::print("Training model: {}\n", params.model.value());
     } else {
-        model = "gpt-4o-mini";
+        reporting::print_error("No model provided");
+        return;
     }
 
-    fmt::print("Training model: {}\n", model);
-
     reporting::print_sep();
+
+    const std::string response = query_create_fine_tuning_job_api(params.training_file.value(), params.model.value());
+    nlohmann::json results = nlohmann::json::parse(response);
+
+    if (results.contains("error")) {
+        if (not results["error"].empty()) {
+            const std::string error = results["error"]["message"];
+            reporting::print_error(error);
+            return;
+        }
+    }
+
+    const std::string id = results["id"];
+    fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 
 } // namespace

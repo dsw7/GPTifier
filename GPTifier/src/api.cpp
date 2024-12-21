@@ -13,6 +13,7 @@ namespace endpoints {
 const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
 const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
 const std::string URL_FILES = "https://api.openai.com/v1/files";
+const std::string URL_FINE_TUNING = "https://api.openai.com/v1/fine_tuning";
 const std::string URL_MODELS = "https://api.openai.com/v1/models";
 
 } // namespace endpoints
@@ -54,6 +55,7 @@ public:
     std::string post_generate_embedding(const std::string &post_fields);
     std::string post_upload_file(const std::string &filename, const std::string &purpose);
     std::string delete_file(const std::string &file_id);
+    std::string post_create_fine_tuning_job(const std::string &post_fields);
 
     CURL *handle = NULL;
 
@@ -222,6 +224,26 @@ std::string Curl::delete_file(const std::string &file_id)
     return response;
 }
 
+std::string Curl::post_create_fine_tuning_job(const std::string &post_fields)
+{
+    const std::string header = "Content-Type: application/json";
+    this->headers = curl_slist_append(this->headers, header.c_str());
+
+    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+
+    const std::string endpoint = fmt::format("{}/{}", endpoints::URL_FINE_TUNING, "jobs");
+
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
+    curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
+
+    std::string response;
+    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+
+    catch_curl_error(curl_easy_perform(this->handle));
+    return response;
+}
+
 } // namespace
 
 std::string query_chat_completion_api(const std::string &model, const std::string &prompt, float temperature)
@@ -265,4 +287,12 @@ std::string query_delete_file_api(const std::string &file_id)
 {
     Curl curl;
     return curl.delete_file(file_id);
+}
+
+std::string query_create_fine_tuning_job_api(const std::string &training_file, const std::string &model)
+{
+    const nlohmann::json data = { { "model", model }, { "training_file", training_file } };
+
+    Curl curl;
+    return curl.post_create_fine_tuning_job(data.dump());
 }
