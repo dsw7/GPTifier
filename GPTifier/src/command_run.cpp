@@ -220,16 +220,15 @@ void command_run(int argc, char **argv)
     if (not results.has_value()) {
         return;
     }
-
     nlohmann::json completion = results.value();
 
     if (params.json_dump_file.has_value()) {
         dump_chat_completion_response(completion, params.json_dump_file.value());
-    } else {
-        print_chat_completion_response(completion);
+        return;
+    }
 
-        if (params.enable_export) {
-            export_chat_completion_response(completion, params.prompt.value());
-        }
+    print_chat_completion_response(completion);
+    if (params.enable_export) {
+        export_chat_completion_response(completion, params.prompt.value());
     }
 }
