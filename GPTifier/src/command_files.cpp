@@ -4,12 +4,14 @@
 #include "cli.hpp"
 #include "help_messages.hpp"
 #include "json.hpp"
+#include "parsers.hpp"
 #include "reporting.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
 #include <iostream>
 #include <map>
+#include <optional>
 #include <string>
 
 namespace {
@@ -38,12 +40,9 @@ void command_files_list(int argc, char **argv)
     }
 
     const std::string response = query_list_files_api();
+    const std::optional<nlohmann::json> results = parse_response(response);
 
-    nlohmann::json results = nlohmann::json::parse(response);
-
-    if (results.contains("error")) {
-        const std::string error = results["error"]["message"];
-        reporting::print_error(error);
+    if (not results.has_value()) {
         return;
     }
 
@@ -53,7 +52,7 @@ void command_files_list(int argc, char **argv)
     reporting::print_sep();
     std::map<int, File> files = {};
 
-    for (const auto &entry: results["data"]) {
+    for (const auto &entry: results.value()["data"]) {
         File file;
         file.id = entry["id"];
         file.filename = entry["filename"];
@@ -83,17 +82,15 @@ void command_files_delete(int argc, char **argv)
     }
 
     const std::string response = query_delete_file_api(opt_or_file_id);
-    nlohmann::json results = nlohmann::json::parse(response);
+    const std::optional<nlohmann::json> results = parse_response(response);
 
-    if (results.contains("error")) {
-        const std::string error = results["error"]["message"];
-        reporting::print_error(error);
+    if (not results.has_value()) {
         return;
     }
 
-    const std::string id = results["id"];
+    const std::string id = results.value()["id"];
 
-    if (results["deleted"]) {
+    if (results.value()["deleted"]) {
         fmt::print("Success!\nDeleted file with ID: {}\n", id);
     } else {
         fmt::print("Warning!\nDid not delete file with ID: {}\n", id);

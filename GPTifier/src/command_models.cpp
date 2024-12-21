@@ -3,11 +3,13 @@
 #include "api.hpp"
 #include "cli.hpp"
 #include "json.hpp"
+#include "parsers.hpp"
 #include "reporting.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -59,18 +61,15 @@ void print_user_models(const std::vector<UserModel> &models)
 
 void print_models_response(const std::string &response)
 {
-    nlohmann::json results = nlohmann::json::parse(response);
-
-    if (results.contains("error")) {
-        const std::string error = results["error"]["message"];
-        reporting::print_error(error);
+    const std::optional<nlohmann::json> results = parse_response(response);
+    if (not results.has_value()) {
         return;
     }
 
     std::vector<UserModel> user_models = {};
     std::map<int, OpenAIModel> openai_models = {};
 
-    for (const auto &entry: results["data"]) {
+    for (const auto &entry: results.value()["data"]) {
         if (is_fine_tuning_model(entry["id"])) {
             UserModel model;
             model.creation_time = entry["created"];
