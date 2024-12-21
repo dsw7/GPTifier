@@ -8,10 +8,8 @@
 #include "reporting.hpp"
 #include "testing.hpp"
 
-#include <fmt/core.h>
 #include <iostream>
 #include <optional>
-#include <stdexcept>
 #include <string>
 
 namespace {
@@ -43,15 +41,7 @@ void command_short(int argc, char **argv)
     }
 
     const std::string model = select_chat_model();
-
-    std::string response;
-    try {
-        response = query_chat_completion_api(model, prompt.value(), 1.00);
-    } catch (std::runtime_error &e) {
-        const std::string errmsg = fmt::format("Query failed. {}", e.what());
-        throw std::runtime_error(errmsg);
-    }
-
+    const std::string response = query_chat_completion_api(model, prompt.value(), 1.00);
     const std::optional<nlohmann::json> results = parse_response(response);
 
     if (not results.has_value()) {
