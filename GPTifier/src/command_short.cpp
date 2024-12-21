@@ -4,6 +4,7 @@
 #include "cli.hpp"
 #include "configs.hpp"
 #include "json.hpp"
+#include "parsers.hpp"
 #include "reporting.hpp"
 #include "testing.hpp"
 
@@ -31,21 +32,6 @@ std::string select_chat_model()
     throw std::runtime_error("No model provided via configuration file!");
 }
 
-void print_chat_completion_response(const std::string &response)
-{
-    const nlohmann::json results = nlohmann::json::parse(response);
-
-    if (results.contains("error")) {
-        const std::string error = results["error"]["message"];
-        std::cout << error;
-    } else {
-        const std::string content = results["choices"][0]["message"]["content"];
-        std::cout << content;
-    }
-
-    std::cout << '\n';
-}
-
 } // namespace
 
 void command_short(int argc, char **argv)
@@ -66,5 +52,12 @@ void command_short(int argc, char **argv)
         throw std::runtime_error(errmsg);
     }
 
-    print_chat_completion_response(response);
+    const std::optional<nlohmann::json> results = parse_response(response);
+
+    if (not results.has_value()) {
+        return;
+    }
+
+    const std::string content = results.value()["choices"][0]["message"]["content"];
+    std::cout << content << '\n';
 }
