@@ -6,11 +6,13 @@
 #include "datadir.hpp"
 #include "input_selection.hpp"
 #include "json.hpp"
+#include "parsers.hpp"
 #include "reporting.hpp"
 
 #include <fmt/core.h>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -18,13 +20,13 @@ namespace {
 
 void export_embedding(const std::string &response, const std::string &input)
 {
-    nlohmann::json results = nlohmann::json::parse(response);
-    results["input"] = input;
-
-    if (results.contains("error")) {
-        const std::string error = results["error"]["message"];
-        reporting::print_error(error);
+    const std::optional<nlohmann::json> results = parse_response(response);
+    if (not results.has_value()) {
+        return;
     }
+
+    nlohmann::json embedding = results.value();
+    embedding["input"] = input;
 
     std::cout << fmt::format("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS.string());
     std::ofstream st_filename(datadir::GPT_EMBEDDINGS);
@@ -34,7 +36,7 @@ void export_embedding(const std::string &response, const std::string &input)
         throw std::runtime_error(errmsg);
     }
 
-    st_filename << std::setw(2) << results;
+    st_filename << std::setw(2) << embedding;
     st_filename.close();
 
     reporting::print_sep();
