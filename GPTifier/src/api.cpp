@@ -53,7 +53,7 @@ public:
     std::string post_chat_completion(const std::string &post_fields);
     std::string post_generate_embedding(const std::string &post_fields);
     std::string post_upload_file(const std::string &filename, const std::string &purpose);
-    std::string delete_path(const std::string &file_id);
+    std::string delete_file(const std::string &file_id);
 
     CURL *handle = NULL;
 
@@ -206,7 +206,7 @@ std::string Curl::post_upload_file(const std::string &filename, const std::strin
     return response;
 }
 
-std::string Curl::delete_path(const std::string &file_id)
+std::string Curl::delete_file(const std::string &file_id)
 {
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
@@ -264,5 +264,5 @@ std::string query_upload_file_api(const std::string &filename, const std::string
 std::string query_delete_file_api(const std::string &file_id)
 {
     Curl curl;
-    return curl.delete_path(file_id);
+    return curl.delete_file(file_id);
 }
