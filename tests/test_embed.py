@@ -3,7 +3,7 @@ from os import EX_OK
 from pathlib import Path
 from subprocess import run
 from pytest import mark
-from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error, Command, Capture
+from utils import unpack_stdout_stderr, EX_MEM_LEAK, Command, Capture
 
 RESULTS_JSON = Path.home() / ".gptifier" / "embeddings.gpt"
 
@@ -80,9 +80,8 @@ def test_invalid_model(command: Command, capfd: Capture) -> None:
     command.extend(["embed", "-i'What is 3 + 5?'", "-mfoobar"])
     process = run(command)
 
-    unpack_stdout_stderr(capfd)
+    stdout, _ = unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
     assert (
-        load_error(str(RESULTS_JSON))
-        == "The model `foobar` does not exist or you do not have access to it."
+        "The model `foobar` does not exist or you do not have access to it." in stdout
     )
