@@ -1,4 +1,3 @@
-from json import loads
 from typing import NewType, Any, TypeAlias
 from colorama import Fore, Style
 from pytest import CaptureFixture
@@ -35,10 +34,3 @@ def unpack_stdout_stderr(capture: Capture) -> tuple[str, str]:
     _print_stdout(output.out)
     _print_stderr(output.err)
     return output.out, output.err
-
-
-def load_error(json_file: str) -> Any:
-    with open(json_file) as f:
-        contents = loads(f.read())
-
-    return contents["error"]["message"]
