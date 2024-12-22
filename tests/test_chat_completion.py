@@ -74,9 +74,9 @@ def test_invalid_temp(
     command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", "-u"])
     process = run(command)
 
-    stdout, _ = unpack_stdout_stderr(capfd)
-    assert f"Invalid 'temperature': {message}" in stdout
-    assert process.returncode == EX_OK
+    _, stderr = unpack_stdout_stderr(capfd)
+    assert f"Invalid 'temperature': {message}" in stderr
+    assert process.returncode != EX_OK
 
 
 def test_missing_prompt_file(command: Command, capfd: Capture) -> None:
@@ -101,8 +101,8 @@ def test_invalid_model(command: Command, capfd: Capture) -> None:
     command.extend(["run", f"-p'{PROMPT}'", "-mfoobar", "-u"])
     process = run(command)
 
-    stdout, _ = unpack_stdout_stderr(capfd)
+    _, stderr = unpack_stdout_stderr(capfd)
     assert (
-        "The model `foobar` does not exist or you do not have access to it." in stdout
+        "The model `foobar` does not exist or you do not have access to it." in stderr
     )
-    assert process.returncode == EX_OK
+    assert process.returncode != EX_OK

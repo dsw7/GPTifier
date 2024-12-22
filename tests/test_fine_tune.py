@@ -40,15 +40,15 @@ def test_fine_tune_upload_invalid_file(command: Command, capfd: Capture) -> None
     command.extend(["fine-tune", "upload-file", "tests/prompt_basic.txt"])
     process = run(command)
 
-    stdout, _ = unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    assert "Invalid file format for Fine-Tuning API. Must be .jsonl" in stdout
+    _, stderr = unpack_stdout_stderr(capfd)
+    assert process.returncode != EX_OK
+    assert "Invalid file format for Fine-Tuning API. Must be .jsonl" in stderr
 
 
 def test_fine_tune_create_job_invalid_params(command: Command, capfd: Capture) -> None:
     command.extend(["fine-tune", "create-job", "--model=foobar", "--file-id=foobar"])
     process = run(command)
 
-    stdout, _ = unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    assert "invalid training_file: foobar" in stdout
+    _, stderr = unpack_stdout_stderr(capfd)
+    assert process.returncode != EX_OK
+    assert "invalid training_file: foobar" in stderr

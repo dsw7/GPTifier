@@ -40,6 +40,6 @@ def test_files_delete(command: Command, capfd: Capture) -> None:
     command.extend(["files", "delete", "foobar"])
     process = run(command)
 
-    stdout, _ = unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    assert "No such File object:" in stdout
+    _, stderr = unpack_stdout_stderr(capfd)
+    assert process.returncode != EX_OK
+    assert "No such File object: foobar" in stderr

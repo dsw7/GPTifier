@@ -80,8 +80,8 @@ def test_invalid_model(command: Command, capfd: Capture) -> None:
     command.extend(["embed", "-i'What is 3 + 5?'", "-mfoobar"])
     process = run(command)
 
-    stdout, _ = unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
+    _, stderr = unpack_stdout_stderr(capfd)
+    assert process.returncode != EX_OK
     assert (
-        "The model `foobar` does not exist or you do not have access to it." in stdout
+        "The model `foobar` does not exist or you do not have access to it." in stderr
     )
