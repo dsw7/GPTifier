@@ -4,7 +4,7 @@ from pathlib import Path
 from subprocess import run
 from typing import Any
 from pytest import mark
-from utils import unpack_stdout_stderr, EX_MEM_LEAK, load_error, Command, Capture
+from utils import unpack_stdout_stderr, EX_MEM_LEAK, Command, Capture
 
 PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
 
@@ -69,18 +69,14 @@ MESSAGES_BAD_TEMP = [
 
 @mark.parametrize("temp, message", MESSAGES_BAD_TEMP)
 def test_invalid_temp(
-    json_file: str,
-    command: Command,
-    temp: float,
-    message: str,
-    capfd: Capture,
+    command: Command, temp: float, message: str, capfd: Capture
 ) -> None:
-    command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", f"-d{json_file}", "-u"])
+    command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", "-u"])
     process = run(command)
 
-    unpack_stdout_stderr(capfd)
+    stdout, _ = unpack_stdout_stderr(capfd)
+    assert f"Invalid 'temperature': {message}" in stdout
     assert process.returncode == EX_OK
-    assert load_error(json_file) == f"Invalid 'temperature': {message}"
 
 
 def test_missing_prompt_file(command: Command, capfd: Capture) -> None:
@@ -101,13 +97,12 @@ def test_invalid_dump_location(command: Command, capfd: Capture) -> None:
     assert "Unable to open '/tmp/a/b/c'" in stderr
 
 
-def test_invalid_model(json_file: str, command: Command, capfd: Capture) -> None:
-    command.extend(["run", f"-p'{PROMPT}'", "-mfoobar", f"-d{json_file}", "-u"])
+def test_invalid_model(command: Command, capfd: Capture) -> None:
+    command.extend(["run", f"-p'{PROMPT}'", "-mfoobar", "-u"])
     process = run(command)
 
-    unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
+    stdout, _ = unpack_stdout_stderr(capfd)
     assert (
-        load_error(json_file)
-        == "The model `foobar` does not exist or you do not have access to it."
+        "The model `foobar` does not exist or you do not have access to it." in stdout
     )
+    assert process.returncode == EX_OK
