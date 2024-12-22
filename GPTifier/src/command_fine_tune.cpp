@@ -8,7 +8,6 @@
 #include "reporting.hpp"
 
 #include <fmt/core.h>
-#include <optional>
 #include <string>
 
 namespace {
@@ -30,13 +29,10 @@ void upload_fine_tuning_file(int argc, char **argv)
     const std::string purpose = "fine-tune";
     const std::string response = query_upload_file_api(opt_or_filename, purpose);
 
-    const std::optional<nlohmann::json> results = parse_response(response);
-    if (not results.has_value()) {
-        return;
-    }
+    const nlohmann::json results = parse_response(response);
 
-    const std::string filename = results.value()["filename"];
-    const std::string id = results.value()["id"];
+    const std::string filename = results["filename"];
+    const std::string id = results["id"];
 
     fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", filename, id);
 }
@@ -64,13 +60,9 @@ void create_fine_tuning_job(int argc, char **argv)
     reporting::print_sep();
 
     const std::string response = query_create_fine_tuning_job_api(params.training_file.value(), params.model.value());
+    const nlohmann::json results = parse_response(response);
 
-    const std::optional<nlohmann::json> results = parse_response(response);
-    if (not results.has_value()) {
-        return;
-    }
-
-    const std::string id = results.value()["id"];
+    const std::string id = results["id"];
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 

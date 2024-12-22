@@ -11,7 +11,6 @@
 #include <fmt/core.h>
 #include <iostream>
 #include <map>
-#include <optional>
 #include <string>
 
 namespace {
@@ -40,11 +39,7 @@ void command_files_list(int argc, char **argv)
     }
 
     const std::string response = query_list_files_api();
-    const std::optional<nlohmann::json> results = parse_response(response);
-
-    if (not results.has_value()) {
-        return;
-    }
+    const nlohmann::json results = parse_response(response);
 
     reporting::print_sep();
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
@@ -52,7 +47,7 @@ void command_files_list(int argc, char **argv)
     reporting::print_sep();
     std::map<int, File> files = {};
 
-    for (const auto &entry: results.value()["data"]) {
+    for (const auto &entry: results["data"]) {
         File file;
         file.id = entry["id"];
         file.filename = entry["filename"];
@@ -82,15 +77,11 @@ void command_files_delete(int argc, char **argv)
     }
 
     const std::string response = query_delete_file_api(opt_or_file_id);
-    const std::optional<nlohmann::json> results = parse_response(response);
+    const nlohmann::json results = parse_response(response);
 
-    if (not results.has_value()) {
-        return;
-    }
+    const std::string id = results["id"];
 
-    const std::string id = results.value()["id"];
-
-    if (results.value()["deleted"]) {
+    if (results["deleted"]) {
         fmt::print("Success!\nDeleted file with ID: {}\n", id);
     } else {
         fmt::print("Warning!\nDid not delete file with ID: {}\n", id);

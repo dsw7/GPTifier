@@ -16,7 +16,6 @@
 #include <fmt/core.h>
 #include <fstream>
 #include <iostream>
-#include <optional>
 #include <stdexcept>
 #include <string>
 #include <thread>
@@ -215,20 +214,16 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("Cannot proceed");
     }
 
-    const std::optional<nlohmann::json> results = parse_response(response);
-
-    if (not results.has_value()) {
-        return;
-    }
-    nlohmann::json completion = results.value();
+    nlohmann::json results = parse_response(response);
 
     if (params.json_dump_file.has_value()) {
-        dump_chat_completion_response(completion, params.json_dump_file.value());
+        dump_chat_completion_response(results, params.json_dump_file.value());
         return;
     }
 
-    print_chat_completion_response(completion);
+    print_chat_completion_response(results);
+
     if (params.enable_export) {
-        export_chat_completion_response(completion, params.prompt.value());
+        export_chat_completion_response(results, params.prompt.value());
     }
 }
