@@ -33,7 +33,7 @@ std::string select_chat_model()
 {
     if (testing::is_test_running()) {
         static std::string low_cost_model = "gpt-3.5-turbo";
-        std::cout << "Defaulting to using a low cost model: " << low_cost_model << '\n';
+        fmt::print("Defaulting to using a low cost model: {}\n", low_cost_model);
 
         return low_cost_model;
     }
@@ -75,7 +75,7 @@ void write_message_to_file(const Completion &completion)
 {
     const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
 
-    std::cout << fmt::format("> Writing completion to file {}\n", path_completions_file);
+    fmt::print("> Writing completion to file {}\n", path_completions_file);
     std::ofstream st_filename(path_completions_file, std::ios::app);
 
     if (not st_filename.is_open()) {
@@ -130,7 +130,7 @@ void export_chat_completion_response(const nlohmann::json &results, const std::s
         completion.created = results["created"];
         completion.model = results["model"];
     } catch (const nlohmann::json::type_error &e) {
-        const std::string errmsg = "Failed to parse completion. Error was: '" + std::string(e.what()) + "'";
+        const std::string errmsg = fmt::format("Failed to parse completion. Error was:\n{}", e.what());
         throw std::runtime_error(errmsg);
     }
 
@@ -140,11 +140,12 @@ void export_chat_completion_response(const nlohmann::json &results, const std::s
 
 void dump_chat_completion_response(const nlohmann::json &results, const std::string &json_dump_file)
 {
-    std::cout << "Dumping results to " + json_dump_file + '\n';
+    fmt::print("Dumping results to '{}'\n", json_dump_file);
     std::ofstream st_filename(json_dump_file);
 
     if (not st_filename.is_open()) {
-        throw std::runtime_error("Unable to open '" + json_dump_file + "'");
+        const std::string errmsg = fmt::format("Unable to open '{}'\n", json_dump_file);
+        throw std::runtime_error(errmsg);
     }
 
     st_filename << std::setw(2) << results;
@@ -164,7 +165,7 @@ void time_api_call()
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> duration = end - start;
 
-        std::cout << "\033[1mTime (s):\033[0m " << duration.count() << "\r";
+        fmt::print("\033[1mTime (s):\033[0m {}\r", duration.count());
         std::cout.flush();
     }
 

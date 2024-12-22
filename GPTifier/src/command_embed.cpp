@@ -11,7 +11,6 @@
 
 #include <fmt/core.h>
 #include <fstream>
-#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -22,7 +21,8 @@ void export_embedding(const std::string &response, const std::string &input)
     nlohmann::json results = parse_response(response);
     results["input"] = input;
 
-    std::cout << fmt::format("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS.string());
+    fmt::print("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS.string());
+
     std::ofstream st_filename(datadir::GPT_EMBEDDINGS);
 
     if (not st_filename.is_open()) {

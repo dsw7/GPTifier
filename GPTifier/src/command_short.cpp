@@ -8,7 +8,7 @@
 #include "reporting.hpp"
 #include "testing.hpp"
 
-#include <iostream>
+#include <fmt/core.h>
 #include <optional>
 #include <string>
 
@@ -18,7 +18,7 @@ std::string select_chat_model()
 {
     if (testing::is_test_running()) {
         static std::string low_cost_model = "gpt-3.5-turbo";
-        std::cout << "Defaulting to using a low cost model: " << low_cost_model << '\n';
+        fmt::print("Defaulting to using a low cost model: {}\n", low_cost_model);
 
         return low_cost_model;
     }
@@ -46,5 +46,5 @@ void command_short(int argc, char **argv)
     const nlohmann::json results = parse_response(response);
     const std::string content = results["choices"][0]["message"]["content"];
 
-    std::cout << content << '\n';
+    fmt::print("{}\n", content);
 }

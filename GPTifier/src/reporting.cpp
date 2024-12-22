@@ -1,5 +1,4 @@
 #include <fmt/core.h>
-#include <iostream>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -24,22 +23,22 @@ namespace reporting {
 void print_sep()
 {
     static unsigned short columns = get_terminal_columns();
-    std::cout << std::string(columns, '-') + "\n";
+    fmt::print("{}\n", std::string(columns, '-'));
 }
 
 void print_error(const std::string &message)
 {
-    std::cout << fmt::format("\033[1mError:\033[31m {}\033[0m\n", message);
+    fmt::print("\033[1mError:\033[31m {}\033[0m\n", message);
 }
 
 void print_response(const std::string &response)
 {
-    std::cout << fmt::format("\033[1mResponse:\033[0m {}\n", response);
+    fmt::print("\033[1mResponse:\033[0m {}\n", response);
 }
 
 void print_results(const std::string &results)
 {
-    std::cout << fmt::format("\033[1mResults:\033[32m {}\033[0m\n", results);
+    fmt::print("\033[1mResults:\033[32m {}\033[0m\n", results);
 }
 
 } // namespace reporting
