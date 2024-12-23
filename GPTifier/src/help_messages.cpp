@@ -14,28 +14,6 @@ typedef std::vector<std::pair<std::string, std::string>> str_pair;
 const std::string ws_2 = std::string(2, ' ');
 const std::string ws_4 = std::string(4, ' ');
 
-std::string add_description(const std::string &text)
-{
-    return fmt::format("\033[1mDESCRIPTION:\033[0m\n{}{}\n\n", ws_2, text);
-}
-
-std::string add_synopsis(const std::string &text)
-{
-    return fmt::format("\033[1mSYNOPSIS:\033[0m\n{}\033[4mgpt\033[0m {}\n\n", ws_2, text);
-}
-
-std::string add_options(const str_pair &options)
-{
-    std::string body = "\033[1mOPTIONS:\033[0m\n";
-
-    for (auto it = options.begin(); it != options.end(); it++) {
-        body += fmt::format("{}\033[2m{}\033[0m\n{} -> {}\n", ws_2, it->first, ws_4, it->second);
-    }
-
-    body += '\n';
-    return body;
-}
-
 std::string bash_block(const std::string &command)
 {
     return fmt::format("\033[1;32m{0}```bash\n{0}{1}\n{0}```\n\033[0m", ws_2, command);
@@ -237,19 +215,18 @@ void help_root_messages()
 
 void help_command_run()
 {
-    std::string body = add_description("Create a chat completion.");
-    body += add_synopsis("run <options>");
+    HelpMessages help;
+    help.add_description("Create a chat completion.");
+    help.add_synopsis("run <options>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
+    help.add_option("-u", "--no-interactive-export", "Disable [y/n] prompt that asks whether to export results");
+    help.add_option("-d <json-file>", "--dump=<json-file>", "Export results to a JSON file");
+    help.add_option("-p <prompt>", "--prompt=<prompt>", "Provide prompt via command line");
+    help.add_option("-r <filename>", "--read-from-file=<filename>", "Read prompt from a custom file");
+    help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
 
-    str_pair options = {};
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    options.push_back({ "-m <model-name>, --model=<model-name>", "Specify a valid chat model" });
-    options.push_back({ "-u , --no-interactive-export", "Disable [y/n] prompt that asks whether to export results" });
-    options.push_back({ "-d <json-file>, --dump=<json-file>", "Export results to a JSON file" });
-    options.push_back({ "-p <prompt>, --prompt=<prompt>", "Provide prompt via command line" });
-    options.push_back({ "-r <filename>, --read-from-file=<filename>", "Read prompt from a custom file" });
-    options.push_back({ "-t <temp>, --temperature=<temperature>", "Provide a sampling temperature between 0 and 2" });
-    body += add_options(options);
-
+    std::string body;
     str_pair examples = {};
     examples.push_back({ "Run an interactive session", "gpt run" });
     examples.push_back({ "Run a query non-interactively and export results",
@@ -261,14 +238,14 @@ void help_command_run()
 
 void help_command_short()
 {
-    std::string body = add_description("Create a chat completion but without threading or verbosity.");
-    body += add_synopsis("short <options>");
+    HelpMessages help;
+    help.add_description("Create a chat completion but without threading or verbosity.");
+    help.add_synopsis("short <options>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-p <prompt>", "--prompt=<prompt>", "Provide prompt via command line");
+    help.print();
 
-    str_pair options = {};
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    options.push_back({ "-p <prompt>, --prompt=<prompt>", "Provide prompt via command line" });
-    body += add_options(options);
-
+    std::string body;
     str_pair examples = {};
     examples.push_back({ "Create a chat completion", "gpt short --prompt=\"What is 2 + 2?\"" });
     body += add_examples(examples);
