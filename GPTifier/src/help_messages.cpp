@@ -75,20 +75,28 @@ struct Options {
 class HelpMessages {
 private:
     void print_name_version();
+    void print_description();
     void print_options();
 
-    std::vector<Options> options;
     bool print_metadata = false;
+    std::vector<std::string> description;
+    std::vector<Options> options;
 
 public:
-    void print();
     void add_name_version();
+    void add_description(const std::string &line);
     void add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description);
+    void print();
 };
 
 void HelpMessages::add_name_version()
 {
     this->print_metadata = true;
+}
+
+void HelpMessages::add_description(const std::string &line)
+{
+    this->description.push_back(line);
 }
 
 void HelpMessages::add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description)
@@ -117,6 +125,21 @@ void HelpMessages::print_name_version()
     fmt::print("{}\n", text);
 }
 
+void HelpMessages::print_description()
+{
+    if (this->description.empty()) {
+        return;
+    }
+
+    std::string text = "\033[1mDescription:\033[0m\n";
+
+    for (auto it = this->description.begin(); it < this->description.end(); it++) {
+        text += fmt::format("{}{}\n", ws_2, *it);
+    }
+
+    fmt::print("{}\n", text);
+}
+
 void HelpMessages::print_options()
 {
     if (this->options.empty()) {
@@ -136,6 +159,7 @@ void HelpMessages::print_options()
 void HelpMessages::print()
 {
     this->print_name_version();
+    this->print_description();
     this->print_options();
 }
 
@@ -147,6 +171,8 @@ void help_root_messages()
 {
     HelpMessages help;
     help.add_name_version();
+    help.add_description("A command line program for interactively querying OpenAI via the OpenAI API.");
+    help.add_description("See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-v", "--version", "Print version and exit");
     help.print();
