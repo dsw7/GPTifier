@@ -74,18 +74,22 @@ struct Options {
 
 class HelpMessages {
 private:
-    void print_name_version();
     void print_description();
+    void print_name_version();
     void print_options();
+    void print_synopsis();
 
     bool print_metadata = false;
-    std::vector<std::string> description;
     std::vector<Options> options;
+    std::vector<std::string> description;
+    std::vector<std::string> synopsis;
 
 public:
-    void add_name_version();
     void add_description(const std::string &line);
+    void add_name_version();
     void add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description);
+    void add_synopsis(const std::string &line);
+
     void print();
 };
 
@@ -97,6 +101,11 @@ void HelpMessages::add_name_version()
 void HelpMessages::add_description(const std::string &line)
 {
     this->description.push_back(line);
+}
+
+void HelpMessages::add_synopsis(const std::string &line)
+{
+    this->synopsis.push_back(line);
 }
 
 void HelpMessages::add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description)
@@ -140,6 +149,21 @@ void HelpMessages::print_description()
     fmt::print("{}\n", text);
 }
 
+void HelpMessages::print_synopsis()
+{
+    if (this->synopsis.empty()) {
+        return;
+    }
+
+    std::string text = "\033[1mSynopsis:\033[0m\n";
+
+    for (auto it = this->synopsis.begin(); it < this->synopsis.end(); it++) {
+        text += fmt::format("{}{}\n", ws_2, *it);
+    }
+
+    fmt::print("{}\n", text);
+}
+
 void HelpMessages::print_options()
 {
     if (this->options.empty()) {
@@ -160,6 +184,7 @@ void HelpMessages::print()
 {
     this->print_name_version();
     this->print_description();
+    this->print_synopsis();
     this->print_options();
 }
 
@@ -173,6 +198,7 @@ void help_root_messages()
     help.add_name_version();
     help.add_description("A command line program for interactively querying OpenAI via the OpenAI API.");
     help.add_description("See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.");
+    help.add_synopsis("[-v | --version] [-h | --help] [run] [models] [embed]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-v", "--version", "Print version and exit");
     help.print();
