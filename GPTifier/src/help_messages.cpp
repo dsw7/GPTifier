@@ -245,35 +245,6 @@ void help_root_messages()
     help.add_command("files", "Manage files uploaded to OpenAI");
     help.add_command("fine-tune", "Manage fine tuning operations");
     help.print();
-
-    const std::string name = std::string(PROJECT_NAME);
-    const std::string version = std::string(PROJECT_VERSION);
-
-    std::string body = "\033[1mNAME:\033[0m\n";
-    body += fmt::format("{}\033[4m{} v{}\033[0m\n\n", ws_2, name, version);
-
-    std::string description = "A command line program for interactively querying OpenAI via the OpenAI API.\n";
-    description += ws_2 + "See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.";
-
-    body += add_description(description);
-    body += add_synopsis("[-v | --version] [-h | --help] [run] [models] [embed]");
-
-    str_pair options = {};
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    options.push_back({ "-v, --version", "Print version and exit" });
-    body += add_options(options);
-
-    str_pair commands = {};
-    commands.push_back({ "run", "Run a query against an appropriate model" });
-    commands.push_back(
-        { "short", "Run a query against an appropriate model but with no threading and limited verbosity" });
-    commands.push_back({ "models", "List available OpenAI models" });
-    commands.push_back({ "embed", "Get embedding representing a block of text" });
-    commands.push_back({ "files", "Manage files uploaded to OpenAI" });
-    commands.push_back({ "fine-tune", "Manage fine tuning operations" });
-    body += add_commands(commands);
-
-    fmt::print(body);
 }
 
 void help_command_run()
