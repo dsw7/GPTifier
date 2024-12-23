@@ -210,7 +210,7 @@ void HelpMessages::print_synopsis()
     std::string text = "\033[1mSynopsis:\033[0m\n";
 
     for (auto it = this->synopsis.begin(); it < this->synopsis.end(); it++) {
-        text += fmt::format("{}{}\n", ws_2, *it);
+        text += fmt::format("{}\033[4mgpt\033[0m {}\n", ws_2, *it);
     }
 
     fmt::print("{}\n", text);
@@ -302,17 +302,14 @@ void help_command_models()
 
 void help_command_embed()
 {
-    std::string body = add_description("Get embedding representing a block of text.");
-    body += add_synopsis("embed <options>");
-
-    str_pair options = {};
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    options.push_back({ "-m <model-name>, --model=<model-name>", "Specify a valid embedding model" });
-    options.push_back({ "-i <text>, --input=<text>", "Input text to embed" });
-    options.push_back({ "-r <filename>, --read-from-file=<filename>", "Read input text to embed from a file" });
-    body += add_options(options);
-
-    fmt::print(body);
+    HelpMessages help;
+    help.add_description("Get embedding representing a block of text.");
+    help.add_synopsis("embed <options>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid embedding model");
+    help.add_option("-i <text>", "--input=<text>", "Input text to embed");
+    help.add_option("-r <filename>", "--read-from-file=<filename>", "Read input text to embed from a file");
+    help.print();
 }
 
 void help_command_files()
