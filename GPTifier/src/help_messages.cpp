@@ -36,18 +36,6 @@ std::string add_options(const str_pair &options)
     return body;
 }
 
-std::string add_commands(const str_pair &commands)
-{
-    std::string body = "\033[1mCOMMANDS:\033[0m\n";
-
-    for (auto it = commands.begin(); it != commands.end(); it++) {
-        body += fmt::format("{}\033[2m{}\033[0m\n{} -> {}\n", ws_2, it->first, ws_4, it->second);
-    }
-
-    body += fmt::format("\n{}Try gpt <subcommand> [-h | --help] for subcommand specific help.\n\n", ws_2);
-    return body;
-}
-
 std::string bash_block(const std::string &command)
 {
     return fmt::format("\033[1;32m{0}```bash\n{0}{1}\n{0}```\n\033[0m", ws_2, command);
@@ -310,44 +298,31 @@ void help_command_embed()
 
 void help_command_files()
 {
-
-    std::string body = add_description("Manage files uploaded to OpenAI.");
-    body += add_synopsis("files <subcommands>");
-
-    str_pair options = {};
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    body += add_options(options);
-
-    str_pair commands = {};
-    commands.push_back({ "list", "List uploaded files" });
-    commands.push_back({ "delete", "Delete an uploaded file" });
-    body += add_commands(commands);
-
-    fmt::print(body);
+    HelpMessages help;
+    help.add_description("Manage files uploaded to OpenAI.");
+    help.add_synopsis("files <subcommands>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_command("list", "List uploaded files");
+    help.add_command("delete", "Delete an uploaded file");
+    help.print();
 }
 
 void help_command_files_list()
 {
-    std::string body = add_description("List uploaded files.");
-    body += add_synopsis("files list <options>");
-
-    str_pair options = {};
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    body += add_options(options);
-
-    fmt::print(body);
+    HelpMessages help;
+    help.add_description("List uploaded files.");
+    help.add_synopsis("files list <options>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.print();
 }
 
 void help_command_files_delete()
 {
-    std::string body = add_description("Delete an uploaded file.");
-    body += add_synopsis("files delete [FILE ID] <options>");
-
-    str_pair options = {};
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    body += add_options(options);
-
-    fmt::print(body);
+    HelpMessages help;
+    help.add_description("Delete an uploaded file.");
+    help.add_synopsis("files delete [FILE ID] <options>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.print();
 }
 
 void help_command_fine_tune()
