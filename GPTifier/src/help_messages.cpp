@@ -74,14 +74,22 @@ struct Options {
 
 class HelpMessages {
 private:
+    void print_name_version();
     void print_options();
 
     std::vector<Options> options;
+    bool print_metadata = false;
 
 public:
     void print();
+    void add_name_version();
     void add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description);
 };
+
+void HelpMessages::add_name_version()
+{
+    this->print_metadata = true;
+}
 
 void HelpMessages::add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description)
 {
@@ -92,6 +100,21 @@ void HelpMessages::add_option(const std::string &opt_short, const std::string &o
     opts.description = description;
 
     this->options.push_back(opts);
+}
+
+void HelpMessages::print_name_version()
+{
+    if (not this->print_metadata) {
+        return;
+    }
+
+    const std::string name = std::string(PROJECT_NAME);
+    const std::string version = std::string(PROJECT_VERSION);
+
+    std::string text = "\033[1mName:\033[0m\n";
+    text += fmt::format("{}\033[4m{} v{}\033[0m\n", ws_2, name, version);
+
+    fmt::print("{}\n", text);
 }
 
 void HelpMessages::print_options()
@@ -107,11 +130,12 @@ void HelpMessages::print_options()
         text += fmt::format("{} -> {}\n", ws_4, it->description);
     }
 
-    fmt::print(text);
+    fmt::print("{}\n", text);
 }
 
 void HelpMessages::print()
 {
+    this->print_name_version();
     this->print_options();
 }
 
@@ -122,6 +146,7 @@ namespace cli {
 void help_root_messages()
 {
     HelpMessages help;
+    help.add_name_version();
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-v", "--version", "Print version and exit");
     help.print();
