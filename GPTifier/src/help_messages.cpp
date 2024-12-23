@@ -2,6 +2,7 @@
 
 #include <fmt/core.h>
 
+#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -65,12 +66,66 @@ std::string add_examples(const str_pair &examples)
     return body;
 }
 
+struct Options {
+    std::string description;
+    std::string opt_long;
+    std::string opt_short;
+};
+
+class HelpMessages {
+private:
+    void print_options();
+
+    std::vector<Options> options;
+
+public:
+    void print();
+    void add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description);
+};
+
+void HelpMessages::add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description)
+{
+    Options opts;
+
+    opts.opt_short = opt_short;
+    opts.opt_long = opt_long;
+    opts.description = description;
+
+    this->options.push_back(opts);
+}
+
+void HelpMessages::print_options()
+{
+    if (this->options.empty()) {
+        return;
+    }
+
+    std::string text = "\033[1mOptions:\033[0m\n";
+
+    for (auto it = this->options.begin(); it != this->options.end(); it++) {
+        text += fmt::format("{}\033[2m{}, {}\033[0m\n", ws_2, it->opt_short, it->opt_long);
+        text += fmt::format("{} -> {}\n", ws_4, it->description);
+    }
+
+    fmt::print(text);
+}
+
+void HelpMessages::print()
+{
+    this->print_options();
+}
+
 } // namespace
 
 namespace cli {
 
 void help_root_messages()
 {
+    HelpMessages help;
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-v", "--version", "Print version and exit");
+    help.print();
+
     const std::string name = std::string(PROJECT_NAME);
     const std::string version = std::string(PROJECT_VERSION);
 
