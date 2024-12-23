@@ -358,45 +358,33 @@ void help_command_files_delete()
 
 void help_command_fine_tune()
 {
-    std::string body = add_description("Manage fine tuning operations.");
-    body += add_synopsis("fine-tune <subcommands>");
-
-    str_pair options = {};
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    body += add_options(options);
-
-    str_pair commands = {};
-    commands.push_back({ "upload-file", "Upload a fine-tuning file" });
-    commands.push_back({ "create-job", "Create a fine-tuning job" });
-    body += add_commands(commands);
-
-    fmt::print(body);
+    HelpMessages help;
+    help.add_description("Manage fine tuning operations.");
+    help.add_synopsis("fine-tune <subcommands>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_command("upload-file", "Upload a fine-tuning file");
+    help.add_command("create-job", "Create a fine-tuning job");
+    help.print();
 }
 
 void help_command_fine_tune_upload_file()
 {
-    std::string body = add_description("Upload a fine-tuning file.");
-    body += add_synopsis("fine-tune upload-file [FILE] <options>");
-
-    str_pair options = {};
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    body += add_options(options);
-
-    fmt::print(body);
+    HelpMessages help;
+    help.add_description("Upload a fine-tuning file.");
+    help.add_synopsis("fine-tune upload-file [FILE] <options>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.print();
 }
 
 void help_command_fine_tune_create_job()
 {
-    std::string body = add_description("Create a fine-tuning job.");
-    body += add_synopsis("fine-tune create-job <options>");
-
-    str_pair options = {};
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    options.push_back({ "-f, --file-id", "The ID of an uploaded file that contains the training data" });
-    options.push_back({ "-m, --model", "The name of the model to fine-tune" });
-    body += add_options(options);
-
-    fmt::print(body);
+    HelpMessages help;
+    help.add_description("Create a fine-tuning job.");
+    help.add_synopsis("fine-tune create-job <options>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-f", "--file-id", "The ID of an uploaded file that contains the training data");
+    help.add_option("-m", "--model", "The name of the model to fine-tune");
+    help.print();
 }
 
 } // namespace cli
