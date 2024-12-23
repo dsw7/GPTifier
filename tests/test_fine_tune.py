@@ -11,7 +11,7 @@ def test_fine_tune_help(command: Command, option: str, capfd: Capture) -> None:
 
     stdout, _ = unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-    assert "SYNOPSIS" in stdout
+    assert "Synopsis" in stdout
 
 
 @mark.parametrize("option", ["-h", "--help"])
@@ -24,7 +24,7 @@ def test_fine_tune_subcommand_help(
 
     stdout, _ = unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-    assert "SYNOPSIS" in stdout
+    assert "Synopsis" in stdout
 
 
 def test_fine_tune_upload_missing_file(command: Command, capfd: Capture) -> None:

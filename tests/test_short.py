@@ -11,7 +11,7 @@ def test_short_help(command: Command, option: str, capfd: Capture) -> None:
 
     stdout, _ = unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-    assert "SYNOPSIS" in stdout
+    assert "Synopsis" in stdout
 
 
 @mark.parametrize("option", ["-p", "--prompt="])

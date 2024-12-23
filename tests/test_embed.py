@@ -22,7 +22,7 @@ def test_embed_help(command: Command, option: str, capfd: Capture) -> None:
 
     stdout, _ = unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-    assert "SYNOPSIS" in stdout
+    assert "Synopsis" in stdout
 
 
 def test_basic(command: Command, capfd: Capture) -> None:
