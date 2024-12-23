@@ -289,15 +289,11 @@ void help_command_short()
 
 void help_command_models()
 {
-    std::string body = add_description("List available OpenAI models.");
-
-    body += add_synopsis("models [-h | --help]");
-    str_pair options = {};
-
-    options.push_back({ "-h, --help", "Print help information and exit" });
-    body += add_options(options);
-
-    fmt::print(body);
+    HelpMessages help;
+    help.add_description("List available OpenAI models.");
+    help.add_synopsis("models [-h | --help]");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.print();
 }
 
 void help_command_embed()
@@ -314,6 +310,7 @@ void help_command_embed()
 
 void help_command_files()
 {
+
     std::string body = add_description("Manage files uploaded to OpenAI.");
     body += add_synopsis("files <subcommands>");
 
