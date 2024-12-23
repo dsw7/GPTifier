@@ -59,14 +59,16 @@ float get_temperature(const std::string &temp_s)
     return temp_f;
 }
 
-void print_chat_completion_response(nlohmann::json &results)
+void print_chat_completion_response(const nlohmann::json &results)
 {
-    const std::string content = results["choices"][0]["message"]["content"];
-    results["choices"][0]["message"]["content"] = "...";
+    const std::string content_original = results["choices"][0]["message"]["content"];
 
-    reporting::print_response(results.dump(2));
+    nlohmann::json results_copy = results;
+    results_copy["choices"][0]["message"]["content"] = "...";
+
+    reporting::print_response(results_copy.dump(2));
     reporting::print_sep();
-    reporting::print_results(content);
+    reporting::print_results(content_original);
 
     reporting::print_sep();
 }
@@ -215,7 +217,7 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("Cannot proceed");
     }
 
-    nlohmann::json results = parse_response(response);
+    const nlohmann::json results = parse_response(response);
 
     if (params.json_dump_file.has_value()) {
         dump_chat_completion_response(results, params.json_dump_file.value());
