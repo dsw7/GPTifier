@@ -1,15 +1,11 @@
 #include "help_messages.hpp"
 
 #include <fmt/core.h>
-
 #include <iostream>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace {
-
-typedef std::vector<std::pair<std::string, std::string>> str_pair;
 
 const std::string ws_2 = std::string(2, ' ');
 const std::string ws_4 = std::string(4, ' ');
@@ -17,19 +13,6 @@ const std::string ws_4 = std::string(4, ' ');
 std::string bash_block(const std::string &command)
 {
     return fmt::format("\033[1;32m{0}```bash\n{0}{1}\n{0}```\n\033[0m", ws_2, command);
-}
-
-std::string add_examples(const str_pair &examples)
-{
-    std::string body = "\033[1mEXAMPLES:\033[0m\n";
-
-    for (auto it = examples.begin(); it != examples.end(); it++) {
-        body += fmt::format("{}{}:\n", ws_2, it->first);
-        body += bash_block(it->second);
-    }
-
-    body += '\n';
-    return body;
 }
 
 struct Option {
@@ -43,16 +26,23 @@ struct Command {
     std::string name;
 };
 
+struct Example {
+    std::string command;
+    std::string description;
+};
+
 class HelpMessages {
 private:
     void print_commands();
     void print_description();
+    void print_examples();
     void print_name_version();
     void print_options();
     void print_synopsis();
 
     bool print_metadata = false;
     std::vector<Command> commands;
+    std::vector<Example> examples;
     std::vector<Option> options;
     std::vector<std::string> description;
     std::vector<std::string> synopsis;
@@ -60,6 +50,7 @@ private:
 public:
     void add_command(const std::string &name, const std::string &description);
     void add_description(const std::string &line);
+    void add_example(const std::string &description, const std::string &command);
     void add_name_version();
     void add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description);
     void add_synopsis(const std::string &line);
@@ -70,7 +61,6 @@ public:
 void HelpMessages::add_command(const std::string &name, const std::string &description)
 {
     Command command;
-
     command.description = description;
     command.name = name;
 
@@ -82,6 +72,15 @@ void HelpMessages::add_description(const std::string &line)
     this->description.push_back(line);
 }
 
+void HelpMessages::add_example(const std::string &description, const std::string &command)
+{
+    Example example;
+    example.command = command;
+    example.description = description;
+
+    this->examples.push_back(example);
+}
+
 void HelpMessages::add_name_version()
 {
     this->print_metadata = true;
@@ -89,13 +88,12 @@ void HelpMessages::add_name_version()
 
 void HelpMessages::add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description)
 {
-    Option opts;
+    Option option;
+    option.opt_short = opt_short;
+    option.opt_long = opt_long;
+    option.description = description;
 
-    opts.opt_short = opt_short;
-    opts.opt_long = opt_long;
-    opts.description = description;
-
-    this->options.push_back(opts);
+    this->options.push_back(option);
 }
 
 void HelpMessages::add_synopsis(const std::string &line)
@@ -131,6 +129,22 @@ void HelpMessages::print_description()
 
     for (auto it = this->description.begin(); it < this->description.end(); it++) {
         text += fmt::format("{}{}\n", ws_2, *it);
+    }
+
+    fmt::print("{}\n", text);
+}
+
+void HelpMessages::print_examples()
+{
+    if (this->examples.empty()) {
+        return;
+    }
+
+    std::string text = "\033[1mExamples:\033[0m\n";
+
+    for (auto it = this->examples.begin(); it != this->examples.end(); it++) {
+        text += fmt::format("{}{}:\n", ws_2, it->description);
+        text += bash_block(it->command);
     }
 
     fmt::print("{}\n", text);
@@ -189,6 +203,7 @@ void HelpMessages::print()
     this->print_synopsis();
     this->print_options();
     this->print_commands();
+    this->print_examples();
 }
 
 } // namespace
@@ -225,15 +240,9 @@ void help_command_run()
     help.add_option("-p <prompt>", "--prompt=<prompt>", "Provide prompt via command line");
     help.add_option("-r <filename>", "--read-from-file=<filename>", "Read prompt from a custom file");
     help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
-
-    std::string body;
-    str_pair examples = {};
-    examples.push_back({ "Run an interactive session", "gpt run" });
-    examples.push_back({ "Run a query non-interactively and export results",
-        "gpt run --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\"" });
-
-    body += add_examples(examples);
-    fmt::print(body);
+    help.add_example("Run an interactive session", "gpt run");
+    help.add_example("Run a query non-interactively and export results", "gpt run --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\"");
+    help.print();
 }
 
 void help_command_short()
@@ -243,13 +252,8 @@ void help_command_short()
     help.add_synopsis("short <options>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-p <prompt>", "--prompt=<prompt>", "Provide prompt via command line");
+    help.add_example("Create a chat completion", "gpt short --prompt=\"What is 2 + 2?\"");
     help.print();
-
-    std::string body;
-    str_pair examples = {};
-    examples.push_back({ "Create a chat completion", "gpt short --prompt=\"What is 2 + 2?\"" });
-    body += add_examples(examples);
-    fmt::print(body);
 }
 
 void help_command_models()
