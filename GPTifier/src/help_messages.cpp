@@ -66,25 +66,33 @@ std::string add_examples(const str_pair &examples)
     return body;
 }
 
-struct Options {
+struct Option {
     std::string description;
     std::string opt_long;
     std::string opt_short;
 };
 
+struct Command {
+    std::string description;
+    std::string name;
+};
+
 class HelpMessages {
 private:
+    void print_commands();
     void print_description();
     void print_name_version();
     void print_options();
     void print_synopsis();
 
     bool print_metadata = false;
-    std::vector<Options> options;
+    std::vector<Command> commands;
+    std::vector<Option> options;
     std::vector<std::string> description;
     std::vector<std::string> synopsis;
 
 public:
+    void add_command(const std::string &name, const std::string &description);
     void add_description(const std::string &line);
     void add_name_version();
     void add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description);
@@ -93,9 +101,14 @@ public:
     void print();
 };
 
-void HelpMessages::add_name_version()
+void HelpMessages::add_command(const std::string &name, const std::string &description)
 {
-    this->print_metadata = true;
+    Command command;
+
+    command.description = description;
+    command.name = name;
+
+    this->commands.push_back(command);
 }
 
 void HelpMessages::add_description(const std::string &line)
@@ -103,14 +116,14 @@ void HelpMessages::add_description(const std::string &line)
     this->description.push_back(line);
 }
 
-void HelpMessages::add_synopsis(const std::string &line)
+void HelpMessages::add_name_version()
 {
-    this->synopsis.push_back(line);
+    this->print_metadata = true;
 }
 
 void HelpMessages::add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description)
 {
-    Options opts;
+    Option opts;
 
     opts.opt_short = opt_short;
     opts.opt_long = opt_long;
@@ -119,17 +132,25 @@ void HelpMessages::add_option(const std::string &opt_short, const std::string &o
     this->options.push_back(opts);
 }
 
-void HelpMessages::print_name_version()
+void HelpMessages::add_synopsis(const std::string &line)
 {
-    if (not this->print_metadata) {
+    this->synopsis.push_back(line);
+}
+
+void HelpMessages::print_commands()
+{
+    if (this->commands.empty()) {
         return;
     }
 
-    const std::string name = std::string(PROJECT_NAME);
-    const std::string version = std::string(PROJECT_VERSION);
+    std::string text = "\033[1mCommands:\033[0m\n";
 
-    std::string text = "\033[1mName:\033[0m\n";
-    text += fmt::format("{}\033[4m{} v{}\033[0m\n", ws_2, name, version);
+    for (auto it = this->commands.begin(); it != this->commands.end(); it++) {
+        text += fmt::format("{}\033[2m{}\033[0m\n", ws_2, it->name);
+        text += fmt::format("{} -> {}\n", ws_4, it->description);
+    }
+
+    text += fmt::format("\n{}Try gpt \033[2m<subcommand>\033[0m [-h | --help] for subcommand specific help.\n", ws_2);
 
     fmt::print("{}\n", text);
 }
@@ -149,17 +170,17 @@ void HelpMessages::print_description()
     fmt::print("{}\n", text);
 }
 
-void HelpMessages::print_synopsis()
+void HelpMessages::print_name_version()
 {
-    if (this->synopsis.empty()) {
+    if (not this->print_metadata) {
         return;
     }
 
-    std::string text = "\033[1mSynopsis:\033[0m\n";
+    const std::string name = std::string(PROJECT_NAME);
+    const std::string version = std::string(PROJECT_VERSION);
 
-    for (auto it = this->synopsis.begin(); it < this->synopsis.end(); it++) {
-        text += fmt::format("{}{}\n", ws_2, *it);
-    }
+    std::string text = "\033[1mName:\033[0m\n";
+    text += fmt::format("{}\033[4m{} v{}\033[0m\n", ws_2, name, version);
 
     fmt::print("{}\n", text);
 }
@@ -180,12 +201,28 @@ void HelpMessages::print_options()
     fmt::print("{}\n", text);
 }
 
+void HelpMessages::print_synopsis()
+{
+    if (this->synopsis.empty()) {
+        return;
+    }
+
+    std::string text = "\033[1mSynopsis:\033[0m\n";
+
+    for (auto it = this->synopsis.begin(); it < this->synopsis.end(); it++) {
+        text += fmt::format("{}{}\n", ws_2, *it);
+    }
+
+    fmt::print("{}\n", text);
+}
+
 void HelpMessages::print()
 {
     this->print_name_version();
     this->print_description();
     this->print_synopsis();
     this->print_options();
+    this->print_commands();
 }
 
 } // namespace
@@ -201,6 +238,12 @@ void help_root_messages()
     help.add_synopsis("[-v | --version] [-h | --help] [run] [models] [embed]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-v", "--version", "Print version and exit");
+    help.add_command("run", "Run a query against an appropriate model");
+    help.add_command("short", "Run a query against an appropriate model but with no threading and limited verbosity");
+    help.add_command("models", "List available OpenAI models");
+    help.add_command("embed", "Get embedding representing a block of text");
+    help.add_command("files", "Manage files uploaded to OpenAI");
+    help.add_command("fine-tune", "Manage fine tuning operations");
     help.print();
 
     const std::string name = std::string(PROJECT_NAME);
