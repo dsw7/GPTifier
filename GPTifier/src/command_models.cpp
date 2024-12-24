@@ -71,10 +71,12 @@ void print_models_response(const std::string &response)
     }
 
     fmt::print("> OpenAI models:\n");
+    fmt::print("> Number of models: {}\n", openai_models.size());
     print_models(openai_models);
 
     if (not user_models.empty()) {
         fmt::print("\n> User models:\n");
+        fmt::print("> Number of models: {}\n", user_models.size());
         print_models(user_models);
     }
 }
