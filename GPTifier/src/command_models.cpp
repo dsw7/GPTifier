@@ -8,8 +8,8 @@
 #include "utils.hpp"
 
 #include <fmt/core.h>
-#include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -19,12 +19,14 @@ struct OpenAIModel {
     std::string owned_by;
 };
 
+typedef std::vector<std::pair<int, OpenAIModel>> vec_models;
+
 bool is_fine_tuning_model(const std::string &model)
 {
     return model.compare(0, 3, "ft:") == 0;
 }
 
-void print_models(const std::map<int, OpenAIModel> &models)
+void print_models(const vec_models &models)
 {
     reporting::print_sep();
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
@@ -42,20 +44,20 @@ void print_models_response(const std::string &response)
 {
     const nlohmann::json results = parse_response(response);
 
-    std::map<int, OpenAIModel> openai_models = {};
-    std::map<int, OpenAIModel> user_models = {};
+    vec_models openai_models = {};
+    vec_models user_models = {};
 
     for (const auto &entry: results["data"]) {
         if (is_fine_tuning_model(entry["id"])) {
             OpenAIModel model;
             model.id = entry["id"];
             model.owned_by = entry["owned_by"];
-            user_models[entry["created"]] = model;
+            user_models.push_back(std::make_pair(entry["created"], model));
         } else {
             OpenAIModel model;
             model.id = entry["id"];
             model.owned_by = entry["owned_by"];
-            openai_models[entry["created"]] = model;
+            openai_models.push_back(std::make_pair(entry["created"], model));
         }
     }
 
