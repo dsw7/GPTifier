@@ -7,20 +7,15 @@
 #include "reporting.hpp"
 #include "utils.hpp"
 
+#include <algorithm>
 #include <fmt/core.h>
-#include <map>
 #include <string>
 #include <vector>
 
 namespace {
 
 struct OpenAIModel {
-    std::string id;
-    std::string owned_by;
-};
-
-struct UserModel {
-    int creation_time;
+    int created;
     std::string id;
     std::string owned_by;
 };
@@ -30,28 +25,22 @@ bool is_fine_tuning_model(const std::string &model)
     return model.compare(0, 3, "ft:") == 0;
 }
 
-void print_openai_models(const std::map<int, OpenAIModel> &models)
+void print_models(std::vector<OpenAIModel> &models)
 {
     reporting::print_sep();
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     reporting::print_sep();
 
-    for (auto it = models.begin(); it != models.end(); ++it) {
-        const std::string datetime = datetime_from_unix_timestamp(it->first);
-        fmt::print("{:<25}{:<35}{}\n", datetime, it->second.owned_by, it->second.id);
-    }
+    std::sort(models.begin(), models.end(), [](const OpenAIModel &a, const OpenAIModel &b) {
+        if (a.created != b.created) {
+            return a.created < b.created;
+        }
 
-    reporting::print_sep();
-}
-
-void print_user_models(const std::vector<UserModel> &models)
-{
-    reporting::print_sep();
-    fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
-    reporting::print_sep();
+        return a.id < b.id;
+    });
 
     for (auto it = models.begin(); it != models.end(); ++it) {
-        const std::string datetime = datetime_from_unix_timestamp(it->creation_time);
+        const std::string datetime = datetime_from_unix_timestamp(it->created);
         fmt::print("{:<25}{:<35}{}\n", datetime, it->owned_by, it->id);
     }
 
@@ -62,30 +51,33 @@ void print_models_response(const std::string &response)
 {
     const nlohmann::json results = parse_response(response);
 
-    std::vector<UserModel> user_models = {};
-    std::map<int, OpenAIModel> openai_models = {};
+    std::vector<OpenAIModel> openai_models = {};
+    std::vector<OpenAIModel> user_models = {};
 
     for (const auto &entry: results["data"]) {
         if (is_fine_tuning_model(entry["id"])) {
-            UserModel model;
-            model.creation_time = entry["created"];
+            OpenAIModel model;
+            model.created = entry["created"];
             model.id = entry["id"];
             model.owned_by = entry["owned_by"];
             user_models.push_back(model);
         } else {
             OpenAIModel model;
+            model.created = entry["created"];
             model.id = entry["id"];
             model.owned_by = entry["owned_by"];
-            openai_models[entry["created"]] = model;
+            openai_models.push_back(model);
         }
     }
 
     fmt::print("> OpenAI models:\n");
-    print_openai_models(openai_models);
+    fmt::print("> Number of models: {}\n", openai_models.size());
+    print_models(openai_models);
 
     if (not user_models.empty()) {
         fmt::print("\n> User models:\n");
-        print_user_models(user_models);
+        fmt::print("> Number of models: {}\n", user_models.size());
+        print_models(user_models);
     }
 }
 
