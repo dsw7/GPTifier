@@ -10,41 +10,38 @@
 #include <algorithm>
 #include <fmt/core.h>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace {
 
 struct OpenAIModel {
+    int created;
     std::string id;
     std::string owned_by;
 };
-
-typedef std::pair<int, OpenAIModel> pair_model;
-typedef std::vector<pair_model> vec_models;
 
 bool is_fine_tuning_model(const std::string &model)
 {
     return model.compare(0, 3, "ft:") == 0;
 }
 
-void print_models(vec_models &models)
+void print_models(std::vector<OpenAIModel> &models)
 {
     reporting::print_sep();
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     reporting::print_sep();
 
-    std::sort(models.begin(), models.end(), [](const pair_model &a, const pair_model &b) {
-        if (a.first != b.first) {
-            return a.first < b.first;
+    std::sort(models.begin(), models.end(), [](const OpenAIModel &a, const OpenAIModel &b) {
+        if (a.created != b.created) {
+            return a.created < b.created;
         }
 
-        return a.second.id < b.second.id;
+        return a.id < b.id;
     });
 
     for (auto it = models.begin(); it != models.end(); ++it) {
-        const std::string datetime = datetime_from_unix_timestamp(it->first);
-        fmt::print("{:<25}{:<35}{}\n", datetime, it->second.owned_by, it->second.id);
+        const std::string datetime = datetime_from_unix_timestamp(it->created);
+        fmt::print("{:<25}{:<35}{}\n", datetime, it->owned_by, it->id);
     }
 
     reporting::print_sep();
@@ -54,20 +51,22 @@ void print_models_response(const std::string &response)
 {
     const nlohmann::json results = parse_response(response);
 
-    vec_models openai_models = {};
-    vec_models user_models = {};
+    std::vector<OpenAIModel> openai_models = {};
+    std::vector<OpenAIModel> user_models = {};
 
     for (const auto &entry: results["data"]) {
         if (is_fine_tuning_model(entry["id"])) {
             OpenAIModel model;
+            model.created = entry["created"];
             model.id = entry["id"];
             model.owned_by = entry["owned_by"];
-            user_models.push_back(std::make_pair(entry["created"], model));
+            user_models.push_back(model);
         } else {
             OpenAIModel model;
+            model.created = entry["created"];
             model.id = entry["id"];
             model.owned_by = entry["owned_by"];
-            openai_models.push_back(std::make_pair(entry["created"], model));
+            openai_models.push_back(model);
         }
     }
 
