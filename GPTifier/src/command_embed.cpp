@@ -59,7 +59,7 @@ void command_embed(int argc, char **argv)
         }
     }
 
-    const std::string response = api::query_embeddings_api(model, params.input.value());
+    const std::string response = api::create_embedding(model, params.input.value());
 
     reporting::print_sep();
     export_embedding(response, params.input.value());

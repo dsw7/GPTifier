@@ -87,6 +87,6 @@ void command_models(int argc, char **argv)
 {
     cli::get_opts_models(argc, argv);
 
-    const std::string response = api::query_models_api();
+    const std::string response = api::get_models();
     print_models_response(response);
 }

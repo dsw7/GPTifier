@@ -38,7 +38,7 @@ void command_files_list(int argc, char **argv)
         }
     }
 
-    const std::string response = api::query_list_files_api();
+    const std::string response = api::get_uploaded_files();
     const nlohmann::json results = parse_response(response);
 
     reporting::print_sep();
@@ -76,7 +76,7 @@ void command_files_delete(int argc, char **argv)
         return;
     }
 
-    const std::string response = api::query_delete_file_api(opt_or_file_id);
+    const std::string response = api::delete_file(opt_or_file_id);
     const nlohmann::json results = parse_response(response);
 
     const std::string id = results["id"];

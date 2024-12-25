@@ -27,7 +27,7 @@ void upload_fine_tuning_file(int argc, char **argv)
     }
 
     const std::string purpose = "fine-tune";
-    const std::string response = api::query_upload_file_api(opt_or_filename, purpose);
+    const std::string response = api::upload_file(opt_or_filename, purpose);
 
     const nlohmann::json results = parse_response(response);
 
@@ -59,7 +59,7 @@ void create_fine_tuning_job(int argc, char **argv)
 
     reporting::print_sep();
 
-    const std::string response = api::query_create_fine_tuning_job_api(params.training_file.value(), params.model.value());
+    const std::string response = api::create_fine_tuning_job(params.training_file.value(), params.model.value());
     const nlohmann::json results = parse_response(response);
 
     const std::string id = results["id"];
@@ -80,7 +80,7 @@ void delete_fine_tuned_model(int argc, char **argv)
         return;
     }
 
-    const std::string response = api::query_delete_model(opt_or_model);
+    const std::string response = api::delete_model(opt_or_model);
     const nlohmann::json results = parse_response(response);
 
     const std::string id = results["id"];

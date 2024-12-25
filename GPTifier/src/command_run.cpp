@@ -204,7 +204,7 @@ void command_run(int argc, char **argv)
     std::string response;
 
     try {
-        response = api::query_chat_completion_api(model, params.prompt.value(), temp);
+        response = api::create_chat_completion(model, params.prompt.value(), temp);
     } catch (std::runtime_error &e) {
         query_failed = true;
         std::cerr << e.what() << '\n';

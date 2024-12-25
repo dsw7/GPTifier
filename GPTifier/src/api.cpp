@@ -265,7 +265,7 @@ std::string Curl::delete_model(const std::string &model_id)
 
 namespace api {
 
-std::string query_chat_completion_api(const std::string &model, const std::string &prompt, float temperature)
+std::string create_chat_completion(const std::string &model, const std::string &prompt, float temperature)
 {
     const nlohmann::json messages = { { "role", "user" }, { "content", prompt } };
     const nlohmann::json data = {
@@ -276,7 +276,7 @@ std::string query_chat_completion_api(const std::string &model, const std::strin
     return curl.post_chat_completion(data.dump());
 }
 
-std::string query_embeddings_api(const std::string &model, const std::string &input)
+std::string create_embedding(const std::string &model, const std::string &input)
 {
     const nlohmann::json data = { { "model", model }, { "input", input } };
 
@@ -284,31 +284,31 @@ std::string query_embeddings_api(const std::string &model, const std::string &in
     return curl.post_generate_embedding(data.dump());
 }
 
-std::string query_list_files_api()
+std::string get_uploaded_files()
 {
     Curl curl;
     return curl.get_files();
 }
 
-std::string query_models_api()
+std::string get_models()
 {
     Curl curl;
     return curl.get_models();
 }
 
-std::string query_upload_file_api(const std::string &filename, const std::string &purpose)
+std::string upload_file(const std::string &filename, const std::string &purpose)
 {
     Curl curl;
     return curl.post_upload_file(filename, purpose);
 }
 
-std::string query_delete_file_api(const std::string &file_id)
+std::string delete_file(const std::string &file_id)
 {
     Curl curl;
     return curl.delete_file(file_id);
 }
 
-std::string query_create_fine_tuning_job_api(const std::string &training_file, const std::string &model)
+std::string create_fine_tuning_job(const std::string &training_file, const std::string &model)
 {
     const nlohmann::json data = { { "model", model }, { "training_file", training_file } };
 
@@ -316,7 +316,7 @@ std::string query_create_fine_tuning_job_api(const std::string &training_file, c
     return curl.post_create_fine_tuning_job(data.dump());
 }
 
-std::string query_delete_model(const std::string &model_id)
+std::string delete_model(const std::string &model_id)
 {
     Curl curl;
     return curl.delete_model(model_id);
