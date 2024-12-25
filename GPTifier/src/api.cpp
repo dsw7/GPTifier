@@ -263,6 +263,8 @@ std::string Curl::delete_model(const std::string &model_id)
 
 } // namespace
 
+namespace api {
+
 std::string query_chat_completion_api(const std::string &model, const std::string &prompt, float temperature)
 {
     const nlohmann::json messages = { { "role", "user" }, { "content", prompt } };
@@ -319,3 +321,5 @@ std::string query_delete_model(const std::string &model_id)
     Curl curl;
     return curl.delete_model(model_id);
 }
+
+} // namespace api
