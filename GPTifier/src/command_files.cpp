@@ -91,7 +91,7 @@ void command_files_delete(int argc, char **argv)
             const std::string response = api::delete_file(*it);
             results = parse_response(response);
         } catch (const std::runtime_error &e) {
-            fmt::print("Failed to delete file with ID: {}. The error was: \"{}\"\n", *it, e.what());
+            std::cerr << fmt::format("Failed to delete file with ID: {}. The error was: \"{}\"\n", *it, e.what());
             has_failed = true;
             continue;
         }
