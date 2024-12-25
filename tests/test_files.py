@@ -42,4 +42,21 @@ def test_files_delete(command: Command, capfd: Capture) -> None:
 
     _, stderr = unpack_stdout_stderr(capfd)
     assert process.returncode != EX_OK
-    assert "No such File object: foobar" in stderr
+    assert (
+        'Failed to delete file with ID: foobar. The error was: "No such File object: foobar"\n'
+        "One or more failures occurred when deleting files\n"
+    ) in stderr
+
+
+def test_files_delete_multiple(command: Command, capfd: Capture) -> None:
+    command.extend(["files", "delete", "spam", "ham", "eggs"])
+    process = run(command)
+
+    _, stderr = unpack_stdout_stderr(capfd)
+    assert process.returncode != EX_OK
+    assert (
+        'Failed to delete file with ID: spam. The error was: "No such File object: spam"\n'
+        'Failed to delete file with ID: ham. The error was: "No such File object: ham"\n'
+        'Failed to delete file with ID: eggs. The error was: "No such File object: eggs"\n'
+        "One or more failures occurred when deleting files\n"
+    ) in stderr
