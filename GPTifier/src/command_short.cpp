@@ -41,7 +41,7 @@ void command_short(int argc, char **argv)
     }
 
     const std::string model = select_chat_model();
-    const std::string response = query_chat_completion_api(model, prompt.value(), 1.00);
+    const std::string response = api::query_chat_completion_api(model, prompt.value(), 1.00);
 
     const nlohmann::json results = parse_response(response);
     const std::string content = results["choices"][0]["message"]["content"];
