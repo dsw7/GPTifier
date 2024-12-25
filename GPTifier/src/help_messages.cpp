@@ -301,7 +301,7 @@ void help_command_files_delete()
 {
     HelpMessages help;
     help.add_description("Delete an uploaded file.");
-    help.add_synopsis("files delete [FILE ID] <options>");
+    help.add_synopsis("files delete [FILE ID...] <options>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.print();
 }
