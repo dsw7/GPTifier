@@ -15,7 +15,7 @@ def test_fine_tune_help(command: Command, option: str, capfd: Capture) -> None:
 
 
 @mark.parametrize("option", ["-h", "--help"])
-@mark.parametrize("subcommand", ["upload-file", "create-job"])
+@mark.parametrize("subcommand", ["upload-file", "create-job", "delete-model"])
 def test_fine_tune_subcommand_help(
     command: Command, subcommand: str, option: str, capfd: Capture
 ) -> None:
@@ -52,3 +52,12 @@ def test_fine_tune_create_job_invalid_params(command: Command, capfd: Capture) -
     _, stderr = unpack_stdout_stderr(capfd)
     assert process.returncode != EX_OK
     assert "invalid training_file: foobar" in stderr
+
+
+def test_fine_tune_delete_model_missing_model(command: Command, capfd: Capture) -> None:
+    command.extend(["fine-tune", "delete-model", "foobar"])
+    process = run(command)
+
+    _, stderr = unpack_stdout_stderr(capfd)
+    assert process.returncode != EX_OK
+    assert "The model 'foobar' does not exist" in stderr

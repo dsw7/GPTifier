@@ -66,6 +66,32 @@ void create_fine_tuning_job(int argc, char **argv)
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 
+void delete_fine_tuned_model(int argc, char **argv)
+{
+    if (argc < 4) {
+        cli::help_command_fine_tune_delete_model();
+        return;
+    }
+
+    const std::string opt_or_model = argv[3];
+
+    if (opt_or_model == "-h" or opt_or_model == "--help") {
+        cli::help_command_fine_tune_delete_model();
+        return;
+    }
+
+    const std::string response = query_delete_model(opt_or_model);
+    const nlohmann::json results = parse_response(response);
+
+    const std::string id = results["id"];
+
+    if (results["deleted"]) {
+        fmt::print("Success!\nDeleted model with ID: {}\n", id);
+    } else {
+        fmt::print("Warning!\nDid not delete model with ID: {}\n", id);
+    }
+}
+
 } // namespace
 
 void command_fine_tune(int argc, char **argv)
@@ -86,6 +112,8 @@ void command_fine_tune(int argc, char **argv)
         upload_fine_tuning_file(argc, argv);
     } else if (subcommand == "create-job") {
         create_fine_tuning_job(argc, argv);
+    } else if (subcommand == "delete-model") {
+        delete_fine_tuned_model(argc, argv);
     } else {
         cli::help_command_fine_tune();
         exit(EXIT_FAILURE);
