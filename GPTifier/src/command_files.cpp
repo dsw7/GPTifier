@@ -12,6 +12,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -69,22 +70,28 @@ void command_files_delete(int argc, char **argv)
         return;
     }
 
-    const std::string opt_or_file_id = argv[3];
+    std::vector<std::string> args = {};
 
-    if (opt_or_file_id == "-h" or opt_or_file_id == "--help") {
+    for (int i = 3; i < argc; i++) {
+        args.push_back(argv[i]);
+    }
+
+    if (args[0] == "-h" or args[0] == "--help") {
         cli::help_command_files_delete();
         return;
     }
 
-    const std::string response = api::delete_file(opt_or_file_id);
-    const nlohmann::json results = parse_response(response);
+    for (auto it = args.begin(); it != args.end(); it++) {
+        const std::string response = api::delete_file(*it);
 
-    const std::string id = results["id"];
+        const nlohmann::json results = parse_response(response);
+        const std::string id = results["id"];
 
-    if (results["deleted"]) {
-        fmt::print("Success!\nDeleted file with ID: {}\n", id);
-    } else {
-        fmt::print("Warning!\nDid not delete file with ID: {}\n", id);
+        if (results["deleted"]) {
+            fmt::print("Success!\nDeleted file with ID: {}\n", id);
+        } else {
+            fmt::print("Warning!\nDid not delete file with ID: {}\n", id);
+        }
     }
 }
 
