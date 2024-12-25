@@ -49,13 +49,13 @@ class Curl {
 public:
     Curl();
     ~Curl();
-    std::string get_files();
+    std::string get_uploaded_files();
     std::string get_models();
-    std::string post_chat_completion(const std::string &post_fields);
-    std::string post_generate_embedding(const std::string &post_fields);
-    std::string post_upload_file(const std::string &filename, const std::string &purpose);
+    std::string create_chat_completion(const std::string &post_fields);
+    std::string create_embedding(const std::string &post_fields);
+    std::string upload_file(const std::string &filename, const std::string &purpose);
     std::string delete_file(const std::string &file_id);
-    std::string post_create_fine_tuning_job(const std::string &post_fields);
+    std::string create_fine_tuning_job(const std::string &post_fields);
     std::string delete_model(const std::string &model_id);
 
     CURL *handle = NULL;
@@ -127,7 +127,7 @@ std::string Curl::get_models()
     return response;
 }
 
-std::string Curl::get_files()
+std::string Curl::get_uploaded_files()
 {
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
@@ -141,7 +141,7 @@ std::string Curl::get_files()
     return response;
 }
 
-std::string Curl::post_chat_completion(const std::string &post_fields)
+std::string Curl::create_chat_completion(const std::string &post_fields)
 {
     const std::string header = "Content-Type: application/json";
     this->headers = curl_slist_append(this->headers, header.c_str());
@@ -159,7 +159,7 @@ std::string Curl::post_chat_completion(const std::string &post_fields)
     return response;
 }
 
-std::string Curl::post_generate_embedding(const std::string &post_fields)
+std::string Curl::create_embedding(const std::string &post_fields)
 {
     const std::string header = "Content-Type: application/json";
     this->headers = curl_slist_append(this->headers, header.c_str());
@@ -177,7 +177,7 @@ std::string Curl::post_generate_embedding(const std::string &post_fields)
     return response;
 }
 
-std::string Curl::post_upload_file(const std::string &filename, const std::string &purpose)
+std::string Curl::upload_file(const std::string &filename, const std::string &purpose)
 {
     const std::string header = "Content-Type: multipart/form-data";
     this->headers = curl_slist_append(this->headers, header.c_str());
@@ -225,7 +225,7 @@ std::string Curl::delete_file(const std::string &file_id)
     return response;
 }
 
-std::string Curl::post_create_fine_tuning_job(const std::string &post_fields)
+std::string Curl::create_fine_tuning_job(const std::string &post_fields)
 {
     const std::string header = "Content-Type: application/json";
     this->headers = curl_slist_append(this->headers, header.c_str());
@@ -273,7 +273,7 @@ std::string create_chat_completion(const std::string &model, const std::string &
     };
 
     Curl curl;
-    return curl.post_chat_completion(data.dump());
+    return curl.create_chat_completion(data.dump());
 }
 
 std::string create_embedding(const std::string &model, const std::string &input)
@@ -281,13 +281,13 @@ std::string create_embedding(const std::string &model, const std::string &input)
     const nlohmann::json data = { { "model", model }, { "input", input } };
 
     Curl curl;
-    return curl.post_generate_embedding(data.dump());
+    return curl.create_embedding(data.dump());
 }
 
 std::string get_uploaded_files()
 {
     Curl curl;
-    return curl.get_files();
+    return curl.get_uploaded_files();
 }
 
 std::string get_models()
@@ -299,7 +299,7 @@ std::string get_models()
 std::string upload_file(const std::string &filename, const std::string &purpose)
 {
     Curl curl;
-    return curl.post_upload_file(filename, purpose);
+    return curl.upload_file(filename, purpose);
 }
 
 std::string delete_file(const std::string &file_id)
@@ -313,7 +313,7 @@ std::string create_fine_tuning_job(const std::string &training_file, const std::
     const nlohmann::json data = { { "model", model }, { "training_file", training_file } };
 
     Curl curl;
-    return curl.post_create_fine_tuning_job(data.dump());
+    return curl.create_fine_tuning_job(data.dump());
 }
 
 std::string delete_model(const std::string &model_id)
