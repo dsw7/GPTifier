@@ -68,6 +68,17 @@ void create_fine_tuning_job(int argc, char **argv)
 
 void delete_fine_tuned_model(int argc, char **argv)
 {
+    if (argc < 4) {
+        cli::help_command_fine_tune_delete_model();
+        return;
+    }
+
+    const std::string opt_or_model = argv[3];
+
+    if (opt_or_model == "-h" or opt_or_model == "--help") {
+        cli::help_command_fine_tune_delete_model();
+        return;
+    }
 }
 
 } // namespace
