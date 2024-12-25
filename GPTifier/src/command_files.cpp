@@ -11,6 +11,7 @@
 #include <fmt/core.h>
 #include <iostream>
 #include <map>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -81,17 +82,31 @@ void command_files_delete(int argc, char **argv)
         return;
     }
 
-    for (auto it = args.begin(); it != args.end(); it++) {
-        const std::string response = api::delete_file(*it);
+    bool has_failed = false;
 
-        const nlohmann::json results = parse_response(response);
+    for (auto it = args.begin(); it != args.end(); it++) {
+        nlohmann::json results;
+
+        try {
+            const std::string response = api::delete_file(*it);
+            results = parse_response(response);
+        } catch (const std::runtime_error &e) {
+            fmt::print("Failed to delete file with ID: {}. The error was: \"{}\"\n", *it, e.what());
+            has_failed = true;
+            continue;
+        }
+
         const std::string id = results["id"];
 
         if (results["deleted"]) {
-            fmt::print("Success!\nDeleted file with ID: {}\n", id);
+            fmt::print("Success! Deleted file with ID: {}\n", id);
         } else {
-            fmt::print("Warning!\nDid not delete file with ID: {}\n", id);
+            fmt::print("Warning! Did not delete file with ID: {}\n", id);
         }
+    }
+
+    if (has_failed) {
+        throw std::runtime_error("One or more failures occurred when deleting files");
     }
 }
 
