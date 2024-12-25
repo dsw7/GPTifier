@@ -79,6 +79,17 @@ void delete_fine_tuned_model(int argc, char **argv)
         cli::help_command_fine_tune_delete_model();
         return;
     }
+
+    const std::string response = query_delete_model(opt_or_model);
+    const nlohmann::json results = parse_response(response);
+
+    const std::string id = results["id"];
+
+    if (results["deleted"]) {
+        fmt::print("Success!\nDeleted model with ID: {}\n", id);
+    } else {
+        fmt::print("Warning!\nDid not delete model with ID: {}\n", id);
+    }
 }
 
 } // namespace

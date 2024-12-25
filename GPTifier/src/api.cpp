@@ -56,6 +56,7 @@ public:
     std::string post_upload_file(const std::string &filename, const std::string &purpose);
     std::string delete_file(const std::string &file_id);
     std::string post_create_fine_tuning_job(const std::string &post_fields);
+    std::string delete_model(const std::string &model_id);
 
     CURL *handle = NULL;
 
@@ -244,6 +245,22 @@ std::string Curl::post_create_fine_tuning_job(const std::string &post_fields)
     return response;
 }
 
+std::string Curl::delete_model(const std::string &model_id)
+{
+    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+
+    const std::string endpoint = fmt::format("{}/{}", endpoints::URL_MODELS, model_id);
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+
+    curl_easy_setopt(this->handle, CURLOPT_CUSTOMREQUEST, "DELETE");
+
+    std::string response;
+    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+
+    catch_curl_error(curl_easy_perform(this->handle));
+    return response;
+}
+
 } // namespace
 
 std::string query_chat_completion_api(const std::string &model, const std::string &prompt, float temperature)
@@ -295,4 +312,10 @@ std::string query_create_fine_tuning_job_api(const std::string &training_file, c
 
     Curl curl;
     return curl.post_create_fine_tuning_job(data.dump());
+}
+
+std::string query_delete_model(const std::string &model_id)
+{
+    Curl curl;
+    return curl.delete_model(model_id);
 }
