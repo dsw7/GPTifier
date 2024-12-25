@@ -314,6 +314,7 @@ void help_command_fine_tune()
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_command("upload-file", "Upload a fine-tuning file");
     help.add_command("create-job", "Create a fine-tuning job");
+    help.add_command("delete-model", "Delete a fine-tuned model");
     help.print();
 }
 
@@ -334,6 +335,15 @@ void help_command_fine_tune_create_job()
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-f", "--file-id", "The ID of an uploaded file that contains the training data");
     help.add_option("-m", "--model", "The name of the model to fine-tune");
+    help.print();
+}
+
+void help_command_fine_tune_delete_model()
+{
+    HelpMessages help;
+    help.add_description("Delete a fine-tuned model.");
+    help.add_synopsis("fine-tune delete-model [MODEL] <options>");
+    help.add_option("-h", "--help", "Print help information and exit");
     help.print();
 }
 

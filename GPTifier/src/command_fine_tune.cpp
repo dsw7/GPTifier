@@ -66,6 +66,10 @@ void create_fine_tuning_job(int argc, char **argv)
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 
+void delete_fine_tuned_model(int argc, char **argv)
+{
+}
+
 } // namespace
 
 void command_fine_tune(int argc, char **argv)
@@ -86,6 +90,8 @@ void command_fine_tune(int argc, char **argv)
         upload_fine_tuning_file(argc, argv);
     } else if (subcommand == "create-job") {
         create_fine_tuning_job(argc, argv);
+    } else if (subcommand == "delete-model") {
+        delete_fine_tuned_model(argc, argv);
     } else {
         cli::help_command_fine_tune();
         exit(EXIT_FAILURE);
