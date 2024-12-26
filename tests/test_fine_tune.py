@@ -1,6 +1,7 @@
+from json import loads, JSONDecodeError
 from os import EX_OK
 from subprocess import run
-from pytest import mark
+from pytest import mark, fail
 from utils import unpack_stdout_stderr, Command, Capture
 
 
@@ -15,7 +16,9 @@ def test_fine_tune_help(command: Command, option: str, capfd: Capture) -> None:
 
 
 @mark.parametrize("option", ["-h", "--help"])
-@mark.parametrize("subcommand", ["upload-file", "create-job", "delete-model"])
+@mark.parametrize(
+    "subcommand", ["upload-file", "create-job", "delete-model", "list-jobs"]
+)
 def test_fine_tune_subcommand_help(
     command: Command, subcommand: str, option: str, capfd: Capture
 ) -> None:
@@ -61,3 +64,27 @@ def test_fine_tune_delete_model_missing_model(command: Command, capfd: Capture) 
     _, stderr = unpack_stdout_stderr(capfd)
     assert process.returncode != EX_OK
     assert "The model 'foobar' does not exist" in stderr
+
+
+@mark.parametrize("option", ["-r", "--raw"])
+def test_fine_tune_list_jobs_raw(command: Command, option: str, capfd: Capture) -> None:
+    command.extend(["fine-tune", "list-jobs", option])
+    process = run(command)
+
+    stdout, _ = unpack_stdout_stderr(capfd)
+    assert process.returncode == EX_OK
+
+    try:
+        loads(stdout)
+    except JSONDecodeError:
+        fail("Test should not have failed on decoding JSON")
+
+
+@mark.parametrize("option", ["-l1", "--limit=1"])
+def test_fine_tune_list_jobs(command: Command, option: str, capfd: Capture) -> None:
+    command.extend(["fine-tune", "list-jobs", option])
+    process = run(command)
+
+    stdout, _ = unpack_stdout_stderr(capfd)
+    assert "No limit passed with --limit flag." not in stdout
+    assert process.returncode == EX_OK
