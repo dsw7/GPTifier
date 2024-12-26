@@ -92,6 +92,18 @@ void delete_fine_tuned_model(int argc, char **argv)
     }
 }
 
+void list_fine_tuning_jobs(int argc, char **argv)
+{
+    if (argc > 3) {
+        const std::string opt = argv[3];
+
+        if (opt == "-h" or opt == "--help") {
+            cli::help_command_fine_tune_list_jobs();
+            return;
+        }
+    }
+}
+
 } // namespace
 
 void command_fine_tune(int argc, char **argv)
@@ -114,6 +126,8 @@ void command_fine_tune(int argc, char **argv)
         create_fine_tuning_job(argc, argv);
     } else if (subcommand == "delete-model") {
         delete_fine_tuned_model(argc, argv);
+    } else if (subcommand == "list-jobs") {
+        list_fine_tuning_jobs(argc, argv);
     } else {
         cli::help_command_fine_tune();
         exit(EXIT_FAILURE);
