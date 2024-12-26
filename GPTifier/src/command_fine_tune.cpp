@@ -94,14 +94,7 @@ void delete_fine_tuned_model(int argc, char **argv)
 
 void list_fine_tuning_jobs(int argc, char **argv)
 {
-    if (argc > 3) {
-        const std::string opt = argv[3];
-
-        if (opt == "-h" or opt == "--help") {
-            cli::help_command_fine_tune_list_jobs();
-            return;
-        }
-    }
+    std::string limit = cli::get_opts_get_fine_tuning_jobs(argc, argv);
 }
 
 } // namespace

@@ -199,4 +199,37 @@ ParamsFineTune get_opts_create_fine_tuning_job(int argc, char **argv)
     return params;
 }
 
+std::string get_opts_get_fine_tuning_jobs(int argc, char **argv)
+{
+    std::string limit = "20";
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' },
+            { "limit", required_argument, 0, 'l' },
+            { 0, 0, 0, 0 },
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hl:", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                help_command_fine_tune_list_jobs();
+                exit(EXIT_SUCCESS);
+            case 'l':
+                limit = optarg;
+                break;
+            default:
+                exit_on_failure();
+        }
+    };
+
+    return limit;
+}
+
 } // namespace cli
