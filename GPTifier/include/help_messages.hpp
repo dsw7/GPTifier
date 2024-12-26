@@ -13,4 +13,5 @@ void help_command_fine_tune();
 void help_command_fine_tune_upload_file();
 void help_command_fine_tune_create_job();
 void help_command_fine_tune_delete_model();
+void help_command_fine_tune_list_jobs();
 } // namespace cli

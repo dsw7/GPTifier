@@ -315,6 +315,7 @@ void help_command_fine_tune()
     help.add_command("upload-file", "Upload a fine-tuning file");
     help.add_command("create-job", "Create a fine-tuning job");
     help.add_command("delete-model", "Delete a fine-tuned model");
+    help.add_command("list-jobs", "List fine-tuning jobs");
     help.print();
 }
 
@@ -343,6 +344,15 @@ void help_command_fine_tune_delete_model()
     HelpMessages help;
     help.add_description("Delete a fine-tuned model.");
     help.add_synopsis("fine-tune delete-model [MODEL] <options>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.print();
+}
+
+void help_command_fine_tune_list_jobs()
+{
+    HelpMessages help;
+    help.add_description("List fine-tuning jobs.");
+    help.add_synopsis("fine-tune list-jobs <options>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.print();
 }
