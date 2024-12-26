@@ -6,8 +6,10 @@
 #include "json.hpp"
 #include "parsers.hpp"
 #include "reporting.hpp"
+#include "utils.hpp"
 
 #include <fmt/core.h>
+#include <map>
 #include <string>
 
 namespace {
@@ -92,6 +94,18 @@ void delete_fine_tuned_model(int argc, char **argv)
     }
 }
 
+struct Job {
+    int estimated_finish;
+    int finished_at;
+    std::string id;
+};
+
+void print_jobs(int created_at, const Job &job)
+{
+    const std::string datetime = datetime_from_unix_timestamp(created_at);
+    fmt::print("{:<30}{:<30}{:<30}{}\n", job.id, datetime, job.finished_at, job.estimated_finish);
+}
+
 void list_fine_tuning_jobs(int argc, char **argv)
 {
     cli::ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
@@ -104,6 +118,32 @@ void list_fine_tuning_jobs(int argc, char **argv)
         fmt::print("{}\n", results.dump(4));
         return;
     }
+
+    reporting::print_sep();
+    fmt::print("{:<30}{:<30}{:<30}{}\n", "Job ID", "Created at", "Finished at", "Estimated finish");
+
+    reporting::print_sep();
+    std::map<int, Job> jobs = {};
+
+    for (const auto &entry: results["data"]) {
+        Job job;
+        job.id = entry["id"];
+        job.finished_at = entry.value("finished_at", -1);
+
+        if (entry["estimated_finish"].is_null()) {
+            job.estimated_finish = -1;
+        } else {
+            job.estimated_finish = entry["estimated_finish"];
+        }
+
+        jobs[entry["created_at"]] = job;
+    }
+
+    for (auto it = jobs.begin(); it != jobs.end(); ++it) {
+        print_jobs(it->first, it->second);
+    }
+
+    reporting::print_sep();
 }
 
 } // namespace
