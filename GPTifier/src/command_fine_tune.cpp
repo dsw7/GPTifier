@@ -126,6 +126,11 @@ void print_jobs(int created_at, const Job &job)
 void list_fine_tuning_jobs(int argc, char **argv)
 {
     cli::ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
+
+    if (not params.limit.has_value()) {
+        fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
+    }
+
     std::string limit = params.limit.value_or("20");
 
     const std::string response = api::get_fine_tuning_jobs(limit);
