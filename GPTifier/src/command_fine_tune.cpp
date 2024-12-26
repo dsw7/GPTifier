@@ -6,8 +6,11 @@
 #include "json.hpp"
 #include "parsers.hpp"
 #include "reporting.hpp"
+#include "utils.hpp"
 
 #include <fmt/core.h>
+#include <map>
+#include <optional>
 #include <string>
 
 namespace {
@@ -92,6 +95,82 @@ void delete_fine_tuned_model(int argc, char **argv)
     }
 }
 
+struct Job {
+    std::string id;
+    std::optional<int> estimated_finish = std::nullopt;
+    std::optional<int> finished_at = std::nullopt;
+};
+
+void print_jobs(int created_at, const Job &job)
+{
+    const std::string create_time = datetime_from_unix_timestamp(created_at);
+
+    std::string finish_time;
+    std::string estimated_finish;
+
+    if (job.finished_at.has_value()) {
+        finish_time = datetime_from_unix_timestamp(job.finished_at.value());
+    } else {
+        finish_time = '-';
+    }
+
+    if (job.estimated_finish.has_value()) {
+        finish_time = datetime_from_unix_timestamp(job.estimated_finish.value());
+    } else {
+        estimated_finish = '-';
+    }
+
+    fmt::print("{:<40}{:<30}{:<30}{}\n", job.id, create_time, estimated_finish, finish_time);
+}
+
+void list_fine_tuning_jobs(int argc, char **argv)
+{
+    cli::ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
+
+    if (not params.print_raw_json) {
+        if (not params.limit.has_value()) {
+            fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
+        }
+    }
+
+    std::string limit = params.limit.value_or("20");
+
+    const std::string response = api::get_fine_tuning_jobs(limit);
+    const nlohmann::json results = parse_response(response);
+
+    if (params.print_raw_json) {
+        fmt::print("{}\n", results.dump(4));
+        return;
+    }
+
+    reporting::print_sep();
+    fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
+
+    reporting::print_sep();
+    std::map<int, Job> jobs = {};
+
+    for (const auto &entry: results["data"]) {
+        Job job;
+        job.id = entry["id"];
+
+        if (not entry["finished_at"].is_null()) {
+            job.finished_at = entry["finished_at"];
+        }
+
+        if (not entry["estimated_finish"].is_null()) {
+            job.estimated_finish = entry["estimated_finish"];
+        }
+
+        jobs[entry["created_at"]] = job;
+    }
+
+    for (auto it = jobs.begin(); it != jobs.end(); ++it) {
+        print_jobs(it->first, it->second);
+    }
+
+    reporting::print_sep();
+}
+
 } // namespace
 
 void command_fine_tune(int argc, char **argv)
@@ -114,6 +193,8 @@ void command_fine_tune(int argc, char **argv)
         create_fine_tuning_job(argc, argv);
     } else if (subcommand == "delete-model") {
         delete_fine_tuned_model(argc, argv);
+    } else if (subcommand == "list-jobs") {
+        list_fine_tuning_jobs(argc, argv);
     } else {
         cli::help_command_fine_tune();
         exit(EXIT_FAILURE);

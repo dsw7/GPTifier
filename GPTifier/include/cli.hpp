@@ -34,4 +34,11 @@ struct ParamsFineTune {
 
 ParamsFineTune get_opts_create_fine_tuning_job(int argc, char **argv);
 
+struct ParamsGetFineTuningJobs {
+    bool print_raw_json = false;
+    std::optional<std::string> limit = std::nullopt;
+};
+
+ParamsGetFineTuningJobs get_opts_get_fine_tuning_jobs(int argc, char **argv);
+
 } // namespace cli
