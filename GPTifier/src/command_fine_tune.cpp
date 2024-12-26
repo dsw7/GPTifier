@@ -95,6 +95,11 @@ void delete_fine_tuned_model(int argc, char **argv)
 void list_fine_tuning_jobs(int argc, char **argv)
 {
     std::string limit = cli::get_opts_get_fine_tuning_jobs(argc, argv);
+
+    const std::string response = api::get_fine_tuning_jobs(limit);
+    const nlohmann::json results = parse_response(response);
+
+    fmt::print("{}\n", results.dump(2));
 }
 
 } // namespace
