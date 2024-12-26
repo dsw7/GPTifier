@@ -10,6 +10,7 @@
 
 #include <fmt/core.h>
 #include <map>
+#include <optional>
 #include <string>
 
 namespace {
@@ -95,15 +96,31 @@ void delete_fine_tuned_model(int argc, char **argv)
 }
 
 struct Job {
-    int estimated_finish;
-    int finished_at;
     std::string id;
+    std::optional<int> estimated_finish = std::nullopt;
+    std::optional<int> finished_at = std::nullopt;
 };
 
 void print_jobs(int created_at, const Job &job)
 {
-    const std::string datetime = datetime_from_unix_timestamp(created_at);
-    fmt::print("{:<30}{:<30}{:<30}{}\n", job.id, datetime, job.finished_at, job.estimated_finish);
+    const std::string create_time = datetime_from_unix_timestamp(created_at);
+
+    std::string finish_time;
+    std::string estimated_finish;
+
+    if (job.finished_at.has_value()) {
+        finish_time = datetime_from_unix_timestamp(job.finished_at.value());
+    } else {
+        finish_time = '-';
+    }
+
+    if (job.estimated_finish.has_value()) {
+        finish_time = datetime_from_unix_timestamp(job.estimated_finish.value());
+    } else {
+        estimated_finish = '-';
+    }
+
+    fmt::print("{:<40}{:<30}{:<30}{}\n", job.id, create_time, estimated_finish, finish_time);
 }
 
 void list_fine_tuning_jobs(int argc, char **argv)
@@ -120,7 +137,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
     }
 
     reporting::print_sep();
-    fmt::print("{:<30}{:<30}{:<30}{}\n", "Job ID", "Created at", "Finished at", "Estimated finish");
+    fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
 
     reporting::print_sep();
     std::map<int, Job> jobs = {};
@@ -128,11 +145,12 @@ void list_fine_tuning_jobs(int argc, char **argv)
     for (const auto &entry: results["data"]) {
         Job job;
         job.id = entry["id"];
-        job.finished_at = entry.value("finished_at", -1);
 
-        if (entry["estimated_finish"].is_null()) {
-            job.estimated_finish = -1;
-        } else {
+        if (not entry["finished_at"].is_null()) {
+            job.finished_at = entry["finished_at"];
+        }
+
+        if (not entry["estimated_finish"].is_null()) {
             job.estimated_finish = entry["estimated_finish"];
         }
 
