@@ -15,7 +15,11 @@ struct ParamsRun {
 };
 ParamsRun get_opts_run(int argc, char **argv);
 
-std::optional<std::string> get_opts_short(int argc, char **argv);
+struct ParamsShort {
+    bool print_raw_json = false;
+    std::optional<std::string> prompt = std::nullopt;
+};
+ParamsShort get_opts_short(int argc, char **argv);
 
 bool get_opts_models(int argc, char **argv);
 

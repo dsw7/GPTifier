@@ -9,7 +9,6 @@
 #include "testing.hpp"
 
 #include <fmt/core.h>
-#include <optional>
 #include <string>
 
 namespace {
@@ -34,14 +33,19 @@ std::string select_chat_model()
 
 void command_short(int argc, char **argv)
 {
-    std::optional<std::string> prompt = cli::get_opts_short(argc, argv);
+    cli::ParamsShort params = cli::get_opts_short(argc, argv);
 
-    if (not prompt.has_value()) {
+    if (not params.prompt.has_value()) {
         throw std::runtime_error("Prompt is empty");
     }
 
     const std::string model = select_chat_model();
-    const std::string response = api::create_chat_completion(model, prompt.value(), 1.00);
+    const std::string response = api::create_chat_completion(model, params.prompt.value(), 1.00);
+
+    if (params.print_raw_json) {
+        print_raw_response(response);
+        return;
+    }
 
     const nlohmann::json results = parse_response(response);
     const std::string content = results["choices"][0]["message"]["content"];

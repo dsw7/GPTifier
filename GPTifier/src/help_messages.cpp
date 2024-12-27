@@ -251,6 +251,7 @@ void help_command_short()
     help.add_description("Create a chat completion but without threading or verbosity.");
     help.add_synopsis("short <options>");
     help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
     help.add_option("-p <prompt>", "--prompt=<prompt>", "Provide prompt via command line");
     help.add_example("Create a chat completion", "gpt short --prompt=\"What is 2 + 2?\"");
     help.print();

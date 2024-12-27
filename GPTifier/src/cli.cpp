@@ -70,17 +70,20 @@ ParamsRun get_opts_run(int argc, char **argv)
     return params;
 }
 
-std::optional<std::string> get_opts_short(int argc, char **argv)
+ParamsShort get_opts_short(int argc, char **argv)
 {
-    std::optional<std::string> prompt = std::nullopt;
+    ParamsShort params;
 
     while (true) {
         static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' }, { "prompt", required_argument, 0, 'p' }, { 0, 0, 0, 0 }
+            { "help", no_argument, 0, 'h' },
+            { "raw", no_argument, 0, 'r' },
+            { "prompt", required_argument, 0, 'p' },
+            { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hp:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hrp:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -90,15 +93,18 @@ std::optional<std::string> get_opts_short(int argc, char **argv)
             case 'h':
                 help_command_short();
                 exit(EXIT_SUCCESS);
+            case 'r':
+                params.print_raw_json = true;
+                break;
             case 'p':
-                prompt = optarg;
+                params.prompt = optarg;
                 break;
             default:
                 exit_on_failure();
         }
     }
 
-    return prompt;
+    return params;
 }
 
 bool get_opts_models(int argc, char **argv)
