@@ -31,20 +31,7 @@ void print_file(int created_at, const File &file)
 
 void command_files_list(int argc, char **argv)
 {
-    bool print_raw_json = false;
-
-    if (argc >= 4) {
-        const std::string option = argv[3];
-
-        if (option == "-h" or option == "--help") {
-            cli::help_command_files_list();
-            return;
-        }
-
-        if (option == "-r" or option == "--raw") {
-            print_raw_json = true;
-        }
-    }
+    bool print_raw_json = cli::get_opts_files_list(argc, argv);
 
     const std::string response = api::get_uploaded_files();
 

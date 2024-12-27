@@ -17,108 +17,6 @@ void exit_on_failure()
 
 namespace cli {
 
-bool get_opts_models(int argc, char **argv)
-{
-    bool print_raw_json = false;
-
-    while (true) {
-        static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' }, { 0, 0, 0, 0 },
-            { "raw", no_argument, 0, 'r' }, { 0, 0, 0, 0 }
-        };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "hr", long_options, &option_index);
-
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
-            case 'h':
-                help_command_models();
-                exit(EXIT_SUCCESS);
-            case 'r':
-                print_raw_json = true;
-                break;
-            default:
-                exit_on_failure();
-        }
-    }
-
-    return print_raw_json;
-}
-
-std::optional<std::string> get_opts_short(int argc, char **argv)
-{
-    std::optional<std::string> prompt = std::nullopt;
-
-    while (true) {
-        static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' }, { "prompt", required_argument, 0, 'p' }, { 0, 0, 0, 0 }
-        };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "hp:", long_options, &option_index);
-
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
-            case 'h':
-                help_command_short();
-                exit(EXIT_SUCCESS);
-            case 'p':
-                prompt = optarg;
-                break;
-            default:
-                exit_on_failure();
-        }
-    }
-
-    return prompt;
-}
-
-ParamsEmbedding get_opts_embed(int argc, char **argv)
-{
-    ParamsEmbedding params;
-
-    while (true) {
-        static struct option long_options[] = { { "help", no_argument, 0, 'h' },
-            { "model", required_argument, 0, 'm' },
-            { "input", required_argument, 0, 'i' },
-            { "read-from-file", required_argument, 0, 'r' },
-            { 0, 0, 0, 0 } };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "hm:i:r:", long_options, &option_index);
-
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
-            case 'h':
-                help_command_embed();
-                exit(EXIT_SUCCESS);
-            case 'm':
-                params.model = optarg;
-                break;
-            case 'i':
-                params.input = optarg;
-                break;
-            case 'r':
-                params.input_file = optarg;
-                break;
-            default:
-                exit_on_failure();
-        }
-    }
-
-    return params;
-}
-
 ParamsRun get_opts_run(int argc, char **argv)
 {
     ParamsRun params;
@@ -170,6 +68,140 @@ ParamsRun get_opts_run(int argc, char **argv)
     };
 
     return params;
+}
+
+std::optional<std::string> get_opts_short(int argc, char **argv)
+{
+    std::optional<std::string> prompt = std::nullopt;
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' }, { "prompt", required_argument, 0, 'p' }, { 0, 0, 0, 0 }
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hp:", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                help_command_short();
+                exit(EXIT_SUCCESS);
+            case 'p':
+                prompt = optarg;
+                break;
+            default:
+                exit_on_failure();
+        }
+    }
+
+    return prompt;
+}
+
+bool get_opts_models(int argc, char **argv)
+{
+    bool print_raw_json = false;
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' }, { 0, 0, 0, 0 },
+            { "raw", no_argument, 0, 'r' }, { 0, 0, 0, 0 }
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hr", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                help_command_models();
+                exit(EXIT_SUCCESS);
+            case 'r':
+                print_raw_json = true;
+                break;
+            default:
+                exit_on_failure();
+        }
+    }
+
+    return print_raw_json;
+}
+
+ParamsEmbedding get_opts_embed(int argc, char **argv)
+{
+    ParamsEmbedding params;
+
+    while (true) {
+        static struct option long_options[] = { { "help", no_argument, 0, 'h' },
+            { "model", required_argument, 0, 'm' },
+            { "input", required_argument, 0, 'i' },
+            { "read-from-file", required_argument, 0, 'r' },
+            { 0, 0, 0, 0 } };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hm:i:r:", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                help_command_embed();
+                exit(EXIT_SUCCESS);
+            case 'm':
+                params.model = optarg;
+                break;
+            case 'i':
+                params.input = optarg;
+                break;
+            case 'r':
+                params.input_file = optarg;
+                break;
+            default:
+                exit_on_failure();
+        }
+    }
+
+    return params;
+}
+
+bool get_opts_files_list(int argc, char **argv)
+{
+    bool print_raw_json = false;
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' }, { 0, 0, 0, 0 },
+            { "raw", no_argument, 0, 'r' }, { 0, 0, 0, 0 }
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hr", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                help_command_files_list();
+                exit(EXIT_SUCCESS);
+            case 'r':
+                print_raw_json = true;
+                break;
+            default:
+                exit_on_failure();
+        }
+    }
+
+    return print_raw_json;
 }
 
 ParamsFineTune get_opts_create_fine_tuning_job(int argc, char **argv)
