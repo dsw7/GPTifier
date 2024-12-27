@@ -17,8 +17,6 @@ std::string select_chat_model()
 {
     if (testing::is_test_running()) {
         static std::string low_cost_model = "gpt-3.5-turbo";
-        fmt::print("Defaulting to using a low cost model: {}\n", low_cost_model);
-
         return low_cost_model;
     }
 

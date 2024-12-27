@@ -11,7 +11,6 @@ bool is_pytest_running()
     const char *pytest_current_test = std::getenv("PYTEST_CURRENT_TEST");
 
     if (pytest_current_test) {
-        fmt::print("[TEST] Detected pytest run ({})\n", pytest_current_test);
         return true;
     }
 
