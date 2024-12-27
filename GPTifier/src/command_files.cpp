@@ -31,16 +31,15 @@ void print_file(int created_at, const File &file)
 
 void command_files_list(int argc, char **argv)
 {
-    if (argc >= 4) {
-        const std::string option = argv[3];
-
-        if (option == "-h" or option == "--help") {
-            cli::help_command_files_list();
-            return;
-        }
-    }
+    bool print_raw_json = cli::get_opts_files_list(argc, argv);
 
     const std::string response = api::get_uploaded_files();
+
+    if (print_raw_json) {
+        print_raw_response(response);
+        return;
+    }
+
     const nlohmann::json results = parse_response(response);
 
     reporting::print_sep();

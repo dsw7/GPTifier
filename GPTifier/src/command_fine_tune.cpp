@@ -127,21 +127,21 @@ void list_fine_tuning_jobs(int argc, char **argv)
 {
     cli::ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
 
-    if (not params.print_raw_json) {
-        if (not params.limit.has_value()) {
-            fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
-        }
-    }
-
     std::string limit = params.limit.value_or("20");
 
     const std::string response = api::get_fine_tuning_jobs(limit);
-    const nlohmann::json results = parse_response(response);
 
     if (params.print_raw_json) {
-        fmt::print("{}\n", results.dump(4));
+        print_raw_response(response);
         return;
     }
+
+    if (not params.limit.has_value()) {
+        reporting::print_sep();
+        fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
+    }
+
+    const nlohmann::json results = parse_response(response);
 
     reporting::print_sep();
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
