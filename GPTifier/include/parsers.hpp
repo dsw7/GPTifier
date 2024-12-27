@@ -4,3 +4,4 @@
 #include <string>
 
 nlohmann::json parse_response(const std::string &response);
+void print_raw_response(const std::string &response);

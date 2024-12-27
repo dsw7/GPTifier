@@ -40,3 +40,9 @@ nlohmann::json parse_response(const std::string &response)
 
     return json;
 }
+
+void print_raw_response(const std::string &response)
+{
+    nlohmann::json json = parse_response(response);
+    fmt::print("{}\n", json.dump(4));
+}
