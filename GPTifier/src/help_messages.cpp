@@ -262,6 +262,7 @@ void help_command_models()
     help.add_description("List available OpenAI models.");
     help.add_synopsis("models [-h | --help]");
     help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
     help.print();
 }
 

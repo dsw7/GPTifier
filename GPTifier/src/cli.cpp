@@ -17,13 +17,18 @@ void exit_on_failure()
 
 namespace cli {
 
-void get_opts_models(int argc, char **argv)
+bool get_opts_models(int argc, char **argv)
 {
+    bool print_raw_json = false;
+
     while (true) {
-        static struct option long_options[] = { { "help", no_argument, 0, 'h' }, { 0, 0, 0, 0 } };
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' }, { 0, 0, 0, 0 },
+            { "raw", no_argument, 0, 'r' }, { 0, 0, 0, 0 }
+        };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "h", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hr", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -33,10 +38,15 @@ void get_opts_models(int argc, char **argv)
             case 'h':
                 help_command_models();
                 exit(EXIT_SUCCESS);
+            case 'r':
+                print_raw_json = true;
+                break;
             default:
                 exit_on_failure();
         }
     }
+
+    return print_raw_json;
 }
 
 std::optional<std::string> get_opts_short(int argc, char **argv)

@@ -85,8 +85,13 @@ void print_models_response(const std::string &response)
 
 void command_models(int argc, char **argv)
 {
-    cli::get_opts_models(argc, argv);
-
+    bool print_raw = cli::get_opts_models(argc, argv);
     const std::string response = api::get_models();
+
+    if (print_raw) {
+        print_raw_response(response);
+        return;
+    }
+
     print_models_response(response);
 }
