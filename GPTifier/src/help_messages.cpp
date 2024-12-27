@@ -295,6 +295,7 @@ void help_command_files_list()
     help.add_description("List uploaded files.");
     help.add_synopsis("files list <options>");
     help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
     help.print();
 }
 
