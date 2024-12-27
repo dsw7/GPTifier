@@ -1,6 +1,7 @@
+from json import loads, JSONDecodeError
 from typing import NewType, Any, TypeAlias
 from colorama import Fore, Style
-from pytest import CaptureFixture
+from pytest import CaptureFixture, fail
 
 Capture: TypeAlias = CaptureFixture[Any]
 Command = NewType("Command", list[str])
@@ -34,3 +35,10 @@ def unpack_stdout_stderr(capture: Capture) -> tuple[str, str]:
     _print_stdout(output.out)
     _print_stderr(output.err)
     return output.out, output.err
+
+
+def assert_valid_json(stdout: str) -> None:
+    try:
+        loads(stdout)
+    except JSONDecodeError:
+        fail("Test should not have failed on decoding JSON")

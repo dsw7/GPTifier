@@ -1,8 +1,7 @@
-from json import loads, JSONDecodeError
 from os import EX_OK
 from subprocess import run
-from pytest import mark, fail
-from utils import unpack_stdout_stderr, Command, Capture
+from pytest import mark
+from utils import unpack_stdout_stderr, Command, Capture, assert_valid_json
 
 
 @mark.parametrize("option", ["-h", "--help"])
@@ -73,11 +72,7 @@ def test_fine_tune_list_jobs_raw(command: Command, option: str, capfd: Capture) 
 
     stdout, _ = unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
-
-    try:
-        loads(stdout)
-    except JSONDecodeError:
-        fail("Test should not have failed on decoding JSON")
+    assert_valid_json(stdout)
 
 
 @mark.parametrize("option", ["-l1", "--limit=1"])
