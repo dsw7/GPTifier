@@ -107,8 +107,9 @@ bool get_opts_models(int argc, char **argv)
 
     while (true) {
         static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' }, { 0, 0, 0, 0 },
-            { "raw", no_argument, 0, 'r' }, { 0, 0, 0, 0 }
+            { "help", no_argument, 0, 'h' },
+            { "raw", no_argument, 0, 'r' },
+            { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
@@ -178,8 +179,9 @@ bool get_opts_files_list(int argc, char **argv)
 
     while (true) {
         static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' }, { 0, 0, 0, 0 },
-            { "raw", no_argument, 0, 'r' }, { 0, 0, 0, 0 }
+            { "help", no_argument, 0, 'h' },
+            { "raw", no_argument, 0, 'r' },
+            { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
