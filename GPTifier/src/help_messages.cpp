@@ -283,7 +283,7 @@ void help_command_files()
 {
     HelpMessages help;
     help.add_description("Manage files uploaded to OpenAI.");
-    help.add_synopsis("files <subcommands>");
+    help.add_synopsis("files [list | delete] [-h | --help]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_command("list", "List uploaded files");
     help.add_command("delete", "Delete an uploaded file");
