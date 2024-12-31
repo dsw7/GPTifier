@@ -216,7 +216,7 @@ void help_root_messages()
     help.add_name_version();
     help.add_description("A command line program for interactively querying OpenAI via the OpenAI API.");
     help.add_description("See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.");
-    help.add_synopsis("[-v | --version] [-h | --help] [run] [models] [embed]");
+    help.add_synopsis("[-v | --version] [-h | --help] (run | short | models | embed | files | fine-tune)");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-v", "--version", "Print version and exit");
     help.add_command("run", "Run a query against an appropriate model");
@@ -232,7 +232,11 @@ void help_command_run()
 {
     HelpMessages help;
     help.add_description("Create a chat completion.");
-    help.add_synopsis("run <options>");
+    help.add_synopsis(
+        "run [-h | --help] [-m <model-name> | --model=<model-name>]\n  "
+        "[-u | --no-interactive-export] [-d <json-file> | --dump=<json-file>]\n  "
+        "[-p <prompt> | --prompt=<prompt>] [-r <filename> | --read-from-file=<filename>]\n  "
+        "[-t <temp> | --temperature=<temperature>]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
     help.add_option("-u", "--no-interactive-export", "Disable [y/n] prompt that asks whether to export results");
@@ -249,7 +253,7 @@ void help_command_short()
 {
     HelpMessages help;
     help.add_description("Create a chat completion but without threading or verbosity.");
-    help.add_synopsis("short <options>");
+    help.add_synopsis("short [-h | --help] [-r | --raw] [-p <prompt> | --prompt=<prompt>]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
     help.add_option("-p <prompt>", "--prompt=<prompt>", "Provide prompt via command line");
@@ -261,7 +265,7 @@ void help_command_models()
 {
     HelpMessages help;
     help.add_description("List available OpenAI models.");
-    help.add_synopsis("models [-h | --help]");
+    help.add_synopsis("models [-h | --help] [-r | --raw]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
     help.print();
@@ -271,7 +275,9 @@ void help_command_embed()
 {
     HelpMessages help;
     help.add_description("Get embedding representing a block of text.");
-    help.add_synopsis("embed <options>");
+    help.add_synopsis(
+        "embed [-h | --help] [-m <model> | --model=<model>]\n  "
+        "[-i <text> | --input=<text>] [-r <filename> | --read-from-file=<filename>]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid embedding model");
     help.add_option("-i <text>", "--input=<text>", "Input text to embed");
@@ -283,7 +289,7 @@ void help_command_files()
 {
     HelpMessages help;
     help.add_description("Manage files uploaded to OpenAI.");
-    help.add_synopsis("files [list | delete] [-h | --help]");
+    help.add_synopsis("files [-h | --help] (list | delete)");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_command("list", "List uploaded files");
     help.add_command("delete", "Delete an uploaded file");
@@ -294,7 +300,7 @@ void help_command_files_list()
 {
     HelpMessages help;
     help.add_description("List uploaded files.");
-    help.add_synopsis("files list <options>");
+    help.add_synopsis("files list [-h | --help] [-r | --raw]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
     help.print();
@@ -304,7 +310,7 @@ void help_command_files_delete()
 {
     HelpMessages help;
     help.add_description("Delete an uploaded file.");
-    help.add_synopsis("files delete [FILE ID...] <options>");
+    help.add_synopsis("files delete [-h | --help] <file-id...>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.print();
 }
@@ -313,7 +319,7 @@ void help_command_fine_tune()
 {
     HelpMessages help;
     help.add_description("Manage fine tuning operations.");
-    help.add_synopsis("fine-tune <subcommands>");
+    help.add_synopsis("fine-tune [-h | --help] (upload-file | create-job | delete-model | list-jobs)");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_command("upload-file", "Upload a fine-tuning file");
     help.add_command("create-job", "Create a fine-tuning job");
@@ -326,7 +332,7 @@ void help_command_fine_tune_upload_file()
 {
     HelpMessages help;
     help.add_description("Upload a fine-tuning file.");
-    help.add_synopsis("fine-tune upload-file [FILE] <options>");
+    help.add_synopsis("fine-tune upload-file [-h | --help] <file>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.print();
 }
@@ -335,7 +341,9 @@ void help_command_fine_tune_create_job()
 {
     HelpMessages help;
     help.add_description("Create a fine-tuning job.");
-    help.add_synopsis("fine-tune create-job <options>");
+    help.add_synopsis(
+        "fine-tune create-job [-h | --help] "
+        "-f <file-id> | --file <file-id> -m <model> | --model <model>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-f", "--file-id", "The ID of an uploaded file that contains the training data");
     help.add_option("-m", "--model", "The name of the model to fine-tune");
@@ -346,7 +354,7 @@ void help_command_fine_tune_delete_model()
 {
     HelpMessages help;
     help.add_description("Delete a fine-tuned model.");
-    help.add_synopsis("fine-tune delete-model [MODEL] <options>");
+    help.add_synopsis("fine-tune delete-model [-h | --help] <model>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.print();
 }
@@ -355,7 +363,7 @@ void help_command_fine_tune_list_jobs()
 {
     HelpMessages help;
     help.add_description("List fine-tuning jobs.");
-    help.add_synopsis("fine-tune list-jobs <options>");
+    help.add_synopsis("fine-tune list-jobs [-h | --help] [-r | --raw] -l <limit> | --limit <limit>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
     help.add_option("-l", "--limit", "Number of fine-tuning jobs to show");
