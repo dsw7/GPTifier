@@ -53,7 +53,7 @@ void command_files_list(int argc, char **argv)
         file.id = entry["id"];
         file.filename = entry["filename"];
         file.purpose = entry["purpose"];
-        files[entry["created_at"]] = file;
+        files.emplace(entry["created_at"], file);
     }
 
     for (auto it = files.begin(); it != files.end(); ++it) {
@@ -113,9 +113,9 @@ void command_files_delete(int argc, char **argv)
 
 void command_files(int argc, char **argv)
 {
-    if (argc < 3) {
-        cli::help_command_files();
-        exit(EXIT_FAILURE);
+    if (argc == 2) {
+        command_files_list(argc, argv);
+        return;
     }
 
     std::string subcommand = argv[2];
