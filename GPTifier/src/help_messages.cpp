@@ -1,5 +1,6 @@
 #include "help_messages.hpp"
 
+#include <fmt/color.h>
 #include <fmt/core.h>
 #include <iostream>
 #include <string>
@@ -125,13 +126,13 @@ void HelpMessages::print_description()
         return;
     }
 
-    std::string text = "\033[1mDescription:\033[0m\n";
+    fmt::print(fg(fmt::terminal_color::bright_white), "Description:\n");
 
     for (auto it = this->description.begin(); it < this->description.end(); it++) {
-        text += fmt::format("{}{}\n", ws_2, *it);
+        fmt::print("{}{}\n", ws_2, *it);
     }
 
-    fmt::print("{}\n", text);
+    fmt::print("\n");
 }
 
 void HelpMessages::print_examples()
