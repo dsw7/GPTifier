@@ -4,6 +4,8 @@
 #include "utils.hpp"
 
 #include <filesystem>
+#include <fmt/color.h>
+#include <fmt/core.h>
 #include <iostream>
 #include <stdexcept>
 
@@ -28,7 +30,7 @@ std::optional<std::string> get_text_from_inputfile()
     }
 
     testing::log_test("Loaded input text from Inputfile");
-    std::cout << "Found an Inputfile in current working directory!\n";
+    fmt::print("Found an Inputfile in current working directory!\n");
 
     const std::string text = read_text_from_file(inputfile);
 
@@ -41,7 +43,7 @@ std::optional<std::string> get_text_from_inputfile()
 
 std::optional<std::string> get_text_from_stdin()
 {
-    std::cout << "\033[1mInput:\033[0m ";
+    fmt::print(fg(fmt::terminal_color::bright_white), "Input: ");
     std::string text;
 
     std::getline(std::cin, text);

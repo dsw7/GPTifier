@@ -1,3 +1,4 @@
+#include <fmt/color.h>
 #include <fmt/core.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -23,22 +24,25 @@ namespace reporting {
 void print_sep()
 {
     static unsigned short columns = get_terminal_columns();
-    fmt::print("{}\n", std::string(columns, '-'));
+    static std::string separator = std::string(columns, '-');
+    fmt::print("{}\n", separator);
 }
 
 void print_error(const std::string &message)
 {
-    fmt::print("\033[1mError:\033[31m {}\033[0m\n", message);
+    fmt::print(fg(fmt::terminal_color::bright_white), "Error: ");
+    fmt::print(fg(fmt::terminal_color::bright_red), "{}\n", message);
 }
 
 void print_response(const std::string &response)
 {
-    fmt::print("\033[1mResponse:\033[0m {}\n", response);
+    fmt::print(fg(fmt::terminal_color::bright_white), "Response: {}\n", response);
 }
 
 void print_results(const std::string &results)
 {
-    fmt::print("\033[1mResults:\033[32m {}\033[0m\n", results);
+    fmt::print(fg(fmt::terminal_color::bright_white), "Results: ");
+    fmt::print(fg(fmt::terminal_color::bright_green), "{}\n", results);
 }
 
 } // namespace reporting

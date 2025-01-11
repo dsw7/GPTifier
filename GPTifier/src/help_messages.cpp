@@ -2,7 +2,6 @@
 
 #include <fmt/color.h>
 #include <fmt/core.h>
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -11,9 +10,9 @@ namespace {
 const std::string ws_2 = std::string(2, ' ');
 const std::string ws_4 = std::string(4, ' ');
 
-std::string bash_block(const std::string &command)
+void print_bash_block(const std::string &command)
 {
-    return fmt::format("\033[1;32m{0}```bash\n{0}{1}\n{0}```\n\033[0m", ws_2, command);
+    fmt::print(fg(fmt::terminal_color::bright_green), "{0}```bash\n{0}{1}\n{0}```\n", ws_2, command);
 }
 
 struct Option {
@@ -46,7 +45,7 @@ private:
     std::vector<Example> examples;
     std::vector<Option> options;
     std::vector<std::string> description;
-    std::vector<std::string> synopsis;
+    std::string synopsis;
 
 public:
     void add_command(const std::string &name, const std::string &description);
@@ -99,7 +98,7 @@ void HelpMessages::add_option(const std::string &opt_short, const std::string &o
 
 void HelpMessages::add_synopsis(const std::string &line)
 {
-    this->synopsis.push_back(line);
+    this->synopsis = line;
 }
 
 void HelpMessages::print_commands()
@@ -109,16 +108,15 @@ void HelpMessages::print_commands()
     }
 
     fmt::print(fg(fmt::terminal_color::bright_white), "Commands:\n");
-    std::string text;
 
     for (auto it = this->commands.begin(); it != this->commands.end(); it++) {
-        text += fmt::format("{}\033[2m{}\033[0m\n", ws_2, it->name);
-        text += fmt::format("{} -> {}\n", ws_4, it->description);
+        fmt::print(fg(fmt::terminal_color::bright_blue), "{}{}\n", ws_2, it->name);
+        fmt::print("{} -> {}\n", ws_4, it->description);
     }
 
-    text += fmt::format("\n{}Try gpt \033[2m<subcommand>\033[0m [-h | --help] for subcommand specific help.\n", ws_2);
-
-    fmt::print("{}\n", text);
+    fmt::print("\n{}Try gpt ", ws_2);
+    fmt::print(fg(fmt::terminal_color::bright_blue), "<subcommand>");
+    fmt::print(" [-h | --help] for subcommand specific help.\n\n");
 }
 
 void HelpMessages::print_description()
@@ -143,14 +141,13 @@ void HelpMessages::print_examples()
     }
 
     fmt::print(fg(fmt::terminal_color::bright_white), "Examples:\n");
-    std::string text;
 
     for (auto it = this->examples.begin(); it != this->examples.end(); it++) {
-        text += fmt::format("{}{}:\n", ws_2, it->description);
-        text += bash_block(it->command);
+        fmt::print("{}{}:\n", ws_2, it->description);
+        print_bash_block(it->command);
     }
 
-    fmt::print("{}\n", text);
+    fmt::print("\n");
 }
 
 void HelpMessages::print_name_version()
@@ -163,9 +160,8 @@ void HelpMessages::print_name_version()
     const std::string version = std::string(PROJECT_VERSION);
 
     fmt::print(fg(fmt::terminal_color::bright_white), "Name:\n");
-    std::string text = fmt::format("{}\033[4m{} v{}\033[0m\n", ws_2, name, version);
-
-    fmt::print("{}\n", text);
+    fmt::print("{}", ws_2);
+    fmt::print(fmt::emphasis::underline, "{} v{}\n\n", name, version);
 }
 
 void HelpMessages::print_options()
@@ -175,14 +171,13 @@ void HelpMessages::print_options()
     }
 
     fmt::print(fg(fmt::terminal_color::bright_white), "Options:\n");
-    std::string text;
 
     for (auto it = this->options.begin(); it != this->options.end(); it++) {
-        text += fmt::format("{}\033[2m{}, {}\033[0m\n", ws_2, it->opt_short, it->opt_long);
-        text += fmt::format("{} -> {}\n", ws_4, it->description);
+        fmt::print(fmt::emphasis::faint, "{}{}, {}\n", ws_2, it->opt_short, it->opt_long);
+        fmt::print("{} -> {}\n", ws_4, it->description);
     }
 
-    fmt::print("{}\n", text);
+    fmt::print("\n");
 }
 
 void HelpMessages::print_synopsis()
@@ -192,13 +187,7 @@ void HelpMessages::print_synopsis()
     }
 
     fmt::print(fg(fmt::terminal_color::bright_white), "Synopsis:\n");
-    std::string text;
-
-    for (auto it = this->synopsis.begin(); it < this->synopsis.end(); it++) {
-        text += fmt::format("{}\033[4mgpt\033[0m {}\n", ws_2, *it);
-    }
-
-    fmt::print("{}\n", text);
+    fmt::print("{}gpt {}\n\n", ws_2, this->synopsis);
 }
 
 void HelpMessages::print()
