@@ -108,7 +108,8 @@ void HelpMessages::print_commands()
         return;
     }
 
-    std::string text = "\033[1mCommands:\033[0m\n";
+    fmt::print(fg(fmt::terminal_color::bright_white), "Commands:\n");
+    std::string text;
 
     for (auto it = this->commands.begin(); it != this->commands.end(); it++) {
         text += fmt::format("{}\033[2m{}\033[0m\n", ws_2, it->name);
@@ -141,7 +142,8 @@ void HelpMessages::print_examples()
         return;
     }
 
-    std::string text = "\033[1mExamples:\033[0m\n";
+    fmt::print(fg(fmt::terminal_color::bright_white), "Examples:\n");
+    std::string text;
 
     for (auto it = this->examples.begin(); it != this->examples.end(); it++) {
         text += fmt::format("{}{}:\n", ws_2, it->description);
@@ -160,8 +162,8 @@ void HelpMessages::print_name_version()
     const std::string name = std::string(PROJECT_NAME);
     const std::string version = std::string(PROJECT_VERSION);
 
-    std::string text = "\033[1mName:\033[0m\n";
-    text += fmt::format("{}\033[4m{} v{}\033[0m\n", ws_2, name, version);
+    fmt::print(fg(fmt::terminal_color::bright_white), "Name:\n");
+    std::string text = fmt::format("{}\033[4m{} v{}\033[0m\n", ws_2, name, version);
 
     fmt::print("{}\n", text);
 }
@@ -172,7 +174,8 @@ void HelpMessages::print_options()
         return;
     }
 
-    std::string text = "\033[1mOptions:\033[0m\n";
+    fmt::print(fg(fmt::terminal_color::bright_white), "Options:\n");
+    std::string text;
 
     for (auto it = this->options.begin(); it != this->options.end(); it++) {
         text += fmt::format("{}\033[2m{}, {}\033[0m\n", ws_2, it->opt_short, it->opt_long);
@@ -188,7 +191,8 @@ void HelpMessages::print_synopsis()
         return;
     }
 
-    std::string text = "\033[1mSynopsis:\033[0m\n";
+    fmt::print(fg(fmt::terminal_color::bright_white), "Synopsis:\n");
+    std::string text;
 
     for (auto it = this->synopsis.begin(); it < this->synopsis.end(); it++) {
         text += fmt::format("{}\033[4mgpt\033[0m {}\n", ws_2, *it);
