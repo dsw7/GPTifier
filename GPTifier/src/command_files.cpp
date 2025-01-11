@@ -9,7 +9,6 @@
 #include "utils.hpp"
 
 #include <fmt/core.h>
-#include <iostream>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -90,7 +89,7 @@ void command_files_delete(int argc, char **argv)
             const std::string response = api::delete_file(*it);
             results = parse_response(response);
         } catch (const std::runtime_error &e) {
-            std::cerr << fmt::format("Failed to delete file with ID: {}. The error was: \"{}\"\n", *it, e.what());
+            fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", *it, e.what());
             has_failed = true;
             continue;
         }

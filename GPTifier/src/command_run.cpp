@@ -207,7 +207,7 @@ void command_run(int argc, char **argv)
         response = api::create_chat_completion(model, params.prompt.value(), temp);
     } catch (std::runtime_error &e) {
         query_failed = true;
-        std::cerr << e.what() << '\n';
+        fmt::print(stderr, "{}\n", e.what());
     }
 
     timer_enabled = false;

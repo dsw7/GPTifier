@@ -2,14 +2,14 @@
 
 #include "help_messages.hpp"
 
+#include <fmt/core.h>
 #include <getopt.h>
-#include <iostream>
 
 namespace {
 
 void exit_on_failure()
 {
-    std::cerr << "Try running with -h or --help for more information\n";
+    fmt::print(stderr, "Try running with -h or --help for more information\n");
     exit(EXIT_FAILURE);
 }
 

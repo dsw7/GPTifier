@@ -8,7 +8,7 @@
 #include "help_messages.hpp"
 #include "json.hpp"
 
-#include <iostream>
+#include <fmt/core.h>
 #include <stdexcept>
 #include <string>
 
@@ -21,7 +21,7 @@ void print_build_information()
     data["build_date"] = BUILD_DATE;
     data["version"] = PROJECT_VERSION;
 
-    std::cout << data.dump(2) << '\n';
+    fmt::print("{}\n", data.dump(2));
 }
 
 int main(int argc, char **argv)
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     try {
         configs.load_configs_from_config_file();
     } catch (std::runtime_error &e) {
-        std::cerr << e.what() << '\n';
+        fmt::print(stderr, "{}\n", e.what());
         return EXIT_FAILURE;
     }
 
@@ -64,10 +64,10 @@ int main(int argc, char **argv)
         } else if (command == "fine-tune") {
             command_fine_tune(argc, argv);
         } else {
-            std::cerr << "Received unknown command. Re-run with -h or --help\n";
+            fmt::print(stderr, "Received unknown command. Re-run with -h or --help\n");
         }
     } catch (std::runtime_error &e) {
-        std::cerr << e.what() << '\n';
+        fmt::print(stderr, "{}\n", e.what());
         return EXIT_FAILURE;
     }
 
