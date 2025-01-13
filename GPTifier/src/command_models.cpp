@@ -56,17 +56,9 @@ void print_models_response(const std::string &response)
 
     for (const auto &entry: results["data"]) {
         if (is_fine_tuning_model(entry["id"])) {
-            OpenAIModel model;
-            model.created = entry["created"];
-            model.id = entry["id"];
-            model.owned_by = entry["owned_by"];
-            user_models.push_back(model);
+            user_models.push_back({ entry["created"], entry["id"], entry["owned_by"] });
         } else {
-            OpenAIModel model;
-            model.created = entry["created"];
-            model.id = entry["id"];
-            model.owned_by = entry["owned_by"];
-            openai_models.push_back(model);
+            openai_models.push_back({ entry["created"], entry["id"], entry["owned_by"] });
         }
     }
 

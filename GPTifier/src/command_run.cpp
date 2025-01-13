@@ -126,12 +126,14 @@ void export_chat_completion_response(const nlohmann::json &results, const std::s
     }
 
     Completion completion;
-    completion.prompt = prompt;
 
     try {
-        completion.content = results["choices"][0]["message"]["content"];
-        completion.created = results["created"];
-        completion.model = results["model"];
+        completion = {
+            results["choices"][0]["message"]["content"],
+            results["model"],
+            prompt,
+            results["created"],
+        };
     } catch (const nlohmann::json::type_error &e) {
         const std::string errmsg = fmt::format("Failed to parse completion. Error was:\n{}", e.what());
         throw std::runtime_error(errmsg);

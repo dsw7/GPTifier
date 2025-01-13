@@ -48,10 +48,7 @@ void command_files_list(int argc, char **argv)
     std::map<int, File> files = {};
 
     for (const auto &entry: results["data"]) {
-        File file;
-        file.id = entry["id"];
-        file.filename = entry["filename"];
-        file.purpose = entry["purpose"];
+        File file = { entry["filename"], entry["id"], entry["purpose"] };
         files.emplace(entry["created_at"], file);
     }
 

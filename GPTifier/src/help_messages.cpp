@@ -60,11 +60,7 @@ public:
 
 void HelpMessages::add_command(const std::string &name, const std::string &description)
 {
-    Command command;
-    command.description = description;
-    command.name = name;
-
-    this->commands.push_back(command);
+    this->commands.push_back({ description, name });
 }
 
 void HelpMessages::add_description(const std::string &line)
@@ -74,11 +70,7 @@ void HelpMessages::add_description(const std::string &line)
 
 void HelpMessages::add_example(const std::string &description, const std::string &command)
 {
-    Example example;
-    example.command = command;
-    example.description = description;
-
-    this->examples.push_back(example);
+    this->examples.push_back({ command, description });
 }
 
 void HelpMessages::add_name_version()
@@ -88,12 +80,7 @@ void HelpMessages::add_name_version()
 
 void HelpMessages::add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description)
 {
-    Option option;
-    option.opt_short = opt_short;
-    option.opt_long = opt_long;
-    option.description = description;
-
-    this->options.push_back(option);
+    this->options.push_back({ description, opt_long, opt_short });
 }
 
 void HelpMessages::add_synopsis(const std::string &line)
