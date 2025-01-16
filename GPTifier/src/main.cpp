@@ -16,7 +16,7 @@ Configs configs;
 
 void print_build_information()
 {
-    nlohmann::json data = {};
+    nlohmann::json data;
 
     data["build_date"] = BUILD_DATE;
     data["version"] = PROJECT_VERSION;

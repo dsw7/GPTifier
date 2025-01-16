@@ -45,7 +45,7 @@ void command_files_list(int argc, char **argv)
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
 
     reporting::print_sep();
-    std::map<int, File> files = {};
+    std::map<int, File> files;
 
     for (const auto &entry: results["data"]) {
         File file = { entry["filename"], entry["id"], entry["purpose"] };
@@ -66,7 +66,7 @@ void command_files_delete(int argc, char **argv)
         return;
     }
 
-    std::vector<std::string> args = {};
+    std::vector<std::string> args;
 
     for (int i = 3; i < argc; i++) {
         args.push_back(argv[i]);

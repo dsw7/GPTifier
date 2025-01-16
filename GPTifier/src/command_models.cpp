@@ -51,8 +51,8 @@ void print_models_response(const std::string &response)
 {
     const nlohmann::json results = parse_response(response);
 
-    std::vector<OpenAIModel> openai_models = {};
-    std::vector<OpenAIModel> user_models = {};
+    std::vector<OpenAIModel> openai_models;
+    std::vector<OpenAIModel> user_models;
 
     for (const auto &entry: results["data"]) {
         if (is_fine_tuning_model(entry["id"])) {

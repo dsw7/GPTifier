@@ -147,7 +147,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
 
     reporting::print_sep();
-    std::map<int, Job> jobs = {};
+    std::map<int, Job> jobs;
 
     for (const auto &entry: results["data"]) {
         Job job;
