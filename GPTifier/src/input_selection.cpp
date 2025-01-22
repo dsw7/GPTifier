@@ -43,7 +43,7 @@ std::optional<std::string> get_text_from_inputfile()
 
 std::optional<std::string> get_text_from_stdin()
 {
-    fmt::print(fg(fmt::terminal_color::bright_white), "Input: ");
+    fmt::print(fg(white), "Input: ");
     std::string text;
 
     std::getline(std::cin, text);

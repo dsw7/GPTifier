@@ -1,4 +1,7 @@
-#include <fmt/color.h>
+#include "reporting.hpp"
+
+#include "utils.hpp"
+
 #include <fmt/core.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -30,19 +33,19 @@ void print_sep()
 
 void print_error(const std::string &message)
 {
-    fmt::print(fg(fmt::terminal_color::bright_white), "Error: ");
-    fmt::print(fg(fmt::terminal_color::bright_red), "{}\n", message);
+    fmt::print(fg(white), "Error: ");
+    fmt::print(fg(red), "{}\n", message);
 }
 
 void print_response(const std::string &response)
 {
-    fmt::print(fg(fmt::terminal_color::bright_white), "Response: {}\n", response);
+    fmt::print(fg(white), "Response: {}\n", response);
 }
 
 void print_results(const std::string &results)
 {
-    fmt::print(fg(fmt::terminal_color::bright_white), "Results: ");
-    fmt::print(fg(fmt::terminal_color::bright_green), "{}\n", results);
+    fmt::print(fg(white), "Results: ");
+    fmt::print(fg(green), "{}\n", results);
 }
 
 } // namespace reporting

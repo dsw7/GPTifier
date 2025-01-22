@@ -13,7 +13,6 @@
 
 #include <chrono>
 #include <ctime>
-#include <fmt/color.h>
 #include <fmt/core.h>
 #include <fstream>
 #include <iostream>
@@ -105,7 +104,7 @@ void write_message_to_file(const Completion &completion)
 
 void export_chat_completion_response(const nlohmann::json &results, const std::string &prompt)
 {
-    fmt::print(fg(fmt::terminal_color::bright_white), "Export:\n");
+    fmt::print(fg(white), "Export:\n");
     std::string choice;
 
     while (true) {
@@ -170,7 +169,7 @@ void time_api_call()
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> duration = end - start;
 
-        fmt::print(fg(fmt::terminal_color::bright_white), "Time (s): ");
+        fmt::print(fg(white), "Time (s): ");
         fmt::print("{}\r", duration.count());
         std::cout.flush();
     }

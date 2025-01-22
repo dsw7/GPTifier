@@ -1,6 +1,7 @@
 #include "help_messages.hpp"
 
-#include <fmt/color.h>
+#include "utils.hpp"
+
 #include <fmt/core.h>
 #include <string>
 #include <vector>
@@ -12,7 +13,7 @@ const std::string ws_4 = std::string(4, ' ');
 
 void print_bash_block(const std::string &command)
 {
-    fmt::print(fg(fmt::terminal_color::bright_green), "{0}```bash\n{0}{1}\n{0}```\n", ws_2, command);
+    fmt::print(fg(green), "{0}```bash\n{0}{1}\n{0}```\n", ws_2, command);
 }
 
 struct Option {
@@ -94,15 +95,15 @@ void HelpMessages::print_commands()
         return;
     }
 
-    fmt::print(fg(fmt::terminal_color::bright_white), "Commands:\n");
+    fmt::print(fg(white), "Commands:\n");
 
     for (auto it = this->commands.begin(); it != this->commands.end(); it++) {
-        fmt::print(fg(fmt::terminal_color::bright_blue), "{}{}\n", ws_2, it->name);
+        fmt::print(fg(blue), "{}{}\n", ws_2, it->name);
         fmt::print("{} -> {}\n", ws_4, it->description);
     }
 
     fmt::print("\n{}Try gpt ", ws_2);
-    fmt::print(fg(fmt::terminal_color::bright_blue), "<subcommand>");
+    fmt::print(fg(blue), "<subcommand>");
     fmt::print(" [-h | --help] for subcommand specific help.\n\n");
 }
 
@@ -112,7 +113,7 @@ void HelpMessages::print_description()
         return;
     }
 
-    fmt::print(fg(fmt::terminal_color::bright_white), "Description:\n");
+    fmt::print(fg(white), "Description:\n");
 
     for (auto it = this->description.begin(); it < this->description.end(); it++) {
         fmt::print("{}{}\n", ws_2, *it);
@@ -127,7 +128,7 @@ void HelpMessages::print_examples()
         return;
     }
 
-    fmt::print(fg(fmt::terminal_color::bright_white), "Examples:\n");
+    fmt::print(fg(white), "Examples:\n");
 
     for (auto it = this->examples.begin(); it != this->examples.end(); it++) {
         fmt::print("{}{}:\n", ws_2, it->description);
@@ -146,7 +147,7 @@ void HelpMessages::print_name_version()
     const std::string name = std::string(PROJECT_NAME);
     const std::string version = std::string(PROJECT_VERSION);
 
-    fmt::print(fg(fmt::terminal_color::bright_white), "Name:\n");
+    fmt::print(fg(white), "Name:\n");
     fmt::print("{}", ws_2);
     fmt::print(fmt::emphasis::underline, "{} v{}\n\n", name, version);
 }
@@ -157,7 +158,7 @@ void HelpMessages::print_options()
         return;
     }
 
-    fmt::print(fg(fmt::terminal_color::bright_white), "Options:\n");
+    fmt::print(fg(white), "Options:\n");
 
     for (auto it = this->options.begin(); it != this->options.end(); it++) {
         fmt::print(fmt::emphasis::faint, "{}{}, {}\n", ws_2, it->opt_short, it->opt_long);
@@ -173,7 +174,7 @@ void HelpMessages::print_synopsis()
         return;
     }
 
-    fmt::print(fg(fmt::terminal_color::bright_white), "Synopsis:\n");
+    fmt::print(fg(white), "Synopsis:\n");
     fmt::print("{}gpt {}\n\n", ws_2, this->synopsis);
 }
 
