@@ -37,11 +37,6 @@ void print_error(const std::string &message)
     fmt::print(fg(red), "{}\n", message);
 }
 
-void print_response(const std::string &response)
-{
-    fmt::print(fg(white), "Response: {}\n", response);
-}
-
 void print_results(const std::string &results)
 {
     fmt::print(fg(white), "Results: ");
