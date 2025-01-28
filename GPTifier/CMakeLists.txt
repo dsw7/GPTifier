@@ -14,6 +14,15 @@ add_compile_definitions(BUILD_DATE="${BUILD_DATE}")
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
 # -----------------------------------------------------------------------------------------------------------
+# Testing
+
+option(ENABLE_TESTING "Set the TESTING_ENABLED macro" OFF)
+
+if(ENABLE_TESTING)
+  add_compile_definitions(TESTING_ENABLED)
+endif()
+
+# -----------------------------------------------------------------------------------------------------------
 # nlohmann/json.hpp
 
 message(STATUS "Checking for nlohmann/json.hpp")
