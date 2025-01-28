@@ -6,12 +6,12 @@
 #include "json.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
-#include "reporting.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
 #include <map>
 #include <optional>
+#include <stdexcept>
 #include <string>
 
 namespace {
@@ -50,15 +50,13 @@ void create_fine_tuning_job(int argc, char **argv)
     if (params.training_file.has_value()) {
         fmt::print("Training using file with ID: {}\n", params.training_file.value());
     } else {
-        reporting::print_error("No training file ID provided");
-        return;
+        throw std::runtime_error("No training file ID provided");
     }
 
     if (params.model.has_value()) {
         fmt::print("Training model: {}\n", params.model.value());
     } else {
-        reporting::print_error("No model provided");
-        return;
+        throw std::runtime_error("No model provided");
     }
 
     print_sep();

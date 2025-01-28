@@ -6,7 +6,6 @@
 #include "json.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
-#include "reporting.hpp"
 #include "testing.hpp"
 
 #include <fmt/core.h>
