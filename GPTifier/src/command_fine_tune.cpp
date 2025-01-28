@@ -4,6 +4,7 @@
 #include "cli.hpp"
 #include "help_messages.hpp"
 #include "json.hpp"
+#include "params.hpp"
 #include "parsers.hpp"
 #include "reporting.hpp"
 #include "utils.hpp"
@@ -42,7 +43,7 @@ void upload_fine_tuning_file(int argc, char **argv)
 
 void create_fine_tuning_job(int argc, char **argv)
 {
-    cli::ParamsFineTune params = cli::get_opts_create_fine_tuning_job(argc, argv);
+    ParamsFineTune params = cli::get_opts_create_fine_tuning_job(argc, argv);
 
     reporting::print_sep();
 
@@ -125,7 +126,7 @@ void print_jobs(int created_at, const Job &job)
 
 void list_fine_tuning_jobs(int argc, char **argv)
 {
-    cli::ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
+    ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
 
     std::string limit = params.limit.value_or("20");
 

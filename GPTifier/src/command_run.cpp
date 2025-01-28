@@ -6,6 +6,7 @@
 #include "datadir.hpp"
 #include "input_selection.hpp"
 #include "json.hpp"
+#include "params.hpp"
 #include "parsers.hpp"
 #include "reporting.hpp"
 #include "testing.hpp"
@@ -182,7 +183,7 @@ void time_api_call()
 
 void command_run(int argc, char **argv)
 {
-    cli::ParamsRun params = cli::get_opts_run(argc, argv);
+    ParamsRun params = cli::get_opts_run(argc, argv);
 
     if (not params.prompt.has_value()) {
         reporting::print_sep();

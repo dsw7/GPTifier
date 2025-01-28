@@ -6,6 +6,7 @@
 #include "datadir.hpp"
 #include "input_selection.hpp"
 #include "json.hpp"
+#include "params.hpp"
 #include "parsers.hpp"
 #include "reporting.hpp"
 
@@ -40,7 +41,7 @@ void export_embedding(const std::string &response, const std::string &input)
 
 void command_embed(int argc, char **argv)
 {
-    cli::ParamsEmbedding params = cli::get_opts_embed(argc, argv);
+    ParamsEmbedding params = cli::get_opts_embed(argc, argv);
 
     if (not params.input.has_value()) {
         reporting::print_sep();

@@ -4,6 +4,7 @@
 #include "cli.hpp"
 #include "configs.hpp"
 #include "json.hpp"
+#include "params.hpp"
 #include "parsers.hpp"
 #include "reporting.hpp"
 #include "testing.hpp"
@@ -31,7 +32,7 @@ std::string select_chat_model()
 
 void command_short(int argc, char **argv)
 {
-    cli::ParamsShort params = cli::get_opts_short(argc, argv);
+    ParamsShort params = cli::get_opts_short(argc, argv);
 
     if (not params.prompt.has_value()) {
         throw std::runtime_error("Prompt is empty");
