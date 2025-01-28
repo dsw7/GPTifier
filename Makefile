@@ -32,6 +32,9 @@ clean:
 lint:
 	@cppcheck GPTifier --enable=all
 
-test: compile
+test: export PATH_BIN = $(CURDIR)/build/gpt
+test:
+	@cmake -S GPTifier -B build
+	@make --jobs=12 --directory=build
 	@python3 -m pytest -v tests
 	@python3 -m pytest -v tests --memory
