@@ -37,10 +37,4 @@ void print_error(const std::string &message)
     fmt::print(fg(red), "{}\n", message);
 }
 
-void print_results(const std::string &results)
-{
-    fmt::print(fg(white), "Results: ");
-    fmt::print(fg(green), "{}\n", results);
-}
-
 } // namespace reporting

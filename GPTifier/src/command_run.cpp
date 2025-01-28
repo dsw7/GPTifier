@@ -67,9 +67,12 @@ void print_chat_completion_response(const nlohmann::json &results)
     nlohmann::json results_copy = results;
     results_copy["choices"][0]["message"]["content"] = "...";
 
-    fmt::print(fg(white), "Response: {}\n", results_copy.dump(4));
+    fmt::print(fg(white), "Response: ");
+    fmt::print("{}\n", results_copy.dump(4));
     reporting::print_sep();
-    reporting::print_results(content_original);
+
+    fmt::print(fg(white), "Results: ");
+    fmt::print(fg(green), "{}\n", content_original);
 
     reporting::print_sep();
 }
