@@ -1,6 +1,5 @@
 #include "input_selection.hpp"
 
-#include "testing.hpp"
 #include "utils.hpp"
 
 #include <filesystem>
@@ -13,7 +12,9 @@ namespace {
 
 std::string get_text_from_cli_specified_file(const std::string &filename)
 {
-    testing::log_test("Loaded input text from custom file");
+#ifdef TESTING_ENABLED
+    fmt::print("[TEST] Loaded input text from custom file\n");
+#endif
     return read_text_from_file(filename);
 }
 
@@ -29,7 +30,9 @@ std::optional<std::string> get_text_from_inputfile()
         return std::nullopt;
     }
 
-    testing::log_test("Loaded input text from Inputfile");
+#ifdef TESTING_ENABLED
+    fmt::print("[TEST] Loaded input text from Inputfile\n");
+#endif
     fmt::print("Found an Inputfile in current working directory!\n");
 
     const std::string text = read_text_from_file(inputfile);
@@ -47,7 +50,9 @@ std::optional<std::string> get_text_from_stdin()
     std::string text;
 
     std::getline(std::cin, text);
-    testing::log_test("Loaded input text from stdin");
+#ifdef TESTING_ENABLED
+    fmt::print("[TEST] Loaded input text from stdin\n");
+#endif
 
     if (text.empty()) {
         return std::nullopt;

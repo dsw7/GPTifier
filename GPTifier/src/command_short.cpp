@@ -4,9 +4,8 @@
 #include "cli.hpp"
 #include "configs.hpp"
 #include "json.hpp"
+#include "params.hpp"
 #include "parsers.hpp"
-#include "reporting.hpp"
-#include "testing.hpp"
 
 #include <fmt/core.h>
 #include <string>
@@ -15,10 +14,10 @@ namespace {
 
 std::string select_chat_model()
 {
-    if (testing::is_test_running()) {
-        static std::string low_cost_model = "gpt-3.5-turbo";
-        return low_cost_model;
-    }
+#ifdef TESTING_ENABLED
+    static std::string low_cost_model = "gpt-3.5-turbo";
+    return low_cost_model;
+#endif
 
     if (configs.chat.model.has_value()) {
         return configs.chat.model.value();
@@ -31,7 +30,7 @@ std::string select_chat_model()
 
 void command_short(int argc, char **argv)
 {
-    cli::ParamsShort params = cli::get_opts_short(argc, argv);
+    ParamsShort params = cli::get_opts_short(argc, argv);
 
     if (not params.prompt.has_value()) {
         throw std::runtime_error("Prompt is empty");

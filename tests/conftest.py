@@ -1,9 +1,10 @@
+from os import environ
 from pathlib import Path
 from platform import system
 from tempfile import TemporaryDirectory, NamedTemporaryFile, gettempdir
 from typing import Generator, Any
-from pytest import fixture, exit
 from utils import EX_MEM_LEAK, Command
+from pytest import fixture, exit
 
 
 def pytest_addoption(parser: Any) -> None:
@@ -19,23 +20,19 @@ def pre_test_checks(pytestconfig: Any) -> None:
         if system() == "Darwin":
             exit("Valgrind not supported on MacOS")
 
-    if not Path("build/gpt").exists():
+    if "PATH_BIN" not in environ:
         exit("Was the GPTifier binary compiled?")
 
 
 @fixture(scope="function")
 def command(pytestconfig: Any) -> Command:
+    path_bin = environ["PATH_BIN"]
 
     if not pytestconfig.getoption("memory"):
-        return Command(["build/gpt"])
+        return Command([path_bin])
 
     return Command(
-        [
-            "valgrind",
-            f"--error-exitcode={EX_MEM_LEAK}",
-            "--leak-check=full",
-            "build/gpt",
-        ]
+        ["valgrind", f"--error-exitcode={EX_MEM_LEAK}", "--leak-check=full", path_bin]
     )
 
 

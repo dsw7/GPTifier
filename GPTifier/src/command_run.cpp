@@ -6,9 +6,8 @@
 #include "datadir.hpp"
 #include "input_selection.hpp"
 #include "json.hpp"
+#include "params.hpp"
 #include "parsers.hpp"
-#include "reporting.hpp"
-#include "testing.hpp"
 #include "utils.hpp"
 
 #include <chrono>
@@ -31,12 +30,10 @@ struct Completion {
 
 std::string select_chat_model()
 {
-    if (testing::is_test_running()) {
-        static std::string low_cost_model = "gpt-3.5-turbo";
-        fmt::print("Defaulting to using a low cost model: {}\n", low_cost_model);
-
-        return low_cost_model;
-    }
+#ifdef TESTING_ENABLED
+    static std::string low_cost_model = "gpt-3.5-turbo";
+    return low_cost_model;
+#endif
 
     if (configs.chat.model.has_value()) {
         return configs.chat.model.value();
@@ -66,11 +63,14 @@ void print_chat_completion_response(const nlohmann::json &results)
     nlohmann::json results_copy = results;
     results_copy["choices"][0]["message"]["content"] = "...";
 
-    reporting::print_response(results_copy.dump(2));
-    reporting::print_sep();
-    reporting::print_results(content_original);
+    fmt::print(fg(white), "Response: ");
+    fmt::print("{}\n", results_copy.dump(4));
+    print_sep();
 
-    reporting::print_sep();
+    fmt::print(fg(white), "Results: ");
+    fmt::print(fg(green), "{}\n", content_original);
+
+    print_sep();
 }
 
 void write_message_to_file(const Completion &completion)
@@ -120,7 +120,7 @@ void export_chat_completion_response(const nlohmann::json &results, const std::s
 
     if (choice == "n") {
         std::cout << "> Not exporting response.\n";
-        reporting::print_sep();
+        print_sep();
         return;
     }
 
@@ -139,7 +139,7 @@ void export_chat_completion_response(const nlohmann::json &results, const std::s
     }
 
     write_message_to_file(completion);
-    reporting::print_sep();
+    print_sep();
 }
 
 void dump_chat_completion_response(const nlohmann::json &results, const std::string &json_dump_file)
@@ -175,21 +175,21 @@ void time_api_call()
     }
 
     std::cout << "\n";
-    reporting::print_sep();
+    print_sep();
 }
 
 } // namespace
 
 void command_run(int argc, char **argv)
 {
-    cli::ParamsRun params = cli::get_opts_run(argc, argv);
+    ParamsRun params = cli::get_opts_run(argc, argv);
 
     if (not params.prompt.has_value()) {
-        reporting::print_sep();
+        print_sep();
         params.prompt = load_input_text(params.prompt_file);
     }
 
-    reporting::print_sep();
+    print_sep();
     std::string model;
 
     if (params.model.has_value()) {

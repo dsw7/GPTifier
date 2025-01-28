@@ -4,13 +4,14 @@
 #include "cli.hpp"
 #include "help_messages.hpp"
 #include "json.hpp"
+#include "params.hpp"
 #include "parsers.hpp"
-#include "reporting.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
 #include <map>
 #include <optional>
+#include <stdexcept>
 #include <string>
 
 namespace {
@@ -42,25 +43,23 @@ void upload_fine_tuning_file(int argc, char **argv)
 
 void create_fine_tuning_job(int argc, char **argv)
 {
-    cli::ParamsFineTune params = cli::get_opts_create_fine_tuning_job(argc, argv);
+    ParamsFineTune params = cli::get_opts_create_fine_tuning_job(argc, argv);
 
-    reporting::print_sep();
+    print_sep();
 
     if (params.training_file.has_value()) {
         fmt::print("Training using file with ID: {}\n", params.training_file.value());
     } else {
-        reporting::print_error("No training file ID provided");
-        return;
+        throw std::runtime_error("No training file ID provided");
     }
 
     if (params.model.has_value()) {
         fmt::print("Training model: {}\n", params.model.value());
     } else {
-        reporting::print_error("No model provided");
-        return;
+        throw std::runtime_error("No model provided");
     }
 
-    reporting::print_sep();
+    print_sep();
 
     const std::string response = api::create_fine_tuning_job(params.training_file.value(), params.model.value());
     const nlohmann::json results = parse_response(response);
@@ -125,7 +124,7 @@ void print_jobs(int created_at, const Job &job)
 
 void list_fine_tuning_jobs(int argc, char **argv)
 {
-    cli::ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
+    ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
 
     std::string limit = params.limit.value_or("20");
 
@@ -137,16 +136,16 @@ void list_fine_tuning_jobs(int argc, char **argv)
     }
 
     if (not params.limit.has_value()) {
-        reporting::print_sep();
+        print_sep();
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
     }
 
     const nlohmann::json results = parse_response(response);
 
-    reporting::print_sep();
+    print_sep();
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
 
-    reporting::print_sep();
+    print_sep();
     std::map<int, Job> jobs;
 
     for (const auto &entry: results["data"]) {
@@ -168,7 +167,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
         print_jobs(it->first, it->second);
     }
 
-    reporting::print_sep();
+    print_sep();
 }
 
 } // namespace

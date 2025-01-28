@@ -21,6 +21,12 @@ void print_build_information()
     data["build_date"] = BUILD_DATE;
     data["version"] = PROJECT_VERSION;
 
+#ifdef TESTING_ENABLED
+    data["build_type"] = "Testing";
+#else
+    data["build_type"] = "Production";
+#endif
+
     fmt::print("{}\n", data.dump(2));
 }
 
