@@ -27,13 +27,4 @@ bool is_test_running()
     return pytest_running;
 }
 
-void log_test(const std::string &message)
-{
-    static bool pytest_running = is_pytest_running();
-
-    if (pytest_running) {
-        fmt::print("[TEST] {}\n", message);
-    }
-}
-
 } // namespace testing
