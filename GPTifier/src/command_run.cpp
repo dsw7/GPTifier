@@ -8,7 +8,6 @@
 #include "json.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
-#include "reporting.hpp"
 #include "testing.hpp"
 #include "utils.hpp"
 
@@ -69,12 +68,12 @@ void print_chat_completion_response(const nlohmann::json &results)
 
     fmt::print(fg(white), "Response: ");
     fmt::print("{}\n", results_copy.dump(4));
-    reporting::print_sep();
+    print_sep();
 
     fmt::print(fg(white), "Results: ");
     fmt::print(fg(green), "{}\n", content_original);
 
-    reporting::print_sep();
+    print_sep();
 }
 
 void write_message_to_file(const Completion &completion)
@@ -124,7 +123,7 @@ void export_chat_completion_response(const nlohmann::json &results, const std::s
 
     if (choice == "n") {
         std::cout << "> Not exporting response.\n";
-        reporting::print_sep();
+        print_sep();
         return;
     }
 
@@ -143,7 +142,7 @@ void export_chat_completion_response(const nlohmann::json &results, const std::s
     }
 
     write_message_to_file(completion);
-    reporting::print_sep();
+    print_sep();
 }
 
 void dump_chat_completion_response(const nlohmann::json &results, const std::string &json_dump_file)
@@ -179,7 +178,7 @@ void time_api_call()
     }
 
     std::cout << "\n";
-    reporting::print_sep();
+    print_sep();
 }
 
 } // namespace
@@ -189,11 +188,11 @@ void command_run(int argc, char **argv)
     ParamsRun params = cli::get_opts_run(argc, argv);
 
     if (not params.prompt.has_value()) {
-        reporting::print_sep();
+        print_sep();
         params.prompt = load_input_text(params.prompt_file);
     }
 
-    reporting::print_sep();
+    print_sep();
     std::string model;
 
     if (params.model.has_value()) {

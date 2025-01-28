@@ -45,7 +45,7 @@ void create_fine_tuning_job(int argc, char **argv)
 {
     ParamsFineTune params = cli::get_opts_create_fine_tuning_job(argc, argv);
 
-    reporting::print_sep();
+    print_sep();
 
     if (params.training_file.has_value()) {
         fmt::print("Training using file with ID: {}\n", params.training_file.value());
@@ -61,7 +61,7 @@ void create_fine_tuning_job(int argc, char **argv)
         return;
     }
 
-    reporting::print_sep();
+    print_sep();
 
     const std::string response = api::create_fine_tuning_job(params.training_file.value(), params.model.value());
     const nlohmann::json results = parse_response(response);
@@ -138,16 +138,16 @@ void list_fine_tuning_jobs(int argc, char **argv)
     }
 
     if (not params.limit.has_value()) {
-        reporting::print_sep();
+        print_sep();
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
     }
 
     const nlohmann::json results = parse_response(response);
 
-    reporting::print_sep();
+    print_sep();
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
 
-    reporting::print_sep();
+    print_sep();
     std::map<int, Job> jobs;
 
     for (const auto &entry: results["data"]) {
@@ -169,7 +169,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
         print_jobs(it->first, it->second);
     }
 
-    reporting::print_sep();
+    print_sep();
 }
 
 } // namespace

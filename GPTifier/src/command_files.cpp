@@ -5,7 +5,6 @@
 #include "help_messages.hpp"
 #include "json.hpp"
 #include "parsers.hpp"
-#include "reporting.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -41,10 +40,10 @@ void command_files_list(int argc, char **argv)
 
     const nlohmann::json results = parse_response(response);
 
-    reporting::print_sep();
+    print_sep();
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
 
-    reporting::print_sep();
+    print_sep();
     std::map<int, File> files;
 
     for (const auto &entry: results["data"]) {
@@ -56,7 +55,7 @@ void command_files_list(int argc, char **argv)
         print_file(it->first, it->second);
     }
 
-    reporting::print_sep();
+    print_sep();
 }
 
 void command_files_delete(int argc, char **argv)

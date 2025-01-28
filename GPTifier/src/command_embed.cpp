@@ -8,7 +8,7 @@
 #include "json.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
-#include "reporting.hpp"
+#include "utils.hpp"
 
 #include <fmt/core.h>
 #include <fstream>
@@ -34,7 +34,7 @@ void export_embedding(const std::string &response, const std::string &input)
     st_filename << std::setw(2) << results;
     st_filename.close();
 
-    reporting::print_sep();
+    print_sep();
 }
 
 } // namespace
@@ -44,7 +44,7 @@ void command_embed(int argc, char **argv)
     ParamsEmbedding params = cli::get_opts_embed(argc, argv);
 
     if (not params.input.has_value()) {
-        reporting::print_sep();
+        print_sep();
         params.input = load_input_text(params.input_file);
     }
 
@@ -62,6 +62,6 @@ void command_embed(int argc, char **argv)
 
     const std::string response = api::create_embedding(model, params.input.value());
 
-    reporting::print_sep();
+    print_sep();
     export_embedding(response, params.input.value());
 }

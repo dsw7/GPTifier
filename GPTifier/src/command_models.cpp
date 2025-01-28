@@ -4,7 +4,6 @@
 #include "cli.hpp"
 #include "json.hpp"
 #include "parsers.hpp"
-#include "reporting.hpp"
 #include "utils.hpp"
 
 #include <algorithm>
@@ -27,9 +26,9 @@ bool is_fine_tuning_model(const std::string &model)
 
 void print_models(std::vector<OpenAIModel> &models)
 {
-    reporting::print_sep();
+    print_sep();
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
-    reporting::print_sep();
+    print_sep();
 
     std::sort(models.begin(), models.end(), [](const OpenAIModel &a, const OpenAIModel &b) {
         if (a.created != b.created) {
@@ -44,7 +43,7 @@ void print_models(std::vector<OpenAIModel> &models)
         fmt::print("{:<25}{:<35}{}\n", datetime, it->owned_by, it->id);
     }
 
-    reporting::print_sep();
+    print_sep();
 }
 
 void print_models_response(const std::string &response)

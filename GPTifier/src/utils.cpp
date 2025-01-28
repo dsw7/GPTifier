@@ -4,6 +4,31 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <sys/ioctl.h>
+#include <unistd.h>
+
+namespace {
+
+short get_terminal_columns()
+{
+    static struct winsize window_size;
+    window_size.ws_col = 0;
+
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &window_size) == 0) {
+        return window_size.ws_col;
+    }
+
+    return 20;
+}
+
+} // namespace
+
+void print_sep()
+{
+    static short columns = get_terminal_columns();
+    static std::string separator = std::string(columns, '-');
+    fmt::print("{}\n", separator);
+}
 
 std::string datetime_from_unix_timestamp(const std::time_t &timestamp)
 {
