@@ -1,6 +1,5 @@
 #include "input_selection.hpp"
 
-#include "testing.hpp"
 #include "utils.hpp"
 
 #include <filesystem>

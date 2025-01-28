@@ -6,7 +6,6 @@
 #include "json.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
-#include "testing.hpp"
 
 #include <fmt/core.h>
 #include <string>
@@ -15,10 +14,10 @@ namespace {
 
 std::string select_chat_model()
 {
-    if (testing::is_test_running()) {
-        static std::string low_cost_model = "gpt-3.5-turbo";
-        return low_cost_model;
-    }
+#ifdef TESTING_ENABLED
+    static std::string low_cost_model = "gpt-3.5-turbo";
+    return low_cost_model;
+#endif
 
     if (configs.chat.model.has_value()) {
         return configs.chat.model.value();

@@ -92,7 +92,6 @@ add_executable(
   "src/input_selection.cpp"
   "src/main.cpp"
   "src/parsers.cpp"
-  "src/testing.cpp"
   "src/utils.cpp"
 )
 target_link_libraries(
