@@ -61,21 +61,13 @@ def test_read_from_inputfile(
     assert load_content(json_file) == ">>>8<<<"
 
 
-MESSAGES_BAD_TEMP = [
-    (-2.5, "decimal below minimum value. Expected a value >= 0, but got -2.5 instead."),
-    (2.5, "decimal above maximum value. Expected a value <= 2, but got 2.5 instead."),
-]
-
-
-@mark.parametrize("temp, message", MESSAGES_BAD_TEMP)
-def test_invalid_temp(
-    command: Command, temp: float, message: str, capfd: Capture
-) -> None:
+@mark.parametrize("temp", [-2.5, 2.5])
+def test_invalid_temp(command: Command, temp: float, capfd: Capture) -> None:
     command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", "-u"])
     process = run(command)
 
     _, stderr = unpack_stdout_stderr(capfd)
-    assert f"Invalid 'temperature': {message}" in stderr
+    assert "Temperature must be between 0 and 2" in stderr
     assert process.returncode != EX_OK
 
 
