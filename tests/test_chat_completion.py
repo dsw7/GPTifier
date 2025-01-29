@@ -62,12 +62,21 @@ def test_read_from_inputfile(
 
 
 @mark.parametrize("temp", [-2.5, 2.5])
-def test_invalid_temp(command: Command, temp: float, capfd: Capture) -> None:
+def test_out_of_range_temp(command: Command, temp: float, capfd: Capture) -> None:
     command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", "-u"])
     process = run(command)
 
     _, stderr = unpack_stdout_stderr(capfd)
     assert "Temperature must be between 0 and 2" in stderr
+    assert process.returncode != EX_OK
+
+
+def test_invalid_temp(command: Command, capfd: Capture) -> None:
+    command.extend(["run", f"-p'{PROMPT}'", "-tfoobar", "-u"])
+    process = run(command)
+
+    _, stderr = unpack_stdout_stderr(capfd)
+    assert "Failed to convert 'foobar' to float" in stderr
     assert process.returncode != EX_OK
 
 
