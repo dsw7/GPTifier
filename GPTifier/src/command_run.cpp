@@ -198,7 +198,7 @@ void command_run(int argc, char **argv)
         model = select_chat_model();
     }
 
-    float temp = get_temperature(params.temperature);
+    float temp = get_temperature(std::get<std::string>(params.temperature));
 
     timer_enabled = true;
     std::thread timer(time_api_call);

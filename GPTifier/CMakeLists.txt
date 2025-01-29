@@ -91,6 +91,7 @@ add_executable(
   "src/help_messages.cpp"
   "src/input_selection.cpp"
   "src/main.cpp"
+  "src/params.cpp"
   "src/parsers.cpp"
   "src/utils.cpp"
 )
