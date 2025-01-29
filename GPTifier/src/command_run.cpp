@@ -42,20 +42,6 @@ std::string select_chat_model()
     throw std::runtime_error("No model provided via configuration file or command line");
 }
 
-float get_temperature(const std::string &temp_s)
-{
-    float temp_f = 1.00;
-
-    try {
-        temp_f = std::stof(temp_s);
-    } catch (std::invalid_argument &e) {
-        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), temp_s);
-        throw std::runtime_error(errmsg);
-    }
-
-    return temp_f;
-}
-
 void print_chat_completion_response(const nlohmann::json &results)
 {
     const std::string content_original = results["choices"][0]["message"]["content"];
@@ -183,6 +169,7 @@ void time_api_call()
 void command_run(int argc, char **argv)
 {
     ParamsRun params = cli::get_opts_run(argc, argv);
+    params.sanitize();
 
     if (not params.prompt.has_value()) {
         print_sep();
@@ -198,7 +185,10 @@ void command_run(int argc, char **argv)
         model = select_chat_model();
     }
 
-    float temp = get_temperature(std::get<std::string>(params.temperature));
+    float temp = 1.00;
+    if (std::holds_alternative<float>(params.temperature)) {
+        temp = std::get<float>(params.temperature);
+    }
 
     timer_enabled = true;
     std::thread timer(time_api_call);

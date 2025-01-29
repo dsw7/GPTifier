@@ -10,7 +10,7 @@ struct ParamsRun {
     std::optional<std::string> model = std::nullopt;
     std::optional<std::string> prompt = std::nullopt;
     std::optional<std::string> prompt_file = std::nullopt;
-    std::variant<std::string, float> temperature = "1";
+    std::variant<std::string, float> temperature = "1.00";
 
     void sanitize();
 };
