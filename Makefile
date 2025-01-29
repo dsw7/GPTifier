@@ -1,6 +1,10 @@
 .PHONY = help format compile clean lint test
 .DEFAULT_GOAL = help
 
+BUILD_DIR = build
+BUILD_DIR_PROD = $(BUILD_DIR)/prod
+BUILD_DIR_TEST = $(BUILD_DIR)/test
+
 define HELP_LIST_TARGETS
 To format code:
     $$ make format
@@ -23,18 +27,20 @@ format:
 	@clang-format -i --verbose --style=file GPTifier/src/*.cpp GPTifier/include/*.hpp
 
 compile: format
-	@cmake -S GPTifier -B build
-	@make --jobs=12 --directory=build install
+	@cmake -S GPTifier -B $(BUILD_DIR_PROD)
+	@make --jobs=12 --directory=$(BUILD_DIR_PROD) install
+
+compile-test: format # Private target
+	@cmake -S GPTifier -B $(BUILD_DIR_TEST) -DENABLE_TESTING=ON
+	@make --jobs=12 --directory=$(BUILD_DIR_TEST)
 
 clean:
-	@rm -rfv build
+	@rm -rfv $(BUILD_DIR)
 
 lint:
 	@cppcheck GPTifier --enable=all
 
-test: export PATH_BIN = $(CURDIR)/build/gpt
-test:
-	@cmake -S GPTifier -B build -DENABLE_TESTING=ON
-	@make --jobs=12 --directory=build
+test: export PATH_BIN = $(CURDIR)/$(BUILD_DIR_TEST)/gpt
+test: compile-test
 	@python3 -m pytest -v tests
 	@python3 -m pytest -v tests --memory
