@@ -24,6 +24,14 @@ def test_version_version(command: Command, option: str, capfd: Capture) -> None:
 
 
 @mark.parametrize("option", ["-v", "--version"])
+def test_version_build_type(command: Command, option: str, capfd: Capture) -> None:
+    data = run_command(command, option, capfd)
+
+    assert "build_type" in data
+    assert data["build_type"] == "Testing"
+
+
+@mark.parametrize("option", ["-v", "--version"])
 def test_version_build_date(command: Command, option: str, capfd: Capture) -> None:
     data = run_command(command, option, capfd)
     assert "build_date" in data
