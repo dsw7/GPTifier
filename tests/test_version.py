@@ -6,17 +6,27 @@ from pytest import mark
 from utils import unpack_stdout_stderr, Command, Capture
 
 
-@mark.parametrize("option", ["-v", "--version"])
-def test_version(command: Command, option: str, capfd: Capture) -> None:
+def run_command(command: Command, option: str, capfd: Capture) -> dict[str, str]:
     command.extend([option])
     process = run(command)
 
     stdout, _ = unpack_stdout_stderr(capfd)
     assert process.returncode == EX_OK
 
-    data = loads(stdout)
-    assert "build_date" in data
+    data: dict[str, str] = loads(stdout)
+    return data
+
+
+@mark.parametrize("option", ["-v", "--version"])
+def test_version_version(command: Command, option: str, capfd: Capture) -> None:
+    data = run_command(command, option, capfd)
     assert "version" in data
+
+
+@mark.parametrize("option", ["-v", "--version"])
+def test_version_build_date(command: Command, option: str, capfd: Capture) -> None:
+    data = run_command(command, option, capfd)
+    assert "build_date" in data
 
     build_date = datetime.strptime(data["build_date"], "%Y-%m-%dT%H:%M:%S")
     now = datetime.now()
