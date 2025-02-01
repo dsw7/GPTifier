@@ -1,5 +1,4 @@
 from datetime import datetime
-from json import loads
 from unittest import TestCase
 from helpers import run_process
 
@@ -12,7 +11,7 @@ class TestVersion(TestCase):
                 proc = run_process(option)
                 proc.assert_success()
 
-                stdout = loads(proc.stdout)
+                stdout = proc.load_stdout_to_json()
                 self.assertIn("version", stdout)
 
     def test_version_build_type(self) -> None:
@@ -21,7 +20,7 @@ class TestVersion(TestCase):
                 proc = run_process(option)
                 proc.assert_success()
 
-                stdout = loads(proc.stdout)
+                stdout = proc.load_stdout_to_json()
                 self.assertIn("build_type", stdout)
                 self.assertEqual(stdout["build_type"], "Testing")
 
@@ -31,7 +30,7 @@ class TestVersion(TestCase):
                 proc = run_process(option)
                 proc.assert_success()
 
-                stdout = loads(proc.stdout)
+                stdout = proc.load_stdout_to_json()
                 self.assertIn("build_date", stdout)
 
                 build_date = datetime.strptime(
