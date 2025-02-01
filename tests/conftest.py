@@ -1,7 +1,6 @@
 from os import environ
-from pathlib import Path
 from platform import system
-from tempfile import TemporaryDirectory, NamedTemporaryFile, gettempdir
+from tempfile import NamedTemporaryFile, gettempdir
 from typing import Generator, Any
 from utils import EX_MEM_LEAK, Command
 from pytest import fixture, exit
@@ -35,13 +34,6 @@ def command(pytestconfig: Any) -> Command:
         ["valgrind", f"--error-exitcode={EX_MEM_LEAK}", "--leak-check=full", path_bin]
     )
 
-
-@fixture
-def tempdir() -> Generator[Path, None, None]:
-    handle_tempdir = TemporaryDirectory()
-
-    yield Path(handle_tempdir.name)
-    handle_tempdir.cleanup()
 
 
 @fixture(scope="function")
