@@ -1,109 +1,85 @@
 from json import loads
-from os import EX_OK
 from pathlib import Path
-from subprocess import run
-from typing import Any
-from pytest import mark
-from utils import unpack_stdout_stderr, EX_MEM_LEAK, Command, Capture
+from tempfile import NamedTemporaryFile, gettempdir
+from unittest import TestCase
+from .helpers import run_process
 
-PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
+Prompt = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
 
 
-def load_content(json_file: str) -> Any:
+def load_content(json_file: str) -> str:
     with open(json_file) as f:
         contents = loads(f.read())
 
-    return contents["choices"][0]["message"]["content"]
+    result: str = contents["choices"][0]["message"]["content"]
+    return result
 
 
-@mark.parametrize("option", ["-h", "--help"])
-def test_run_help(command: Command, option: str, capfd: Capture) -> None:
-    command.extend(["run", option])
-    process = run(command)
+class TestChatCompletionReadFromInputfile(TestCase):
+    def setUp(self) -> None:
+        self.filename = Path.cwd() / "Inputfile"
+        self.filename.write_text(Prompt)
 
-    stdout, _ = unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    assert "Synopsis" in stdout
+    def tearDown(self) -> None:
+        self.filename.unlink()
 
-
-def test_read_from_command_line(
-    json_file: str, command: Command, capfd: Capture
-) -> None:
-    command.extend(["run", f"-p'{PROMPT}'", "-t0", f"-d{json_file}", "-u"])
-    process = run(command)
-
-    unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    assert load_content(json_file) == ">>>8<<<"
+    def test_read_from_inputfile(self) -> None:
+        with NamedTemporaryFile(dir=gettempdir()) as f:
+            json_file = f.name
+            proc = run_process(["run", "-t0", f"-d{json_file}", "-u"])
+            proc.assert_success()
+            self.assertEqual(load_content(json_file), ">>>8<<<")
 
 
-def test_read_from_file(json_file: str, command: Command, capfd: Capture) -> None:
-    prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
+class TestChatCompletion(TestCase):
+    def test_help(self) -> None:
+        for option in ["-h", "--help"]:
+            with self.subTest(option=option):
+                proc = run_process(["run", option])
+                proc.assert_success()
+                self.assertIn("Synopsis", proc.stdout)
 
-    command.extend(["run", f"-r{prompt}", "-t0", f"-d{json_file}", "-u"])
-    process = run(command)
+    def test_read_from_command_line(self) -> None:
+        with NamedTemporaryFile(dir=gettempdir()) as f:
+            json_file = f.name
+            proc = run_process(["run", f"-p'{Prompt}'", "-t0", f"-d{json_file}", "-u"])
+            proc.assert_success()
+            self.assertEqual(load_content(json_file), ">>>8<<<")
 
-    unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    assert load_content(json_file) == ">>>8<<<"
+    def test_read_from_file(self) -> None:
+        with NamedTemporaryFile(dir=gettempdir()) as f:
+            json_file = f.name
+            prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
+            proc = run_process(["run", f"-r{prompt}", "-t0", f"-d{json_file}", "-u"])
+            proc.assert_success()
+            self.assertEqual(load_content(json_file), ">>>8<<<")
 
+    def test_invalid_temp(self) -> None:
+        proc = run_process(["run", f"-p'{Prompt}'", "-tfoobar", "-u"])
+        proc.assert_failure()
+        self.assertIn("Failed to convert 'foobar' to float", proc.stderr)
 
-def test_read_from_inputfile(
-    json_file: str, command: Command, inputfile: Path, capfd: Capture
-) -> None:
-    inputfile.write_text(PROMPT)
+    def test_missing_prompt_file(self) -> None:
+        proc = run_process(["run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u"])
+        proc.assert_failure()
+        self.assertIn("Could not open file '/tmp/yU8nnkRs.txt'", proc.stderr)
 
-    command.extend(["run", "-t0", f"-d{json_file}", "-u"])
-    process = run(command)
+    def test_invalid_dump_location(self) -> None:
+        proc = run_process(["run", f"--prompt='{Prompt}'", "--dump=/tmp/a/b/c", "-u"])
+        proc.assert_failure()
+        self.assertIn("Unable to open '/tmp/a/b/c'", proc.stderr)
 
-    unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    assert load_content(json_file) == ">>>8<<<"
+    def test_invalid_model(self) -> None:
+        proc = run_process(["run", f"-p'{Prompt}'", "-mfoobar", "-u"])
+        proc.assert_failure()
+        self.assertIn(
+            "The model `foobar` does not exist or you do not have access to it.",
+            proc.stderr,
+        )
 
-
-@mark.parametrize("temp", [-2.5, 2.5])
-def test_out_of_range_temp(command: Command, temp: float, capfd: Capture) -> None:
-    command.extend(["run", f"-p'{PROMPT}'", f"-t{temp}", "-u"])
-    process = run(command)
-
-    _, stderr = unpack_stdout_stderr(capfd)
-    assert "Temperature must be between 0 and 2" in stderr
-    assert process.returncode != EX_OK
-
-
-def test_invalid_temp(command: Command, capfd: Capture) -> None:
-    command.extend(["run", f"-p'{PROMPT}'", "-tfoobar", "-u"])
-    process = run(command)
-
-    _, stderr = unpack_stdout_stderr(capfd)
-    assert "Failed to convert 'foobar' to float" in stderr
-    assert process.returncode != EX_OK
-
-
-def test_missing_prompt_file(command: Command, capfd: Capture) -> None:
-    command.extend(["run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u"])
-    process = run(command)
-
-    _, stderr = unpack_stdout_stderr(capfd)
-    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
-    assert "Could not open file '/tmp/yU8nnkRs.txt'" in stderr
-
-
-def test_invalid_dump_location(command: Command, capfd: Capture) -> None:
-    command.extend(["run", f"--prompt='{PROMPT}'", "--dump=/tmp/a/b/c", "-u"])
-    process = run(command)
-
-    _, stderr = unpack_stdout_stderr(capfd)
-    assert process.returncode not in (EX_OK, EX_MEM_LEAK)
-    assert "Unable to open '/tmp/a/b/c'" in stderr
-
-
-def test_invalid_model(command: Command, capfd: Capture) -> None:
-    command.extend(["run", f"-p'{PROMPT}'", "-mfoobar", "-u"])
-    process = run(command)
-
-    _, stderr = unpack_stdout_stderr(capfd)
-    assert (
-        "The model `foobar` does not exist or you do not have access to it." in stderr
-    )
-    assert process.returncode != EX_OK
+    def test_out_of_range_temp(self) -> None:
+        for temp in [-2.5, 2.5]:
+            with self.subTest(temp=temp):
+                proc = run_process(["run", f"-p'{Prompt}'", f"-t{temp}", "-u"])
+                proc.assert_failure()
+                self.assertIn("Temperature must be between 0 and 2", proc.stderr)

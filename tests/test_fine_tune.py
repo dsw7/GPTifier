@@ -1,99 +1,62 @@
-from os import EX_OK
-from subprocess import run
-from pytest import mark
-import utils
+from pathlib import Path
+from unittest import TestCase
+from .helpers import run_process
 
 
-@mark.parametrize("option", ["-h", "--help"])
-def test_fine_tune_help(
-    command: utils.Command, option: str, capfd: utils.Capture
-) -> None:
-    command.extend(["fine-tune", option])
-    process = run(command)
+class TestFineTune(TestCase):
 
-    stdout, _ = utils.unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    assert "Synopsis" in stdout
+    def test_help(self) -> None:
+        for option in ["-h", "--help"]:
+            with self.subTest(option=option):
+                proc = run_process(["fine-tune", option])
+                proc.assert_success()
+                self.assertIn("Synopsis", proc.stdout)
 
+    def test_subcommand_help(self) -> None:
+        for subcommand in ["upload-file", "create-job", "delete-model", "list-jobs"]:
+            for option in ["-h", "--help"]:
+                with self.subTest(subcommand=subcommand, option=option):
+                    proc = run_process(["fine-tune", subcommand, option])
+                    proc.assert_success()
+                    self.assertIn("Synopsis", proc.stdout)
 
-@mark.parametrize("option", ["-h", "--help"])
-@mark.parametrize(
-    "subcommand", ["upload-file", "create-job", "delete-model", "list-jobs"]
-)
-def test_fine_tune_subcommand_help(
-    command: utils.Command, subcommand: str, option: str, capfd: utils.Capture
-) -> None:
-    command.extend(["fine-tune", subcommand, option])
-    process = run(command)
+    def test_upload_missing_file(self) -> None:
+        proc = run_process(["fine-tune", "upload-file", "foobar"])
+        proc.assert_failure()
+        self.assertIn(
+            "Failed to open/read local data from file/application", proc.stderr
+        )
 
-    stdout, _ = utils.unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    assert "Synopsis" in stdout
+    def test_upload_invalid_file(self) -> None:
+        input_text_file = Path(__file__).resolve().parent / "prompt_basic.txt"
+        proc = run_process(["fine-tune", "upload-file", str(input_text_file)])
+        proc.assert_failure()
+        self.assertIn(
+            "Invalid file format for Fine-Tuning API. Must be .jsonl", proc.stderr
+        )
 
+    def test_create_job_invalid_params(self) -> None:
+        process = run_process(
+            ["fine-tune", "create-job", "--model=foobar", "--file-id=foobar"]
+        )
+        process.assert_failure()
+        self.assertIn("invalid training_file: foobar", process.stderr)
 
-def test_fine_tune_upload_missing_file(
-    command: utils.Command, capfd: utils.Capture
-) -> None:
-    command.extend(["fine-tune", "upload-file", "foobar"])
-    process = run(command)
+    def test_delete_model_missing_model(self) -> None:
+        process = run_process(["fine-tune", "delete-model", "foobar"])
+        process.assert_failure()
+        self.assertIn("The model 'foobar' does not exist", process.stderr)
 
-    _, stderr = utils.unpack_stdout_stderr(capfd)
-    assert process.returncode != EX_OK
-    assert "Failed to open/read local data from file/application" in stderr
+    def test_list_jobs_raw(self) -> None:
+        for option in ["-r", "--raw"]:
+            with self.subTest(option=option):
+                proc = run_process(["fine-tune", "list-jobs", option])
+                proc.assert_success()
+                proc.load_stdout_to_json()
 
-
-def test_fine_tune_upload_invalid_file(
-    command: utils.Command, capfd: utils.Capture
-) -> None:
-    command.extend(["fine-tune", "upload-file", "tests/prompt_basic.txt"])
-    process = run(command)
-
-    _, stderr = utils.unpack_stdout_stderr(capfd)
-    assert process.returncode != EX_OK
-    assert "Invalid file format for Fine-Tuning API. Must be .jsonl" in stderr
-
-
-def test_fine_tune_create_job_invalid_params(
-    command: utils.Command, capfd: utils.Capture
-) -> None:
-    command.extend(["fine-tune", "create-job", "--model=foobar", "--file-id=foobar"])
-    process = run(command)
-
-    _, stderr = utils.unpack_stdout_stderr(capfd)
-    assert process.returncode != EX_OK
-    assert "invalid training_file: foobar" in stderr
-
-
-def test_fine_tune_delete_model_missing_model(
-    command: utils.Command, capfd: utils.Capture
-) -> None:
-    command.extend(["fine-tune", "delete-model", "foobar"])
-    process = run(command)
-
-    _, stderr = utils.unpack_stdout_stderr(capfd)
-    assert process.returncode != EX_OK
-    assert "The model 'foobar' does not exist" in stderr
-
-
-@mark.parametrize("option", ["-r", "--raw"])
-def test_fine_tune_list_jobs_raw(
-    command: utils.Command, option: str, capfd: utils.Capture
-) -> None:
-    command.extend(["fine-tune", "list-jobs", option])
-    process = run(command)
-
-    stdout, _ = utils.unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    utils.assert_valid_json(stdout)
-
-
-@mark.parametrize("option", ["-l1", "--limit=1"])
-def test_fine_tune_list_jobs(
-    command: utils.Command, option: str, capfd: utils.Capture
-) -> None:
-    command.extend(["fine-tune", "list-jobs", option])
-    process = run(command)
-
-    stdout, _ = utils.unpack_stdout_stderr(capfd)
-    assert "No limit passed with --limit flag." not in stdout
-    assert process.returncode == EX_OK
+    def test_list_jobs(self) -> None:
+        for option in ["-l1", "--limit=1"]:
+            with self.subTest(option=option):
+                proc = run_process(["fine-tune", "list-jobs", option])
+                proc.assert_success()
+                self.assertNotIn("No limit passed with --limit flag.", proc.stdout)

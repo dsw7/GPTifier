@@ -1,51 +1,35 @@
-from os import EX_OK
-from subprocess import run
-from pytest import mark
-import utils
+from unittest import TestCase
+from .helpers import run_process
 
 
-@mark.parametrize("option", ["-h", "--help"])
-def test_short_help(command: utils.Command, option: str, capfd: utils.Capture) -> None:
-    command.extend(["short", option])
+class TestShort(TestCase):
 
-    process = run(command)
-    stdout, _ = utils.unpack_stdout_stderr(capfd)
+    def test_help(self) -> None:
+        for option in ["-h", "--help"]:
+            with self.subTest(option=option):
+                proc = run_process(["short", option])
+                proc.assert_success()
+                self.assertIn("Synopsis", proc.stdout)
 
-    assert process.returncode == EX_OK
-    assert "Synopsis" in stdout
+    def test_short_prompt(self) -> None:
+        prompt = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
 
+        for option in ["-p", "--prompt="]:
+            with self.subTest(option=option):
+                proc = run_process(["short", option + prompt])
+                proc.assert_success()
+                self.assertIn(">>>4<<<", proc.stdout)
 
-@mark.parametrize("option", ["-p", "--prompt="])
-def test_short_prompt(
-    command: utils.Command, option: str, capfd: utils.Capture
-) -> None:
-    prompt = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
-    command.extend(["short", option + prompt])
+    def test_short_raw(self) -> None:
+        prompt = '"What is 2 + 2?"'
 
-    process = run(command)
-    stdout, _ = utils.unpack_stdout_stderr(capfd)
+        for option in ["-r", "--raw"]:
+            with self.subTest(option=option):
+                proc = run_process(["short", f"--prompt={prompt}", option])
+                proc.assert_success()
+                proc.load_stdout_to_json()
 
-    assert process.returncode == EX_OK
-    assert ">>>4<<<" in stdout
-
-
-@mark.parametrize("option", ["-r", "--raw"])
-def test_short_raw(command: utils.Command, option: str, capfd: utils.Capture) -> None:
-    prompt = '"What is 2 + 2?"'
-    command.extend(["short", f"--prompt={prompt}", option])
-
-    process = run(command)
-    stdout, _ = utils.unpack_stdout_stderr(capfd)
-
-    assert process.returncode == EX_OK
-    utils.assert_valid_json(stdout)
-
-
-def test_missing_prompt(command: utils.Command, capfd: utils.Capture) -> None:
-    command.extend(["short"])
-
-    process = run(command)
-    _, stderr = utils.unpack_stdout_stderr(capfd)
-
-    assert process.returncode != EX_OK
-    assert "Prompt is empty" in stderr
+    def test_missing_prompt(self) -> None:
+        proc = run_process("short")
+        proc.assert_failure()
+        self.assertIn("Prompt is empty", proc.stderr)
