@@ -48,10 +48,3 @@ def tempdir() -> Generator[Path, None, None]:
 def json_file() -> Generator[str, None, None]:
     with NamedTemporaryFile(dir=gettempdir()) as temp_file:
         yield temp_file.name
-
-
-@fixture(scope="function")
-def inputfile() -> Generator[Path, None, None]:
-    filename = Path.cwd() / "Inputfile"
-    yield filename
-    filename.unlink()

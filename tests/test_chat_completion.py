@@ -3,7 +3,11 @@ from os import EX_OK
 from pathlib import Path
 from subprocess import run
 from typing import Any
+from unittest import TestCase
+from tempfile import NamedTemporaryFile, gettempdir
+
 from pytest import mark
+from helpers import run_process
 from utils import unpack_stdout_stderr, EX_MEM_LEAK, Command, Capture
 
 PROMPT = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
@@ -14,6 +18,22 @@ def load_content(json_file: str) -> Any:
         contents = loads(f.read())
 
     return contents["choices"][0]["message"]["content"]
+
+
+class TestChatCompletionReadFromInputfile(TestCase):
+    def setUp(self) -> None:
+        self.filename = Path.cwd() / "Inputfile"
+        self.filename.write_text(PROMPT)
+
+    def tearDown(self) -> None:
+        self.filename.unlink()
+
+    def test_read_from_inputfile(self) -> None:
+        with NamedTemporaryFile(dir=gettempdir()) as f:
+            json_file = f.name
+            proc = run_process(["run", "-t0", f"-d{json_file}", "-u"])
+            proc.assert_success()
+            self.assertEqual(load_content(json_file), ">>>8<<<")
 
 
 @mark.parametrize("option", ["-h", "--help"])
@@ -41,19 +61,6 @@ def test_read_from_file(json_file: str, command: Command, capfd: Capture) -> Non
     prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
 
     command.extend(["run", f"-r{prompt}", "-t0", f"-d{json_file}", "-u"])
-    process = run(command)
-
-    unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    assert load_content(json_file) == ">>>8<<<"
-
-
-def test_read_from_inputfile(
-    json_file: str, command: Command, inputfile: Path, capfd: Capture
-) -> None:
-    inputfile.write_text(PROMPT)
-
-    command.extend(["run", "-t0", f"-d{json_file}", "-u"])
     process = run(command)
 
     unpack_stdout_stderr(capfd)
