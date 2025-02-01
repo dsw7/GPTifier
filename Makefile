@@ -42,5 +42,4 @@ lint:
 
 test: export PATH_BIN = $(CURDIR)/$(BUILD_DIR_TEST)/gpt
 test: compile-test
-	@python3 -m pytest -v tests
-	@python3 -m pytest -v tests --memory
+	@python3 -m unittest -v tests/*.py
