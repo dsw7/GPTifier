@@ -1,8 +1,6 @@
 from os import environ
 from platform import system
-from tempfile import NamedTemporaryFile, gettempdir
-from typing import Generator, Any
-from utils import EX_MEM_LEAK, Command
+from typing import Any
 from pytest import fixture, exit
 
 
@@ -33,9 +31,3 @@ def command(pytestconfig: Any) -> Command:
     return Command(
         ["valgrind", f"--error-exitcode={EX_MEM_LEAK}", "--leak-check=full", path_bin]
     )
-
-
-@fixture(scope="function")
-def json_file() -> Generator[str, None, None]:
-    with NamedTemporaryFile(dir=gettempdir()) as temp_file:
-        yield temp_file.name
