@@ -27,8 +27,14 @@ class Process:
         return loads(self.stdout)
 
 
-def run_process(options: str) -> Process:
-    command = [_get_path_to_gptifier_binary(), options]
+def run_process(options: str | list[str]) -> Process:
+    command = [_get_path_to_gptifier_binary()]
+
+    if isinstance(options, str):
+        command.append(options)
+    elif isinstance(options, list):
+        command.extend(options)
+
     process = run(command, stdout=PIPE, stderr=PIPE)
 
     return Process(

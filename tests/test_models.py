@@ -1,35 +1,27 @@
-from os import EX_OK
-from subprocess import run
-from pytest import mark
-import utils
+from unittest import TestCase
+from helpers import run_process
 
 
-@mark.parametrize("option", ["-h", "--help"])
-def test_models_help(command: utils.Command, option: str, capfd: utils.Capture) -> None:
-    command.extend(["models", option])
-    process = run(command)
+class TestModels(TestCase):
 
-    stdout, _ = utils.unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    assert "Synopsis" in stdout
+    def test_help(self) -> None:
+        for option in ["-h", "--help"]:
+            with self.subTest(option=option):
+                proc = run_process(["models", option])
 
+                proc.assert_success()
+                self.assertIn("Synopsis", proc.stdout)
 
-def test_models(command: utils.Command, capfd: utils.Capture) -> None:
-    command.extend(["models"])
-    process = run(command)
+    def test_models(self) -> None:
+        proc = run_process("models")
+        proc.assert_success()
 
-    stdout, _ = utils.unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
+        models = proc.stdout.split("\n")
+        assert len(models) > 1
 
-    models = stdout.split("\n")
-    assert len(models) > 1
-
-
-@mark.parametrize("option", ["-r", "--raw"])
-def test_models_raw(command: utils.Command, option: str, capfd: utils.Capture) -> None:
-    command.extend(["models", option])
-    process = run(command)
-
-    stdout, _ = utils.unpack_stdout_stderr(capfd)
-    assert process.returncode == EX_OK
-    utils.assert_valid_json(stdout)
+    def test_models_raw(self) -> None:
+        for option in ["-r", "--raw"]:
+            with self.subTest(option=option):
+                proc = run_process(["models", option])
+                proc.assert_success()
+                proc.load_stdout_to_json()
