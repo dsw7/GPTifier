@@ -4,14 +4,14 @@ from helpers import run_process
 
 class TestShort(TestCase):
 
-    def test_help(self):
+    def test_help(self) -> None:
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = run_process(["short", option])
                 proc.assert_success()
                 self.assertIn("Synopsis", proc.stdout)
 
-    def test_short_prompt(self):
+    def test_short_prompt(self) -> None:
         prompt = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
 
         for option in ["-p", "--prompt="]:
@@ -20,7 +20,7 @@ class TestShort(TestCase):
                 proc.assert_success()
                 self.assertIn(">>>4<<<", proc.stdout)
 
-    def test_short_raw(self):
+    def test_short_raw(self) -> None:
         prompt = '"What is 2 + 2?"'
 
         for option in ["-r", "--raw"]:
@@ -29,7 +29,7 @@ class TestShort(TestCase):
                 proc.assert_success()
                 proc.load_stdout_to_json()
 
-    def test_missing_prompt(self):
+    def test_missing_prompt(self) -> None:
         proc = run_process("short")
         proc.assert_failure()
         self.assertIn("Prompt is empty", proc.stderr)

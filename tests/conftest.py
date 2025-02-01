@@ -35,7 +35,6 @@ def command(pytestconfig: Any) -> Command:
     )
 
 
-
 @fixture(scope="function")
 def json_file() -> Generator[str, None, None]:
     with NamedTemporaryFile(dir=gettempdir()) as temp_file:

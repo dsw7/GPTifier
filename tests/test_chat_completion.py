@@ -11,7 +11,8 @@ def load_content(json_file: str) -> str:
     with open(json_file) as f:
         contents = loads(f.read())
 
-    return contents["choices"][0]["message"]["content"]
+    result: str = contents["choices"][0]["message"]["content"]
+    return result
 
 
 class TestChatCompletionReadFromInputfile(TestCase):
@@ -81,4 +82,4 @@ class TestChatCompletion(TestCase):
             with self.subTest(temp=temp):
                 proc = run_process(["run", f"-p'{Prompt}'", f"-t{temp}", "-u"])
                 proc.assert_failure()
-                self.assertIn("Temperature must be between 0 and 2" ,proc.stderr)
+                self.assertIn("Temperature must be between 0 and 2", proc.stderr)
