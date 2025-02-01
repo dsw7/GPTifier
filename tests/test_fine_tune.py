@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest import TestCase
 from helpers import run_process
 
@@ -27,7 +28,8 @@ class TestFineTune(TestCase):
         )
 
     def test_upload_invalid_file(self) -> None:
-        proc = run_process(["fine-tune", "upload-file", "tests/prompt_basic.txt"])
+        input_text_file = Path(__file__).resolve().parent / "prompt_basic.txt"
+        proc = run_process(["fine-tune", "upload-file", input_text_file])
         proc.assert_failure()
         self.assertIn(
             "Invalid file format for Fine-Tuning API. Must be .jsonl", proc.stderr
