@@ -1,5 +1,5 @@
 from unittest import TestCase
-from helpers import run_process
+from .helpers import run_process
 
 
 class TestFiles(TestCase):

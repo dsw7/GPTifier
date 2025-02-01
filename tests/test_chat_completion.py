@@ -2,7 +2,7 @@ from json import loads
 from pathlib import Path
 from tempfile import NamedTemporaryFile, gettempdir
 from unittest import TestCase
-from helpers import run_process
+from .helpers import run_process
 
 Prompt = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
 
