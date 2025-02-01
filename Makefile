@@ -1,4 +1,4 @@
-.PHONY = help format compile clean lint test
+.PHONY = help format compile clean lint test test-memory
 .DEFAULT_GOAL = help
 
 BUILD_DIR = build
@@ -16,6 +16,8 @@ To run cppcheck linter:
     $$ make lint
 To run unit tests:
     $$ make test
+To run Valgrind unit tests:
+    $$ make test-memory
 endef
 
 export HELP_LIST_TARGETS
@@ -42,4 +44,9 @@ lint:
 
 test: export PATH_BIN = $(CURDIR)/$(BUILD_DIR_TEST)/gpt
 test: compile-test
+	@python3 -m unittest -v tests/*.py
+
+test-memory: export PATH_BIN = $(CURDIR)/$(BUILD_DIR_TEST)/gpt
+test-memory: export TEST_MEMORY = 1
+test-memory: compile-test
 	@python3 -m unittest -v tests/*.py
