@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from functools import cache
+from json import loads
 from os import environ, EX_OK
 from subprocess import run, PIPE
+from typing import Any
 
 
 @cache
@@ -20,6 +22,9 @@ class Process:
 
     def assert_failure(self) -> None:
         assert self.exit_code != EX_OK
+
+    def load_stdout_to_json(self) -> Any:
+        return loads(self.stdout)
 
 
 def run_process(options: str) -> Process:
