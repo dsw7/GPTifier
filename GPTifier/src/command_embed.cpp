@@ -51,7 +51,7 @@ void command_embed(int argc, char **argv)
 
     if (not params.input.has_value()) {
         print_sep();
-        params.input = load_input_text(params.input_file);
+        params.input = select_input_text(params.input_file);
     }
 
     std::string model;

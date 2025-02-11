@@ -78,7 +78,7 @@ std::string select_chat_model()
     throw std::runtime_error("Could not determine which model to use");
 }
 
-std::string load_input_text(const std::optional<std::string> &input_file)
+std::string select_input_text(const std::optional<std::string> &input_file)
 {
     if (input_file.has_value()) {
         return get_text_from_cli_specified_file(input_file.value());

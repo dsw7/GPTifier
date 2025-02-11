@@ -172,7 +172,7 @@ void command_run(int argc, char **argv)
 
     if (not params.prompt.has_value()) {
         print_sep();
-        params.prompt = load_input_text(params.prompt_file);
+        params.prompt = select_input_text(params.prompt_file);
     }
 
     print_sep();
