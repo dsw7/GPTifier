@@ -13,7 +13,16 @@
 #include <string>
 #include <vector>
 
+using json = nlohmann::json;
+
 namespace {
+
+void delete_file(const std::string &file_id, json &results)
+{
+    Curl curl;
+    const std::string response = curl.delete_file(file_id);
+    results = parse_response(response);
+}
 
 struct File {
     std::string filename;
@@ -83,8 +92,7 @@ void command_files_delete(int argc, char **argv)
         nlohmann::json results;
 
         try {
-            const std::string response = api::delete_file(*it);
-            results = parse_response(response);
+            delete_file(*it, results);
         } catch (const std::runtime_error &e) {
             fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", *it, e.what());
             has_failed = true;

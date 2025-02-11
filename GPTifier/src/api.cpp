@@ -277,12 +277,6 @@ std::string upload_file(const std::string &filename, const std::string &purpose)
     return curl.upload_file(filename, purpose);
 }
 
-std::string delete_file(const std::string &file_id)
-{
-    Curl curl;
-    return curl.delete_file(file_id);
-}
-
 std::string create_fine_tuning_job(const std::string &training_file, const std::string &model)
 {
     const nlohmann::json data = { { "model", model }, { "training_file", training_file } };

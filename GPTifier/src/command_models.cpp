@@ -53,7 +53,7 @@ void print_models_response(const json &response)
     std::vector<OpenAIModel> openai_models;
     std::vector<OpenAIModel> user_models;
 
-    for (const auto &entry: results["data"]) {
+    for (const auto &entry: response["data"]) {
         if (is_fine_tuning_model(entry["id"])) {
             user_models.push_back({ entry["created"], entry["id"], entry["owned_by"] });
         } else {
