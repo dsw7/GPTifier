@@ -271,12 +271,4 @@ std::string create_chat_completion(const std::string &model, const std::string &
     return curl.create_chat_completion(data.dump());
 }
 
-std::string create_fine_tuning_job(const std::string &training_file, const std::string &model)
-{
-    const nlohmann::json data = { { "model", model }, { "training_file", training_file } };
-
-    Curl curl;
-    return curl.create_fine_tuning_job(data.dump());
-}
-
 } // namespace api

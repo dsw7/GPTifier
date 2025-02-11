@@ -33,6 +33,4 @@ private:
 
 namespace api {
 std::string create_chat_completion(const std::string &model, const std::string &prompt, float temperature);
-std::string create_fine_tuning_job(const std::string &training_file, const std::string &model);
-std::string get_fine_tuning_jobs(const std::string &limit);
 } // namespace api

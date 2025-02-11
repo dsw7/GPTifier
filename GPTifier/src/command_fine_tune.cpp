@@ -63,7 +63,10 @@ void create_fine_tuning_job(int argc, char **argv)
 
     print_sep();
 
-    const std::string response = api::create_fine_tuning_job(params.training_file.value(), params.model.value());
+    const json data = { { "model", params.model.value() }, { "training_file", params.training_file.value() } };
+
+    Curl curl;
+    const std::string response = curl.create_fine_tuning_job(data.dump());
     const json results = parse_response(response);
 
     const std::string id = results["id"];
