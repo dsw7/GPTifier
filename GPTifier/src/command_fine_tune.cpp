@@ -3,16 +3,18 @@
 #include "api.hpp"
 #include "cli.hpp"
 #include "help_messages.hpp"
-#include "json.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
+#include <json.hpp>
 #include <map>
 #include <optional>
 #include <stdexcept>
 #include <string>
+
+using json = nlohmann::json;
 
 namespace {
 
@@ -30,11 +32,11 @@ void upload_fine_tuning_file(int argc, char **argv)
         return;
     }
 
+    Curl curl;
     const std::string purpose = "fine-tune";
-    const std::string response = api::upload_file(opt_or_filename, purpose);
+    const std::string response = curl.upload_file(opt_or_filename, purpose);
 
-    const nlohmann::json results = parse_response(response);
-
+    const json results = parse_response(response);
     const std::string filename = results["filename"];
     const std::string id = results["id"];
 
@@ -61,8 +63,11 @@ void create_fine_tuning_job(int argc, char **argv)
 
     print_sep();
 
-    const std::string response = api::create_fine_tuning_job(params.training_file.value(), params.model.value());
-    const nlohmann::json results = parse_response(response);
+    const json data = { { "model", params.model.value() }, { "training_file", params.training_file.value() } };
+
+    Curl curl;
+    const std::string response = curl.create_fine_tuning_job(data.dump());
+    const json results = parse_response(response);
 
     const std::string id = results["id"];
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
@@ -75,16 +80,17 @@ void delete_fine_tuned_model(int argc, char **argv)
         return;
     }
 
-    const std::string opt_or_model = argv[3];
+    const std::string opt_or_model_id = argv[3];
 
-    if (opt_or_model == "-h" or opt_or_model == "--help") {
+    if (opt_or_model_id == "-h" or opt_or_model_id == "--help") {
         cli::help_command_fine_tune_delete_model();
         return;
     }
 
-    const std::string response = api::delete_model(opt_or_model);
-    const nlohmann::json results = parse_response(response);
+    Curl curl;
 
+    const std::string response = curl.delete_model(opt_or_model_id);
+    const json results = parse_response(response);
     const std::string id = results["id"];
 
     if (results["deleted"]) {
@@ -125,10 +131,10 @@ void print_jobs(int created_at, const Job &job)
 void list_fine_tuning_jobs(int argc, char **argv)
 {
     ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
-
     std::string limit = params.limit.value_or("20");
 
-    const std::string response = api::get_fine_tuning_jobs(limit);
+    Curl curl;
+    const std::string response = curl.get_fine_tuning_jobs(limit);
 
     if (params.print_raw_json) {
         print_raw_response(response);
@@ -140,7 +146,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
     }
 
-    const nlohmann::json results = parse_response(response);
+    const json results = parse_response(response);
 
     print_sep();
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");

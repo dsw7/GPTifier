@@ -3,17 +3,26 @@
 #include "api.hpp"
 #include "cli.hpp"
 #include "help_messages.hpp"
-#include "json.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
+#include <json.hpp>
 #include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
+using json = nlohmann::json;
+
 namespace {
+
+void delete_file(const std::string &file_id, json &results)
+{
+    Curl curl;
+    const std::string response = curl.delete_file(file_id);
+    results = parse_response(response);
+}
 
 struct File {
     std::string filename;
@@ -31,14 +40,15 @@ void command_files_list(int argc, char **argv)
 {
     bool print_raw_json = cli::get_opts_files_list(argc, argv);
 
-    const std::string response = api::get_uploaded_files();
+    Curl curl;
+    const std::string response = curl.get_uploaded_files();
 
     if (print_raw_json) {
         print_raw_response(response);
         return;
     }
 
-    const nlohmann::json results = parse_response(response);
+    const json results = parse_response(response);
 
     print_sep();
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
@@ -79,11 +89,10 @@ void command_files_delete(int argc, char **argv)
     bool has_failed = false;
 
     for (auto it = args.begin(); it != args.end(); it++) {
-        nlohmann::json results;
+        json results;
 
         try {
-            const std::string response = api::delete_file(*it);
-            results = parse_response(response);
+            delete_file(*it, results);
         } catch (const std::runtime_error &e) {
             fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", *it, e.what());
             has_failed = true;

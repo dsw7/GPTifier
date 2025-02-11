@@ -89,10 +89,10 @@ add_executable(
   "src/configs.cpp"
   "src/datadir.cpp"
   "src/help_messages.cpp"
-  "src/input_selection.cpp"
   "src/main.cpp"
   "src/params.cpp"
   "src/parsers.cpp"
+  "src/selectors.cpp"
   "src/utils.cpp"
 )
 target_link_libraries(

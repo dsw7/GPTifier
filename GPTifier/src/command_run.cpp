@@ -2,12 +2,10 @@
 
 #include "api.hpp"
 #include "cli.hpp"
-#include "configs.hpp"
 #include "datadir.hpp"
-#include "input_selection.hpp"
-#include "json.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
+#include "selectors.hpp"
 #include "utils.hpp"
 
 #include <chrono>
@@ -15,9 +13,12 @@
 #include <fmt/core.h>
 #include <fstream>
 #include <iostream>
+#include <json.hpp>
 #include <stdexcept>
 #include <string>
 #include <thread>
+
+using json = nlohmann::json;
 
 namespace {
 
@@ -28,25 +29,23 @@ struct Completion {
     std::time_t created = 0;
 };
 
-std::string select_chat_model()
+void create_chat_completion(const std::string &model, const std::string &prompt, float temperature, json &results)
 {
-#ifdef TESTING_ENABLED
-    static std::string low_cost_model = "gpt-3.5-turbo";
-    return low_cost_model;
-#endif
+    const json messages = { { "role", "user" }, { "content", prompt } };
+    const json data = {
+        { "model", model }, { "temperature", temperature }, { "messages", json::array({ messages }) }
+    };
 
-    if (configs.chat.model.has_value()) {
-        return configs.chat.model.value();
-    }
-
-    throw std::runtime_error("No model provided via configuration file or command line");
+    Curl curl;
+    const std::string response = curl.create_chat_completion(data.dump());
+    results = parse_response(response);
 }
 
-void print_chat_completion_response(const nlohmann::json &results)
+void print_chat_completion_response(const json &results)
 {
     const std::string content_original = results["choices"][0]["message"]["content"];
 
-    nlohmann::json results_copy = results;
+    json results_copy = results;
     results_copy["choices"][0]["message"]["content"] = "...";
 
     fmt::print(fg(white), "Response: ");
@@ -88,7 +87,7 @@ void write_message_to_file(const Completion &completion)
     st_filename.close();
 }
 
-void export_chat_completion_response(const nlohmann::json &results, const std::string &prompt)
+void export_chat_completion_response(const json &results, const std::string &prompt)
 {
     fmt::print(fg(white), "Export:\n");
     std::string choice;
@@ -119,7 +118,7 @@ void export_chat_completion_response(const nlohmann::json &results, const std::s
             prompt,
             results["created"],
         };
-    } catch (const nlohmann::json::type_error &e) {
+    } catch (const json::type_error &e) {
         const std::string errmsg = fmt::format("Failed to parse completion. Error was:\n{}", e.what());
         throw std::runtime_error(errmsg);
     }
@@ -128,7 +127,7 @@ void export_chat_completion_response(const nlohmann::json &results, const std::s
     print_sep();
 }
 
-void dump_chat_completion_response(const nlohmann::json &results, const std::string &json_dump_file)
+void dump_chat_completion_response(const json &results, const std::string &json_dump_file)
 {
     fmt::print("Dumping results to '{}'\n", json_dump_file);
     std::ofstream st_filename(json_dump_file);
@@ -142,14 +141,14 @@ void dump_chat_completion_response(const nlohmann::json &results, const std::str
     st_filename.close();
 }
 
-bool timer_enabled = false;
+bool TIMER_ENABLED = false;
 
 void time_api_call()
 {
     auto delay = std::chrono::milliseconds(250);
     auto start = std::chrono::high_resolution_clock::now();
 
-    while (timer_enabled) {
+    while (TIMER_ENABLED) {
         std::this_thread::sleep_for(delay);
 
         auto end = std::chrono::high_resolution_clock::now();
@@ -173,7 +172,7 @@ void command_run(int argc, char **argv)
 
     if (not params.prompt.has_value()) {
         print_sep();
-        params.prompt = load_input_text(params.prompt_file);
+        params.prompt = select_input_text(params.prompt_file);
     }
 
     print_sep();
@@ -185,32 +184,30 @@ void command_run(int argc, char **argv)
         model = select_chat_model();
     }
 
-    float temp = 1.00;
+    float temperature = 1.00;
     if (std::holds_alternative<float>(params.temperature)) {
-        temp = std::get<float>(params.temperature);
+        temperature = std::get<float>(params.temperature);
     }
 
-    timer_enabled = true;
+    TIMER_ENABLED = true;
     std::thread timer(time_api_call);
 
     bool query_failed = false;
-    std::string response;
+    json results;
 
     try {
-        response = api::create_chat_completion(model, params.prompt.value(), temp);
+        create_chat_completion(model, params.prompt.value(), temperature, results);
     } catch (std::runtime_error &e) {
         query_failed = true;
         fmt::print(stderr, "{}\n", e.what());
     }
 
-    timer_enabled = false;
+    TIMER_ENABLED = false;
     timer.join();
 
     if (query_failed) {
         throw std::runtime_error("Cannot proceed");
     }
-
-    const nlohmann::json results = parse_response(response);
 
     if (params.json_dump_file.has_value()) {
         dump_chat_completion_response(results, params.json_dump_file.value());

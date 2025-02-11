@@ -2,14 +2,16 @@
 
 #include "api.hpp"
 #include "cli.hpp"
-#include "json.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
 
 #include <algorithm>
 #include <fmt/core.h>
+#include <json.hpp>
 #include <string>
 #include <vector>
+
+using json = nlohmann::json;
 
 namespace {
 
@@ -46,14 +48,12 @@ void print_models(std::vector<OpenAIModel> &models)
     print_sep();
 }
 
-void print_models_response(const std::string &response)
+void print_models_response(const json &response)
 {
-    const nlohmann::json results = parse_response(response);
-
     std::vector<OpenAIModel> openai_models;
     std::vector<OpenAIModel> user_models;
 
-    for (const auto &entry: results["data"]) {
+    for (const auto &entry: response["data"]) {
         if (is_fine_tuning_model(entry["id"])) {
             user_models.push_back({ entry["created"], entry["id"], entry["owned_by"] });
         } else {
@@ -77,12 +77,15 @@ void print_models_response(const std::string &response)
 void command_models(int argc, char **argv)
 {
     bool print_raw = cli::get_opts_models(argc, argv);
-    const std::string response = api::get_models();
+
+    Curl curl;
+    const std::string response = curl.get_models();
 
     if (print_raw) {
         print_raw_response(response);
         return;
     }
 
-    print_models_response(response);
+    const json results = parse_response(response);
+    print_models_response(results);
 }
