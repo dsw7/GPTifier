@@ -8,6 +8,7 @@
 
 #include <fmt/core.h>
 #include <json.hpp>
+#include <stdexcept>
 #include <string>
 
 using json = nlohmann::json;

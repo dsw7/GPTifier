@@ -44,7 +44,7 @@ std::string select_chat_model()
     throw std::runtime_error("No model provided via configuration file or command line");
 }
 
-std::string create_chat_completion(const std::string &model, const std::string &prompt, float temperature)
+void create_chat_completion(const std::string &model, const std::string &prompt, float temperature, json &results)
 {
     const json messages = { { "role", "user" }, { "content", prompt } };
     const json data = {
@@ -52,7 +52,8 @@ std::string create_chat_completion(const std::string &model, const std::string &
     };
 
     Curl curl;
-    return curl.create_chat_completion(data.dump());
+    const std::string response = curl.create_chat_completion(data.dump());
+    results = parse_response(response);
 }
 
 void print_chat_completion_response(const json &results)
@@ -155,14 +156,14 @@ void dump_chat_completion_response(const json &results, const std::string &json_
     st_filename.close();
 }
 
-bool timer_enabled = false;
+bool TIMER_ENABLED = false;
 
 void time_api_call()
 {
     auto delay = std::chrono::milliseconds(250);
     auto start = std::chrono::high_resolution_clock::now();
 
-    while (timer_enabled) {
+    while (TIMER_ENABLED) {
         std::this_thread::sleep_for(delay);
 
         auto end = std::chrono::high_resolution_clock::now();
@@ -198,32 +199,30 @@ void command_run(int argc, char **argv)
         model = select_chat_model();
     }
 
-    float temp = 1.00;
+    float temperature = 1.00;
     if (std::holds_alternative<float>(params.temperature)) {
-        temp = std::get<float>(params.temperature);
+        temperature = std::get<float>(params.temperature);
     }
 
-    timer_enabled = true;
+    TIMER_ENABLED = true;
     std::thread timer(time_api_call);
 
     bool query_failed = false;
-    std::string response;
+    json results;
 
     try {
-        response = create_chat_completion(model, params.prompt.value(), temp);
+        create_chat_completion(model, params.prompt.value(), temperature, results);
     } catch (std::runtime_error &e) {
         query_failed = true;
         fmt::print(stderr, "{}\n", e.what());
     }
 
-    timer_enabled = false;
+    TIMER_ENABLED = false;
     timer.join();
 
     if (query_failed) {
         throw std::runtime_error("Cannot proceed");
     }
-
-    const json results = parse_response(response);
 
     if (params.json_dump_file.has_value()) {
         dump_chat_completion_response(results, params.json_dump_file.value());

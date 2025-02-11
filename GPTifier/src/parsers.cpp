@@ -3,46 +3,47 @@
 #include <fmt/core.h>
 #include <stdexcept>
 
+using json = nlohmann::json;
+
 namespace {
 
-void catch_deserialization_errors(nlohmann::json &json, const std::string &response)
+void catch_deserialization_errors(json &results, const std::string &response)
 {
     try {
-        json = nlohmann::json::parse(response);
-    } catch (const nlohmann::json::parse_error &e) {
+        results = json::parse(response);
+    } catch (const json::parse_error &e) {
         const std::string errmsg = fmt::format("Failed to parse completion. Error was:\n{}", e.what());
         throw std::runtime_error(errmsg);
     }
 }
 
-void catch_errors_from_openai(const nlohmann::json &json)
+void catch_errors_from_openai(const json &results)
 {
-    if (not json.contains("error")) {
+    if (not results.contains("error")) {
         return;
     }
 
-    if (json["error"].empty()) {
+    if (results["error"].empty()) {
         return;
     }
 
-    const std::string errmsg = json["error"]["message"];
+    const std::string errmsg = results["error"]["message"];
     throw std::runtime_error(errmsg);
 }
 
 } // namespace
 
-nlohmann::json parse_response(const std::string &response)
+json parse_response(const std::string &response)
 {
-    nlohmann::json json;
+    json results;
+    catch_deserialization_errors(results, response);
+    catch_errors_from_openai(results);
 
-    catch_deserialization_errors(json, response);
-    catch_errors_from_openai(json);
-
-    return json;
+    return results;
 }
 
 void print_raw_response(const std::string &response)
 {
-    nlohmann::json json = parse_response(response);
-    fmt::print("{}\n", json.dump(4));
+    const json results = parse_response(response);
+    fmt::print("{}\n", results.dump(4));
 }
