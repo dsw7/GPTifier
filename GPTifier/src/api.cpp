@@ -271,12 +271,6 @@ std::string create_chat_completion(const std::string &model, const std::string &
     return curl.create_chat_completion(data.dump());
 }
 
-std::string upload_file(const std::string &filename, const std::string &purpose)
-{
-    Curl curl;
-    return curl.upload_file(filename, purpose);
-}
-
 std::string create_fine_tuning_job(const std::string &training_file, const std::string &model)
 {
     const nlohmann::json data = { { "model", model }, { "training_file", training_file } };

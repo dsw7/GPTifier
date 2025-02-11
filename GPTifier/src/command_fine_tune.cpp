@@ -32,11 +32,11 @@ void upload_fine_tuning_file(int argc, char **argv)
         return;
     }
 
+    Curl curl;
     const std::string purpose = "fine-tune";
-    const std::string response = api::upload_file(opt_or_filename, purpose);
+    const std::string response = curl.upload_file(opt_or_filename, purpose);
 
     const json results = parse_response(response);
-
     const std::string filename = results["filename"];
     const std::string id = results["id"];
 
