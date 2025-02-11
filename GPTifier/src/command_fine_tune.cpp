@@ -128,10 +128,10 @@ void print_jobs(int created_at, const Job &job)
 void list_fine_tuning_jobs(int argc, char **argv)
 {
     ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
-
     std::string limit = params.limit.value_or("20");
 
-    const std::string response = api::get_fine_tuning_jobs(limit);
+    Curl curl;
+    const std::string response = curl.get_fine_tuning_jobs(limit);
 
     if (params.print_raw_json) {
         print_raw_response(response);

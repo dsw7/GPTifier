@@ -279,10 +279,4 @@ std::string create_fine_tuning_job(const std::string &training_file, const std::
     return curl.create_fine_tuning_job(data.dump());
 }
 
-std::string get_fine_tuning_jobs(const std::string &limit)
-{
-    Curl curl;
-    return curl.get_fine_tuning_jobs(limit);
-}
-
 } // namespace api
