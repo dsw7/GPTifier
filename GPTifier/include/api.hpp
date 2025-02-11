@@ -30,7 +30,3 @@ private:
     void set_project_id();
     struct curl_slist *headers = NULL;
 };
-
-namespace api {
-std::string create_chat_completion(const std::string &model, const std::string &prompt, float temperature);
-} // namespace api

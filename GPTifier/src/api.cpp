@@ -257,18 +257,3 @@ std::string Curl::get_fine_tuning_jobs(const std::string &limit)
     catch_curl_error(curl_easy_perform(this->handle));
     return response;
 }
-
-namespace api {
-
-std::string create_chat_completion(const std::string &model, const std::string &prompt, float temperature)
-{
-    const nlohmann::json messages = { { "role", "user" }, { "content", prompt } };
-    const nlohmann::json data = {
-        { "model", model }, { "temperature", temperature }, { "messages", nlohmann::json::array({ messages }) }
-    };
-
-    Curl curl;
-    return curl.create_chat_completion(data.dump());
-}
-
-} // namespace api

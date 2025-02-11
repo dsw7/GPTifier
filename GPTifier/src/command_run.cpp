@@ -5,7 +5,6 @@
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "input_selection.hpp"
-#include "json.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
@@ -15,9 +14,12 @@
 #include <fmt/core.h>
 #include <fstream>
 #include <iostream>
+#include <json.hpp>
 #include <stdexcept>
 #include <string>
 #include <thread>
+
+using json = nlohmann::json;
 
 namespace {
 
@@ -42,11 +44,22 @@ std::string select_chat_model()
     throw std::runtime_error("No model provided via configuration file or command line");
 }
 
-void print_chat_completion_response(const nlohmann::json &results)
+std::string create_chat_completion(const std::string &model, const std::string &prompt, float temperature)
+{
+    const json messages = { { "role", "user" }, { "content", prompt } };
+    const json data = {
+        { "model", model }, { "temperature", temperature }, { "messages", json::array({ messages }) }
+    };
+
+    Curl curl;
+    return curl.create_chat_completion(data.dump());
+}
+
+void print_chat_completion_response(const json &results)
 {
     const std::string content_original = results["choices"][0]["message"]["content"];
 
-    nlohmann::json results_copy = results;
+    json results_copy = results;
     results_copy["choices"][0]["message"]["content"] = "...";
 
     fmt::print(fg(white), "Response: ");
@@ -88,7 +101,7 @@ void write_message_to_file(const Completion &completion)
     st_filename.close();
 }
 
-void export_chat_completion_response(const nlohmann::json &results, const std::string &prompt)
+void export_chat_completion_response(const json &results, const std::string &prompt)
 {
     fmt::print(fg(white), "Export:\n");
     std::string choice;
@@ -119,7 +132,7 @@ void export_chat_completion_response(const nlohmann::json &results, const std::s
             prompt,
             results["created"],
         };
-    } catch (const nlohmann::json::type_error &e) {
+    } catch (const json::type_error &e) {
         const std::string errmsg = fmt::format("Failed to parse completion. Error was:\n{}", e.what());
         throw std::runtime_error(errmsg);
     }
@@ -128,7 +141,7 @@ void export_chat_completion_response(const nlohmann::json &results, const std::s
     print_sep();
 }
 
-void dump_chat_completion_response(const nlohmann::json &results, const std::string &json_dump_file)
+void dump_chat_completion_response(const json &results, const std::string &json_dump_file)
 {
     fmt::print("Dumping results to '{}'\n", json_dump_file);
     std::ofstream st_filename(json_dump_file);
@@ -197,7 +210,7 @@ void command_run(int argc, char **argv)
     std::string response;
 
     try {
-        response = api::create_chat_completion(model, params.prompt.value(), temp);
+        response = create_chat_completion(model, params.prompt.value(), temp);
     } catch (std::runtime_error &e) {
         query_failed = true;
         fmt::print(stderr, "{}\n", e.what());
@@ -210,7 +223,7 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("Cannot proceed");
     }
 
-    const nlohmann::json results = parse_response(response);
+    const json results = parse_response(response);
 
     if (params.json_dump_file.has_value()) {
         dump_chat_completion_response(results, params.json_dump_file.value());
