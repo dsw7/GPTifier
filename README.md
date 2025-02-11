@@ -21,6 +21,9 @@ A beautiful C++ libcurl / ChatGPT interface
   - [The `short` command](#the-short-command)
   - [The `embed` command](#the-embed-command)
   - [The `models` command](#the-models-command)
+  - [The `files` command](#the-files-command)
+    - [List files](#list-files)
+    - [Delete files](#delete-files)
   - [Input selection](#input-selection)
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
@@ -194,6 +197,22 @@ whisper-1                     openai-internal               2023-02-27 21:13:04
 davinci-002                   system                        2023-08-21 16:11:41
 ...                           ...                           ...
 ```
+
+### The `files` command
+Use this command to manage files uploaded to OpenAI.
+#### List files
+To list uploaded files, run:
+```console
+gpt files
+# or
+gpt files list
+```
+#### Delete files
+To delete one or more uploaded files, run:
+```console
+gpt files delete <file-id>
+```
+The file ID corresponding to a file can be obtained by running [the `list` subcommand](#list-files).
 
 ### Input selection
 For certain commands, a hierarchy exists for choosing where input text comes from. The hierarchy roughly
