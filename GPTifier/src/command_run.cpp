@@ -2,7 +2,6 @@
 
 #include "api.hpp"
 #include "cli.hpp"
-#include "configs.hpp"
 #include "datadir.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
@@ -29,20 +28,6 @@ struct Completion {
     std::string prompt;
     std::time_t created = 0;
 };
-
-std::string select_chat_model()
-{
-#ifdef TESTING_ENABLED
-    static std::string low_cost_model = "gpt-3.5-turbo";
-    return low_cost_model;
-#endif
-
-    if (configs.chat.model.has_value()) {
-        return configs.chat.model.value();
-    }
-
-    throw std::runtime_error("No model provided via configuration file or command line");
-}
 
 void create_chat_completion(const std::string &model, const std::string &prompt, float temperature, json &results)
 {
