@@ -3,12 +3,14 @@
 #include "api.hpp"
 #include "cli.hpp"
 #include "configs.hpp"
-#include "json.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
 
 #include <fmt/core.h>
+#include <json.hpp>
 #include <string>
+
+using json = nlohmann::json;
 
 namespace {
 
@@ -36,15 +38,20 @@ void command_short(int argc, char **argv)
         throw std::runtime_error("Prompt is empty");
     }
 
-    const std::string model = select_chat_model();
-    const std::string response = api::create_chat_completion(model, params.prompt.value(), 1.00);
+    const json messages = { { "role", "user" }, { "content", params.prompt.value() } };
+    const json data = {
+        { "model", select_chat_model() }, { "temperature", 1.00 }, { "messages", json::array({ messages }) }
+    };
+
+    Curl curl;
+    const std::string response = curl.create_chat_completion(data.dump());
 
     if (params.print_raw_json) {
         print_raw_response(response);
         return;
     }
 
-    const nlohmann::json results = parse_response(response);
+    const json results = parse_response(response);
     const std::string content = results["choices"][0]["message"]["content"];
 
     fmt::print("{}\n", content);
