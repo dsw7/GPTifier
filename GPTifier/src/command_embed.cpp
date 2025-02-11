@@ -5,25 +5,33 @@
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "input_selection.hpp"
-#include "json.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
 #include <fstream>
+#include <json.hpp>
 #include <stdexcept>
 #include <string>
 
+using json = nlohmann::json;
+
 namespace {
 
-void export_embedding(const std::string &response, const std::string &input)
+void create_embedding(const std::string &model, const std::string &input, json &results)
 {
-    nlohmann::json results = parse_response(response);
-    results["input"] = input;
+    const json data = { { "model", model }, { "input", input } };
 
+    Curl curl;
+    const std::string response = curl.create_embedding(data.dump());
+
+    results = parse_response(response);
+}
+
+void export_embedding(const json &results)
+{
     fmt::print("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS.string());
-
     std::ofstream st_filename(datadir::GPT_EMBEDDINGS);
 
     if (not st_filename.is_open()) {
@@ -33,8 +41,6 @@ void export_embedding(const std::string &response, const std::string &input)
 
     st_filename << std::setw(2) << results;
     st_filename.close();
-
-    print_sep();
 }
 
 } // namespace
@@ -60,8 +66,12 @@ void command_embed(int argc, char **argv)
         }
     }
 
-    const std::string response = api::create_embedding(model, params.input.value());
+    json results;
+    create_embedding(model, params.input.value(), results);
+
+    results["input"] = params.input.value();
 
     print_sep();
-    export_embedding(response, params.input.value());
+    export_embedding(results);
+    print_sep();
 }
