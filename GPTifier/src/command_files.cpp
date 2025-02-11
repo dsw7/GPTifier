@@ -31,7 +31,8 @@ void command_files_list(int argc, char **argv)
 {
     bool print_raw_json = cli::get_opts_files_list(argc, argv);
 
-    const std::string response = api::get_uploaded_files();
+    Curl curl;
+    const std::string response = curl.get_uploaded_files();
 
     if (print_raw_json) {
         print_raw_response(response);
