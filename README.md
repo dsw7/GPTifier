@@ -24,6 +24,8 @@ A beautiful C++ libcurl / ChatGPT interface
   - [The `files` command](#the-files-command)
     - [List files](#list-files)
     - [Delete files](#delete-files)
+  - [The `fine-tune` command](#the-fine-tune-command)
+    - [Fine tuning workflow](#fine-tuning-workflow)
   - [Input selection](#input-selection)
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
@@ -213,6 +215,42 @@ To delete one or more uploaded files, run:
 gpt files delete <file-id>
 ```
 The file ID corresponding to a file can be obtained by running [the `list` subcommand](#list-files).
+
+### The `fine-tune` command
+The `fine-tune` command can be used for managing fine-tuning operations.
+#### Fine tuning workflow
+Start off by creating a dataset. See [Preparing your
+dataset](https://platform.openai.com/docs/guides/fine-tuning#preparing-your-dataset) for more information.
+Next, upload the dataset:
+```console
+gpt fine-tune upload-file jessica_training.jsonl # jessica_training.jsonl is the dataset
+```
+Which will print out:
+```
+Success!
+Uploaded file: jessica_training.jsonl
+With ID: file-6Vf...8t7
+```
+Next, create a fine-tuning job:
+```console
+gpt fine-tune create-job --file-id=file-6Vf...8t7 --model=gpt-4o-mini-2024-07-18
+```
+Then check the status of the job:
+```console
+gpt fine-tune list-jobs
+```
+If the training file is no longer needed, the file can be deleted from OpenAI servers:
+```console
+gpt files delete file-6Vf...8t7
+```
+And if the model is no longer needed, the model can be deleted using:
+```console
+gpt fine-tune delete-model <model-id>
+```
+The model ID can be found from the `User models` section listed by running:
+```console
+gpt models
+```
 
 ### Input selection
 For certain commands, a hierarchy exists for choosing where input text comes from. The hierarchy roughly
