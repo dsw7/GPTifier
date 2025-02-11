@@ -3,11 +3,11 @@
 #include "api.hpp"
 #include "cli.hpp"
 #include "help_messages.hpp"
-#include "json.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
+#include <json.hpp>
 #include <map>
 #include <stdexcept>
 #include <string>

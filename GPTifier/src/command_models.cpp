@@ -2,14 +2,16 @@
 
 #include "api.hpp"
 #include "cli.hpp"
-#include "json.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
 
 #include <algorithm>
 #include <fmt/core.h>
+#include <json.hpp>
 #include <string>
 #include <vector>
+
+using json = nlohmann::json;
 
 namespace {
 
@@ -46,10 +48,8 @@ void print_models(std::vector<OpenAIModel> &models)
     print_sep();
 }
 
-void print_models_response(const std::string &response)
+void print_models_response(const json &response)
 {
-    const nlohmann::json results = parse_response(response);
-
     std::vector<OpenAIModel> openai_models;
     std::vector<OpenAIModel> user_models;
 
@@ -86,5 +86,6 @@ void command_models(int argc, char **argv)
         return;
     }
 
-    print_models_response(response);
+    const json results = parse_response(response);
+    print_models_response(results);
 }
