@@ -271,12 +271,6 @@ std::string create_chat_completion(const std::string &model, const std::string &
     return curl.create_chat_completion(data.dump());
 }
 
-std::string get_models()
-{
-    Curl curl;
-    return curl.get_models();
-}
-
 std::string upload_file(const std::string &filename, const std::string &purpose)
 {
     Curl curl;
