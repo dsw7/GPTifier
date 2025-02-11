@@ -285,12 +285,6 @@ std::string create_fine_tuning_job(const std::string &training_file, const std::
     return curl.create_fine_tuning_job(data.dump());
 }
 
-std::string delete_model(const std::string &model_id)
-{
-    Curl curl;
-    return curl.delete_model(model_id);
-}
-
 std::string get_fine_tuning_jobs(const std::string &limit)
 {
     Curl curl;
