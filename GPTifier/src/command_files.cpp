@@ -48,7 +48,7 @@ void command_files_list(int argc, char **argv)
         return;
     }
 
-    const nlohmann::json results = parse_response(response);
+    const json results = parse_response(response);
 
     print_sep();
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
@@ -89,7 +89,7 @@ void command_files_delete(int argc, char **argv)
     bool has_failed = false;
 
     for (auto it = args.begin(); it != args.end(); it++) {
-        nlohmann::json results;
+        json results;
 
         try {
             delete_file(*it, results);
