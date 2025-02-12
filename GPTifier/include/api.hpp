@@ -29,6 +29,8 @@ public:
     CURL *handle = NULL;
 
 private:
-    void set_project_id();
     struct curl_slist *headers = NULL;
+
+    void set_api_key();
+    void set_project_id();
 };
