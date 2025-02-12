@@ -17,16 +17,17 @@ using json = nlohmann::json;
 namespace {
 
 struct CostsBucket {
+    float cost;
+    std::string org_id;
     std::time_t end_time;
     std::time_t start_time;
-    std::string org_id;
 
     void print()
     {
         const std::string start_time = datetime_from_unix_timestamp(this->start_time);
         const std::string end_time = datetime_from_unix_timestamp(this->end_time);
 
-        fmt::print("{:<25}{:<25}{}\n", start_time, end_time, this->org_id);
+        fmt::print("{:<25}{:<25}{:<25}{}\n", start_time, end_time, this->cost, this->org_id);
     }
 };
 
@@ -52,11 +53,14 @@ void print_results(const json &results)
             continue;
         }
 
-        buckets.push_back({ entry["end_time"], entry["start_time"], entry["results"][0]["organization_id"] });
+        buckets.push_back({ entry["results"][0]["amount"]["value"],
+            entry["results"][0]["organization_id"],
+            entry["end_time"],
+            entry["start_time"] });
     }
 
     print_sep();
-    fmt::print("{:<25}{:<25}{}\n", "Start time", "End time", "Model ID");
+    fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
     print_sep();
 
     for (auto it = buckets.begin(); it != buckets.end(); it++) {
