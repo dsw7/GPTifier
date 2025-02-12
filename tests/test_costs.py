@@ -1,8 +1,12 @@
-from unittest import TestCase
+import unittest
+from os import environ
 from .helpers import run_process
 
 
-class TestCosts(TestCase):
+@unittest.skipIf(
+    "OPENAI_ADMIN_KEY" not in environ, "OPENAI_ADMIN_KEY does not exist in environment"
+)
+class TestCosts(unittest.TestCase):
 
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
@@ -22,7 +26,7 @@ class TestCosts(TestCase):
     def test_costs_raw(self) -> None:
         for option in ["-r", "--raw"]:
             with self.subTest(option=option):
-                proc = run_process(["costs", option])
+                proc = run_process(["costs", option, "--days=3"])
                 proc.assert_success()
                 proc.load_stdout_to_json()
 
