@@ -4,15 +4,31 @@
 #include "cli.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
+#include "utils.hpp"
 
 #include <ctime>
 #include <fmt/core.h>
 #include <json.hpp>
 #include <string>
+#include <vector>
 
 using json = nlohmann::json;
 
 namespace {
+
+struct CostsBucket {
+    std::time_t end_time;
+    std::time_t start_time;
+    std::string org_id;
+
+    void print()
+    {
+        const std::string start_time = datetime_from_unix_timestamp(this->start_time);
+        const std::string end_time = datetime_from_unix_timestamp(this->end_time);
+
+        fmt::print("{:<25}{:<25}{}\n", start_time, end_time, this->org_id);
+    }
+};
 
 std::time_t get_current_time_minus_days(int days)
 {
@@ -25,6 +41,27 @@ std::time_t get_current_time_minus_days(int days)
 
     std::time_t now = std::time(nullptr);
     return now - offset;
+}
+
+void print_results(const json &results)
+{
+    std::vector<CostsBucket> buckets;
+
+    for (const auto &entry: results["data"]) {
+        if (entry["results"].empty()) {
+            continue;
+        }
+
+        buckets.push_back({ entry["end_time"], entry["start_time"], entry["results"][0]["organization_id"] });
+    }
+
+    print_sep();
+    fmt::print("{:<25}{:<25}{}\n", "Start time", "End time", "Model ID");
+    print_sep();
+
+    for (auto it = buckets.begin(); it != buckets.end(); it++) {
+        it->print();
+    }
 }
 
 } // namespace
@@ -45,5 +82,5 @@ void command_costs(int argc, char **argv)
     }
 
     const json results = parse_response(response);
-    fmt::print("{}\n", results.dump(4));
+    print_results(results);
 }
