@@ -37,6 +37,8 @@ std::time_t get_current_time_minus_days(int days)
         return std::time(nullptr);
     }
 
+    days--;
+
     static std::time_t seconds_per_day = 86400;
     std::time_t offset = days * seconds_per_day;
 
@@ -69,12 +71,14 @@ void print_results(const json &results, int days)
     print_sep();
     fmt::print("Overall usage (in USD) over {} days: {}\n", days, costs);
     print_sep();
+
     fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
     print_sep();
 
     for (auto it = buckets.begin(); it != buckets.end(); it++) {
         it->print();
     }
+    print_sep();
 }
 
 } // namespace
