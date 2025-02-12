@@ -38,5 +38,7 @@ struct ParamsGetFineTuningJobs {
 
 struct ParamsCosts {
     bool print_raw_json = false;
-    int days = 30;
+    std::variant<std::string, int> days = "30";
+
+    void sanitize();
 };
