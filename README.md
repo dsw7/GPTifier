@@ -27,6 +27,8 @@ A beautiful C++ libcurl / ChatGPT interface
   - [The `fine-tune` command](#the-fine-tune-command)
     - [Fine tuning workflow](#fine-tuning-workflow)
   - [Input selection](#input-selection)
+- [Administration](#administration)
+  - [The `costs` command](#the-costs-command)
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
   - [GPTifier administration via OpenAI platform](#gptifier-administration-via-openai-platform)
@@ -41,6 +43,10 @@ Ensure that you have access to a valid OpenAI API key and ensure that this API k
 environment variable:
 ```
 OPENAI_API_KEY="<your-api-key>"
+```
+For running administrative commands, an additional administrative key must also be set:
+```
+OPENAI_ADMIN_KEY="<your-admin-key>"
 ```
 ### Get specific release
 Interested in a specific release? To download `1.0.0`, for example:
@@ -270,6 +276,18 @@ follows:
 
 4. **Read from stdin**:
    - If none of the above conditions are met, read input from standard input (stdin)
+
+## Administration
+> [!NOTE]
+> The commands in this section assume that a valid `OPENAI_ADMIN_KEY` is set as an environment variable.
+
+### The `costs` command
+The `costs` command can be used to determine overall monetary usage on OpenAI resources over a specified
+number of days for an organization. For example:
+```console
+gpt costs --days=5
+```
+Will return the usage per day over the past 5 days and the overall usage over the 5 days.
 
 ## Integrations
 ### Coupling with `vim`
