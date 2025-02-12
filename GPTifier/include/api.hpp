@@ -16,7 +16,7 @@ public:
     Curl &operator=(const Curl &) = delete;
 
     // Admin commands
-    std::string get_costs(const std::time_t &start_time);
+    std::string get_costs(const std::time_t &start_time, int limit);
 
     // User commands
     std::string get_uploaded_files();

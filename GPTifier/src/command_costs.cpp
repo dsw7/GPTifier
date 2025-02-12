@@ -76,9 +76,10 @@ void command_costs(int argc, char **argv)
     params.sanitize();
 
     std::time_t start_time = get_current_time_minus_days(std::get<int>(params.days));
+    int limit = 180;
 
     Curl curl;
-    const std::string response = curl.get_costs(start_time);
+    const std::string response = curl.get_costs(start_time, limit);
 
     if (params.print_raw_json) {
         print_raw_response(response);
