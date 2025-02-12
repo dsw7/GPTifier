@@ -15,6 +15,7 @@ const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
 const std::string URL_FILES = "https://api.openai.com/v1/files";
 const std::string URL_FINE_TUNING = "https://api.openai.com/v1/fine_tuning";
 const std::string URL_MODELS = "https://api.openai.com/v1/models";
+const std::string URL_ORGANIZATION = "https://api.openai.com/v1/organization";
 
 } // namespace endpoints
 
@@ -247,6 +248,25 @@ std::string Curl::get_fine_tuning_jobs(const std::string &limit)
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}?limit={}", endpoints::URL_FINE_TUNING, "jobs", limit);
+
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
+
+    std::string response;
+    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+
+    catch_curl_error(curl_easy_perform(this->handle));
+    return response;
+}
+
+std::string Curl::get_costs(const std::time_t &start_time)
+{
+    const std::string header = "Content-Type: application/json";
+    this->headers = curl_slist_append(this->headers, header.c_str());
+
+    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+
+    const std::string endpoint = fmt::format("{}/{}?start_time={}", endpoints::URL_ORGANIZATION, "costs", start_time);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);

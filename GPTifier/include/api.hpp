@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ctime>
 #include <curl/curl.h>
 #include <string>
 
@@ -23,6 +24,7 @@ public:
     std::string create_fine_tuning_job(const std::string &post_fields);
     std::string delete_model(const std::string &model_id);
     std::string get_fine_tuning_jobs(const std::string &limit);
+    std::string get_costs(const std::time_t &start_time);
 
     CURL *handle = NULL;
 
