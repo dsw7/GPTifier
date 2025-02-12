@@ -352,4 +352,15 @@ void help_command_fine_tune_list_jobs()
     help.print();
 }
 
+void help_command_costs()
+{
+    HelpMessages help;
+    help.add_description("Get OpenAI usage details.");
+    help.add_synopsis("costs [-h | --help] [-r | --raw] -d <days> | --days <days>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
+    help.add_option("-d", "--days", "Select number of days to go back");
+    help.print();
+}
+
 } // namespace cli
