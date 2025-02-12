@@ -24,10 +24,10 @@ struct CostsBucket {
 
     void print()
     {
-        const std::string start_time = datetime_from_unix_timestamp(this->start_time);
-        const std::string end_time = datetime_from_unix_timestamp(this->end_time);
+        const std::string dt_start = datetime_from_unix_timestamp(this->start_time);
+        const std::string dt_end = datetime_from_unix_timestamp(this->end_time);
 
-        fmt::print("{:<25}{:<25}{:<25}{}\n", start_time, end_time, this->cost, this->org_id);
+        fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, this->cost, this->org_id);
     }
 };
 
