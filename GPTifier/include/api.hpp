@@ -15,6 +15,10 @@ public:
     Curl(const Curl &) = delete;
     Curl &operator=(const Curl &) = delete;
 
+    // Admin commands
+    std::string get_costs(const std::time_t &start_time);
+
+    // User commands
     std::string get_uploaded_files();
     std::string get_models();
     std::string create_chat_completion(const std::string &post_fields);
@@ -24,13 +28,13 @@ public:
     std::string create_fine_tuning_job(const std::string &post_fields);
     std::string delete_model(const std::string &model_id);
     std::string get_fine_tuning_jobs(const std::string &limit);
-    std::string get_costs(const std::time_t &start_time);
 
     CURL *handle = NULL;
 
 private:
     struct curl_slist *headers = NULL;
 
+    void set_admin_key();
     void set_api_key();
     void set_project_id();
 };
