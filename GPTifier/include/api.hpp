@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ctime>
 #include <curl/curl.h>
 #include <string>
 
@@ -14,6 +15,10 @@ public:
     Curl(const Curl &) = delete;
     Curl &operator=(const Curl &) = delete;
 
+    // Admin commands
+    std::string get_costs(const std::time_t &start_time, int limit);
+
+    // User commands
     std::string get_uploaded_files();
     std::string get_models();
     std::string create_chat_completion(const std::string &post_fields);
@@ -27,6 +32,11 @@ public:
     CURL *handle = NULL;
 
 private:
-    void set_project_id();
     struct curl_slist *headers = NULL;
+
+    void set_admin_key();
+    void set_api_key();
+    void set_project_id();
+    void set_content_type_transmit_json();
+    void set_content_type_submit_form();
 };

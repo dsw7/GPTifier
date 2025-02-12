@@ -35,3 +35,10 @@ struct ParamsGetFineTuningJobs {
     bool print_raw_json = false;
     std::optional<std::string> limit = std::nullopt;
 };
+
+struct ParamsCosts {
+    bool print_raw_json = false;
+    std::variant<std::string, int> days = "30";
+
+    void sanitize();
+};

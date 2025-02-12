@@ -198,7 +198,7 @@ void help_root_messages()
     help.add_name_version();
     help.add_description("A command line program for interactively querying OpenAI via the OpenAI API.");
     help.add_description("See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.");
-    help.add_synopsis("[-v | --version] [-h | --help] (run | short | models | embed | files | fine-tune)");
+    help.add_synopsis("[-v | --version] [-h | --help] (run | short | models | embed | files | fine-tune | costs)");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-v", "--version", "Print version and exit");
     help.add_command("run", "Run a query against an appropriate model");
@@ -207,6 +207,7 @@ void help_root_messages()
     help.add_command("embed", "Get embedding representing a block of text");
     help.add_command("files", "Manage files uploaded to OpenAI");
     help.add_command("fine-tune", "Manage fine tuning operations");
+    help.add_command("costs", "Get OpenAI usage details");
     help.print();
 }
 
@@ -349,6 +350,17 @@ void help_command_fine_tune_list_jobs()
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
     help.add_option("-l", "--limit", "Number of fine-tuning jobs to show");
+    help.print();
+}
+
+void help_command_costs()
+{
+    HelpMessages help;
+    help.add_description("Get OpenAI usage details.");
+    help.add_synopsis("costs [-h | --help] [-r | --raw] -d <days> | --days <days>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
+    help.add_option("-d", "--days", "Select number of days to go back");
     help.print();
 }
 
