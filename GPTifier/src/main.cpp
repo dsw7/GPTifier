@@ -1,3 +1,4 @@
+#include "command_costs.hpp"
 #include "command_embed.hpp"
 #include "command_files.hpp"
 #include "command_fine_tune.hpp"
@@ -69,6 +70,8 @@ int main(int argc, char **argv)
             command_files(argc, argv);
         } else if (command == "fine-tune") {
             command_fine_tune(argc, argv);
+        } else if (command == "costs") {
+            command_costs(argc, argv);
         } else {
             fmt::print(stderr, "Received unknown command. Re-run with -h or --help\n");
         }
