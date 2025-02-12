@@ -97,14 +97,17 @@ void Curl::set_project_id()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
+void Curl::set_content_type_transmit_json()
+{
+    const std::string header = "Content-Type: application/json";
+    this->headers = curl_slist_append(this->headers, header.c_str());
+}
+
 // Admin commands
 std::string Curl::get_costs(const std::time_t &start_time)
 {
     this->set_admin_key();
-
-    const std::string header = "Content-Type: application/json";
-    this->headers = curl_slist_append(this->headers, header.c_str());
-
+    this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}?start_time={}", endpoints::URL_ORGANIZATION, "costs", start_time);
@@ -153,10 +156,7 @@ std::string Curl::get_uploaded_files()
 std::string Curl::create_chat_completion(const std::string &post_fields)
 {
     this->set_api_key();
-
-    const std::string header = "Content-Type: application/json";
-    this->headers = curl_slist_append(this->headers, header.c_str());
-
+    this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_CHAT_COMPLETIONS.c_str());
@@ -173,10 +173,7 @@ std::string Curl::create_chat_completion(const std::string &post_fields)
 std::string Curl::create_embedding(const std::string &post_fields)
 {
     this->set_api_key();
-
-    const std::string header = "Content-Type: application/json";
-    this->headers = curl_slist_append(this->headers, header.c_str());
-
+    this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_EMBEDDINGS.c_str());
@@ -227,7 +224,6 @@ std::string Curl::upload_file(const std::string &filename, const std::string &pu
 std::string Curl::delete_file(const std::string &file_id)
 {
     this->set_api_key();
-
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}", endpoints::URL_FILES, file_id);
@@ -245,10 +241,7 @@ std::string Curl::delete_file(const std::string &file_id)
 std::string Curl::create_fine_tuning_job(const std::string &post_fields)
 {
     this->set_api_key();
-
-    const std::string header = "Content-Type: application/json";
-    this->headers = curl_slist_append(this->headers, header.c_str());
-
+    this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}", endpoints::URL_FINE_TUNING, "jobs");
@@ -267,7 +260,6 @@ std::string Curl::create_fine_tuning_job(const std::string &post_fields)
 std::string Curl::delete_model(const std::string &model_id)
 {
     this->set_api_key();
-
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}", endpoints::URL_MODELS, model_id);
@@ -285,7 +277,6 @@ std::string Curl::delete_model(const std::string &model_id)
 std::string Curl::get_fine_tuning_jobs(const std::string &limit)
 {
     this->set_api_key();
-
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}?limit={}", endpoints::URL_FINE_TUNING, "jobs", limit);

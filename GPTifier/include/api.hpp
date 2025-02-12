@@ -37,4 +37,5 @@ private:
     void set_admin_key();
     void set_api_key();
     void set_project_id();
+    void set_content_type_transmit_json();
 };
