@@ -44,21 +44,30 @@ std::time_t get_current_time_minus_days(int days)
     return now - offset;
 }
 
-void print_results(const json &results)
+void print_results(const json &results, int days)
 {
     std::vector<CostsBucket> buckets;
+    float costs = 0.00;
 
     for (const auto &entry: results["data"]) {
         if (entry["results"].empty()) {
             continue;
         }
 
-        buckets.push_back({ entry["results"][0]["amount"]["value"],
-            entry["results"][0]["organization_id"],
-            entry["end_time"],
-            entry["start_time"] });
+        float cost = entry["results"][0]["amount"]["value"];
+        costs += cost;
+
+        CostsBucket bucket;
+        bucket.end_time = entry["end_time"];
+        bucket.start_time = entry["start_time"];
+        bucket.cost = cost;
+        bucket.org_id = entry["results"][0]["organization_id"];
+
+        buckets.push_back(bucket);
     }
 
+    print_sep();
+    fmt::print("Overall usage (in USD) over {} days: {}\n", days, costs);
     print_sep();
     fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
     print_sep();
@@ -87,5 +96,5 @@ void command_costs(int argc, char **argv)
     }
 
     const json results = parse_response(response);
-    print_results(results);
+    print_results(results, std::get<int>(params.days));
 }
