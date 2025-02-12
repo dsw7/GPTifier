@@ -103,6 +103,12 @@ void Curl::set_content_type_transmit_json()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
+void Curl::set_content_type_submit_form()
+{
+    const std::string header = "Content-Type: multipart/form-data";
+    this->headers = curl_slist_append(this->headers, header.c_str());
+}
+
 // Admin commands
 std::string Curl::get_costs(const std::time_t &start_time)
 {
@@ -190,10 +196,7 @@ std::string Curl::create_embedding(const std::string &post_fields)
 std::string Curl::upload_file(const std::string &filename, const std::string &purpose)
 {
     this->set_api_key();
-
-    const std::string header = "Content-Type: multipart/form-data";
-    this->headers = curl_slist_append(this->headers, header.c_str());
-
+    this->set_content_type_submit_form();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_FILES.c_str());

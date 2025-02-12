@@ -38,4 +38,5 @@ private:
     void set_api_key();
     void set_project_id();
     void set_content_type_transmit_json();
+    void set_content_type_submit_form();
 };
