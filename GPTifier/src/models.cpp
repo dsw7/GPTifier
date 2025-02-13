@@ -1,9 +1,11 @@
-#include "value_objects.hpp"
+#include "models.hpp"
 
 #include "utils.hpp"
 
 #include <algorithm>
 #include <fmt/core.h>
+
+namespace models {
 
 void OpenAIModel::print()
 {
@@ -20,3 +22,5 @@ void sort(std::vector<OpenAIModel> &models)
         return left.id < right.id;
     });
 }
+
+} // namespace models

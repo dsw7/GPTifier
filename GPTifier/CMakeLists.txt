@@ -91,6 +91,7 @@ add_executable(
   "src/datadir.cpp"
   "src/help_messages.cpp"
   "src/main.cpp"
+  "src/models.cpp"
   "src/params.cpp"
   "src/parsers.cpp"
   "src/selectors.cpp"

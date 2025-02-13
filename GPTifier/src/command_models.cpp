@@ -2,9 +2,9 @@
 
 #include "api.hpp"
 #include "cli.hpp"
+#include "models.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
-#include "value_objects.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -20,13 +20,13 @@ bool is_fine_tuning_model(const std::string &model)
     return model.compare(0, 3, "ft:") == 0;
 }
 
-void print_models(std::vector<OpenAIModel> &models)
+void print_models(std::vector<models::OpenAIModel> &models)
 {
     print_sep();
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     print_sep();
 
-    sort(models);
+    models::sort(models);
 
     for (auto it = models.begin(); it != models.end(); ++it) {
         it->print();
@@ -37,8 +37,8 @@ void print_models(std::vector<OpenAIModel> &models)
 
 void print_models_response(const json &response)
 {
-    std::vector<OpenAIModel> openai_models;
-    std::vector<OpenAIModel> user_models;
+    std::vector<models::OpenAIModel> openai_models;
+    std::vector<models::OpenAIModel> user_models;
 
     for (const auto &entry: response["data"]) {
         if (is_fine_tuning_model(entry["id"])) {
