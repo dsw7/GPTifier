@@ -9,7 +9,14 @@ namespace models {
 
 void OpenAIModel::print()
 {
-    fmt::print("{:<25}{:<35}{}\n", datetime_from_unix_timestamp(this->created_at), this->owned_by, this->id);
+    const std::string dt_created_at = datetime_from_unix_timestamp(this->created_at);
+    fmt::print("{:<25}{:<35}{}\n", dt_created_at, this->owned_by, this->id);
+}
+
+void File::print()
+{
+    const std::string dt_created_at = datetime_from_unix_timestamp(this->created_at);
+    fmt::print("{:<30}{:<30}{:<30}{}\n", this->id, this->filename, dt_created_at, this->purpose);
 }
 
 void CostsBucket::print()
@@ -23,6 +30,17 @@ void CostsBucket::print()
 void sort(std::vector<OpenAIModel> &models)
 {
     std::sort(models.begin(), models.end(), [](const OpenAIModel &left, const OpenAIModel &right) {
+        if (left.created_at != right.created_at) {
+            return left.created_at < right.created_at;
+        }
+
+        return left.id < right.id;
+    });
+}
+
+void sort(std::vector<File> &files)
+{
+    std::sort(files.begin(), files.end(), [](const File &left, const File &right) {
         if (left.created_at != right.created_at) {
             return left.created_at < right.created_at;
         }

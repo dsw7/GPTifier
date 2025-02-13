@@ -3,12 +3,12 @@
 #include "api.hpp"
 #include "cli.hpp"
 #include "help_messages.hpp"
+#include "models.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
-#include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -22,18 +22,6 @@ void delete_file(const std::string &file_id, json &results)
     Curl curl;
     const std::string response = curl.delete_file(file_id);
     results = parse_response(response);
-}
-
-struct File {
-    std::string filename;
-    std::string id;
-    std::string purpose;
-};
-
-void print_file(int created_at, const File &file)
-{
-    const std::string datetime = datetime_from_unix_timestamp(created_at);
-    fmt::print("{:<30}{:<30}{:<30}{}\n", file.id, file.filename, datetime, file.purpose);
 }
 
 void command_files_list(int argc, char **argv)
@@ -54,15 +42,21 @@ void command_files_list(int argc, char **argv)
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
 
     print_sep();
-    std::map<int, File> files;
+    std::vector<models::File> files;
 
     for (const auto &entry: results["data"]) {
-        File file = { entry["filename"], entry["id"], entry["purpose"] };
-        files.emplace(entry["created_at"], file);
+        models::File file;
+        file.created_at = entry["created_at"];
+        file.filename = entry["filename"];
+        file.id = entry["id"];
+        file.purpose = entry["purpose"];
+        files.push_back(file);
     }
 
+    models::sort(files);
+
     for (auto it = files.begin(); it != files.end(); ++it) {
-        print_file(it->first, it->second);
+        it->print();
     }
 
     print_sep();
