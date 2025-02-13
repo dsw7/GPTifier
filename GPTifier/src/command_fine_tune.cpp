@@ -3,16 +3,16 @@
 #include "api.hpp"
 #include "cli.hpp"
 #include "help_messages.hpp"
+#include "models.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
-#include <map>
-#include <optional>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 using json = nlohmann::json;
 
@@ -100,34 +100,6 @@ void delete_fine_tuned_model(int argc, char **argv)
     }
 }
 
-struct Job {
-    std::string id;
-    std::optional<int> estimated_finish = std::nullopt;
-    std::optional<int> finished_at = std::nullopt;
-};
-
-void print_jobs(int created_at, const Job &job)
-{
-    const std::string create_time = datetime_from_unix_timestamp(created_at);
-
-    std::string finish_time;
-    std::string estimated_finish;
-
-    if (job.finished_at.has_value()) {
-        finish_time = datetime_from_unix_timestamp(job.finished_at.value());
-    } else {
-        finish_time = '-';
-    }
-
-    if (job.estimated_finish.has_value()) {
-        finish_time = datetime_from_unix_timestamp(job.estimated_finish.value());
-    } else {
-        estimated_finish = '-';
-    }
-
-    fmt::print("{:<40}{:<30}{:<30}{}\n", job.id, create_time, estimated_finish, finish_time);
-}
-
 void list_fine_tuning_jobs(int argc, char **argv)
 {
     ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
@@ -152,11 +124,13 @@ void list_fine_tuning_jobs(int argc, char **argv)
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
 
     print_sep();
-    std::map<int, Job> jobs;
+    std::vector<models::Job> jobs;
 
     for (const auto &entry: results["data"]) {
-        Job job;
+        models::Job job;
+
         job.id = entry["id"];
+        job.created_at = entry["created_at"];
 
         if (not entry["finished_at"].is_null()) {
             job.finished_at = entry["finished_at"];
@@ -166,11 +140,13 @@ void list_fine_tuning_jobs(int argc, char **argv)
             job.estimated_finish = entry["estimated_finish"];
         }
 
-        jobs[entry["created_at"]] = job;
+        jobs.push_back(job);
     }
 
+    models::sort(jobs);
+
     for (auto it = jobs.begin(); it != jobs.end(); ++it) {
-        print_jobs(it->first, it->second);
+        it->print();
     }
 
     print_sep();
