@@ -20,7 +20,7 @@ bool is_fine_tuning_model(const std::string &model)
     return model.compare(0, 3, "ft:") == 0;
 }
 
-void print_models(std::vector<models::OpenAIModel> &models)
+void print_models(std::vector<models::Model> &models)
 {
     print_sep();
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
@@ -37,8 +37,8 @@ void print_models(std::vector<models::OpenAIModel> &models)
 
 void print_models_response(const json &response)
 {
-    std::vector<models::OpenAIModel> openai_models;
-    std::vector<models::OpenAIModel> user_models;
+    std::vector<models::Model> openai_models;
+    std::vector<models::Model> user_models;
 
     for (const auto &entry: response["data"]) {
         if (is_fine_tuning_model(entry["id"])) {

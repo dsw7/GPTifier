@@ -6,7 +6,7 @@
 
 namespace models {
 
-struct OpenAIModel {
+struct Model {
     int created_at;
     std::string id;
     std::string owned_by;
@@ -32,7 +32,7 @@ struct CostsBucket {
     void print();
 };
 
-void sort(std::vector<OpenAIModel> &models);
+void sort(std::vector<Model> &models);
 void sort(std::vector<File> &files);
 void sort(std::vector<CostsBucket> &buckets);
 
