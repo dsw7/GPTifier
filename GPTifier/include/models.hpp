@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ctime>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,6 +24,15 @@ struct File {
     void print();
 };
 
+struct Job {
+    int created_at;
+    std::optional<int> estimated_finish = std::nullopt;
+    std::optional<int> finished_at = std::nullopt;
+    std::string id;
+
+    void print();
+};
+
 struct CostsBucket {
     float cost;
     std::string org_id;
@@ -34,6 +44,7 @@ struct CostsBucket {
 
 void sort(std::vector<Model> &models);
 void sort(std::vector<File> &files);
+void sort(std::vector<Job> &jobs);
 void sort(std::vector<CostsBucket> &buckets);
 
 } // namespace models

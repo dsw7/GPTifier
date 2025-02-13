@@ -62,6 +62,7 @@ void print_results(const json &results, int days)
     print_sep();
 
     models::sort(buckets);
+
     for (auto it = buckets.begin(); it != buckets.end(); it++) {
         it->print();
     }
