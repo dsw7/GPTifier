@@ -4,8 +4,8 @@
 #include "cli.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
+#include "value_objects.hpp"
 
-#include <algorithm>
 #include <fmt/core.h>
 #include <json.hpp>
 #include <string>
@@ -14,17 +14,6 @@
 using json = nlohmann::json;
 
 namespace {
-
-struct OpenAIModel {
-    int created;
-    std::string id;
-    std::string owned_by;
-
-    void print()
-    {
-        fmt::print("{:<25}{:<35}{}\n", datetime_from_unix_timestamp(this->created), this->owned_by, this->id);
-    }
-};
 
 bool is_fine_tuning_model(const std::string &model)
 {
@@ -37,13 +26,7 @@ void print_models(std::vector<OpenAIModel> &models)
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     print_sep();
 
-    std::sort(models.begin(), models.end(), [](const OpenAIModel &a, const OpenAIModel &b) {
-        if (a.created != b.created) {
-            return a.created < b.created;
-        }
-
-        return a.id < b.id;
-    });
+    sort(models);
 
     for (auto it = models.begin(); it != models.end(); ++it) {
         it->print();
