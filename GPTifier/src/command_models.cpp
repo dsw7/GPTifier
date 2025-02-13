@@ -19,6 +19,11 @@ struct OpenAIModel {
     int created;
     std::string id;
     std::string owned_by;
+
+    void print()
+    {
+        fmt::print("{:<25}{:<35}{}\n", datetime_from_unix_timestamp(this->created), this->owned_by, this->id);
+    }
 };
 
 bool is_fine_tuning_model(const std::string &model)
@@ -41,8 +46,7 @@ void print_models(std::vector<OpenAIModel> &models)
     });
 
     for (auto it = models.begin(); it != models.end(); ++it) {
-        const std::string datetime = datetime_from_unix_timestamp(it->created);
-        fmt::print("{:<25}{:<35}{}\n", datetime, it->owned_by, it->id);
+        it->print();
     }
 
     print_sep();
