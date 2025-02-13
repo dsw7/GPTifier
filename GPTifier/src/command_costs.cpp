@@ -2,6 +2,7 @@
 
 #include "api.hpp"
 #include "cli.hpp"
+#include "models.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
@@ -15,21 +16,6 @@
 using json = nlohmann::json;
 
 namespace {
-
-struct CostsBucket {
-    float cost;
-    std::string org_id;
-    std::time_t end_time;
-    std::time_t start_time;
-
-    void print()
-    {
-        const std::string dt_start = datetime_from_unix_timestamp(this->start_time);
-        const std::string dt_end = datetime_from_unix_timestamp(this->end_time);
-
-        fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, this->cost, this->org_id);
-    }
-};
 
 std::time_t get_current_time_minus_days(int days)
 {
@@ -48,7 +34,7 @@ std::time_t get_current_time_minus_days(int days)
 
 void print_results(const json &results, int days)
 {
-    std::vector<CostsBucket> buckets;
+    std::vector<models::CostsBucket> buckets;
     float costs = 0.00;
 
     for (const auto &entry: results["data"]) {
@@ -59,7 +45,7 @@ void print_results(const json &results, int days)
         float cost = entry["results"][0]["amount"]["value"];
         costs += cost;
 
-        CostsBucket bucket;
+        models::CostsBucket bucket;
         bucket.end_time = entry["end_time"];
         bucket.start_time = entry["start_time"];
         bucket.cost = cost;
@@ -75,9 +61,11 @@ void print_results(const json &results, int days)
     fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
     print_sep();
 
+    models::sort(buckets);
     for (auto it = buckets.begin(); it != buckets.end(); it++) {
         it->print();
     }
+
     print_sep();
 }
 
