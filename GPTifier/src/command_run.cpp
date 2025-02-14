@@ -57,7 +57,7 @@ void time_api_call()
     std::cout << "\n";
 }
 
-models::Completion create_chat_completion(const std::string &model, const std::string &prompt, float temperature)
+void create_chat_completion(models::Completion &completion, const std::string &model, const std::string &prompt, float temperature)
 {
     const json messages = { { "role", "user" }, { "content", prompt } };
     const json data = {
@@ -68,8 +68,6 @@ models::Completion create_chat_completion(const std::string &model, const std::s
     const std::string response = curl.create_chat_completion(data.dump());
     const json results = parse_response(response);
 
-    models::Completion completion;
-
     try {
         completion.content = results["choices"][0]["message"]["content"];
         completion.model = results["model"];
@@ -78,6 +76,29 @@ models::Completion create_chat_completion(const std::string &model, const std::s
     } catch (const json::exception &e) {
         const std::string errmsg = fmt::format("Malformed response from OpenAI. Error was:\n{}", e.what());
         throw std::runtime_error(errmsg);
+    }
+}
+
+models::Completion run_query(const std::string &model, const std::string &prompt, float temperature)
+{
+    TIMER_ENABLED = true;
+    std::thread timer(time_api_call);
+
+    bool query_failed = false;
+    models::Completion completion;
+
+    try {
+        create_chat_completion(completion, model, prompt, temperature);
+    } catch (std::runtime_error &e) {
+        query_failed = true;
+        fmt::print(stderr, "{}\n", e.what());
+    }
+
+    TIMER_ENABLED = false;
+    timer.join();
+
+    if (query_failed) {
+        throw std::runtime_error("Cannot proceed");
     }
 
     return completion;
@@ -200,26 +221,8 @@ void command_run(int argc, char **argv)
         temperature = std::get<float>(params.temperature);
     }
 
-    TIMER_ENABLED = true;
-    std::thread timer(time_api_call);
-
-    bool query_failed = false;
-    models::Completion completion;
-
-    try {
-        completion = create_chat_completion(model, prompt, temperature);
-    } catch (std::runtime_error &e) {
-        query_failed = true;
-        fmt::print(stderr, "{}\n", e.what());
-    }
-
-    TIMER_ENABLED = false;
-    timer.join();
+    const models::Completion completion = run_query(model, prompt, temperature);
     print_sep();
-
-    if (query_failed) {
-        throw std::runtime_error("Cannot proceed");
-    }
 
     if (params.json_dump_file.has_value()) {
         dump_chat_completion_response(completion, params.json_dump_file.value());
