@@ -19,7 +19,7 @@ using json = nlohmann::json;
 
 namespace {
 
-void create_embedding(const std::string &model, const std::string &input, json &results)
+void query_embeddings_api(const std::string &model, const std::string &input, json &results)
 {
     const json data = { { "model", model }, { "input", input } };
 
@@ -67,7 +67,7 @@ void command_embed(int argc, char **argv)
     }
 
     json results;
-    create_embedding(model, params.input.value(), results);
+    query_embeddings_api(model, params.input.value(), results);
 
     results["input"] = params.input.value();
 
