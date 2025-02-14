@@ -100,12 +100,10 @@ void command_embed(int argc, char **argv)
 
     if (params.model.has_value()) {
         model = params.model.value();
+    } else if (configs.embeddings.model.has_value()) {
+        model = configs.embeddings.model.value();
     } else {
-        if (configs.embeddings.model.has_value()) {
-            model = configs.embeddings.model.value();
-        } else {
-            throw std::runtime_error("No model provided via configuration file or command line");
-        }
+        throw std::runtime_error("No model provided via configuration file or command line");
     }
 
     const models::Embedding embedding = query_embeddings_api(model, text_to_embed);
