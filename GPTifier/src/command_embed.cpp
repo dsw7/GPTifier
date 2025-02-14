@@ -7,11 +7,11 @@
 #include "models.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
-#include "selectors.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
 #include <fstream>
+#include <iostream>
 #include <json.hpp>
 #include <optional>
 #include <stdexcept>
@@ -20,6 +20,15 @@
 using json = nlohmann::json;
 
 namespace {
+
+std::string read_text_from_stdin()
+{
+    fmt::print(fg(white), "Input text to embed: ");
+    std::string text;
+
+    std::getline(std::cin, text);
+    return text;
+}
 
 models::Embedding query_embeddings_api(const std::string &model, const std::string &input)
 {
@@ -73,9 +82,18 @@ void command_embed(int argc, char **argv)
 {
     ParamsEmbedding params = cli::get_opts_embed(argc, argv);
 
-    if (not params.input.has_value()) {
-        print_sep();
-        params.input = select_input_text(params.input_file);
+    std::string text_to_embed;
+
+    if (params.input.has_value()) {
+        text_to_embed = params.input.value();
+    } else if (params.input_file.has_value()) {
+        text_to_embed = read_text_from_file(params.input_file.value());
+    } else {
+        text_to_embed = read_text_from_stdin();
+    }
+
+    if (text_to_embed.empty()) {
+        throw std::runtime_error("No input text provided anywhere");
     }
 
     std::string model;
@@ -90,8 +108,8 @@ void command_embed(int argc, char **argv)
         }
     }
 
-    const models::Embedding embedding = query_embeddings_api(model, params.input.value());
-
+    const models::Embedding embedding = query_embeddings_api(model, text_to_embed);
     export_embedding(embedding, params.output_file);
+
     print_sep();
 }
