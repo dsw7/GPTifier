@@ -34,6 +34,34 @@ def get_cosine_similarity(left: Embedding, right: Embedding) -> float:
     return dot_p / (mag_l * mag_r)
 
 
+class TestEmbedCosineSimilarityIdentical(TestCase):
+
+    def setUp(self) -> None:
+        self.filename = Path(gettempdir()) / "result.gpt"
+
+    def tearDown(self) -> None:
+        if self.filename.exists():
+            self.filename.unlink()
+
+    def test_compute_cosine_similarities(self) -> None:
+        model = "text-embedding-ada-002"
+
+        text = "The cat meowed softly."
+        proc = run_process(["embed", f"-i{text}", f"-m{model}", f"-o{self.filename}"])
+        proc.assert_success()
+
+        embedding = load_embedding(self.filename)
+
+        self.assertIn(model, embedding.model)
+        self.assertEqual(embedding.text, text)
+        self.assertEqual(
+            len(embedding.embedding), 1536
+        )  # text-embedding-ada-002 dimension
+        self.assertAlmostEqual(
+            get_cosine_similarity(embedding, embedding), 1.00, places=2
+        )
+
+
 class TestEmbedCosineSimilarityOrthogonal(TestCase):
 
     def setUp(self) -> None:
@@ -76,20 +104,6 @@ class TestEmbedCosineSimilarityOrthogonal(TestCase):
 #
 #                proc.assert_success()
 #                self.assertIn("Synopsis", proc.stdout)
-#
-#    def test_basic(self) -> None:
-#        text = "What is 3 + 5?"
-#        model = "text-embedding-ada-002"
-#
-#        proc = run_process(["embed", f"-i{text}", f"-m{model}"])
-#        proc.assert_success()
-#
-#        results = load_embedding()
-#        self.assertEqual(results.model, model)
-#        self.assertEqual(results.text, text)
-#        self.assertEqual(
-#            len(results.embedding), 1536
-#        )  # text-embedding-ada-002 dimension
 #
 #    def test_read_from_file(self) -> None:
 #        input_text_file = Path(__file__).resolve().parent / "prompt_basic.txt"
