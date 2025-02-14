@@ -13,6 +13,7 @@
 #include <fmt/core.h>
 #include <fstream>
 #include <json.hpp>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -42,13 +43,21 @@ models::Embedding query_embeddings_api(const std::string &model, const std::stri
     return embedding;
 }
 
-void export_embedding(const models::Embedding &embedding)
+void export_embedding(const models::Embedding &embedding, const std::optional<std::string> &output_file)
 {
-    fmt::print("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS.string());
-    std::ofstream st_filename(datadir::GPT_EMBEDDINGS);
+    std::string filename;
+
+    if (output_file.has_value()) {
+        filename = output_file.value();
+    } else {
+        filename = datadir::GPT_EMBEDDINGS.string();
+    }
+
+    fmt::print("Dumping JSON to '{}'\n", filename);
+    std::ofstream st_filename(filename);
 
     if (not st_filename.is_open()) {
-        const std::string errmsg = fmt::format("Unable to open '{}'", datadir::GPT_EMBEDDINGS.string());
+        const std::string errmsg = fmt::format("Unable to open '{}'", filename);
         throw std::runtime_error(errmsg);
     }
 
@@ -83,7 +92,6 @@ void command_embed(int argc, char **argv)
 
     const models::Embedding embedding = query_embeddings_api(model, params.input.value());
 
-    print_sep();
-    export_embedding(embedding);
+    export_embedding(embedding, params.output_file);
     print_sep();
 }
