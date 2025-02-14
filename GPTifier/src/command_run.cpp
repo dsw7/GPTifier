@@ -3,13 +3,13 @@
 #include "api.hpp"
 #include "cli.hpp"
 #include "datadir.hpp"
+#include "models.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
 #include "selectors.hpp"
 #include "utils.hpp"
 
 #include <chrono>
-#include <ctime>
 #include <fmt/core.h>
 #include <fstream>
 #include <iostream>
@@ -22,14 +22,7 @@ using json = nlohmann::json;
 
 namespace {
 
-struct Completion {
-    std::string content;
-    std::string model;
-    std::string prompt;
-    std::time_t created = 0;
-};
-
-void create_chat_completion(const std::string &model, const std::string &prompt, float temperature, json &results)
+models::Completion create_chat_completion(const std::string &model, const std::string &prompt, float temperature)
 {
     const json messages = { { "role", "user" }, { "content", prompt } };
     const json data = {
@@ -38,7 +31,21 @@ void create_chat_completion(const std::string &model, const std::string &prompt,
 
     Curl curl;
     const std::string response = curl.create_chat_completion(data.dump());
-    results = parse_response(response);
+    const json results = parse_response(response);
+
+    models::Completion completion;
+
+    try {
+        completion.content = results["choices"][0]["message"]["content"];
+        completion.model = results["model"];
+        completion.prompt = prompt;
+        completion.created = results["created"];
+    } catch (const json::exception &e) {
+        const std::string errmsg = fmt::format("Malformed response from OpenAI. Error was:\n{}", e.what());
+        throw std::runtime_error(errmsg);
+    }
+
+    return completion;
 }
 
 void print_chat_completion_response(const json &results)
@@ -58,7 +65,7 @@ void print_chat_completion_response(const json &results)
     print_sep();
 }
 
-void write_message_to_file(const Completion &completion)
+void write_message_to_file(const models::Completion &completion)
 {
     const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
 
@@ -109,7 +116,7 @@ void export_chat_completion_response(const json &results, const std::string &pro
         return;
     }
 
-    Completion completion;
+    models::Completion completion;
 
     try {
         completion = {
@@ -193,10 +200,10 @@ void command_run(int argc, char **argv)
     std::thread timer(time_api_call);
 
     bool query_failed = false;
-    json results;
+    models::Completion completion;
 
     try {
-        create_chat_completion(model, params.prompt.value(), temperature, results);
+        completion = create_chat_completion(model, params.prompt.value(), temperature);
     } catch (std::runtime_error &e) {
         query_failed = true;
         fmt::print(stderr, "{}\n", e.what());
@@ -208,6 +215,8 @@ void command_run(int argc, char **argv)
     if (query_failed) {
         throw std::runtime_error("Cannot proceed");
     }
+
+    json results = completion.jsonify();
 
     if (params.json_dump_file.has_value()) {
         dump_chat_completion_response(results, params.json_dump_file.value());
