@@ -30,9 +30,14 @@ models::Embedding query_embeddings_api(const std::string &model, const std::stri
 
     models::Embedding embedding;
 
-    embedding.embedding = results["data"][0]["embedding"].template get<std::vector<float>>();
-    embedding.input = input;
-    embedding.model = results["model"];
+    try {
+        embedding.embedding = results["data"][0]["embedding"].template get<std::vector<float>>();
+        embedding.input = input;
+        embedding.model = results["model"];
+    } catch (const json::exception &e) {
+        const std::string errmsg = fmt::format("Malformed response from OpenAI. Error was:\n{}", e.what());
+        throw std::runtime_error(errmsg);
+    }
 
     return embedding;
 }
