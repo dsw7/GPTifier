@@ -22,6 +22,27 @@ using json = nlohmann::json;
 
 namespace {
 
+bool TIMER_ENABLED = false;
+
+void time_api_call()
+{
+    auto delay = std::chrono::milliseconds(250);
+    auto start = std::chrono::high_resolution_clock::now();
+
+    while (TIMER_ENABLED) {
+        std::this_thread::sleep_for(delay);
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = end - start;
+
+        fmt::print(fg(white), "Time (s): ");
+        fmt::print("{}\r", duration.count());
+        std::cout.flush();
+    }
+
+    std::cout << "\n";
+}
+
 models::Completion create_chat_completion(const std::string &model, const std::string &prompt, float temperature)
 {
     const json messages = { { "role", "user" }, { "content", prompt } };
@@ -124,28 +145,6 @@ void dump_chat_completion_response(const models::Completion &completion, const s
     st_filename.close();
 }
 
-bool TIMER_ENABLED = false;
-
-void time_api_call()
-{
-    auto delay = std::chrono::milliseconds(250);
-    auto start = std::chrono::high_resolution_clock::now();
-
-    while (TIMER_ENABLED) {
-        std::this_thread::sleep_for(delay);
-
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> duration = end - start;
-
-        fmt::print(fg(white), "Time (s): ");
-        fmt::print("{}\r", duration.count());
-        std::cout.flush();
-    }
-
-    std::cout << "\n";
-    print_sep();
-}
-
 } // namespace
 
 void command_run(int argc, char **argv)
@@ -187,6 +186,7 @@ void command_run(int argc, char **argv)
 
     TIMER_ENABLED = false;
     timer.join();
+    print_sep();
 
     if (query_failed) {
         throw std::runtime_error("Cannot proceed");
