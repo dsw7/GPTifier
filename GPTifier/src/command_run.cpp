@@ -23,7 +23,7 @@ using json = nlohmann::json;
 
 namespace {
 
-bool TIMER_ENABLED = false;
+// Input ----------------------------------------------------------------------------------------------------
 
 std::string read_text_from_stdin()
 {
@@ -33,6 +33,10 @@ std::string read_text_from_stdin()
     std::getline(std::cin, text);
     return text;
 }
+
+// Completion -----------------------------------------------------------------------------------------------
+
+bool TIMER_ENABLED = false;
 
 void time_api_call()
 {
@@ -77,6 +81,22 @@ models::Completion create_chat_completion(const std::string &model, const std::s
     }
 
     return completion;
+}
+
+// Output ---------------------------------------------------------------------------------------------------
+
+void dump_chat_completion_response(const models::Completion &completion, const std::string &json_dump_file)
+{
+    fmt::print("Dumping results to '{}'\n", json_dump_file);
+    std::ofstream st_filename(json_dump_file);
+
+    if (not st_filename.is_open()) {
+        const std::string errmsg = fmt::format("Unable to open '{}'\n", json_dump_file);
+        throw std::runtime_error(errmsg);
+    }
+
+    st_filename << std::setw(2) << completion.jsonify();
+    st_filename.close();
 }
 
 void print_chat_completion_response(const std::string &content)
@@ -139,20 +159,6 @@ void export_chat_completion_response(const models::Completion &completion)
 
     write_message_to_file(completion);
     print_sep();
-}
-
-void dump_chat_completion_response(const models::Completion &completion, const std::string &json_dump_file)
-{
-    fmt::print("Dumping results to '{}'\n", json_dump_file);
-    std::ofstream st_filename(json_dump_file);
-
-    if (not st_filename.is_open()) {
-        const std::string errmsg = fmt::format("Unable to open '{}'\n", json_dump_file);
-        throw std::runtime_error(errmsg);
-    }
-
-    st_filename << std::setw(2) << completion.jsonify();
-    st_filename.close();
 }
 
 } // namespace
