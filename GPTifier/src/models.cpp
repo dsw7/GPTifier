@@ -7,6 +7,16 @@
 
 namespace models {
 
+nlohmann::json Embedding::jsonify() const
+{
+    nlohmann::json results;
+    results["embedding"] = this->embedding;
+    results["input"] = this->input;
+    results["model"] = this->model;
+
+    return results;
+}
+
 void Model::print()
 {
     const std::string dt_created_at = datetime_from_unix_timestamp(this->created_at);

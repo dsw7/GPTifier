@@ -1,11 +1,20 @@
 #pragma once
 
 #include <ctime>
+#include <json.hpp>
 #include <optional>
 #include <string>
 #include <vector>
 
 namespace models {
+
+struct Embedding {
+    std::string input;
+    std::string model;
+    std::vector<float> embedding;
+
+    nlohmann::json jsonify() const;
+};
 
 struct Model {
     int created_at;

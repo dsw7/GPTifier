@@ -4,14 +4,16 @@
 #include "cli.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
+#include "models.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
-#include "selectors.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
 #include <fstream>
+#include <iostream>
 #include <json.hpp>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -19,27 +21,58 @@ using json = nlohmann::json;
 
 namespace {
 
-void create_embedding(const std::string &model, const std::string &input, json &results)
+std::string read_text_from_stdin()
+{
+    fmt::print(fg(white), "Input text to embed: ");
+    std::string text;
+
+    std::getline(std::cin, text);
+    return text;
+}
+
+models::Embedding query_embeddings_api(const std::string &model, const std::string &input)
 {
     const json data = { { "model", model }, { "input", input } };
 
     Curl curl;
     const std::string response = curl.create_embedding(data.dump());
+    const json results = parse_response(response);
 
-    results = parse_response(response);
-}
+    models::Embedding embedding;
 
-void export_embedding(const json &results)
-{
-    fmt::print("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS.string());
-    std::ofstream st_filename(datadir::GPT_EMBEDDINGS);
-
-    if (not st_filename.is_open()) {
-        const std::string errmsg = fmt::format("Unable to open '{}'", datadir::GPT_EMBEDDINGS.string());
+    try {
+        embedding.embedding = results["data"][0]["embedding"].template get<std::vector<float>>();
+        embedding.input = input;
+        embedding.model = results["model"];
+    } catch (const json::exception &e) {
+        const std::string errmsg = fmt::format("Malformed response from OpenAI. Error was:\n{}", e.what());
         throw std::runtime_error(errmsg);
     }
 
+    return embedding;
+}
+
+void export_embedding(const models::Embedding &embedding, const std::optional<std::string> &output_file)
+{
+    std::string filename;
+
+    if (output_file.has_value()) {
+        filename = output_file.value();
+    } else {
+        filename = datadir::GPT_EMBEDDINGS.string();
+    }
+
+    fmt::print("Dumping JSON to '{}'\n", filename);
+    std::ofstream st_filename(filename);
+
+    if (not st_filename.is_open()) {
+        const std::string errmsg = fmt::format("Unable to open '{}'", filename);
+        throw std::runtime_error(errmsg);
+    }
+
+    const json results = embedding.jsonify();
     st_filename << std::setw(2) << results;
+
     st_filename.close();
 }
 
@@ -49,29 +82,32 @@ void command_embed(int argc, char **argv)
 {
     ParamsEmbedding params = cli::get_opts_embed(argc, argv);
 
-    if (not params.input.has_value()) {
-        print_sep();
-        params.input = select_input_text(params.input_file);
+    std::string text_to_embed;
+
+    if (params.input.has_value()) {
+        text_to_embed = params.input.value();
+    } else if (params.input_file.has_value()) {
+        text_to_embed = read_text_from_file(params.input_file.value());
+    } else {
+        text_to_embed = read_text_from_stdin();
+    }
+
+    if (text_to_embed.empty()) {
+        throw std::runtime_error("No input text provided anywhere");
     }
 
     std::string model;
 
     if (params.model.has_value()) {
         model = params.model.value();
+    } else if (configs.embeddings.model.has_value()) {
+        model = configs.embeddings.model.value();
     } else {
-        if (configs.embeddings.model.has_value()) {
-            model = configs.embeddings.model.value();
-        } else {
-            throw std::runtime_error("No model provided via configuration file or command line");
-        }
+        throw std::runtime_error("No model provided via configuration file or command line");
     }
 
-    json results;
-    create_embedding(model, params.input.value(), results);
+    const models::Embedding embedding = query_embeddings_api(model, text_to_embed);
+    export_embedding(embedding, params.output_file);
 
-    results["input"] = params.input.value();
-
-    print_sep();
-    export_embedding(results);
     print_sep();
 }
