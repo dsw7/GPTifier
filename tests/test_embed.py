@@ -37,23 +37,25 @@ def get_cosine_similarity(left: Embedding, right: Embedding) -> float:
 class TestEmbedCosineSimilarityIdentical(TestCase):
 
     def setUp(self) -> None:
-        self.filename = Path(gettempdir()) / "result.gpt"
+        self.input_file = Path(__file__).resolve().parent / "prompt_basic.txt"
+        self.output_file = Path(gettempdir()) / "result.gpt"
 
     def tearDown(self) -> None:
-        if self.filename.exists():
-            self.filename.unlink()
+        if self.output_file.exists():
+            self.output_file.unlink()
 
     def test_compute_cosine_similarities(self) -> None:
-        model = "text-embedding-ada-002"
-
-        text = "The cat meowed softly."
-        proc = run_process(["embed", f"-i{text}", f"-m{model}", f"-o{self.filename}"])
+        model = "text-embedding-3-small"
+        proc = run_process(
+            ["embed", f"-r{self.input_file}", f"-m{model}", f"-o{self.output_file}"]
+        )
         proc.assert_success()
 
-        embedding = load_embedding(self.filename)
+        embedding = load_embedding(self.output_file)
 
-        self.assertIn(model, embedding.model)
-        self.assertEqual(embedding.text, text)
+        self.assertEqual(model, embedding.model)
+        self.assertEqual(embedding.text, self.input_file.read_text())
+
         self.assertEqual(
             len(embedding.embedding), 1536
         )  # text-embedding-ada-002 dimension
@@ -104,17 +106,6 @@ class TestEmbedCosineSimilarityOrthogonal(TestCase):
 #
 #                proc.assert_success()
 #                self.assertIn("Synopsis", proc.stdout)
-#
-#    def test_read_from_file(self) -> None:
-#        input_text_file = Path(__file__).resolve().parent / "prompt_basic.txt"
-#        model = "text-embedding-3-small"
-#
-#        proc = run_process(["embed", f"-r{input_text_file}", f"-m{model}"])
-#        proc.assert_success()
-#
-#        results = load_embedding()
-#        self.assertEqual(results.model, model)
-#        self.assertEqual(results.text, input_text_file.read_text())
 #
 #    def test_missing_input_file(self) -> None:
 #        proc = run_process(["embed", "--read-from-file=/tmp/yU8nnkRs.txt"])
