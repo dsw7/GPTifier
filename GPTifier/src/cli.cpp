@@ -148,12 +148,12 @@ ParamsEmbedding get_opts_embed(int argc, char **argv)
         static struct option long_options[] = { { "help", no_argument, 0, 'h' },
             { "model", required_argument, 0, 'm' },
             { "input", required_argument, 0, 'i' },
-            { "output-file", required_argument, 0, 'f' },
+            { "output-file", required_argument, 0, 'o' },
             { "read-from-file", required_argument, 0, 'r' },
             { 0, 0, 0, 0 } };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hm:i:f:r:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hm:i:o:r:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -169,7 +169,7 @@ ParamsEmbedding get_opts_embed(int argc, char **argv)
             case 'i':
                 params.input = optarg;
                 break;
-            case 'f':
+            case 'o':
                 params.output_file = optarg;
                 break;
             case 'r':
