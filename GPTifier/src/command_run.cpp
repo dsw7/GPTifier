@@ -48,19 +48,12 @@ models::Completion create_chat_completion(const std::string &model, const std::s
     return completion;
 }
 
-void print_chat_completion_response(const json &results)
+void print_chat_completion_response(const std::string &content)
 {
-    const std::string content_original = results["choices"][0]["message"]["content"];
-
-    json results_copy = results;
-    results_copy["choices"][0]["message"]["content"] = "...";
-
-    fmt::print(fg(white), "Response: ");
-    fmt::print("{}\n", results_copy.dump(4));
     print_sep();
 
     fmt::print(fg(white), "Results: ");
-    fmt::print(fg(green), "{}\n", content_original);
+    fmt::print(fg(green), "{}\n", content);
 
     print_sep();
 }
@@ -94,7 +87,7 @@ void write_message_to_file(const models::Completion &completion)
     st_filename.close();
 }
 
-void export_chat_completion_response(const json &results, const std::string &prompt)
+void export_chat_completion_response(const models::Completion &completion)
 {
     fmt::print(fg(white), "Export:\n");
     std::string choice;
@@ -116,25 +109,11 @@ void export_chat_completion_response(const json &results, const std::string &pro
         return;
     }
 
-    models::Completion completion;
-
-    try {
-        completion = {
-            results["choices"][0]["message"]["content"],
-            results["model"],
-            prompt,
-            results["created"],
-        };
-    } catch (const json::type_error &e) {
-        const std::string errmsg = fmt::format("Failed to parse completion. Error was:\n{}", e.what());
-        throw std::runtime_error(errmsg);
-    }
-
     write_message_to_file(completion);
     print_sep();
 }
 
-void dump_chat_completion_response(const json &results, const std::string &json_dump_file)
+void dump_chat_completion_response(const models::Completion &completion, const std::string &json_dump_file)
 {
     fmt::print("Dumping results to '{}'\n", json_dump_file);
     std::ofstream st_filename(json_dump_file);
@@ -144,7 +123,7 @@ void dump_chat_completion_response(const json &results, const std::string &json_
         throw std::runtime_error(errmsg);
     }
 
-    st_filename << std::setw(2) << results;
+    st_filename << std::setw(2) << completion.jsonify();
     st_filename.close();
 }
 
@@ -216,16 +195,14 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("Cannot proceed");
     }
 
-    json results = completion.jsonify();
-
     if (params.json_dump_file.has_value()) {
-        dump_chat_completion_response(results, params.json_dump_file.value());
+        dump_chat_completion_response(completion, params.json_dump_file.value());
         return;
     }
 
-    print_chat_completion_response(results);
+    print_chat_completion_response(completion.content);
 
     if (params.enable_export) {
-        export_chat_completion_response(results, params.prompt.value());
+        export_chat_completion_response(completion);
     }
 }
