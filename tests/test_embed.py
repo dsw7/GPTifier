@@ -6,20 +6,20 @@ from .helpers import run_process
 
 
 @dataclass
-class EmbedResults:
+class Embedding:
     embedding: list[float]
     model: str
     text: str
 
 
-def load_embedding() -> EmbedResults:
+def load_embedding() -> Embedding:
     results = Path.home() / ".gptifier" / "embeddings.gpt"
 
     with results.open() as f:
         data = loads(f.read())
 
-    return EmbedResults(
-        model=data["model"], text=data["input"], embedding=data["data"][0]["embedding"]
+    return Embedding(
+        model=data["model"], text=data["input"], embedding=data["embedding"]
     )
 
 
