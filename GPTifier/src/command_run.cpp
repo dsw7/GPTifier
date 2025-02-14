@@ -188,6 +188,7 @@ void command_run(int argc, char **argv)
 {
     ParamsRun params = cli::get_opts_run(argc, argv);
     params.sanitize();
+    print_sep();
 
     static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
     std::string prompt;
@@ -207,7 +208,6 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("No input text provided anywhere. Cannot proceed");
     }
 
-    print_sep();
     std::string model;
 
     if (params.model.has_value()) {
