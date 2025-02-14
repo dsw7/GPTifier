@@ -50,11 +50,8 @@ models::Completion create_chat_completion(const std::string &model, const std::s
 
 void print_chat_completion_response(const std::string &content)
 {
-    print_sep();
-
     fmt::print(fg(white), "Results: ");
     fmt::print(fg(green), "{}\n", content);
-
     print_sep();
 }
 
