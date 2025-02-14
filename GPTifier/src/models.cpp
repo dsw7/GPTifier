@@ -7,6 +7,17 @@
 
 namespace models {
 
+nlohmann::json Completion::jsonify() const
+{
+    nlohmann::json results;
+    results["content"] = this->content;
+    results["model"] = this->model;
+    results["prompt"] = this->prompt;
+    results["created"] = this->created;
+
+    return results;
+}
+
 nlohmann::json Embedding::jsonify() const
 {
     nlohmann::json results;
