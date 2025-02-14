@@ -152,9 +152,12 @@ void command_run(int argc, char **argv)
     ParamsRun params = cli::get_opts_run(argc, argv);
     params.sanitize();
 
-    if (not params.prompt.has_value()) {
-        print_sep();
-        params.prompt = select_input_text(params.prompt_file);
+    std::string prompt;
+
+    if (params.prompt.has_value()) {
+        prompt = params.prompt.value();
+    } else {
+        prompt = select_input_text(params.prompt_file);
     }
 
     print_sep();
@@ -178,7 +181,7 @@ void command_run(int argc, char **argv)
     models::Completion completion;
 
     try {
-        completion = create_chat_completion(model, params.prompt.value(), temperature);
+        completion = create_chat_completion(model, prompt, temperature);
     } catch (std::runtime_error &e) {
         query_failed = true;
         fmt::print(stderr, "{}\n", e.what());
