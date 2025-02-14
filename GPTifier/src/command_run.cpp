@@ -10,6 +10,7 @@
 #include "utils.hpp"
 
 #include <chrono>
+#include <filesystem>
 #include <fmt/core.h>
 #include <fstream>
 #include <iostream>
@@ -23,6 +24,15 @@ using json = nlohmann::json;
 namespace {
 
 bool TIMER_ENABLED = false;
+
+std::string read_text_from_stdin()
+{
+    fmt::print(fg(white), "Input: ");
+    std::string text;
+
+    std::getline(std::cin, text);
+    return text;
+}
 
 void time_api_call()
 {
@@ -152,12 +162,22 @@ void command_run(int argc, char **argv)
     ParamsRun params = cli::get_opts_run(argc, argv);
     params.sanitize();
 
+    static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
     std::string prompt;
 
     if (params.prompt.has_value()) {
         prompt = params.prompt.value();
+    } else if (params.prompt_file.has_value()) {
+        prompt = read_text_from_file(params.prompt_file.value());
+    } else if (std::filesystem::exists(inputfile)) {
+        fmt::print("Found an Inputfile in current working directory!\n");
+        prompt = read_text_from_file(inputfile);
     } else {
-        prompt = select_input_text(params.prompt_file);
+        prompt = read_text_from_stdin();
+    }
+
+    if (prompt.empty()) {
+        throw std::runtime_error("No input text provided anywhere. Cannot proceed");
     }
 
     print_sep();
