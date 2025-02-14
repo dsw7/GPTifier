@@ -4,6 +4,7 @@
 #include "cli.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
+#include "models.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
 #include "selectors.hpp"
@@ -19,17 +20,24 @@ using json = nlohmann::json;
 
 namespace {
 
-void query_embeddings_api(const std::string &model, const std::string &input, json &results)
+models::Embedding query_embeddings_api(const std::string &model, const std::string &input)
 {
     const json data = { { "model", model }, { "input", input } };
 
     Curl curl;
     const std::string response = curl.create_embedding(data.dump());
+    const json results = parse_response(response);
 
-    results = parse_response(response);
+    models::Embedding embedding;
+
+    embedding.embedding = results["data"][0]["embedding"].template get<std::vector<float>>();
+    embedding.input = input;
+    embedding.model = results["model"];
+
+    return embedding;
 }
 
-void export_embedding(const json &results)
+void export_embedding(const models::Embedding &embedding)
 {
     fmt::print("Dumping JSON to {}\n", datadir::GPT_EMBEDDINGS.string());
     std::ofstream st_filename(datadir::GPT_EMBEDDINGS);
@@ -39,7 +47,9 @@ void export_embedding(const json &results)
         throw std::runtime_error(errmsg);
     }
 
+    const json results = embedding.jsonify();
     st_filename << std::setw(2) << results;
+
     st_filename.close();
 }
 
@@ -66,12 +76,9 @@ void command_embed(int argc, char **argv)
         }
     }
 
-    json results;
-    query_embeddings_api(model, params.input.value(), results);
-
-    results["input"] = params.input.value();
+    const models::Embedding embedding = query_embeddings_api(model, params.input.value());
 
     print_sep();
-    export_embedding(results);
+    export_embedding(embedding);
     print_sep();
 }
