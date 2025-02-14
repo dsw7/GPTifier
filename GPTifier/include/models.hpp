@@ -8,6 +8,15 @@
 
 namespace models {
 
+struct Completion {
+    std::string content;
+    std::string model;
+    std::string prompt;
+    std::time_t created = 0;
+
+    nlohmann::json jsonify() const;
+};
+
 struct Embedding {
     std::string input;
     std::string model;
