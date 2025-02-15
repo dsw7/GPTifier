@@ -15,19 +15,46 @@ using json = nlohmann::json;
 
 namespace {
 
-bool is_fine_tuning_model(const std::string &model)
+bool is_owned_by_openai(const std::string &owned_by)
 {
-    return model.compare(0, 3, "ft:") == 0;
+    return owned_by.compare(0, 6, "openai") == 0 or owned_by.compare(0, 6, "system") == 0;
+}
+
+void get_openai_models(const json &response, std::vector<models::Model> &models)
+{
+    for (const auto &entry: response["data"]) {
+        if (not is_owned_by_openai(entry["owned_by"])) {
+            continue;
+        }
+
+        models::Model m;
+        m.created_at = entry["created"];
+        m.id = entry["id"];
+        m.owned_by = entry["owned_by"];
+        models.push_back(m);
+    }
+}
+
+void get_user_models(const json &response, std::vector<models::Model> &models)
+{
+    for (const auto &entry: response["data"]) {
+        if (is_owned_by_openai(entry["owned_by"])) {
+            continue;
+        }
+
+        models::Model m;
+        m.created_at = entry["created"];
+        m.id = entry["id"];
+        m.owned_by = entry["owned_by"];
+        models.push_back(m);
+    }
 }
 
 void print_models(std::vector<models::Model> &models)
 {
-    if (models.empty()) {
-        return;
-    }
-
     fmt::print("> Number of models: {}\n", models.size());
     print_sep();
+
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     print_sep();
 
@@ -40,39 +67,28 @@ void print_models(std::vector<models::Model> &models)
     print_sep();
 }
 
-void print_models_response(const json &response)
-{
-    std::vector<models::Model> openai_models;
-    std::vector<models::Model> user_models;
-
-    for (const auto &entry: response["data"]) {
-        if (is_fine_tuning_model(entry["id"])) {
-            user_models.push_back({ entry["created"], entry["id"], entry["owned_by"] });
-        } else {
-            openai_models.push_back({ entry["created"], entry["id"], entry["owned_by"] });
-        }
-    }
-
-    fmt::print("> OpenAI models:\n");
-    print_models(openai_models);
-    fmt::print("\n> User models:\n");
-    print_models(user_models);
-}
-
 } // namespace
 
 void command_models(int argc, char **argv)
 {
-    bool print_raw = cli::get_opts_models(argc, argv);
+    ParamsModels params = cli::get_opts_models(argc, argv);
 
     Curl curl;
     const std::string response = curl.get_models();
 
-    if (print_raw) {
+    if (params.print_raw_json) {
         print_raw_response(response);
         return;
     }
 
     const json results = parse_response(response);
-    print_models_response(results);
+    std::vector<models::Model> models;
+
+    if (params.print_user_models) {
+        get_user_models(results, models);
+    } else {
+        get_openai_models(results, models);
+    }
+
+    print_models(models);
 }
