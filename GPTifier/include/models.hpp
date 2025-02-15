@@ -60,6 +60,14 @@ struct CostsBucket {
     void print();
 };
 
+struct User {
+    std::string id;
+    std::string name;
+    std::string email;
+
+    void id_to_lowercase();
+};
+
 void sort(std::vector<Model> &models);
 void sort(std::vector<File> &files);
 void sort(std::vector<Job> &jobs);

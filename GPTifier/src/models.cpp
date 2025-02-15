@@ -3,6 +3,7 @@
 #include "utils.hpp"
 
 #include <algorithm>
+#include <cctype>
 #include <fmt/core.h>
 
 namespace models {
@@ -68,6 +69,13 @@ void CostsBucket::print()
     const std::string dt_end = datetime_from_unix_timestamp(this->end_time);
 
     fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, this->cost, this->org_id);
+}
+
+void User::id_to_lowercase()
+{
+    std::transform(this->id.begin(), this->id.end(), this->id.begin(), [](unsigned char c) {
+        return std::tolower(c);
+    });
 }
 
 void sort(std::vector<Model> &models)
