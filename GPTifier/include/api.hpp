@@ -17,6 +17,7 @@ public:
 
     // Admin commands
     std::string get_costs(const std::time_t &start_time, int limit);
+    std::string get_users(int limit = 100);
 
     // User commands
     std::string get_uploaded_files();
