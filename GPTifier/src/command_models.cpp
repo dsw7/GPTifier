@@ -22,6 +22,11 @@ bool is_fine_tuning_model(const std::string &model)
 
 void print_models(std::vector<models::Model> &models)
 {
+    if (models.empty()) {
+        return;
+    }
+
+    fmt::print("> Number of models: {}\n", models.size());
     print_sep();
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     print_sep();
@@ -49,14 +54,9 @@ void print_models_response(const json &response)
     }
 
     fmt::print("> OpenAI models:\n");
-    fmt::print("> Number of models: {}\n", openai_models.size());
     print_models(openai_models);
-
-    if (not user_models.empty()) {
-        fmt::print("\n> User models:\n");
-        fmt::print("> Number of models: {}\n", user_models.size());
-        print_models(user_models);
-    }
+    fmt::print("\n> User models:\n");
+    print_models(user_models);
 }
 
 } // namespace
