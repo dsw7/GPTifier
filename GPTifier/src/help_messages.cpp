@@ -247,7 +247,7 @@ void help_command_short()
 void help_command_models()
 {
     HelpMessages help;
-    help.add_description("List available OpenAI models.");
+    help.add_description("List available OpenAI or user models.");
     help.add_synopsis("models [-h | --help] [-r | --raw] [-u | --user]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
