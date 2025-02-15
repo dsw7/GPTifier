@@ -54,7 +54,9 @@ void resolve_users_from_ids(std::map<std::string, std::string> &users)
     }
 
     for (auto user = results["data"].begin(); user != results["data"].end(); user++) {
-        users[user->at("id")] = user->at("name");
+        std::string id = user->at("id");
+        str_to_lowercase(id);
+        users[id] = user->at("name");
     }
 }
 
@@ -71,7 +73,7 @@ void get_user_models(const json &response, std::vector<models::Model> &models)
         models::Model m;
 
         if (users.count(entry["owned_by"]) > 0) {
-            m.owned_by = entry["owned_by"];
+            m.owned_by = users[entry["owned_by"]];
         } else {
             m.owned_by = "-";
         }
