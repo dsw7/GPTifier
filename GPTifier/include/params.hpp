@@ -20,6 +20,11 @@ struct ParamsShort {
     std::optional<std::string> prompt = std::nullopt;
 };
 
+struct ParamsModels {
+    bool print_raw_json = false;
+    bool print_user_models = false;
+};
+
 struct ParamsEmbedding {
     std::optional<std::string> input = std::nullopt;
     std::optional<std::string> input_file = std::nullopt;
