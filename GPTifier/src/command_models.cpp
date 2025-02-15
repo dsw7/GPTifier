@@ -8,6 +8,7 @@
 
 #include <fmt/core.h>
 #include <json.hpp>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -35,17 +36,48 @@ void get_openai_models(const json &response, std::vector<models::Model> &models)
     }
 }
 
+void resolve_users_from_ids(std::map<std::string, std::string> &users)
+{
+    Curl curl;
+    std::string response;
+
+    try {
+        response = curl.get_users();
+    } catch (const std::runtime_error &e) {
+        return;
+    }
+
+    const json results = parse_response(response);
+
+    if (not results.contains("data")) {
+        return;
+    }
+
+    for (auto user = results["data"].begin(); user != results["data"].end(); user++) {
+        users[user->at("id")] = user->at("name");
+    }
+}
+
 void get_user_models(const json &response, std::vector<models::Model> &models)
 {
+    std::map<std::string, std::string> users;
+    resolve_users_from_ids(users);
+
     for (const auto &entry: response["data"]) {
         if (is_owned_by_openai(entry["owned_by"])) {
             continue;
         }
 
         models::Model m;
+
+        if (users.count(entry["owned_by"]) > 0) {
+            m.owned_by = entry["owned_by"];
+        } else {
+            m.owned_by = "-";
+        }
+
         m.created_at = entry["created"];
         m.id = entry["id"];
-        m.owned_by = entry["owned_by"];
         models.push_back(m);
     }
 }
