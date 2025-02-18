@@ -19,10 +19,17 @@ class TestFiles(TestCase):
                     proc.assert_success()
                     self.assertIn("Synopsis", proc.stdout)
 
+    pattern = r"File ID\s+Filename\s+Creation time\s+Purpose"
+
+    def test_files_list_default(self) -> None:
+        proc = run_process("files")
+        proc.assert_success()
+        self.assertRegex(proc.stdout, self.pattern)
+
     def test_files_list(self) -> None:
         proc = run_process(["files", "list"])
         proc.assert_success()
-        self.assertIn("File ID", proc.stdout)
+        self.assertRegex(proc.stdout, self.pattern)
 
     def test_files_list_raw(self) -> None:
         for option in ["-r", "--raw"]:
