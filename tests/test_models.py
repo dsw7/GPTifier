@@ -12,21 +12,19 @@ class TestModels(TestCase):
                 proc.assert_success()
                 self.assertIn("Synopsis", proc.stdout)
 
+    pattern = r"Creation time\s+Owner\s+Model ID"
+
     def test_models_openai(self) -> None:
         proc = run_process("models")
         proc.assert_success()
-
-        stdout = proc.stdout.split("\n")
-        assert len(stdout) > 1
+        self.assertRegex(proc.stdout, self.pattern)
 
     def test_models_user(self) -> None:
         for option in ["-u", "--user"]:
             with self.subTest(option=option):
                 proc = run_process(["models", option])
                 proc.assert_success()
-
-                stdout = proc.stdout.split("\n")
-                assert len(stdout) > 1
+                self.assertRegex(proc.stdout, self.pattern)
 
     def test_models_raw(self) -> None:
         for option in ["-r", "--raw"]:
