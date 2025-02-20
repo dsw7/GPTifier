@@ -13,8 +13,6 @@
 #include <stdexcept>
 #include <string>
 
-Configs configs;
-
 void print_build_information()
 {
     nlohmann::json data;

@@ -23,3 +23,5 @@ void Configs::load_configs_from_config_file()
     this->chat.model = table["chat"]["model"].value<std::string>();
     this->embeddings.model = table["embeddings"]["model"].value<std::string>();
 }
+
+Configs configs;
