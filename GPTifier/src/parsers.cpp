@@ -41,9 +41,3 @@ json parse_response(const std::string &response)
 
     return results;
 }
-
-void print_raw_response(const std::string &response)
-{
-    const json results = parse_response(response);
-    fmt::print("{}\n", results.dump(4));
-}

@@ -82,12 +82,12 @@ void command_costs(int argc, char **argv)
 
     Curl curl;
     const std::string response = curl.get_costs(start_time, limit);
+    const json results = parse_response(response);
 
     if (params.print_raw_json) {
-        print_raw_response(response);
+        fmt::print("{}\n", results.dump(4));
         return;
     }
 
-    const json results = parse_response(response);
     print_results(results, std::get<int>(params.days));
 }

@@ -30,13 +30,12 @@ void command_files_list(int argc, char **argv)
 
     Curl curl;
     const std::string response = curl.get_uploaded_files();
+    const json results = parse_response(response);
 
     if (print_raw_json) {
-        print_raw_response(response);
+        fmt::print("{}\n", results.dump(4));
         return;
     }
-
-    const json results = parse_response(response);
 
     print_sep();
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");

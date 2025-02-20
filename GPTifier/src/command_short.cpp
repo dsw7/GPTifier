@@ -28,13 +28,13 @@ void command_short(int argc, char **argv)
 
     Curl curl;
     const std::string response = curl.create_chat_completion(data.dump());
+    const json results = parse_response(response);
 
     if (params.print_raw_json) {
-        print_raw_response(response);
+        fmt::print("{}\n", results.dump(4));
         return;
     }
 
-    const json results = parse_response(response);
     const std::string content = results["choices"][0]["message"]["content"];
 
     fmt::print("{}\n", content);

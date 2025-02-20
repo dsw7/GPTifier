@@ -109,13 +109,13 @@ void command_models(int argc, char **argv)
 
     Curl curl;
     const std::string response = curl.get_models();
+    const json results = parse_response(response);
 
     if (params.print_raw_json) {
-        print_raw_response(response);
+        fmt::print("{}\n", results.dump(4));
         return;
     }
 
-    const json results = parse_response(response);
     std::vector<models::Model> models;
 
     if (params.print_user_models) {

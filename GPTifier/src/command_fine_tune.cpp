@@ -107,9 +107,10 @@ void list_fine_tuning_jobs(int argc, char **argv)
 
     Curl curl;
     const std::string response = curl.get_fine_tuning_jobs(limit);
+    const json results = parse_response(response);
 
     if (params.print_raw_json) {
-        print_raw_response(response);
+        fmt::print("{}\n", results.dump(4));
         return;
     }
 
@@ -117,8 +118,6 @@ void list_fine_tuning_jobs(int argc, char **argv)
         print_sep();
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
     }
-
-    const json results = parse_response(response);
 
     print_sep();
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
