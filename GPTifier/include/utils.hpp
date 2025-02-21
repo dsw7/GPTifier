@@ -13,3 +13,4 @@ void str_to_lowercase(std::string &str);
 void print_sep();
 std::string datetime_from_unix_timestamp(const std::time_t &timestamp);
 std::string read_text_from_file(const std::string &filename);
+int get_word_count(const std::string &str);

@@ -68,3 +68,16 @@ std::string read_text_from_file(const std::string &filename)
     const std::string text = buffer.str();
     return text;
 }
+
+int get_word_count(const std::string &str)
+{
+    std::stringstream stream(str);
+    std::string word;
+    int count = 0;
+
+    while (stream >> word) {
+        ++count;
+    }
+
+    return count;
+}
