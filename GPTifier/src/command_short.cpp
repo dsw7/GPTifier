@@ -35,7 +35,7 @@ void command_short(int argc, char **argv)
         return;
     }
 
-    const std::string content = results["choices"][0]["message"]["content"];
+    const std::string completion = results["choices"][0]["message"]["content"];
 
-    fmt::print("{}\n", content);
+    fmt::print("{}\n", completion);
 }
