@@ -32,6 +32,8 @@ A beautiful C++ libcurl / ChatGPT interface
 - [Integrations](#integrations)
   - [Coupling with `vim`](#coupling-with-vim)
   - [GPTifier administration via OpenAI platform](#gptifier-administration-via-openai-platform)
+- [Use cases](#use-cases)
+  - [Using GPTifier to maximize token efficiency](#using-gptifier-to-maximize-token-efficiency)
 
 ## Motivation
 There are numerous ChatGPT command line programs currently available. Many of them are written in Python. I
@@ -323,3 +325,6 @@ vim +/project-id ~/.gptifier/gptifier.toml
 And set `project-id` to the project ID associated with the newly created GPTifier project. The ID can be
 obtained from the [General settings](https://platform.openai.com/settings/organization/general) page
 (authentication is required).
+
+## Use cases
+### Using GPTifier to maximize token efficiency
