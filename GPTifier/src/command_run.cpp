@@ -203,6 +203,7 @@ void command_run(int argc, char **argv)
     } else {
         prompt = read_text_from_stdin();
     }
+    print_sep();
 
     if (prompt.empty()) {
         throw std::runtime_error("No input text provided anywhere. Cannot proceed");
