@@ -128,6 +128,28 @@ void print_chat_completion_response(const std::string &completion)
     fmt::print(fg(green), "{}\n", completion);
 }
 
+void print_ratio(int num_tokens, int num_words)
+{
+    if (num_words < 1) {
+        throw std::runtime_error("Zero division. Number of words is 0!");
+    }
+
+    // See https://platform.openai.com/tokenizer for more information
+    static float ideal_ratio = (float)100 / 75;
+
+    float ratio = (float)num_tokens / num_words;
+
+    fmt::print("Ratio: ");
+
+    if (ratio <= ideal_ratio) {
+        fmt::print(fg(green), "{}\n", ratio);
+    } else if (ratio > ideal_ratio and ratio <= 2) {
+        fmt::print(fg(yellow), "{}\n", ratio);
+    } else {
+        fmt::print(fg(red), "{}\n", ratio);
+    }
+}
+
 void print_usage_statistics(const models::Completion &completion)
 {
     int wc_prompt = get_word_count(completion.prompt);
@@ -138,6 +160,7 @@ void print_usage_statistics(const models::Completion &completion)
     fmt::print(fg(green), "{}\n", completion.prompt_tokens);
     fmt::print("Prompt size (words): ");
     fmt::print(fg(green), "{}\n", wc_prompt);
+    print_ratio(completion.prompt_tokens, wc_prompt);
 
     fmt::print("\n");
 
@@ -145,6 +168,7 @@ void print_usage_statistics(const models::Completion &completion)
     fmt::print(fg(green), "{}\n", completion.completion_tokens);
     fmt::print("Completion size (words): ");
     fmt::print(fg(green), "{}\n", wc_completion);
+    print_ratio(completion.completion_tokens, wc_completion);
 }
 
 void write_message_to_file(const models::Completion &completion)
