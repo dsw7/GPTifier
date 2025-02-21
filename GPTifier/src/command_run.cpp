@@ -130,11 +130,21 @@ void print_chat_completion_response(const std::string &completion)
 
 void print_usage_statistics(const models::Completion &completion)
 {
+    int wc_prompt = get_word_count(completion.prompt);
+    int wc_completion = get_word_count(completion.completion);
+
     fmt::print(fg(white), "Usage:\n");
     fmt::print("Prompt tokens: ");
     fmt::print(fg(green), "{}\n", completion.prompt_tokens);
+    fmt::print("Prompt size (words): ");
+    fmt::print(fg(green), "{}\n", wc_prompt);
+
+    fmt::print("\n");
+
     fmt::print("Completion tokens: ");
     fmt::print(fg(green), "{}\n", completion.completion_tokens);
+    fmt::print("Completion size (words): ");
+    fmt::print(fg(green), "{}\n", wc_completion);
 }
 
 void write_message_to_file(const models::Completion &completion)
