@@ -126,7 +126,6 @@ void print_chat_completion_response(const std::string &completion)
 {
     fmt::print(fg(white), "Results: ");
     fmt::print(fg(green), "{}\n", completion);
-    print_sep();
 }
 
 void write_message_to_file(const models::Completion &completion)
@@ -176,12 +175,10 @@ void export_chat_completion_response(const models::Completion &completion)
 
     if (choice == "n") {
         std::cout << "> Not exporting response.\n";
-        print_sep();
         return;
     }
 
     write_message_to_file(completion);
-    print_sep();
 }
 
 } // namespace
@@ -233,8 +230,10 @@ void command_run(int argc, char **argv)
     }
 
     print_chat_completion_response(completion.completion);
+    print_sep();
 
     if (params.enable_export) {
         export_chat_completion_response(completion);
+        print_sep();
     }
 }
