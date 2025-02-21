@@ -236,15 +236,17 @@ void command_run(int argc, char **argv)
 
     if (params.prompt.has_value()) {
         prompt = params.prompt.value();
-    } else if (params.prompt_file.has_value()) {
-        prompt = read_text_from_file(params.prompt_file.value());
-    } else if (std::filesystem::exists(inputfile)) {
-        fmt::print("Found an Inputfile in current working directory!\n");
-        prompt = read_text_from_file(inputfile);
     } else {
-        prompt = read_text_from_stdin();
+        if (params.prompt_file.has_value()) {
+            prompt = read_text_from_file(params.prompt_file.value());
+        } else if (std::filesystem::exists(inputfile)) {
+            fmt::print("Found an Inputfile in current working directory!\n");
+            prompt = read_text_from_file(inputfile);
+        } else {
+            prompt = read_text_from_stdin();
+        }
+        print_sep();
     }
-    print_sep();
 
     if (prompt.empty()) {
         throw std::runtime_error("No input text provided anywhere. Cannot proceed");
