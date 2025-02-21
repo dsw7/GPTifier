@@ -328,3 +328,36 @@ obtained from the [General settings](https://platform.openai.com/settings/organi
 
 ## Use cases
 ### Using GPTifier to maximize token efficiency
+GPTifier can be used to study prompt quality in an attempt to optimize for token usage. For example, passing
+a very short prompt:
+```console
+gpt run -p "Running a test"
+```
+Will return:
+```
+...
+Usage:
+Prompt tokens: 10
+Prompt size (words): 3
+Ratio: 3.3333333
+
+Completion tokens: 17
+Completion size (words): 14
+Ratio: 1.2142857
+```
+However, passing a slightly more descriptive prompt:
+```console
+gpt run -p "I am running a small test. Please ignore me!"
+```
+Returns:
+```
+...
+Usage:
+Prompt tokens: 18
+Prompt size (words): 9
+Ratio: 2
+
+Completion tokens: 16
+Completion size (words): 13
+Ratio: 1.2307693
+```
