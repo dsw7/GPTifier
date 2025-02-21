@@ -11,7 +11,7 @@ def load_content(json_file: str) -> str:
     with open(json_file) as f:
         contents = loads(f.read())
 
-    result: str = contents["content"]
+    result: str = contents["completion"]
     return result
 
 

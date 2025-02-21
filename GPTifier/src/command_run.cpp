@@ -69,10 +69,12 @@ void create_chat_completion(models::Completion &completion, const std::string &m
     const json results = parse_response(response);
 
     try {
-        completion.content = results["choices"][0]["message"]["content"];
+        completion.completion_tokens = results["usage"]["completion_tokens"];
+        completion.completion = results["choices"][0]["message"]["content"];
+        completion.created = results["created"];
         completion.model = results["model"];
         completion.prompt = prompt;
-        completion.created = results["created"];
+        completion.prompt_tokens = results["usage"]["prompt_tokens"];
     } catch (const json::exception &e) {
         const std::string errmsg = fmt::format("Malformed response from OpenAI. Error was:\n{}", e.what());
         throw std::runtime_error(errmsg);
@@ -120,11 +122,52 @@ void dump_chat_completion_response(const models::Completion &completion, const s
     st_filename.close();
 }
 
-void print_chat_completion_response(const std::string &content)
+void print_chat_completion_response(const std::string &completion)
 {
     fmt::print(fg(white), "Results: ");
-    fmt::print(fg(green), "{}\n", content);
-    print_sep();
+    fmt::print(fg(green), "{}\n", completion);
+}
+
+void print_ratio(int num_tokens, int num_words)
+{
+    if (num_words < 1) {
+        throw std::runtime_error("Zero division. Number of words is 0!");
+    }
+
+    // The ideal ratio is about 100 tokens / 75 words
+    // See https://platform.openai.com/tokenizer for more information
+    float ratio = (float)num_tokens / num_words;
+
+    fmt::print("Ratio: ");
+
+    if (ratio <= 2) {
+        fmt::print(fg(green), "{}\n", ratio);
+    } else if (ratio > 2 and ratio <= 3) {
+        fmt::print(fg(yellow), "{}\n", ratio);
+    } else {
+        fmt::print(fg(red), "{}\n", ratio);
+    }
+}
+
+void print_usage_statistics(const models::Completion &completion)
+{
+    int wc_prompt = get_word_count(completion.prompt);
+    int wc_completion = get_word_count(completion.completion);
+
+    fmt::print(fg(white), "Usage:\n");
+    fmt::print("Prompt tokens: ");
+    fmt::print(fg(green), "{}\n", completion.prompt_tokens);
+    fmt::print("Prompt size (words): ");
+    fmt::print(fg(green), "{}\n", wc_prompt);
+    print_ratio(completion.prompt_tokens, wc_prompt);
+
+    fmt::print("\n");
+
+    fmt::print("Completion tokens: ");
+    fmt::print(fg(green), "{}\n", completion.completion_tokens);
+    fmt::print("Completion size (words): ");
+    fmt::print(fg(green), "{}\n", wc_completion);
+    print_ratio(completion.completion_tokens, wc_completion);
 }
 
 void write_message_to_file(const models::Completion &completion)
@@ -150,7 +193,7 @@ void write_message_to_file(const models::Completion &completion)
     st_filename << sep_inner + '\n';
     st_filename << completion.prompt << '\n';
     st_filename << sep_inner + '\n';
-    st_filename << completion.content << '\n';
+    st_filename << completion.completion << '\n';
     st_filename << sep_outer + "\n\n";
 
     st_filename.close();
@@ -174,12 +217,10 @@ void export_chat_completion_response(const models::Completion &completion)
 
     if (choice == "n") {
         std::cout << "> Not exporting response.\n";
-        print_sep();
         return;
     }
 
     write_message_to_file(completion);
-    print_sep();
 }
 
 } // namespace
@@ -195,13 +236,16 @@ void command_run(int argc, char **argv)
 
     if (params.prompt.has_value()) {
         prompt = params.prompt.value();
-    } else if (params.prompt_file.has_value()) {
-        prompt = read_text_from_file(params.prompt_file.value());
-    } else if (std::filesystem::exists(inputfile)) {
-        fmt::print("Found an Inputfile in current working directory!\n");
-        prompt = read_text_from_file(inputfile);
     } else {
-        prompt = read_text_from_stdin();
+        if (params.prompt_file.has_value()) {
+            prompt = read_text_from_file(params.prompt_file.value());
+        } else if (std::filesystem::exists(inputfile)) {
+            fmt::print("Found an Inputfile in current working directory!\n");
+            prompt = read_text_from_file(inputfile);
+        } else {
+            prompt = read_text_from_stdin();
+        }
+        print_sep();
     }
 
     if (prompt.empty()) {
@@ -229,9 +273,14 @@ void command_run(int argc, char **argv)
         return;
     }
 
-    print_chat_completion_response(completion.content);
+    print_chat_completion_response(completion.completion);
+    print_sep();
+
+    print_usage_statistics(completion);
+    print_sep();
 
     if (params.enable_export) {
         export_chat_completion_response(completion);
+        print_sep();
     }
 }

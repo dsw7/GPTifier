@@ -10,10 +10,10 @@ namespace models {
 nlohmann::json Completion::jsonify() const
 {
     nlohmann::json results;
-    results["content"] = this->content;
+    results["completion"] = this->completion;
+    results["created"] = this->created;
     results["model"] = this->model;
     results["prompt"] = this->prompt;
-    results["created"] = this->created;
 
     return results;
 }
