@@ -134,16 +134,15 @@ void print_ratio(int num_tokens, int num_words)
         throw std::runtime_error("Zero division. Number of words is 0!");
     }
 
+    // The ideal ratio is about 100 tokens / 75 words
     // See https://platform.openai.com/tokenizer for more information
-    static float ideal_ratio = (float)100 / 75;
-
     float ratio = (float)num_tokens / num_words;
 
     fmt::print("Ratio: ");
 
-    if (ratio <= ideal_ratio) {
+    if (ratio <= 2) {
         fmt::print(fg(green), "{}\n", ratio);
-    } else if (ratio > ideal_ratio and ratio <= 2) {
+    } else if (ratio > 2 and ratio <= 3) {
         fmt::print(fg(yellow), "{}\n", ratio);
     } else {
         fmt::print(fg(red), "{}\n", ratio);
