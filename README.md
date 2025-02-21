@@ -361,3 +361,41 @@ Completion tokens: 16
 Completion size (words): 13
 Ratio: 1.2307693
 ```
+Notice that in this case, slightly more tokens are being used, but the token-to-word ratio approaches the
+"typical" 100 tokens / 75 words ratio cited by OpenAI. This output can also be used to modulate the completion
+token usage. For example, the prompt:
+```console
+gpt run -p "A foo that bars"
+```
+Will return:
+```
+Results: Sounds like a playful twist on terminology! In programming, ...
+...
+Prompt tokens: 11
+Prompt size (words): 4
+Ratio: 2.75
+
+Completion tokens: 87
+Completion size (words): 66
+Ratio: 1.3181819
+...
+```
+However, tweaking the prompt:
+```console
+gpt run -p "A foo that bars. Short answer please"
+```
+Will return:
+```
+Results: A playful expression often used to describe ...
+...
+Prompt tokens: 15
+Prompt size (words): 7
+Ratio: 2.142857
+
+Completion tokens: 34
+Completion size (words): 27
+Ratio: 1.2592592
+...
+```
+In this case, 4 extra prompt tokens were used corresponding to the request "Short answer please", however,
+this brought down the number of completion tokens from 87 to 34.
