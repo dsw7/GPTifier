@@ -70,7 +70,7 @@ void create_chat_completion(models::Completion &completion, const std::string &m
 
     try {
         completion.completion_tokens = results["usage"]["completion_tokens"];
-        completion.content = results["choices"][0]["message"]["content"];
+        completion.completion = results["choices"][0]["message"]["content"];
         completion.created = results["created"];
         completion.model = results["model"];
         completion.prompt = prompt;
@@ -152,7 +152,7 @@ void write_message_to_file(const models::Completion &completion)
     st_filename << sep_inner + '\n';
     st_filename << completion.prompt << '\n';
     st_filename << sep_inner + '\n';
-    st_filename << completion.content << '\n';
+    st_filename << completion.completion << '\n';
     st_filename << sep_outer + "\n\n";
 
     st_filename.close();
@@ -232,7 +232,7 @@ void command_run(int argc, char **argv)
         return;
     }
 
-    print_chat_completion_response(completion.content);
+    print_chat_completion_response(completion.completion);
 
     if (params.enable_export) {
         export_chat_completion_response(completion);
