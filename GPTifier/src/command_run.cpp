@@ -69,10 +69,12 @@ void create_chat_completion(models::Completion &completion, const std::string &m
     const json results = parse_response(response);
 
     try {
+        completion.completion_tokens = results["usage"]["completion_tokens"];
         completion.content = results["choices"][0]["message"]["content"];
+        completion.created = results["created"];
         completion.model = results["model"];
         completion.prompt = prompt;
-        completion.created = results["created"];
+        completion.prompt_tokens = results["usage"]["prompt_tokens"];
     } catch (const json::exception &e) {
         const std::string errmsg = fmt::format("Malformed response from OpenAI. Error was:\n{}", e.what());
         throw std::runtime_error(errmsg);

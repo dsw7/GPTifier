@@ -9,6 +9,8 @@
 namespace models {
 
 struct Completion {
+    int completion_tokens = 0;
+    int prompt_tokens = 0;
     std::string content;
     std::string model;
     std::string prompt;
