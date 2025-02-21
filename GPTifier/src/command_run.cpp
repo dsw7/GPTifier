@@ -128,6 +128,15 @@ void print_chat_completion_response(const std::string &completion)
     fmt::print(fg(green), "{}\n", completion);
 }
 
+void print_usage_statistics(const models::Completion &completion)
+{
+    fmt::print(fg(white), "Usage:\n");
+    fmt::print("Prompt tokens: ");
+    fmt::print(fg(green), "{}\n", completion.prompt_tokens);
+    fmt::print("Completion tokens: ");
+    fmt::print(fg(green), "{}\n", completion.completion_tokens);
+}
+
 void write_message_to_file(const models::Completion &completion)
 {
     const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
@@ -230,6 +239,9 @@ void command_run(int argc, char **argv)
     }
 
     print_chat_completion_response(completion.completion);
+    print_sep();
+
+    print_usage_statistics(completion);
     print_sep();
 
     if (params.enable_export) {
