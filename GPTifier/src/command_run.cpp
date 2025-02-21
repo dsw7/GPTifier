@@ -122,10 +122,10 @@ void dump_chat_completion_response(const models::Completion &completion, const s
     st_filename.close();
 }
 
-void print_chat_completion_response(const std::string &content)
+void print_chat_completion_response(const std::string &completion)
 {
     fmt::print(fg(white), "Results: ");
-    fmt::print(fg(green), "{}\n", content);
+    fmt::print(fg(green), "{}\n", completion);
     print_sep();
 }
 
