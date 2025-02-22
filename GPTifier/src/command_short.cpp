@@ -16,10 +16,7 @@ using json = nlohmann::json;
 void command_short(int argc, char **argv)
 {
     ParamsShort params = cli::get_opts_short(argc, argv);
-
-    if (not params.prompt.has_value()) {
-        throw std::runtime_error("Prompt is empty");
-    }
+    params.sanitize();
 
     float temperature = 1.00;
     if (std::holds_alternative<float>(params.temperature)) {

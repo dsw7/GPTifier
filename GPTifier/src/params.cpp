@@ -57,6 +57,10 @@ void ParamsRun::sanitize()
 
 void ParamsShort::sanitize()
 {
+    if (not this->prompt.has_value()) {
+        throw std::runtime_error("Prompt is empty");
+    }
+
     if (std::holds_alternative<float>(this->temperature)) {
         throw std::runtime_error("Temperature is already a float!");
     }
