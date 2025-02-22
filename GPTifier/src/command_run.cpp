@@ -155,12 +155,14 @@ void print_usage_statistics(const models::Completion &completion)
     int wc_completion = get_word_count(completion.completion);
 
     fmt::print(fg(white), "Usage:\n");
+    fmt::print("Model: {}\n", completion.model);
+    fmt::print("\n");
+
     fmt::print("Prompt tokens: ");
     fmt::print(fg(green), "{}\n", completion.prompt_tokens);
     fmt::print("Prompt size (words): ");
     fmt::print(fg(green), "{}\n", wc_prompt);
     print_ratio(completion.prompt_tokens, wc_prompt);
-
     fmt::print("\n");
 
     fmt::print("Completion tokens: ");
