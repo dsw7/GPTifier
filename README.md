@@ -152,7 +152,7 @@ a chat completion under the following conditions:
 
 An example follows:
 ```console
-gpt short --prompt "What is 2 + 2?"
+gpt short "What is 2 + 2?"
 ```
 Which will print out:
 ```

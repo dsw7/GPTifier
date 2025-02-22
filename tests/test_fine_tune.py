@@ -47,8 +47,8 @@ class TestFineTune(TestCase):
         process.assert_failure()
         self.assertIn("The model 'foobar' does not exist", process.stderr)
 
-    def test_list_jobs_raw(self) -> None:
-        for option in ["-r", "--raw"]:
+    def test_list_jobs_raw_json(self) -> None:
+        for option in ["-j", "--json"]:
             with self.subTest(option=option):
                 proc = run_process(["fine-tune", "list-jobs", option])
                 proc.assert_success()

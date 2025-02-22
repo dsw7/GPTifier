@@ -4,6 +4,7 @@
 
 #include <fmt/core.h>
 #include <getopt.h>
+#include <string.h>
 
 namespace {
 
@@ -25,7 +26,7 @@ ParamsRun get_opts_run(int argc, char **argv)
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
             { "no-interactive-export", no_argument, 0, 'u' },
-            { "dump", required_argument, 0, 'd' },
+            { "file", required_argument, 0, 'o' },
             { "model", required_argument, 0, 'm' },
             { "prompt", required_argument, 0, 'p' },
             { "read-from-file", required_argument, 0, 'r' },
@@ -34,7 +35,7 @@ ParamsRun get_opts_run(int argc, char **argv)
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hud:m:p:r:t:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "huo:m:p:r:t:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -47,7 +48,7 @@ ParamsRun get_opts_run(int argc, char **argv)
             case 'u':
                 params.enable_export = false;
                 break;
-            case 'd':
+            case 'o':
                 params.json_dump_file = optarg;
                 break;
             case 'p':
@@ -77,14 +78,13 @@ ParamsShort get_opts_short(int argc, char **argv)
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
-            { "raw", no_argument, 0, 'r' },
-            { "prompt", required_argument, 0, 'p' },
+            { "json", no_argument, 0, 'j' },
             { "temperature", required_argument, 0, 't' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hrp:t:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hjt:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -94,17 +94,21 @@ ParamsShort get_opts_short(int argc, char **argv)
             case 'h':
                 help_command_short();
                 exit(EXIT_SUCCESS);
-            case 'r':
+            case 'j':
                 params.print_raw_json = true;
-                break;
-            case 'p':
-                params.prompt = optarg;
                 break;
             case 't':
                 params.temperature = optarg;
                 break;
             default:
                 exit_on_failure();
+        }
+    }
+
+    for (int i = optind; i < argc; i++) {
+        if (strcmp("short", argv[i]) != 0) {
+            params.prompt = argv[i];
+            break;
         }
     }
 
@@ -118,13 +122,13 @@ ParamsModels get_opts_models(int argc, char **argv)
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
-            { "raw", no_argument, 0, 'r' },
+            { "json", no_argument, 0, 'j' },
             { "user", no_argument, 0, 'u' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hru", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hju", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -134,7 +138,7 @@ ParamsModels get_opts_models(int argc, char **argv)
             case 'h':
                 help_command_models();
                 exit(EXIT_SUCCESS);
-            case 'r':
+            case 'j':
                 params.print_raw_json = true;
                 break;
             case 'u':
@@ -198,12 +202,12 @@ bool get_opts_files_list(int argc, char **argv)
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
-            { "raw", no_argument, 0, 'r' },
+            { "json", no_argument, 0, 'j' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hr", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hj", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -213,7 +217,7 @@ bool get_opts_files_list(int argc, char **argv)
             case 'h':
                 help_command_files_list();
                 exit(EXIT_SUCCESS);
-            case 'r':
+            case 'j':
                 print_raw_json = true;
                 break;
             default:
@@ -268,13 +272,13 @@ ParamsGetFineTuningJobs get_opts_get_fine_tuning_jobs(int argc, char **argv)
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
-            { "raw", no_argument, 0, 'r' },
+            { "json", no_argument, 0, 'j' },
             { "limit", required_argument, 0, 'l' },
             { 0, 0, 0, 0 },
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hrl:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hjl:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -284,7 +288,7 @@ ParamsGetFineTuningJobs get_opts_get_fine_tuning_jobs(int argc, char **argv)
             case 'h':
                 help_command_fine_tune_list_jobs();
                 exit(EXIT_SUCCESS);
-            case 'r':
+            case 'j':
                 params.print_raw_json = true;
                 break;
             case 'l':
@@ -305,13 +309,13 @@ ParamsCosts get_opts_get_costs(int argc, char **argv)
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
-            { "raw", no_argument, 0, 'r' },
+            { "json", no_argument, 0, 'j' },
             { "days", required_argument, 0, 'd' },
             { 0, 0, 0, 0 },
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hrd:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hjd:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -321,7 +325,7 @@ ParamsCosts get_opts_get_costs(int argc, char **argv)
             case 'h':
                 help_command_costs();
                 exit(EXIT_SUCCESS);
-            case 'r':
+            case 'j':
                 params.print_raw_json = true;
                 break;
             case 'd':

@@ -26,7 +26,7 @@ class TestChatCompletionReadFromInputfile(TestCase):
     def test_read_from_inputfile(self) -> None:
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
-            proc = run_process(["run", "-t0", f"-d{json_file}", "-u"])
+            proc = run_process(["run", "-t0", f"-o{json_file}", "-u"])
             proc.assert_success()
             self.assertEqual(load_content(json_file), ">>>8<<<")
 
@@ -42,7 +42,7 @@ class TestChatCompletion(TestCase):
     def test_read_from_command_line(self) -> None:
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
-            proc = run_process(["run", f"-p'{Prompt}'", "-t0", f"-d{json_file}", "-u"])
+            proc = run_process(["run", f"-p'{Prompt}'", "-t0", f"-o{json_file}", "-u"])
             proc.assert_success()
             self.assertEqual(load_content(json_file), ">>>8<<<")
 
@@ -50,7 +50,7 @@ class TestChatCompletion(TestCase):
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
             prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
-            proc = run_process(["run", f"-r{prompt}", "-t0", f"-d{json_file}", "-u"])
+            proc = run_process(["run", f"-r{prompt}", "-t0", f"-o{json_file}", "-u"])
             proc.assert_success()
             self.assertEqual(load_content(json_file), ">>>8<<<")
 
@@ -65,7 +65,7 @@ class TestChatCompletion(TestCase):
         self.assertIn("Could not open file '/tmp/yU8nnkRs.txt'", proc.stderr)
 
     def test_invalid_dump_location(self) -> None:
-        proc = run_process(["run", f"--prompt='{Prompt}'", "--dump=/tmp/a/b/c", "-u"])
+        proc = run_process(["run", f"--prompt='{Prompt}'", "--file=/tmp/a/b/c", "-u"])
         proc.assert_failure()
         self.assertIn("Unable to open '/tmp/a/b/c'", proc.stderr)
 
