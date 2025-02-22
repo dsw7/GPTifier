@@ -331,7 +331,7 @@ void help_command_fine_tune_create_job()
     help.add_description("Create a fine-tuning job.");
     help.add_synopsis(
         "fine-tune create-job [-h | --help] "
-        "-f <file-id> | --file <file-id> -m <model> | --model <model>");
+        "-f <file-id> | --file-id <file-id> -m <model> | --model <model>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-f", "--file-id", "The ID of an uploaded file that contains the training data");
     help.add_option("-m", "--model", "The name of the model to fine-tune");
