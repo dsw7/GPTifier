@@ -79,11 +79,12 @@ ParamsShort get_opts_short(int argc, char **argv)
             { "help", no_argument, 0, 'h' },
             { "raw", no_argument, 0, 'r' },
             { "prompt", required_argument, 0, 'p' },
+            { "temperature", required_argument, 0, 't' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hrp:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hrp:t:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -98,6 +99,9 @@ ParamsShort get_opts_short(int argc, char **argv)
                 break;
             case 'p':
                 params.prompt = optarg;
+                break;
+            case 't':
+                params.temperature = optarg;
                 break;
             default:
                 exit_on_failure();
