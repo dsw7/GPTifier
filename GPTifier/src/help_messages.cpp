@@ -236,10 +236,12 @@ void help_command_short()
 {
     HelpMessages help;
     help.add_description("Create a chat completion but without threading or verbosity.");
-    help.add_synopsis("short [-h | --help] [-r | --raw] [-p <prompt> | --prompt=<prompt>]");
+    help.add_synopsis("short [-h | --help] [-r | --raw] [-p <prompt> | --prompt=<prompt>]\n  "
+                      "[-t <temp> | --temperature=<temperature>]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
     help.add_option("-p <prompt>", "--prompt=<prompt>", "Provide prompt via command line");
+    help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
     help.add_example("Create a chat completion", "gpt short --prompt=\"What is 2 + 2?\"");
     help.print();
 }

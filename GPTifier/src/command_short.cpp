@@ -21,9 +21,15 @@ void command_short(int argc, char **argv)
         throw std::runtime_error("Prompt is empty");
     }
 
+    float temperature = 1.00;
+    if (std::holds_alternative<float>(params.temperature)) {
+        temperature = std::get<float>(params.temperature);
+    }
+
     const json messages = { { "role", "user" }, { "content", params.prompt.value() } };
     const json data = {
-        { "model", select_chat_model() }, { "temperature", 1.00 }, { "messages", json::array({ messages }) }
+        { "model", select_chat_model() }, { "temperature", temperature },
+        { "messages", json::array({ messages }) }
     };
 
     Curl curl;

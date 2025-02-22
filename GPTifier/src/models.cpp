@@ -11,9 +11,11 @@ nlohmann::json Completion::jsonify() const
 {
     nlohmann::json results;
     results["completion"] = this->completion;
+    results["completion_tokens"] = this->completion_tokens;
     results["created"] = this->created;
     results["model"] = this->model;
     results["prompt"] = this->prompt;
+    results["prompt_tokens"] = this->prompt_tokens;
 
     return results;
 }
