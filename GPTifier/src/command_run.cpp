@@ -275,10 +275,10 @@ void command_run(int argc, char **argv)
         return;
     }
 
-    print_chat_completion_response(completion.completion);
+    print_usage_statistics(completion);
     print_sep();
 
-    print_usage_statistics(completion);
+    print_chat_completion_response(completion.completion);
     print_sep();
 
     if (params.enable_export) {
