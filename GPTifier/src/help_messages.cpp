@@ -236,10 +236,10 @@ void help_command_short()
 {
     HelpMessages help;
     help.add_description("Create a chat completion but without threading or verbosity.");
-    help.add_synopsis("short [-h | --help] [-r | --raw] [-p <prompt> | --prompt=<prompt>]\n  "
+    help.add_synopsis("short [-h | --help] [-j | --json] [-p <prompt> | --prompt=<prompt>]\n  "
                       "[-t <temp> | --temperature=<temperature>]");
     help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
+    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.add_option("-p <prompt>", "--prompt=<prompt>", "Provide prompt via command line");
     help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
     help.add_example("Create a chat completion", "gpt short --prompt=\"What is 2 + 2?\"");
@@ -250,9 +250,9 @@ void help_command_models()
 {
     HelpMessages help;
     help.add_description("List available OpenAI or user models.");
-    help.add_synopsis("models [-h | --help] [-r | --raw] [-u | --user]");
+    help.add_synopsis("models [-h | --help] [-j | --json] [-u | --user]");
     help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
+    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.add_option("-u", "--user", "Print user models if they exist");
     help.print();
 }
@@ -288,9 +288,9 @@ void help_command_files_list()
 {
     HelpMessages help;
     help.add_description("List uploaded files.");
-    help.add_synopsis("files list [-h | --help] [-r | --raw]");
+    help.add_synopsis("files list [-h | --help] [-j | --json]");
     help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
+    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.print();
 }
 
@@ -351,9 +351,9 @@ void help_command_fine_tune_list_jobs()
 {
     HelpMessages help;
     help.add_description("List fine-tuning jobs.");
-    help.add_synopsis("fine-tune list-jobs [-h | --help] [-r | --raw] -l <limit> | --limit <limit>");
+    help.add_synopsis("fine-tune list-jobs [-h | --help] [-j | --json] -l <limit> | --limit <limit>");
     help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
+    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.add_option("-l", "--limit", "Number of fine-tuning jobs to show");
     help.print();
 }
@@ -362,9 +362,9 @@ void help_command_costs()
 {
     HelpMessages help;
     help.add_description("Get OpenAI usage details.");
-    help.add_synopsis("costs [-h | --help] [-r | --raw] -d <days> | --days <days>");
+    help.add_synopsis("costs [-h | --help] [-j | --json] -d <days> | --days <days>");
     help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-r", "--raw", "Print raw JSON response from OpenAI");
+    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.add_option("-d", "--days", "Select number of days to go back");
     help.print();
 }
