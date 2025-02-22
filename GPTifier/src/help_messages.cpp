@@ -217,18 +217,18 @@ void help_command_run()
     help.add_description("Create a chat completion.");
     help.add_synopsis(
         "run [-h | --help] [-m <model-name> | --model=<model-name>]\n  "
-        "[-u | --no-interactive-export] [-d <json-file> | --dump=<json-file>]\n  "
+        "[-u | --no-interactive-export] [-o <file> | --file=<file>]\n  "
         "[-p <prompt> | --prompt=<prompt>] [-r <filename> | --read-from-file=<filename>]\n  "
         "[-t <temp> | --temperature=<temperature>]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
     help.add_option("-u", "--no-interactive-export", "Disable [y/n] prompt that asks whether to export results");
-    help.add_option("-d <json-file>", "--dump=<json-file>", "Export results to a JSON file");
+    help.add_option("-o <file>", "--file=<file>", "Export results to a JSON file");
     help.add_option("-p <prompt>", "--prompt=<prompt>", "Provide prompt via command line");
     help.add_option("-r <filename>", "--read-from-file=<filename>", "Read prompt from a custom file");
     help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
     help.add_example("Run an interactive session", "gpt run");
-    help.add_example("Run a query non-interactively and export results", "gpt run --prompt=\"What is 3 + 5\" --dump=\"/tmp/results.json\"");
+    help.add_example("Run a query non-interactively and export results", "gpt run --prompt=\"What is 3 + 5\" --file=\"/tmp/results.json\"");
     help.print();
 }
 

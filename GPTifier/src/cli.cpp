@@ -25,7 +25,7 @@ ParamsRun get_opts_run(int argc, char **argv)
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
             { "no-interactive-export", no_argument, 0, 'u' },
-            { "dump", required_argument, 0, 'd' },
+            { "file", required_argument, 0, 'o' },
             { "model", required_argument, 0, 'm' },
             { "prompt", required_argument, 0, 'p' },
             { "read-from-file", required_argument, 0, 'r' },
@@ -34,7 +34,7 @@ ParamsRun get_opts_run(int argc, char **argv)
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hud:m:p:r:t:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "huo:m:p:r:t:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -47,7 +47,7 @@ ParamsRun get_opts_run(int argc, char **argv)
             case 'u':
                 params.enable_export = false;
                 break;
-            case 'd':
+            case 'o':
                 params.json_dump_file = optarg;
                 break;
             case 'p':
