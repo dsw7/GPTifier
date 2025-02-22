@@ -14,16 +14,14 @@ class TestShort(TestCase):
     prompt = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
 
     def test_short_prompt(self) -> None:
-        for option in ["-p", "--prompt="]:
-            with self.subTest(option=option):
-                proc = run_process(["short", option + self.prompt])
-                proc.assert_success()
-                self.assertIn(">>>4<<<", proc.stdout)
+        proc = run_process(["short", self.prompt])
+        proc.assert_success()
+        self.assertIn(">>>4<<<", proc.stdout)
 
     def test_short_raw_json(self) -> None:
         for option in ["-j", "--json"]:
             with self.subTest(option=option):
-                proc = run_process(["short", f"--prompt={self.prompt}", option])
+                proc = run_process(["short", option, self.prompt])
                 proc.assert_success()
 
                 results = proc.load_stdout_to_json()
