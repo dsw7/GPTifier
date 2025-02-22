@@ -11,23 +11,23 @@ class TestShort(TestCase):
                 proc.assert_success()
                 self.assertIn("Synopsis", proc.stdout)
 
-    def test_short_prompt(self) -> None:
-        prompt = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
+    prompt = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
 
+    def test_short_prompt(self) -> None:
         for option in ["-p", "--prompt="]:
             with self.subTest(option=option):
-                proc = run_process(["short", option + prompt])
+                proc = run_process(["short", option + self.prompt])
                 proc.assert_success()
                 self.assertIn(">>>4<<<", proc.stdout)
 
-    def test_short_raw(self) -> None:
-        prompt = '"What is 2 + 2?"'
-
-        for option in ["-r", "--raw"]:
+    def test_short_raw_json(self) -> None:
+        for option in ["-j", "--json"]:
             with self.subTest(option=option):
-                proc = run_process(["short", f"--prompt={prompt}", option])
+                proc = run_process(["short", f"--prompt={self.prompt}", option])
                 proc.assert_success()
-                proc.load_stdout_to_json()
+
+                results = proc.load_stdout_to_json()
+                self.assertIn(">>>4<<<", results["choices"][0]["message"]["content"])
 
     def test_missing_prompt(self) -> None:
         proc = run_process("short")

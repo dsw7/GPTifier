@@ -26,8 +26,8 @@ class TestModels(TestCase):
                 proc.assert_success()
                 self.assertRegex(proc.stdout, self.pattern)
 
-    def test_models_raw(self) -> None:
-        for option in ["-r", "--raw"]:
+    def test_models_raw_json(self) -> None:
+        for option in ["-j", "--json"]:
             with self.subTest(option=option):
                 proc = run_process(["models", option])
                 proc.assert_success()

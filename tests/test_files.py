@@ -31,8 +31,8 @@ class TestFiles(TestCase):
         proc.assert_success()
         self.assertRegex(proc.stdout, self.pattern)
 
-    def test_files_list_raw(self) -> None:
-        for option in ["-r", "--raw"]:
+    def test_files_list_raw_json(self) -> None:
+        for option in ["-j", "--json"]:
             with self.subTest(option=option):
                 proc = run_process(["files", "list", option])
                 proc.assert_success()

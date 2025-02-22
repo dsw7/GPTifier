@@ -23,8 +23,8 @@ class TestCosts(unittest.TestCase):
         costs = proc.stdout.split("\n")
         assert len(costs) > 1
 
-    def test_costs_raw(self) -> None:
-        for option in ["-r", "--raw"]:
+    def test_costs_raw_json(self) -> None:
+        for option in ["-j", "--json"]:
             with self.subTest(option=option):
                 proc = run_process(["costs", option, "--days=3"])
                 proc.assert_success()
