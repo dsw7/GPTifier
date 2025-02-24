@@ -93,6 +93,7 @@ add_executable(
   "src/help_messages.cpp"
   "src/main.cpp"
   "src/models.cpp"
+  "src/openai_admin.cpp"
   "src/params.cpp"
   "src/parsers.cpp"
   "src/selectors.cpp"
