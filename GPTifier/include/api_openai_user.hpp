@@ -2,21 +2,10 @@
 
 #include "curl_connector.hpp"
 
-#include <ctime>
 #include <string>
 
-class OpenAIAdmin: public Curl {
+class OpenAIUser: public Curl {
 public:
-    std::string get_costs(const std::time_t &start_time, int limit);
-    std::string get_users(int limit = 100);
-
-private:
-    void set_admin_key();
-};
-
-class OpenAI: public Curl {
-public:
-    // User commands
     std::string get_uploaded_files();
     std::string get_models();
     std::string create_chat_completion(const std::string &post_fields);

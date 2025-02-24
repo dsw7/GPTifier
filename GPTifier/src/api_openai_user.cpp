@@ -1,4 +1,4 @@
-#include "api.hpp"
+#include "api_openai_user.hpp"
 
 #include "configs.hpp"
 
@@ -9,10 +9,6 @@
 
 namespace endpoints {
 
-// Admin users
-const std::string URL_ORGANIZATION = "https://api.openai.com/v1/organization";
-
-// Non-admin users
 const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
 const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
 const std::string URL_FILES = "https://api.openai.com/v1/files";
@@ -21,56 +17,7 @@ const std::string URL_MODELS = "https://api.openai.com/v1/models";
 
 } // namespace endpoints
 
-void OpenAIAdmin::set_admin_key()
-{
-    const char *admin_key = std::getenv("OPENAI_ADMIN_KEY");
-
-    if (admin_key == NULL) {
-        throw std::runtime_error("OPENAI_ADMIN_KEY environment variable not set");
-    }
-
-    const std::string header = fmt::format("Authorization: Bearer {}", admin_key);
-    this->headers = curl_slist_append(this->headers, header.c_str());
-}
-
-std::string OpenAIAdmin::get_costs(const std::time_t &start_time, int limit)
-{
-    this->set_admin_key();
-    this->set_content_type_transmit_json();
-    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
-
-    const std::string endpoint = fmt::format(
-        "{}/{}?start_time={}&limit={}", endpoints::URL_ORGANIZATION, "costs", start_time, limit);
-
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
-    curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
-
-    std::string response;
-    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
-
-    catch_curl_error(curl_easy_perform(this->handle));
-    return response;
-}
-
-std::string OpenAIAdmin::get_users(int limit)
-{
-    this->set_admin_key();
-    this->set_content_type_transmit_json();
-    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
-
-    const std::string endpoint = fmt::format("{}/{}?limit={}", endpoints::URL_ORGANIZATION, "users", limit);
-
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
-    curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
-
-    std::string response;
-    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
-
-    catch_curl_error(curl_easy_perform(this->handle));
-    return response;
-}
-
-void OpenAI::set_api_key()
+void OpenAIUser::set_api_key()
 {
     const char *api_key = std::getenv("OPENAI_API_KEY");
 
@@ -82,18 +29,18 @@ void OpenAI::set_api_key()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
-void OpenAI::set_project_id()
+void OpenAIUser::set_project_id()
 {
     if (not configs.project_id.has_value()) {
         return;
     }
 
-    const std::string header = "OpenAI-Project: " + configs.project_id.value();
+    const std::string header = "OpenAIUser-Project: " + configs.project_id.value();
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
 // User commands
-std::string OpenAI::get_models()
+std::string OpenAIUser::get_models()
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
@@ -108,7 +55,7 @@ std::string OpenAI::get_models()
     return response;
 }
 
-std::string OpenAI::get_uploaded_files()
+std::string OpenAIUser::get_uploaded_files()
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
@@ -123,7 +70,7 @@ std::string OpenAI::get_uploaded_files()
     return response;
 }
 
-std::string OpenAI::create_chat_completion(const std::string &post_fields)
+std::string OpenAIUser::create_chat_completion(const std::string &post_fields)
 {
     this->set_api_key();
     this->set_content_type_transmit_json();
@@ -140,7 +87,7 @@ std::string OpenAI::create_chat_completion(const std::string &post_fields)
     return response;
 }
 
-std::string OpenAI::create_embedding(const std::string &post_fields)
+std::string OpenAIUser::create_embedding(const std::string &post_fields)
 {
     this->set_api_key();
     this->set_content_type_transmit_json();
@@ -157,7 +104,7 @@ std::string OpenAI::create_embedding(const std::string &post_fields)
     return response;
 }
 
-std::string OpenAI::upload_file(const std::string &filename, const std::string &purpose)
+std::string OpenAIUser::upload_file(const std::string &filename, const std::string &purpose)
 {
     this->set_api_key();
     this->set_content_type_submit_form();
@@ -188,7 +135,7 @@ std::string OpenAI::upload_file(const std::string &filename, const std::string &
     return response;
 }
 
-std::string OpenAI::delete_file(const std::string &file_id)
+std::string OpenAIUser::delete_file(const std::string &file_id)
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
@@ -205,7 +152,7 @@ std::string OpenAI::delete_file(const std::string &file_id)
     return response;
 }
 
-std::string OpenAI::create_fine_tuning_job(const std::string &post_fields)
+std::string OpenAIUser::create_fine_tuning_job(const std::string &post_fields)
 {
     this->set_api_key();
     this->set_content_type_transmit_json();
@@ -224,7 +171,7 @@ std::string OpenAI::create_fine_tuning_job(const std::string &post_fields)
     return response;
 }
 
-std::string OpenAI::delete_model(const std::string &model_id)
+std::string OpenAIUser::delete_model(const std::string &model_id)
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
@@ -241,7 +188,7 @@ std::string OpenAI::delete_model(const std::string &model_id)
     return response;
 }
 
-std::string OpenAI::get_fine_tuning_jobs(const std::string &limit)
+std::string OpenAIUser::get_fine_tuning_jobs(const std::string &limit)
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);

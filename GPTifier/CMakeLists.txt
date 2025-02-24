@@ -78,7 +78,8 @@ include_directories(
 )
 add_executable(
   "gpt"
-  "src/api.cpp"
+  "src/api_openai_admin.cpp"
+  "src/api_openai_user.cpp"
   "src/cli.cpp"
   "src/command_costs.cpp"
   "src/command_embed.cpp"
@@ -93,7 +94,6 @@ add_executable(
   "src/help_messages.cpp"
   "src/main.cpp"
   "src/models.cpp"
-  "src/openai_admin.cpp"
   "src/params.cpp"
   "src/parsers.cpp"
   "src/selectors.cpp"
