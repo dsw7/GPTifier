@@ -52,18 +52,6 @@ void OpenAI::set_project_id()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
-void OpenAI::set_content_type_transmit_json()
-{
-    const std::string header = "Content-Type: application/json";
-    this->headers = curl_slist_append(this->headers, header.c_str());
-}
-
-void OpenAI::set_content_type_submit_form()
-{
-    const std::string header = "Content-Type: multipart/form-data";
-    this->headers = curl_slist_append(this->headers, header.c_str());
-}
-
 // Admin commands
 std::string OpenAI::get_costs(const std::time_t &start_time, int limit)
 {

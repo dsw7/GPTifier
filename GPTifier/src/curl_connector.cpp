@@ -38,6 +38,18 @@ Curl::~Curl()
     curl_global_cleanup();
 }
 
+void Curl::set_content_type_submit_form()
+{
+    const std::string header = "Content-Type: multipart/form-data";
+    this->headers = curl_slist_append(this->headers, header.c_str());
+}
+
+void Curl::set_content_type_transmit_json()
+{
+    const std::string header = "Content-Type: application/json";
+    this->headers = curl_slist_append(this->headers, header.c_str());
+}
+
 void catch_curl_error(CURLcode code)
 {
     if (code != CURLE_OK) {
