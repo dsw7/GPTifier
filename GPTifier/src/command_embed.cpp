@@ -1,6 +1,6 @@
 #include "command_embed.hpp"
 
-#include "api.hpp"
+#include "api_openai_user.hpp"
 #include "cli.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
@@ -34,8 +34,8 @@ models::Embedding query_embeddings_api(const std::string &model, const std::stri
 {
     const json data = { { "model", model }, { "input", input } };
 
-    OpenAI curl;
-    const std::string response = curl.create_embedding(data.dump());
+    OpenAIUser api;
+    const std::string response = api.create_embedding(data.dump());
     const json results = parse_response(response);
 
     models::Embedding embedding;

@@ -1,9 +1,9 @@
 #include "command_models.hpp"
 
-#include "api.hpp"
+#include "api_openai_admin.hpp"
+#include "api_openai_user.hpp"
 #include "cli.hpp"
 #include "models.hpp"
-#include "openai_admin.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
 
@@ -108,8 +108,8 @@ void command_models(int argc, char **argv)
 {
     ParamsModels params = cli::get_opts_models(argc, argv);
 
-    OpenAI curl;
-    const std::string response = curl.get_models();
+    OpenAIUser api;
+    const std::string response = api.get_models();
     const json results = parse_response(response);
 
     if (params.print_raw_json) {
