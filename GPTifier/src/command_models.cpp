@@ -1,6 +1,7 @@
 #include "command_models.hpp"
 
-#include "api.hpp"
+#include "api_openai_admin.hpp"
+#include "api_openai_user.hpp"
 #include "cli.hpp"
 #include "models.hpp"
 #include "parsers.hpp"
@@ -38,11 +39,11 @@ void get_openai_models(const json &response, std::vector<models::Model> &models)
 
 void resolve_users_from_ids(std::map<std::string, std::string> &users)
 {
-    Curl curl;
+    OpenAIAdmin api;
     std::string response;
 
     try {
-        response = curl.get_users();
+        response = api.get_users();
     } catch (const std::runtime_error &e) {
         return;
     }
@@ -107,8 +108,8 @@ void command_models(int argc, char **argv)
 {
     ParamsModels params = cli::get_opts_models(argc, argv);
 
-    Curl curl;
-    const std::string response = curl.get_models();
+    OpenAIUser api;
+    const std::string response = api.get_models();
     const json results = parse_response(response);
 
     if (params.print_raw_json) {

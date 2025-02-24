@@ -1,6 +1,6 @@
 #include "command_short.hpp"
 
-#include "api.hpp"
+#include "api_openai_user.hpp"
 #include "cli.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
@@ -29,8 +29,8 @@ void command_short(int argc, char **argv)
         { "messages", json::array({ messages }) }
     };
 
-    Curl curl;
-    const std::string response = curl.create_chat_completion(data.dump());
+    OpenAIUser api;
+    const std::string response = api.create_chat_completion(data.dump());
     const json results = parse_response(response);
 
     if (params.print_raw_json) {

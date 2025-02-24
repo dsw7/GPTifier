@@ -1,6 +1,6 @@
 #include "command_files.hpp"
 
-#include "api.hpp"
+#include "api_openai_user.hpp"
 #include "cli.hpp"
 #include "help_messages.hpp"
 #include "models.hpp"
@@ -19,8 +19,8 @@ namespace {
 
 void delete_file(const std::string &file_id, json &results)
 {
-    Curl curl;
-    const std::string response = curl.delete_file(file_id);
+    OpenAIUser api;
+    const std::string response = api.delete_file(file_id);
     results = parse_response(response);
 }
 
@@ -28,8 +28,8 @@ void command_files_list(int argc, char **argv)
 {
     bool print_raw_json = cli::get_opts_files_list(argc, argv);
 
-    Curl curl;
-    const std::string response = curl.get_uploaded_files();
+    OpenAIUser api;
+    const std::string response = api.get_uploaded_files();
     const json results = parse_response(response);
 
     if (print_raw_json) {

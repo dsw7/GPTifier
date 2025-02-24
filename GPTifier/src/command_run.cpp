@@ -1,6 +1,6 @@
 #include "command_run.hpp"
 
-#include "api.hpp"
+#include "api_openai_user.hpp"
 #include "cli.hpp"
 #include "datadir.hpp"
 #include "models.hpp"
@@ -64,8 +64,8 @@ void create_chat_completion(models::Completion &completion, const std::string &m
         { "model", model }, { "temperature", temperature }, { "messages", json::array({ messages }) }
     };
 
-    Curl curl;
-    const std::string response = curl.create_chat_completion(data.dump());
+    OpenAIUser api;
+    const std::string response = api.create_chat_completion(data.dump());
     const json results = parse_response(response);
 
     try {

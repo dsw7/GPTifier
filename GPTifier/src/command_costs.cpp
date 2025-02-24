@@ -1,6 +1,6 @@
 #include "command_costs.hpp"
 
-#include "api.hpp"
+#include "api_openai_admin.hpp"
 #include "cli.hpp"
 #include "models.hpp"
 #include "params.hpp"
@@ -80,8 +80,8 @@ void command_costs(int argc, char **argv)
     std::time_t start_time = get_current_time_minus_days(std::get<int>(params.days));
     int limit = 180;
 
-    Curl curl;
-    const std::string response = curl.get_costs(start_time, limit);
+    OpenAIAdmin api;
+    const std::string response = api.get_costs(start_time, limit);
     const json results = parse_response(response);
 
     if (params.print_raw_json) {
