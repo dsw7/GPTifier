@@ -4,7 +4,6 @@
 
 #include <cstdlib>
 #include <fmt/core.h>
-#include <json.hpp>
 #include <stdexcept>
 
 namespace endpoints {
@@ -39,7 +38,6 @@ void OpenAIUser::set_project_id()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
-// User commands
 std::string OpenAIUser::get_models()
 {
     this->set_api_key();
