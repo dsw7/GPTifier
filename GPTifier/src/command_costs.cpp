@@ -80,7 +80,7 @@ void command_costs(int argc, char **argv)
     std::time_t start_time = get_current_time_minus_days(std::get<int>(params.days));
     int limit = 180;
 
-    Curl curl;
+    OpenAI curl;
     const std::string response = curl.get_costs(start_time, limit);
     const json results = parse_response(response);
 

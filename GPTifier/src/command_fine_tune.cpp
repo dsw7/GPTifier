@@ -32,7 +32,7 @@ void upload_fine_tuning_file(int argc, char **argv)
         return;
     }
 
-    Curl curl;
+    OpenAI curl;
     const std::string purpose = "fine-tune";
     const std::string response = curl.upload_file(opt_or_filename, purpose);
 
@@ -65,7 +65,7 @@ void create_fine_tuning_job(int argc, char **argv)
 
     const json data = { { "model", params.model.value() }, { "training_file", params.training_file.value() } };
 
-    Curl curl;
+    OpenAI curl;
     const std::string response = curl.create_fine_tuning_job(data.dump());
     const json results = parse_response(response);
 
@@ -87,7 +87,7 @@ void delete_fine_tuned_model(int argc, char **argv)
         return;
     }
 
-    Curl curl;
+    OpenAI curl;
 
     const std::string response = curl.delete_model(opt_or_model_id);
     const json results = parse_response(response);
@@ -105,7 +105,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
     ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
     std::string limit = params.limit.value_or("20");
 
-    Curl curl;
+    OpenAI curl;
     const std::string response = curl.get_fine_tuning_jobs(limit);
     const json results = parse_response(response);
 

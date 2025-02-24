@@ -34,7 +34,7 @@ models::Embedding query_embeddings_api(const std::string &model, const std::stri
 {
     const json data = { { "model", model }, { "input", input } };
 
-    Curl curl;
+    OpenAI curl;
     const std::string response = curl.create_embedding(data.dump());
     const json results = parse_response(response);
 

@@ -18,52 +18,7 @@ const std::string URL_ORGANIZATION = "https://api.openai.com/v1/organization";
 
 } // namespace endpoints
 
-namespace {
-
-size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
-{
-    data->append(ptr, size * nmemb);
-    return size * nmemb;
-}
-
-void catch_curl_error(CURLcode code)
-{
-    if (code != CURLE_OK) {
-        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(code));
-        throw std::runtime_error(errmsg);
-    }
-}
-
-} // namespace
-
-Curl::Curl()
-{
-    if (curl_global_init(CURL_GLOBAL_DEFAULT) != 0) {
-        throw std::runtime_error("Something went wrong when initializing libcurl");
-    }
-
-    this->handle = curl_easy_init();
-
-    if (this->handle == NULL) {
-        throw std::runtime_error("Something went wrong when starting libcurl easy session");
-    }
-
-    this->set_project_id();
-
-    curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
-}
-
-Curl::~Curl()
-{
-    if (this->handle) {
-        curl_slist_free_all(this->headers);
-        curl_easy_cleanup(this->handle);
-    }
-
-    curl_global_cleanup();
-}
-
-void Curl::set_admin_key()
+void OpenAI::set_admin_key()
 {
     const char *admin_key = std::getenv("OPENAI_ADMIN_KEY");
 
@@ -75,7 +30,7 @@ void Curl::set_admin_key()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
-void Curl::set_api_key()
+void OpenAI::set_api_key()
 {
     const char *api_key = std::getenv("OPENAI_API_KEY");
 
@@ -87,7 +42,7 @@ void Curl::set_api_key()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
-void Curl::set_project_id()
+void OpenAI::set_project_id()
 {
     if (not configs.project_id.has_value()) {
         return;
@@ -97,20 +52,20 @@ void Curl::set_project_id()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
-void Curl::set_content_type_transmit_json()
+void OpenAI::set_content_type_transmit_json()
 {
     const std::string header = "Content-Type: application/json";
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
-void Curl::set_content_type_submit_form()
+void OpenAI::set_content_type_submit_form()
 {
     const std::string header = "Content-Type: multipart/form-data";
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
 // Admin commands
-std::string Curl::get_costs(const std::time_t &start_time, int limit)
+std::string OpenAI::get_costs(const std::time_t &start_time, int limit)
 {
     this->set_admin_key();
     this->set_content_type_transmit_json();
@@ -129,7 +84,7 @@ std::string Curl::get_costs(const std::time_t &start_time, int limit)
     return response;
 }
 
-std::string Curl::get_users(int limit)
+std::string OpenAI::get_users(int limit)
 {
     this->set_admin_key();
     this->set_content_type_transmit_json();
@@ -148,7 +103,7 @@ std::string Curl::get_users(int limit)
 }
 
 // User commands
-std::string Curl::get_models()
+std::string OpenAI::get_models()
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
@@ -163,7 +118,7 @@ std::string Curl::get_models()
     return response;
 }
 
-std::string Curl::get_uploaded_files()
+std::string OpenAI::get_uploaded_files()
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
@@ -178,7 +133,7 @@ std::string Curl::get_uploaded_files()
     return response;
 }
 
-std::string Curl::create_chat_completion(const std::string &post_fields)
+std::string OpenAI::create_chat_completion(const std::string &post_fields)
 {
     this->set_api_key();
     this->set_content_type_transmit_json();
@@ -195,7 +150,7 @@ std::string Curl::create_chat_completion(const std::string &post_fields)
     return response;
 }
 
-std::string Curl::create_embedding(const std::string &post_fields)
+std::string OpenAI::create_embedding(const std::string &post_fields)
 {
     this->set_api_key();
     this->set_content_type_transmit_json();
@@ -212,7 +167,7 @@ std::string Curl::create_embedding(const std::string &post_fields)
     return response;
 }
 
-std::string Curl::upload_file(const std::string &filename, const std::string &purpose)
+std::string OpenAI::upload_file(const std::string &filename, const std::string &purpose)
 {
     this->set_api_key();
     this->set_content_type_submit_form();
@@ -243,7 +198,7 @@ std::string Curl::upload_file(const std::string &filename, const std::string &pu
     return response;
 }
 
-std::string Curl::delete_file(const std::string &file_id)
+std::string OpenAI::delete_file(const std::string &file_id)
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
@@ -260,7 +215,7 @@ std::string Curl::delete_file(const std::string &file_id)
     return response;
 }
 
-std::string Curl::create_fine_tuning_job(const std::string &post_fields)
+std::string OpenAI::create_fine_tuning_job(const std::string &post_fields)
 {
     this->set_api_key();
     this->set_content_type_transmit_json();
@@ -279,7 +234,7 @@ std::string Curl::create_fine_tuning_job(const std::string &post_fields)
     return response;
 }
 
-std::string Curl::delete_model(const std::string &model_id)
+std::string OpenAI::delete_model(const std::string &model_id)
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
@@ -296,7 +251,7 @@ std::string Curl::delete_model(const std::string &model_id)
     return response;
 }
 
-std::string Curl::get_fine_tuning_jobs(const std::string &limit)
+std::string OpenAI::get_fine_tuning_jobs(const std::string &limit)
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);

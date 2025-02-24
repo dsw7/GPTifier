@@ -29,7 +29,7 @@ void command_short(int argc, char **argv)
         { "messages", json::array({ messages }) }
     };
 
-    Curl curl;
+    OpenAI curl;
     const std::string response = curl.create_chat_completion(data.dump());
     const json results = parse_response(response);
 

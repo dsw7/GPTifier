@@ -64,7 +64,7 @@ void create_chat_completion(models::Completion &completion, const std::string &m
         { "model", model }, { "temperature", temperature }, { "messages", json::array({ messages }) }
     };
 
-    Curl curl;
+    OpenAI curl;
     const std::string response = curl.create_chat_completion(data.dump());
     const json results = parse_response(response);
 

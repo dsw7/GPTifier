@@ -38,7 +38,7 @@ void get_openai_models(const json &response, std::vector<models::Model> &models)
 
 void resolve_users_from_ids(std::map<std::string, std::string> &users)
 {
-    Curl curl;
+    OpenAI curl;
     std::string response;
 
     try {
@@ -107,7 +107,7 @@ void command_models(int argc, char **argv)
 {
     ParamsModels params = cli::get_opts_models(argc, argv);
 
-    Curl curl;
+    OpenAI curl;
     const std::string response = curl.get_models();
     const json results = parse_response(response);
 

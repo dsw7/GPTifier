@@ -19,7 +19,7 @@ namespace {
 
 void delete_file(const std::string &file_id, json &results)
 {
-    Curl curl;
+    OpenAI curl;
     const std::string response = curl.delete_file(file_id);
     results = parse_response(response);
 }
@@ -28,7 +28,7 @@ void command_files_list(int argc, char **argv)
 {
     bool print_raw_json = cli::get_opts_files_list(argc, argv);
 
-    Curl curl;
+    OpenAI curl;
     const std::string response = curl.get_uploaded_files();
     const json results = parse_response(response);
 
