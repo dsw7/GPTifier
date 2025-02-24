@@ -1,10 +1,10 @@
 #pragma once
 
-#include "curl_connector.hpp"
+#include "curl_base.hpp"
 
 #include <string>
 
-class OpenAIUser: public Curl {
+class OpenAIUser: public CurlBase {
 public:
     std::string get_uploaded_files();
     std::string get_models();

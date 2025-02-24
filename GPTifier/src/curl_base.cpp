@@ -1,4 +1,4 @@
-#include "curl_connector.hpp"
+#include "curl_base.hpp"
 
 #include <stdexcept>
 #include <string>
@@ -13,7 +13,7 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
 
 } // namespace
 
-Curl::Curl()
+CurlBase::CurlBase()
 {
     if (curl_global_init(CURL_GLOBAL_DEFAULT) != 0) {
         throw std::runtime_error("Something went wrong when initializing libcurl");
@@ -28,7 +28,7 @@ Curl::Curl()
     curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
 }
 
-Curl::~Curl()
+CurlBase::~CurlBase()
 {
     if (this->handle) {
         curl_slist_free_all(this->headers);
@@ -38,13 +38,13 @@ Curl::~Curl()
     curl_global_cleanup();
 }
 
-void Curl::set_content_type_submit_form()
+void CurlBase::set_content_type_submit_form()
 {
     const std::string header = "Content-Type: multipart/form-data";
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
-void Curl::set_content_type_transmit_json()
+void CurlBase::set_content_type_transmit_json()
 {
     const std::string header = "Content-Type: application/json";
     this->headers = curl_slist_append(this->headers, header.c_str());

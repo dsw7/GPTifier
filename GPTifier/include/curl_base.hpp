@@ -2,16 +2,16 @@
 
 #include <curl/curl.h>
 
-class Curl {
+class CurlBase {
 public:
-    Curl();
-    ~Curl();
+    CurlBase();
+    ~CurlBase();
 
     // We want to prevent any copies from being made otherwise we'll attempt
     // to delete a shallow copy of the headers list multiple times (i.e. because the destructor will
     // be called for each copy)
-    Curl(const Curl &) = delete;
-    Curl &operator=(const Curl &) = delete;
+    CurlBase(const CurlBase &) = delete;
+    CurlBase &operator=(const CurlBase &) = delete;
 
 protected:
     CURL *handle = NULL;
