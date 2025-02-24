@@ -3,15 +3,19 @@
 #include "curl_connector.hpp"
 
 #include <ctime>
-#include <curl/curl.h>
 #include <string>
 
-class OpenAI: public Curl {
+class OpenAIAdmin: public Curl {
 public:
-    // Admin commands
     std::string get_costs(const std::time_t &start_time, int limit);
     std::string get_users(int limit = 100);
 
+private:
+    void set_admin_key();
+};
+
+class OpenAI: public Curl {
+public:
     // User commands
     std::string get_uploaded_files();
     std::string get_models();
@@ -24,7 +28,6 @@ public:
     std::string get_fine_tuning_jobs(const std::string &limit);
 
 private:
-    void set_admin_key();
     void set_api_key();
     void set_project_id();
 };
