@@ -48,4 +48,15 @@ bool is_model_list(const nlohmann::json &json)
     return json["data"][0]["object"] == "model";
 }
 
+bool is_file_list(const nlohmann::json &json)
+{
+    is_openai_response(json);
+
+    if (not is_list(json)) {
+        return false;
+    }
+
+    return json["data"][0]["object"] == "file";
+}
+
 } // namespace validation
