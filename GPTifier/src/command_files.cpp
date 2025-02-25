@@ -6,6 +6,7 @@
 #include "models.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
+#include "validation.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -16,13 +17,6 @@
 using json = nlohmann::json;
 
 namespace {
-
-void delete_file(const std::string &file_id, json &results)
-{
-    OpenAIUser api;
-    const std::string response = api.delete_file(file_id);
-    results = parse_response(response);
-}
 
 void command_files_list(int argc, char **argv)
 {
@@ -35,6 +29,10 @@ void command_files_list(int argc, char **argv)
     if (print_raw_json) {
         fmt::print("{}\n", results.dump(4));
         return;
+    }
+
+    if (not validation::is_file_list(results)) {
+        throw std::runtime_error("Response from OpenAI is not a file list");
     }
 
     print_sep();
@@ -59,6 +57,13 @@ void command_files_list(int argc, char **argv)
     }
 
     print_sep();
+}
+
+void delete_file(const std::string &file_id, json &results)
+{
+    OpenAIUser api;
+    const std::string response = api.delete_file(file_id);
+    results = parse_response(response);
 }
 
 void command_files_delete(int argc, char **argv)
