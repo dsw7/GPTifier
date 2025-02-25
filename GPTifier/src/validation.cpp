@@ -15,13 +15,10 @@ void is_openai_response(const nlohmann::json &json)
 
 namespace validation {
 
-void is_chat_completion(const nlohmann::json &json)
+bool is_chat_completion(const nlohmann::json &json)
 {
     is_openai_response(json);
-
-    if (json["object"] != "chat.completion") {
-        throw std::runtime_error("Is this OpenAI response a valid chat completion?");
-    }
+    return json["object"] == "chat.completion";
 }
 
 } // namespace validation

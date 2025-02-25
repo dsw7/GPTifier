@@ -4,6 +4,6 @@
 
 namespace validation {
 
-void is_chat_completion(const nlohmann::json &json);
+bool is_chat_completion(const nlohmann::json &json);
 
 }
