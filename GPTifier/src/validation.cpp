@@ -21,4 +21,10 @@ bool is_chat_completion(const nlohmann::json &json)
     return json["object"] == "chat.completion";
 }
 
+bool is_embedding(const nlohmann::json &json)
+{
+    is_openai_response(json);
+    return json["object"] == "embedding";
+}
+
 } // namespace validation
