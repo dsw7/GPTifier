@@ -8,6 +8,7 @@
 #include "parsers.hpp"
 #include "selectors.hpp"
 #include "utils.hpp"
+#include "validation.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -68,17 +69,16 @@ void create_chat_completion(models::Completion &completion, const std::string &m
     const std::string response = api.create_chat_completion(data.dump());
     const json results = parse_response(response);
 
-    try {
-        completion.completion_tokens = results["usage"]["completion_tokens"];
-        completion.completion = results["choices"][0]["message"]["content"];
-        completion.created = results["created"];
-        completion.model = results["model"];
-        completion.prompt = prompt;
-        completion.prompt_tokens = results["usage"]["prompt_tokens"];
-    } catch (const json::exception &e) {
-        const std::string errmsg = fmt::format("Malformed response from OpenAI. Error was:\n{}", e.what());
-        throw std::runtime_error(errmsg);
+    if (not validation::is_chat_completion(results)) {
+        throw std::runtime_error("Response from OpenAI is not a chat completion");
     }
+
+    completion.completion_tokens = results["usage"]["completion_tokens"];
+    completion.completion = results["choices"][0]["message"]["content"];
+    completion.created = results["created"];
+    completion.model = results["model"];
+    completion.prompt = prompt;
+    completion.prompt_tokens = results["usage"]["prompt_tokens"];
 }
 
 models::Completion run_query(const std::string &model, const std::string &prompt, float temperature)
