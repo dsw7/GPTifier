@@ -7,6 +7,11 @@ bool is_list(const nlohmann::json &json)
     return json["object"] == "list";
 }
 
+bool is_page(const nlohmann::json &json)
+{
+    return json["object"] == "page";
+}
+
 } // namespace
 
 namespace validation {
@@ -75,6 +80,15 @@ bool is_users_list(const nlohmann::json &json)
     }
 
     return is_user(json);
+}
+
+bool is_costs_list(const nlohmann::json &json)
+{
+    if (not is_page(json)) {
+        return false;
+    }
+
+    return is_cost(json["data"][0]);
 }
 
 } // namespace validation

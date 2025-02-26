@@ -14,5 +14,6 @@ bool is_embedding_list(const nlohmann::json &json);
 bool is_model_list(const nlohmann::json &json);
 bool is_file_list(const nlohmann::json &json);
 bool is_users_list(const nlohmann::json &json);
+bool is_costs_list(const nlohmann::json &json);
 
 } // namespace validation
