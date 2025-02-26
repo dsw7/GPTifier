@@ -7,6 +7,7 @@
 #include "params.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
+#include "validation.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -35,11 +36,14 @@ void upload_fine_tuning_file(int argc, char **argv)
     OpenAIUser api;
     const std::string purpose = "fine-tune";
     const std::string response = api.upload_file(opt_or_filename, purpose);
-
     const json results = parse_response(response);
+
+    if (not validation::is_file(results)) {
+        throw std::runtime_error("Response from OpenAI is not a file");
+    }
+
     const std::string filename = results["filename"];
     const std::string id = results["id"];
-
     fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", filename, id);
 }
 
@@ -69,8 +73,11 @@ void create_fine_tuning_job(int argc, char **argv)
     const std::string response = api.create_fine_tuning_job(data.dump());
     const json results = parse_response(response);
 
-    const std::string id = results["id"];
-    fmt::print("Deployed fine tuning job with ID: {}\n", id);
+    if (not validation::is_fine_tuning_job(results)) {
+        throw std::runtime_error("Response from OpenAI is not a fine-tuning job object");
+    }
+
+    fmt::print("Deployed fine tuning job with ID: {}\n", results["id"]);
 }
 
 void delete_fine_tuned_model(int argc, char **argv)
@@ -88,15 +95,17 @@ void delete_fine_tuned_model(int argc, char **argv)
     }
 
     OpenAIUser api;
-
     const std::string response = api.delete_model(opt_or_model_id);
     const json results = parse_response(response);
-    const std::string id = results["id"];
+
+    if (not validation::is_model(results)) {
+        throw std::runtime_error("Response from OpenAI is not a model");
+    }
 
     if (results["deleted"]) {
-        fmt::print("Success!\nDeleted model with ID: {}\n", id);
+        fmt::print("Success!\nDeleted model with ID: {}\n", results["id"]);
     } else {
-        fmt::print("Warning!\nDid not delete model with ID: {}\n", id);
+        fmt::print("Warning!\nDid not delete model with ID: {}\n", results["id"]);
     }
 }
 
@@ -112,6 +121,10 @@ void list_fine_tuning_jobs(int argc, char **argv)
     if (params.print_raw_json) {
         fmt::print("{}\n", results.dump(4));
         return;
+    }
+
+    if (not validation::is_fine_tuning_jobs_list(results)) {
+        throw std::runtime_error("Response from OpenAI is not a list of fine-tuning jobs");
     }
 
     if (not params.limit.has_value()) {

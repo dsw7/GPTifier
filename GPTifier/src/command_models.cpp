@@ -6,6 +6,7 @@
 #include "models.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
+#include "validation.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -50,8 +51,8 @@ void resolve_users_from_ids(std::map<std::string, std::string> &users)
 
     const json results = parse_response(response);
 
-    if (not results.contains("data")) {
-        return;
+    if (not validation::is_users_list(results)) {
+        throw std::runtime_error("Response from OpenAI is not a list of users");
     }
 
     for (auto user = results["data"].begin(); user != results["data"].end(); user++) {
@@ -115,6 +116,10 @@ void command_models(int argc, char **argv)
     if (params.print_raw_json) {
         fmt::print("{}\n", results.dump(4));
         return;
+    }
+
+    if (not validation::is_model_list(results)) {
+        throw std::runtime_error("Response from OpenAI is not a list of models");
     }
 
     std::vector<models::Model> models;

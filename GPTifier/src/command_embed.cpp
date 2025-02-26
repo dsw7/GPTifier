@@ -8,6 +8,7 @@
 #include "params.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
+#include "validation.hpp"
 
 #include <fmt/core.h>
 #include <fstream>
@@ -38,16 +39,14 @@ models::Embedding query_embeddings_api(const std::string &model, const std::stri
     const std::string response = api.create_embedding(data.dump());
     const json results = parse_response(response);
 
-    models::Embedding embedding;
-
-    try {
-        embedding.embedding = results["data"][0]["embedding"].template get<std::vector<float>>();
-        embedding.input = input;
-        embedding.model = results["model"];
-    } catch (const json::exception &e) {
-        const std::string errmsg = fmt::format("Malformed response from OpenAI. Error was:\n{}", e.what());
-        throw std::runtime_error(errmsg);
+    if (not validation::is_embedding_list(results)) {
+        throw std::runtime_error("Response from OpenAI is not an embeddings list");
     }
+
+    models::Embedding embedding;
+    embedding.embedding = results["data"][0]["embedding"].template get<std::vector<float>>();
+    embedding.input = input;
+    embedding.model = results["model"];
 
     return embedding;
 }

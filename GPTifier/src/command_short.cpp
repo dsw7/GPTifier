@@ -5,6 +5,7 @@
 #include "params.hpp"
 #include "parsers.hpp"
 #include "selectors.hpp"
+#include "validation.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -36,6 +37,10 @@ void command_short(int argc, char **argv)
     if (params.print_raw_json) {
         fmt::print("{}\n", results.dump(4));
         return;
+    }
+
+    if (not validation::is_chat_completion(results)) {
+        throw std::runtime_error("Response from OpenAI is not a chat completion");
     }
 
     const std::string completion = results["choices"][0]["message"]["content"];

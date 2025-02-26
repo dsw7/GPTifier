@@ -6,6 +6,7 @@
 #include "models.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
+#include "validation.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -16,13 +17,6 @@
 using json = nlohmann::json;
 
 namespace {
-
-void delete_file(const std::string &file_id, json &results)
-{
-    OpenAIUser api;
-    const std::string response = api.delete_file(file_id);
-    results = parse_response(response);
-}
 
 void command_files_list(int argc, char **argv)
 {
@@ -35,6 +29,10 @@ void command_files_list(int argc, char **argv)
     if (print_raw_json) {
         fmt::print("{}\n", results.dump(4));
         return;
+    }
+
+    if (not validation::is_file_list(results)) {
+        throw std::runtime_error("Response from OpenAI is not a file list");
     }
 
     print_sep();
@@ -61,6 +59,24 @@ void command_files_list(int argc, char **argv)
     print_sep();
 }
 
+void delete_file(const std::string &file_id)
+{
+    OpenAIUser api;
+
+    const std::string response = api.delete_file(file_id);
+    const json results = parse_response(response);
+
+    if (not validation::is_file(results)) {
+        throw std::runtime_error("Response from OpenAI is not a file");
+    }
+
+    if (results["deleted"]) {
+        fmt::print("Success! Deleted file with ID: {}\n", results["id"]);
+    } else {
+        fmt::print("Warning! Did not delete file with ID: {}\n", results["id"]);
+    }
+}
+
 void command_files_delete(int argc, char **argv)
 {
     if (argc < 4) {
@@ -82,22 +98,12 @@ void command_files_delete(int argc, char **argv)
     bool has_failed = false;
 
     for (auto it = args.begin(); it != args.end(); it++) {
-        json results;
-
         try {
-            delete_file(*it, results);
+            delete_file(*it);
         } catch (const std::runtime_error &e) {
             fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", *it, e.what());
             has_failed = true;
             continue;
-        }
-
-        const std::string id = results["id"];
-
-        if (results["deleted"]) {
-            fmt::print("Success! Deleted file with ID: {}\n", id);
-        } else {
-            fmt::print("Warning! Did not delete file with ID: {}\n", id);
         }
     }
 

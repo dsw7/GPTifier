@@ -98,6 +98,7 @@ add_executable(
   "src/parsers.cpp"
   "src/selectors.cpp"
   "src/utils.cpp"
+  "src/validation.cpp"
 )
 target_link_libraries(
   "gpt"
