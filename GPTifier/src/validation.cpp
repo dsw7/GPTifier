@@ -57,7 +57,7 @@ bool is_embedding_list(const nlohmann::json &json)
         return false;
     }
 
-    return is_embedding(json);
+    return is_embedding(json["data"][0]);
 }
 
 bool is_model_list(const nlohmann::json &json)
@@ -66,7 +66,7 @@ bool is_model_list(const nlohmann::json &json)
         return false;
     }
 
-    return is_model(json);
+    return is_model(json["data"][0]);
 }
 
 bool is_file_list(const nlohmann::json &json)
@@ -75,7 +75,7 @@ bool is_file_list(const nlohmann::json &json)
         return false;
     }
 
-    return is_file(json);
+    return is_file(json["data"][0]);
 }
 
 bool is_users_list(const nlohmann::json &json)
@@ -84,7 +84,7 @@ bool is_users_list(const nlohmann::json &json)
         return false;
     }
 
-    return is_user(json);
+    return is_user(json["data"][0]);
 }
 
 bool is_costs_list(const nlohmann::json &json)
