@@ -120,6 +120,10 @@ void list_fine_tuning_jobs(int argc, char **argv)
         return;
     }
 
+    if (not validation::is_fine_tuning_jobs_list(results)) {
+        throw std::runtime_error("Response from OpenAI is not a list of fine-tuning jobs");
+    }
+
     if (not params.limit.has_value()) {
         print_sep();
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
