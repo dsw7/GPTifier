@@ -36,6 +36,11 @@ bool is_user(const nlohmann::json &json)
     return json["object"] == "organization.user";
 }
 
+bool is_cost(const nlohmann::json &json)
+{
+    return json["object"] == "organization.costs.result";
+}
+
 bool is_embedding_list(const nlohmann::json &json)
 {
     if (not is_list(json)) {
