@@ -1,27 +1,10 @@
 #include "validation.hpp"
 
-#include <stdexcept>
-
 namespace {
 
-void is_openai_response(const nlohmann::json &json)
+bool is_list(const nlohmann::json &json)
 {
-    if (not json.contains("object")) {
-        throw std::runtime_error("Missing 'object' key. Is this an OpenAI response?");
-    }
-}
-
-bool compare_first_object_in_list(const nlohmann::json &json, const std::string &object)
-{
-    if (json["object"] != "list") {
-        return false;
-    }
-
-    if (not json.contains("data")) {
-        throw std::runtime_error("Missing 'data' key. Is this an OpenAI list?");
-    }
-
-    return json["data"][0]["object"] == object;
+    return json["object"] == "list";
 }
 
 } // namespace
@@ -30,32 +13,63 @@ namespace validation {
 
 bool is_chat_completion(const nlohmann::json &json)
 {
-    is_openai_response(json);
     return json["object"] == "chat.completion";
+}
+
+bool is_embedding(const nlohmann::json &json)
+{
+    return json["object"] == "embedding";
+}
+
+bool is_model(const nlohmann::json &json)
+{
+    return json["object"] == "model";
+}
+
+bool is_file(const nlohmann::json &json)
+{
+    return json["object"] == "file";
+}
+
+bool is_user(const nlohmann::json &json)
+{
+    return json["object"] == "organization.user";
 }
 
 bool is_embedding_list(const nlohmann::json &json)
 {
-    is_openai_response(json);
-    return compare_first_object_in_list(json, "embedding");
+    if (not is_list(json)) {
+        return false;
+    }
+
+    return is_embedding(json);
 }
 
 bool is_model_list(const nlohmann::json &json)
 {
-    is_openai_response(json);
-    return compare_first_object_in_list(json, "model");
+    if (not is_list(json)) {
+        return false;
+    }
+
+    return is_model(json);
 }
 
 bool is_file_list(const nlohmann::json &json)
 {
-    is_openai_response(json);
-    return compare_first_object_in_list(json, "file");
+    if (not is_list(json)) {
+        return false;
+    }
+
+    return is_file(json);
 }
 
 bool is_users_list(const nlohmann::json &json)
 {
-    is_openai_response(json);
-    return compare_first_object_in_list(json, "organization.user");
+    if (not is_list(json)) {
+        return false;
+    }
+
+    return is_user(json);
 }
 
 } // namespace validation
