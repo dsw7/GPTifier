@@ -73,8 +73,11 @@ void create_fine_tuning_job(int argc, char **argv)
     const std::string response = api.create_fine_tuning_job(data.dump());
     const json results = parse_response(response);
 
-    const std::string id = results["id"];
-    fmt::print("Deployed fine tuning job with ID: {}\n", id);
+    if (not validation::is_fine_tuning_job(results)) {
+        throw std::runtime_error("Response from OpenAI is not a fine-tuning job object");
+    }
+
+    fmt::print("Deployed fine tuning job with ID: {}\n", results["id"]);
 }
 
 void delete_fine_tuned_model(int argc, char **argv)
