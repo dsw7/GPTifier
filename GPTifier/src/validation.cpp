@@ -34,7 +34,7 @@ bool is_chat_completion(const nlohmann::json &json)
     return json["object"] == "chat.completion";
 }
 
-bool is_embedding(const nlohmann::json &json)
+bool is_embedding_list(const nlohmann::json &json)
 {
     is_openai_response(json);
     return compare_first_object_in_list(json, "embedding");

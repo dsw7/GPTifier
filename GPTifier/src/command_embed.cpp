@@ -39,8 +39,8 @@ models::Embedding query_embeddings_api(const std::string &model, const std::stri
     const std::string response = api.create_embedding(data.dump());
     const json results = parse_response(response);
 
-    if (not validation::is_embedding(results)) {
-        throw std::runtime_error("Response from OpenAI is not an embedding");
+    if (not validation::is_embedding_list(results)) {
+        throw std::runtime_error("Response from OpenAI is not an embeddings list");
     }
 
     models::Embedding embedding;
