@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest import TestCase
 from .helpers import run_process
 
@@ -58,3 +59,14 @@ class TestFiles(TestCase):
             "One or more failures occurred when deleting files\n",
             proc.stderr,
         )
+
+    def test_upload_then_delete(self) -> None:
+        jsonl_file = Path(__file__).resolve().parent / "dummy.jsonl"
+
+        proc = run_process(["fine-tune", "upload-file", str(jsonl_file)])
+        proc.assert_success()
+        last_line = proc.stdout.strip().rsplit("\n", maxsplit=1)[-1]
+        file_id = last_line.split(": ")[-1]
+
+        proc = run_process(["files", "delete", file_id])
+        proc.assert_success()
