@@ -11,9 +11,17 @@ void is_openai_response(const nlohmann::json &json)
     }
 }
 
-bool is_list(const nlohmann::json &json)
+bool compare_first_object_in_list(const nlohmann::json &json, const std::string &object)
 {
-    return json["object"] == "list";
+    if (json["object"] != "list") {
+        return false;
+    }
+
+    if (not json.contains("data")) {
+        throw std::runtime_error("Missing 'data' key. Is this an OpenAI list?");
+    }
+
+    return json["data"][0]["object"] == object;
 }
 
 } // namespace
@@ -29,34 +37,19 @@ bool is_chat_completion(const nlohmann::json &json)
 bool is_embedding(const nlohmann::json &json)
 {
     is_openai_response(json);
-
-    if (not is_list(json)) {
-        return false;
-    }
-
-    return json["data"][0]["object"] == "embedding";
+    return compare_first_object_in_list(json, "embedding");
 }
 
 bool is_model_list(const nlohmann::json &json)
 {
     is_openai_response(json);
-
-    if (not is_list(json)) {
-        return false;
-    }
-
-    return json["data"][0]["object"] == "model";
+    return compare_first_object_in_list(json, "model");
 }
 
 bool is_file_list(const nlohmann::json &json)
 {
     is_openai_response(json);
-
-    if (not is_list(json)) {
-        return false;
-    }
-
-    return json["data"][0]["object"] == "file";
+    return compare_first_object_in_list(json, "file");
 }
 
 } // namespace validation
