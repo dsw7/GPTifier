@@ -52,4 +52,10 @@ bool is_file_list(const nlohmann::json &json)
     return compare_first_object_in_list(json, "file");
 }
 
+bool is_users_list(const nlohmann::json &json)
+{
+    is_openai_response(json);
+    return compare_first_object_in_list(json, "organization.user");
+}
+
 } // namespace validation
