@@ -12,6 +12,11 @@ bool is_page(const nlohmann::json &json)
     return json["object"] == "page";
 }
 
+bool is_bucket(const nlohmann::json &json)
+{
+    return json["object"] == "bucket";
+}
+
 } // namespace
 
 namespace validation {
@@ -88,7 +93,11 @@ bool is_costs_list(const nlohmann::json &json)
         return false;
     }
 
-    return is_cost(json["data"][0]);
+    if (not is_bucket(json["data"][0])) {
+        return false;
+    }
+
+    return is_cost(json["data"][0]["results"][0]);
 }
 
 } // namespace validation

@@ -6,6 +6,7 @@
 #include "params.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
+#include "validation.hpp"
 
 #include <ctime>
 #include <fmt/core.h>
@@ -87,6 +88,10 @@ void command_costs(int argc, char **argv)
     if (params.print_raw_json) {
         fmt::print("{}\n", results.dump(4));
         return;
+    }
+
+    if (not validation::is_costs_list(results)) {
+        throw std::runtime_error("Response from OpenAI is not a list of costs");
     }
 
     print_results(results, std::get<int>(params.days));
