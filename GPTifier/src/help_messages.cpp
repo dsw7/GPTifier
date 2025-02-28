@@ -219,7 +219,7 @@ void help_command_run()
         "run [-h | --help] [-m <model-name> | --model=<model-name>]\n  "
         "[-u | --no-interactive-export] [-o <file> | --file=<file>]\n  "
         "[-p <prompt> | --prompt=<prompt>] [-r <filename> | --read-from-file=<filename>]\n  "
-        "[-t <temp> | --temperature=<temperature>]");
+        "[-t <temp> | --temperature=<temperature>] [-s | --store]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
     help.add_option("-u", "--no-interactive-export", "Disable [y/n] prompt that asks whether to export results");
@@ -227,6 +227,7 @@ void help_command_run()
     help.add_option("-p <prompt>", "--prompt=<prompt>", "Provide prompt via command line");
     help.add_option("-r <filename>", "--read-from-file=<filename>", "Read prompt from a custom file");
     help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
+    help.add_option("-s", "--store-completion", "Store results of completion on OpenAI servers");
     help.add_example("Run an interactive session", "gpt run");
     help.add_example("Run a query non-interactively and export results", "gpt run --prompt=\"What is 3 + 5\" --file=\"/tmp/results.json\"");
     help.print();

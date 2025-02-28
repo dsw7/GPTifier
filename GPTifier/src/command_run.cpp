@@ -58,12 +58,21 @@ void time_api_call()
     std::cout << "\n";
 }
 
-void create_chat_completion(models::Completion &completion, const std::string &model, const std::string &prompt, float temperature)
+void create_chat_completion(
+    models::Completion &completion, const std::string &model,
+    const std::string &prompt, float temperature, bool store_completion)
 {
     const json messages = { { "role", "user" }, { "content", prompt } };
-    const json data = {
-        { "model", model }, { "temperature", temperature }, { "messages", json::array({ messages }) }
+    json data = {
+        { "model", model },
+        { "temperature", temperature },
+        { "messages", json::array({ messages }) },
+        { "store", store_completion }
     };
+
+    if (store_completion) {
+        data["metadata"] = { { "prompt", prompt } };
+    }
 
     OpenAIUser api;
     const std::string response = api.create_chat_completion(data.dump());
@@ -81,7 +90,9 @@ void create_chat_completion(models::Completion &completion, const std::string &m
     completion.prompt_tokens = results["usage"]["prompt_tokens"];
 }
 
-models::Completion run_query(const std::string &model, const std::string &prompt, float temperature)
+models::Completion run_query(
+    const std::string &model, const std::string &prompt,
+    float temperature, bool store_completion)
 {
     TIMER_ENABLED = true;
     std::thread timer(time_api_call);
@@ -90,7 +101,7 @@ models::Completion run_query(const std::string &model, const std::string &prompt
     models::Completion completion;
 
     try {
-        create_chat_completion(completion, model, prompt, temperature);
+        create_chat_completion(completion, model, prompt, temperature, store_completion);
     } catch (std::runtime_error &e) {
         query_failed = true;
         fmt::print(stderr, "{}\n", e.what());
@@ -267,7 +278,7 @@ void command_run(int argc, char **argv)
         temperature = std::get<float>(params.temperature);
     }
 
-    const models::Completion completion = run_query(model, prompt, temperature);
+    const models::Completion completion = run_query(model, prompt, temperature, params.store_completion);
     print_sep();
 
     if (params.json_dump_file.has_value()) {
