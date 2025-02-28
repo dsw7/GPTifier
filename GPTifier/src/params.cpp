@@ -19,7 +19,7 @@ float parse_float(const std::string &val)
     return val_f;
 }
 
-float parse_int(const std::string &val)
+int parse_int(const std::string &val)
 {
     int val_i = 0;
 
