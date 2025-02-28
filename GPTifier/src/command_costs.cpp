@@ -76,7 +76,6 @@ void print_results(const json &results, int days)
 void command_costs(int argc, char **argv)
 {
     ParamsCosts params = cli::get_opts_get_costs(argc, argv);
-    params.sanitize();
 
     std::time_t start_time = get_current_time_minus_days(std::get<int>(params.days));
     int limit = 180;

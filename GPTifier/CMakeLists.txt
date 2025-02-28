@@ -81,6 +81,7 @@ add_executable(
   "src/api_openai_admin.cpp"
   "src/api_openai_user.cpp"
   "src/cli.cpp"
+  "src/command_chats.cpp"
   "src/command_costs.cpp"
   "src/command_embed.cpp"
   "src/command_files.cpp"

@@ -12,10 +12,12 @@ struct Completion {
     int completion_tokens = 0;
     int prompt_tokens = 0;
     std::string completion;
+    std::string id;
     std::string model;
     std::string prompt;
     std::time_t created = 0;
 
+    void print();
     nlohmann::json jsonify() const;
 };
 
