@@ -50,7 +50,7 @@ ParamsRun get_opts_run(int argc, char **argv)
                 params.enable_export = false;
                 break;
             case 's':
-                params.store = true;
+                params.store_completion = true;
                 break;
             case 'o':
                 params.json_dump_file = optarg;
