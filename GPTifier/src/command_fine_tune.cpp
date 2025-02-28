@@ -44,6 +44,7 @@ void upload_fine_tuning_file(int argc, char **argv)
 
     const std::string filename = results["filename"];
     const std::string id = results["id"];
+
     fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", filename, id);
 }
 
@@ -77,7 +78,8 @@ void create_fine_tuning_job(int argc, char **argv)
         throw std::runtime_error("Response from OpenAI is not a fine-tuning job object");
     }
 
-    fmt::print("Deployed fine tuning job with ID: {}\n", results["id"]);
+    const std::string id = results["id"];
+    fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 
 void delete_fine_tuned_model(int argc, char **argv)
@@ -102,10 +104,12 @@ void delete_fine_tuned_model(int argc, char **argv)
         throw std::runtime_error("Response from OpenAI is not a model");
     }
 
+    const std::string id = results["id"];
+
     if (results["deleted"]) {
-        fmt::print("Success!\nDeleted model with ID: {}\n", results["id"]);
+        fmt::print("Success!\nDeleted model with ID: {}\n", id);
     } else {
-        fmt::print("Warning!\nDid not delete model with ID: {}\n", results["id"]);
+        fmt::print("Warning!\nDid not delete model with ID: {}\n", id);
     }
 }
 
