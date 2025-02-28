@@ -26,7 +26,7 @@ ParamsRun get_opts_run(int argc, char **argv)
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
             { "no-interactive-export", no_argument, 0, 'u' },
-            { "store", no_argument, 0, 's' },
+            { "store-completion", no_argument, 0, 's' },
             { "file", required_argument, 0, 'o' },
             { "model", required_argument, 0, 'm' },
             { "prompt", required_argument, 0, 'p' },
