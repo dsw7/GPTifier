@@ -367,7 +367,7 @@ ParamsGetChatCompletions get_opts_get_chat_completions(int argc, char **argv)
 
         switch (c) {
             case 'h':
-                help_command_costs();
+                help_command_chats_list();
                 exit(EXIT_SUCCESS);
             case 'j':
                 params.print_raw_json = true;
