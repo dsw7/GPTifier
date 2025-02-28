@@ -394,7 +394,7 @@ void help_command_chats_delete()
 {
     HelpMessages help;
     help.add_description("Delete an uploaded chat completion.");
-    help.add_synopsis("chats delete [-h | --help] <file-id...>");
+    help.add_synopsis("chats delete [-h | --help] <chat-completion-id...>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.print();
 }
