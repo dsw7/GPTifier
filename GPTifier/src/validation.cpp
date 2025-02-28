@@ -114,4 +114,13 @@ bool is_fine_tuning_jobs_list(const nlohmann::json &json)
     return is_fine_tuning_job(json["data"][0]);
 }
 
+bool is_chat_completions_list(const nlohmann::json &json)
+{
+    if (not is_list(json)) {
+        return false;
+    }
+
+    return is_chat_completion(json["data"][0]);
+}
+
 } // namespace validation
