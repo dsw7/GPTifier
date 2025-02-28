@@ -5,18 +5,32 @@
 
 namespace {
 
-float parse_temp(const std::string &temperature)
+float parse_float(const std::string &val)
 {
-    float temp_f = 0.00;
+    float val_f = 0.00;
 
     try {
-        temp_f = std::stof(temperature);
+        val_f = std::stof(val);
     } catch (std::invalid_argument &e) {
-        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), temperature);
+        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), val);
         throw std::runtime_error(errmsg);
     }
 
-    return temp_f;
+    return val_f;
+}
+
+float parse_int(const std::string &val)
+{
+    int val_i = 0;
+
+    try {
+        val_i = std::stoi(val);
+    } catch (std::invalid_argument &e) {
+        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to int", e.what(), val);
+        throw std::runtime_error(errmsg);
+    }
+
+    return val_i;
 }
 
 bool is_valid_temp(float temperature)
@@ -30,11 +44,7 @@ bool is_valid_temp(float temperature)
 
 bool is_valid_days(int days)
 {
-    if (days <= 0) {
-        return false;
-    }
-
-    return true;
+    return days > 0;
 }
 
 bool is_valid_limit(int limit)
@@ -51,7 +61,7 @@ void ParamsRun::sanitize()
     }
 
     const std::string temperature = std::get<std::string>(this->temperature);
-    this->temperature = parse_temp(temperature);
+    this->temperature = parse_float(temperature);
 
     if (std::holds_alternative<float>(this->temperature)) {
         if (not is_valid_temp(std::get<float>(this->temperature))) {
@@ -71,7 +81,7 @@ void ParamsShort::sanitize()
     }
 
     const std::string temperature = std::get<std::string>(this->temperature);
-    this->temperature = parse_temp(temperature);
+    this->temperature = parse_float(temperature);
 
     if (std::holds_alternative<float>(this->temperature)) {
         if (not is_valid_temp(std::get<float>(this->temperature))) {
@@ -87,13 +97,7 @@ void ParamsCosts::sanitize()
     }
 
     std::string days = std::get<std::string>(this->days);
-
-    try {
-        this->days = std::stoi(days);
-    } catch (std::invalid_argument &e) {
-        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to int", e.what(), days);
-        throw std::runtime_error(errmsg);
-    }
+    this->days = parse_int(days);
 
     if (std::holds_alternative<int>(this->days)) {
         if (not is_valid_days(std::get<int>(this->days))) {
@@ -109,13 +113,7 @@ void ParamsGetChatCompletions::sanitize()
     }
 
     std::string limit = std::get<std::string>(this->limit);
-
-    try {
-        this->limit = std::stoi(limit);
-    } catch (std::invalid_argument &e) {
-        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to int", e.what(), limit);
-        throw std::runtime_error(errmsg);
-    }
+    this->limit = parse_int(limit);
 
     if (std::holds_alternative<int>(this->limit)) {
         if (not is_valid_limit(std::get<int>(this->limit))) {
