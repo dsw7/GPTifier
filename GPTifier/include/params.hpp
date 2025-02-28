@@ -18,6 +18,7 @@ struct ParamsRun {
 
 struct ParamsShort {
     bool print_raw_json = false;
+    bool store_completion = false;
     std::optional<std::string> prompt = std::nullopt;
     std::variant<std::string, float> temperature = "1.00";
 

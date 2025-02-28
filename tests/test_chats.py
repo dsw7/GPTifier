@@ -1,3 +1,4 @@
+from time import sleep
 from unittest import TestCase
 from .helpers import run_process
 
@@ -52,4 +53,36 @@ class TestChatsDelete(TestCase):
         self.assertIn(
             'Failed to delete chat completion with ID: abc. The error was: "Completion abc not found"',
             proc.stderr,
+        )
+
+
+class TestRoundTrip(TestCase):
+
+    def test_round_trip(self) -> None:
+        proc = run_process(["short", "What is 3 + 5?", "--json", "--store-completion"])
+        proc.assert_success()
+        results = proc.load_stdout_to_json()
+        chat_compl_id = results["id"]
+
+        count = 0
+        found = False
+
+        while count < 5:
+            count += 1
+            sleep(0.5)
+
+            proc = run_process(["chats", "list", "--json"])
+            proc.assert_success()
+            results = proc.load_stdout_to_json()
+
+            if chat_compl_id in [i["id"] for i in results["data"]]:
+                found = True
+                break
+
+        self.assertTrue(found)
+
+        proc = run_process(["chats", "delete", chat_compl_id])
+        proc.assert_success()
+        self.assertIn(
+            f"Success! Deleted chat completion with ID: {chat_compl_id}", proc.stdout
         )
