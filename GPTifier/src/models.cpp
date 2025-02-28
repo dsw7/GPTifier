@@ -13,11 +13,18 @@ nlohmann::json Completion::jsonify() const
     results["completion"] = this->completion;
     results["completion_tokens"] = this->completion_tokens;
     results["created"] = this->created;
+    results["id"] = this->id;
     results["model"] = this->model;
     results["prompt"] = this->prompt;
     results["prompt_tokens"] = this->prompt_tokens;
 
     return results;
+}
+
+void Completion::print()
+{
+    const std::string dt_created = datetime_from_unix_timestamp(this->created);
+    fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created, this->id, this->prompt, this->completion);
 }
 
 nlohmann::json Embedding::jsonify() const
