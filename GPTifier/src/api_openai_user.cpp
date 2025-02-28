@@ -85,7 +85,7 @@ std::string OpenAIUser::create_chat_completion(const std::string &post_fields)
     return response;
 }
 
-std::string OpenAIUser::get_chat_completions(const std::string &limit)
+std::string OpenAIUser::get_chat_completions(int limit)
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
