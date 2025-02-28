@@ -10,6 +10,7 @@ public:
     std::string get_models();
     std::string create_chat_completion(const std::string &post_fields);
     std::string get_chat_completions(int limit);
+    std::string delete_chat_completion(const std::string &chat_completion_id);
     std::string create_embedding(const std::string &post_fields);
     std::string upload_file(const std::string &filename, const std::string &purpose);
     std::string delete_file(const std::string &file_id);
