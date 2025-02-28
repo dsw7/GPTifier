@@ -14,6 +14,30 @@
 
 using json = nlohmann::json;
 
+namespace {
+
+void create_chat_completion(json &results, const std::string &prompt, float temperature, bool store_completion)
+{
+    const json messages = { { "role", "user" }, { "content", prompt } };
+    json data = {
+        { "model", select_chat_model() },
+        { "temperature", temperature },
+        { "messages", json::array({ messages }) },
+        { "store", store_completion }
+    };
+
+    if (store_completion) {
+        data["metadata"] = { { "prompt", prompt } };
+    }
+
+    OpenAIUser api;
+
+    const std::string response = api.create_chat_completion(data.dump());
+    results = parse_response(response);
+}
+
+} // namespace
+
 void command_short(int argc, char **argv)
 {
     ParamsShort params = cli::get_opts_short(argc, argv);
@@ -23,21 +47,8 @@ void command_short(int argc, char **argv)
         temperature = std::get<float>(params.temperature);
     }
 
-    const json messages = { { "role", "user" }, { "content", params.prompt.value() } };
-    json data = {
-        { "model", select_chat_model() },
-        { "temperature", temperature },
-        { "messages", json::array({ messages }) },
-        { "store", params.store_completion }
-    };
-
-    if (params.store_completion) {
-        data["metadata"] = { { "prompt", params.prompt.value() } };
-    }
-
-    OpenAIUser api;
-    const std::string response = api.create_chat_completion(data.dump());
-    const json results = parse_response(response);
+    json results;
+    create_chat_completion(results, params.prompt.value(), temperature, params.store_completion);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", results.dump(4));
@@ -49,6 +60,5 @@ void command_short(int argc, char **argv)
     }
 
     const std::string completion = results["choices"][0]["message"]["content"];
-
     fmt::print("{}\n", completion);
 }
