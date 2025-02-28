@@ -85,6 +85,22 @@ std::string OpenAIUser::create_chat_completion(const std::string &post_fields)
     return response;
 }
 
+std::string OpenAIUser::get_chat_completions(const std::string &limit)
+{
+    this->set_api_key();
+    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+
+    const std::string endpoint = fmt::format("{}?limit={}", endpoints::URL_CHAT_COMPLETIONS, limit);
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
+
+    std::string response;
+    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+
+    catch_curl_error(curl_easy_perform(this->handle));
+    return response;
+}
+
 std::string OpenAIUser::create_embedding(const std::string &post_fields)
 {
     this->set_api_key();
