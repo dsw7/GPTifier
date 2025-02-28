@@ -37,6 +37,11 @@ bool is_valid_days(int days)
     return true;
 }
 
+bool is_valid_limit(int limit)
+{
+    return limit > 0;
+}
+
 } // namespace
 
 void ParamsRun::sanitize()
@@ -93,6 +98,28 @@ void ParamsCosts::sanitize()
     if (std::holds_alternative<int>(this->days)) {
         if (not is_valid_days(std::get<int>(this->days))) {
             throw std::runtime_error("Days must be greater than 0");
+        }
+    }
+}
+
+void ParamsGetChatCompletions::sanitize()
+{
+    if (std::holds_alternative<int>(this->limit)) {
+        throw std::runtime_error("Limit value is already an int!");
+    }
+
+    std::string limit = std::get<std::string>(this->limit);
+
+    try {
+        this->limit = std::stoi(limit);
+    } catch (std::invalid_argument &e) {
+        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to int", e.what(), limit);
+        throw std::runtime_error(errmsg);
+    }
+
+    if (std::holds_alternative<int>(this->limit)) {
+        if (not is_valid_limit(std::get<int>(this->limit))) {
+            throw std::runtime_error("Limit must be greater than 0");
         }
     }
 }
