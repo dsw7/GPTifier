@@ -63,12 +63,16 @@ void create_chat_completion(
     const std::string &prompt, float temperature, bool store)
 {
     const json messages = { { "role", "user" }, { "content", prompt } };
-    const json data = {
+    json data = {
         { "model", model },
         { "temperature", temperature },
         { "messages", json::array({ messages }) },
         { "store", store }
     };
+
+    if (store) {
+        data["metadata"] = { "prompt", prompt };
+    }
 
     OpenAIUser api;
     const std::string response = api.create_chat_completion(data.dump());
