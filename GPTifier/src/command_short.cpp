@@ -24,10 +24,16 @@ void command_short(int argc, char **argv)
     }
 
     const json messages = { { "role", "user" }, { "content", params.prompt.value() } };
-    const json data = {
-        { "model", select_chat_model() }, { "temperature", temperature },
-        { "messages", json::array({ messages }) }
+    json data = {
+        { "model", select_chat_model() },
+        { "temperature", temperature },
+        { "messages", json::array({ messages }) },
+        { "store", params.store_completion }
     };
+
+    if (params.store_completion) {
+        data["metadata"] = { { "prompt", params.prompt.value() } };
+    }
 
     OpenAIUser api;
     const std::string response = api.create_chat_completion(data.dump());
