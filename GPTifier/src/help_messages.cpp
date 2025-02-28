@@ -384,7 +384,7 @@ void help_command_chats_list()
 {
     HelpMessages help;
     help.add_description("List uploaded chat completions.");
-    help.add_synopsis("chats list [-h | --help] [-j | --json]");
+    help.add_synopsis("chats list [-h | --help] [-j | --json] -l <limit> | --limit <limit>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.add_option("-l", "--limit", "Number of chat completions to show");
