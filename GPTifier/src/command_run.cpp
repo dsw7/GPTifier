@@ -71,7 +71,7 @@ void create_chat_completion(
     };
 
     if (store_completion) {
-        data["metadata"] = { "prompt", prompt };
+        data["metadata"] = { { "prompt", prompt } };
     }
 
     OpenAIUser api;
