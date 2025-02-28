@@ -59,8 +59,59 @@ void command_chats_list(int argc, char **argv)
     print_sep();
 }
 
-void command_chats_delete()
+void delete_chat_completion(const std::string &chat_completion_id)
 {
+    OpenAIUser api;
+
+    const std::string response = api.delete_chat_completion(chat_completion_id);
+    const json results = parse_response(response);
+
+    if (not validation::is_chat_completion_deleted(results)) {
+        throw std::runtime_error("Response from OpenAI is not a chat completion deletion status");
+    }
+
+    const std::string id = results["id"];
+
+    if (results["deleted"]) {
+        fmt::print("Success! Deleted chat completion with ID: {}\n", id);
+    } else {
+        fmt::print("Warning! Did not delete chat completion with ID: {}\n", id);
+    }
+}
+
+void command_chats_delete(int argc, char **argv)
+{
+    if (argc < 4) {
+        cli::help_command_files_delete();
+        return;
+    }
+
+    std::vector<std::string> args;
+
+    for (int i = 3; i < argc; i++) {
+        args.push_back(argv[i]);
+    }
+
+    if (args[0] == "-h" or args[0] == "--help") {
+        cli::help_command_chats_delete();
+        return;
+    }
+
+    bool has_failed = false;
+
+    for (auto it = args.begin(); it != args.end(); it++) {
+        try {
+            delete_chat_completion(*it);
+        } catch (const std::runtime_error &e) {
+            fmt::print(stderr, "Failed to delete chat completion with ID: {}. The error was: \"{}\"\n", *it, e.what());
+            has_failed = true;
+            continue;
+        }
+    }
+
+    if (has_failed) {
+        throw std::runtime_error("One or more failures occurred when deleting chat completions");
+    }
 }
 
 } // namespace
@@ -82,7 +133,7 @@ void command_chats(int argc, char **argv)
     if (subcommand == "list") {
         command_chats_list(argc, argv);
     } else if (subcommand == "delete") {
-        command_chats_delete();
+        command_chats_delete(argc, argv);
     } else {
         cli::help_command_chats();
         exit(EXIT_FAILURE);
