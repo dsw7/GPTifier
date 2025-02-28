@@ -219,7 +219,7 @@ void help_command_run()
         "run [-h | --help] [-m <model-name> | --model=<model-name>]\n  "
         "[-u | --no-interactive-export] [-o <file> | --file=<file>]\n  "
         "[-p <prompt> | --prompt=<prompt>] [-r <filename> | --read-from-file=<filename>]\n  "
-        "[-t <temp> | --temperature=<temperature>] [-s | --store]");
+        "[-t <temp> | --temperature=<temperature>] [-s | --store-completion]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
     help.add_option("-u", "--no-interactive-export", "Disable [y/n] prompt that asks whether to export results");
@@ -237,11 +237,12 @@ void help_command_short()
 {
     HelpMessages help;
     help.add_description("Create a chat completion but without threading or verbosity.");
-    help.add_synopsis("short [-h | --help] [-j | --json]\n  "
-                      "[-t <temp> | --temperature=<temperature>] PROMPT");
+    help.add_synopsis("short [-h | --help] [-j | --json] [-t <temp> | --temperature=<temp>]\n  "
+                      "[-s | --store-completion] PROMPT");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
+    help.add_option("-s", "--store-completion", "Store results of completion on OpenAI servers");
     help.add_example("Create a chat completion", "gpt short \"What is 2 + 2?\"");
     help.print();
 }
