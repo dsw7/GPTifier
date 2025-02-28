@@ -26,6 +26,11 @@ bool is_chat_completion(const nlohmann::json &json)
     return json["object"] == "chat.completion";
 }
 
+bool is_chat_completion_deleted(const nlohmann::json &json)
+{
+    return json["object"] == "chat.completion.deleted";
+}
+
 bool is_embedding(const nlohmann::json &json)
 {
     return json["object"] == "embedding";
