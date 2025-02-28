@@ -6,6 +6,7 @@
 
 struct ParamsRun {
     bool enable_export = true;
+    bool store = false;
     std::optional<std::string> json_dump_file = std::nullopt;
     std::optional<std::string> model = std::nullopt;
     std::optional<std::string> prompt = std::nullopt;
