@@ -15,4 +15,7 @@ void help_command_fine_tune_create_job();
 void help_command_fine_tune_delete_model();
 void help_command_fine_tune_list_jobs();
 void help_command_costs();
+void help_command_chats();
+void help_command_chats_list();
+void help_command_chats_delete();
 } // namespace cli
