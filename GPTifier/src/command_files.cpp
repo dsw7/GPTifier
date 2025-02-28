@@ -70,10 +70,12 @@ void delete_file(const std::string &file_id)
         throw std::runtime_error("Response from OpenAI is not a file");
     }
 
+    const std::string id = results["id"];
+
     if (results["deleted"]) {
-        fmt::print("Success! Deleted file with ID: {}\n", results["id"]);
+        fmt::print("Success! Deleted file with ID: {}\n", id);
     } else {
-        fmt::print("Warning! Did not delete file with ID: {}\n", results["id"]);
+        fmt::print("Warning! Did not delete file with ID: {}\n", id);
     }
 }
 
