@@ -72,6 +72,7 @@ ParamsRun get_opts_run(int argc, char **argv)
         }
     };
 
+    params.sanitize();
     return params;
 }
 
@@ -116,6 +117,7 @@ ParamsShort get_opts_short(int argc, char **argv)
         }
     }
 
+    params.sanitize();
     return params;
 }
 
@@ -340,6 +342,7 @@ ParamsCosts get_opts_get_costs(int argc, char **argv)
         }
     };
 
+    params.sanitize();
     return params;
 }
 

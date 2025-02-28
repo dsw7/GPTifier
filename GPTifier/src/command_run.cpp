@@ -241,7 +241,6 @@ void export_chat_completion_response(const models::Completion &completion)
 void command_run(int argc, char **argv)
 {
     ParamsRun params = cli::get_opts_run(argc, argv);
-    params.sanitize();
     print_sep();
 
     static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";

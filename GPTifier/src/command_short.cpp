@@ -17,7 +17,6 @@ using json = nlohmann::json;
 void command_short(int argc, char **argv)
 {
     ParamsShort params = cli::get_opts_short(argc, argv);
-    params.sanitize();
 
     float temperature = 1.00;
     if (std::holds_alternative<float>(params.temperature)) {
