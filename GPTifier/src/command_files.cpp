@@ -65,10 +65,7 @@ void delete_file(const std::string &file_id)
     const std::string response = api.delete_file(file_id);
     const json results = parse_response(response);
 
-    if (not validation::is_file(results)) {
-        throw std::runtime_error("Response from OpenAI is not a file");
-    }
-
+    validation::is_file(results);
     const std::string id = results["id"];
 
     if (results["deleted"]) {

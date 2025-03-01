@@ -38,10 +38,7 @@ void upload_fine_tuning_file(int argc, char **argv)
     const std::string response = api.upload_file(opt_or_filename, purpose);
     const json results = parse_response(response);
 
-    if (not validation::is_file(results)) {
-        throw std::runtime_error("Response from OpenAI is not a file");
-    }
-
+    validation::is_file(results);
     const std::string filename = results["filename"];
     const std::string id = results["id"];
 
@@ -100,10 +97,7 @@ void delete_fine_tuned_model(int argc, char **argv)
     const std::string response = api.delete_model(opt_or_model_id);
     const json results = parse_response(response);
 
-    if (not validation::is_model(results)) {
-        throw std::runtime_error("Response from OpenAI is not a model");
-    }
-
+    validation::is_model(results);
     const std::string id = results["id"];
 
     if (results["deleted"]) {
