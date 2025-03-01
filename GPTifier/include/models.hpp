@@ -41,7 +41,7 @@ struct File {
     std::string purpose;
 };
 
-struct Job {
+struct FineTuningJob {
     int created_at;
     std::optional<int> estimated_finish = std::nullopt;
     std::optional<int> finished_at = std::nullopt;
@@ -57,6 +57,6 @@ struct CostsBucket {
     std::time_t start_time;
 };
 
-void sort(std::vector<Job> &jobs);
+void sort(std::vector<FineTuningJob> &jobs);
 
 } // namespace models

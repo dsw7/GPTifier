@@ -31,7 +31,7 @@ nlohmann::json Embedding::jsonify() const
     return results;
 }
 
-void Job::print()
+void FineTuningJob::print()
 {
     const std::string dt_created_at = datetime_from_unix_timestamp(this->created_at);
 
@@ -53,9 +53,9 @@ void Job::print()
     fmt::print("{:<40}{:<30}{:<30}{}\n", this->id, dt_created_at, estimated_finish, finish_time);
 }
 
-void sort(std::vector<Job> &jobs)
+void sort(std::vector<FineTuningJob> &jobs)
 {
-    std::sort(jobs.begin(), jobs.end(), [](const Job &left, const Job &right) {
+    std::sort(jobs.begin(), jobs.end(), [](const FineTuningJob &left, const FineTuningJob &right) {
         if (left.created_at != right.created_at) {
             return left.created_at < right.created_at;
         }

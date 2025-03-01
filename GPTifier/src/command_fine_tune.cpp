@@ -130,11 +130,11 @@ void list_fine_tuning_jobs(int argc, char **argv)
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
 
     print_sep();
-    std::vector<models::Job> jobs;
+    std::vector<models::FineTuningJob> jobs;
 
     for (const auto &entry: results["data"]) {
         validation::is_fine_tuning_job(entry);
-        models::Job job;
+        models::FineTuningJob job;
 
         job.id = entry["id"];
         job.created_at = entry["created_at"];
