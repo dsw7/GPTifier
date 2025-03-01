@@ -2,21 +2,21 @@
 
 #include <stdexcept>
 
-namespace {
-
-bool is_page(const nlohmann::json &json)
-{
-    return json["object"] == "page";
-}
-
-bool is_bucket(const nlohmann::json &json)
-{
-    return json["object"] == "bucket";
-}
-
-} // namespace
-
 namespace validation {
+
+void is_page(const nlohmann::json &json)
+{
+    if (json["object"] != "page") {
+        throw std::runtime_error("Object is not a page");
+    }
+}
+
+void is_bucket(const nlohmann::json &json)
+{
+    if (json["object"] != "bucket") {
+        throw std::runtime_error("Object is not a bucket");
+    }
+}
 
 void is_list(const nlohmann::json &json)
 {
