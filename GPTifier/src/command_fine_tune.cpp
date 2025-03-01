@@ -20,6 +20,8 @@ using json = nlohmann::json;
 
 namespace {
 
+// Upload fine tuning file ----------------------------------------------------------------------------------
+
 void upload_fine_tuning_file(int argc, char **argv)
 {
     if (argc < 4) {
@@ -45,6 +47,8 @@ void upload_fine_tuning_file(int argc, char **argv)
 
     fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", filename, id);
 }
+
+// Create fine tuning job -----------------------------------------------------------------------------------
 
 void create_fine_tuning_job(int argc, char **argv)
 {
@@ -78,6 +82,8 @@ void create_fine_tuning_job(int argc, char **argv)
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 
+// Delete fine tuned model-----------------------------------------------------------------------------------
+
 void delete_fine_tuned_model(int argc, char **argv)
 {
     if (argc < 4) {
@@ -106,6 +112,28 @@ void delete_fine_tuned_model(int argc, char **argv)
     }
 }
 
+// Print fine tuning jobs -----------------------------------------------------------------------------------
+
+void unpack_results(const json &results, std::vector<models::FineTuningJob> &jobs)
+{
+    for (const auto &entry: results["data"]) {
+        validation::is_fine_tuning_job(entry);
+        models::FineTuningJob job;
+
+        job.id = entry["id"];
+        job.created_at = entry["created_at"];
+
+        if (not entry["finished_at"].is_null()) {
+            job.finished_at = entry["finished_at"];
+        }
+
+        if (not entry["estimated_finish"].is_null()) {
+            job.estimated_finish = entry["estimated_finish"];
+        }
+
+        jobs.push_back(job);
+    }
+}
 void print_fine_tuning_job(const models::FineTuningJob &job)
 {
     const std::string dt_created_at = datetime_from_unix_timestamp(job.created_at);
@@ -126,6 +154,19 @@ void print_fine_tuning_job(const models::FineTuningJob &job)
     }
 
     fmt::print("{:<40}{:<30}{:<30}{}\n", job.id, dt_created_at, estimated_finish, finish_time);
+}
+
+void print_results(const std::vector<models::FineTuningJob> &jobs)
+{
+    print_sep();
+    fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
+    print_sep();
+
+    for (const auto &it: jobs) {
+        print_fine_tuning_job(it);
+    }
+
+    print_sep();
 }
 
 void list_fine_tuning_jobs(int argc, char **argv)
@@ -150,37 +191,13 @@ void list_fine_tuning_jobs(int argc, char **argv)
     }
 
     std::vector<models::FineTuningJob> jobs;
-    for (const auto &entry: results["data"]) {
-        validation::is_fine_tuning_job(entry);
-        models::FineTuningJob job;
-
-        job.id = entry["id"];
-        job.created_at = entry["created_at"];
-
-        if (not entry["finished_at"].is_null()) {
-            job.finished_at = entry["finished_at"];
-        }
-
-        if (not entry["estimated_finish"].is_null()) {
-            job.estimated_finish = entry["estimated_finish"];
-        }
-
-        jobs.push_back(job);
-    }
+    unpack_results(results, jobs);
 
     std::sort(jobs.begin(), jobs.end(), [](const models::FineTuningJob &left, const models::FineTuningJob &right) {
         return left.created_at < right.created_at;
     });
 
-    print_sep();
-    fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
-    print_sep();
-
-    for (const auto &it: jobs) {
-        print_fine_tuning_job(it);
-    }
-
-    print_sep();
+    print_results(jobs);
 }
 
 } // namespace
