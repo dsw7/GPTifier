@@ -31,9 +31,7 @@ void command_files_list(int argc, char **argv)
         return;
     }
 
-    if (not validation::is_file_list(results)) {
-        throw std::runtime_error("Response from OpenAI is not a file list");
-    }
+    validation::is_list(results);
 
     print_sep();
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
@@ -42,6 +40,7 @@ void command_files_list(int argc, char **argv)
     std::vector<models::File> files;
 
     for (const auto &entry: results["data"]) {
+        validation::is_file(entry);
         models::File file;
         file.created_at = entry["created_at"];
         file.filename = entry["filename"];

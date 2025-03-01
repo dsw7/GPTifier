@@ -84,12 +84,6 @@ bool is_model_list(const nlohmann::json &json)
     return is_model(json["data"][0]);
 }
 
-bool is_file_list(const nlohmann::json &json)
-{
-    is_list(json);
-    return is_file(json["data"][0]);
-}
-
 bool is_users_list(const nlohmann::json &json)
 {
     is_list(json);
