@@ -78,17 +78,6 @@ void sort(std::vector<Model> &models)
     });
 }
 
-void sort(std::vector<File> &files)
-{
-    std::sort(files.begin(), files.end(), [](const File &left, const File &right) {
-        if (left.created_at != right.created_at) {
-            return left.created_at < right.created_at;
-        }
-
-        return left.id < right.id;
-    });
-}
-
 void sort(std::vector<Job> &jobs)
 {
     std::sort(jobs.begin(), jobs.end(), [](const Job &left, const Job &right) {

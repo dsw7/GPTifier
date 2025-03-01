@@ -61,7 +61,6 @@ struct CostsBucket {
 };
 
 void sort(std::vector<Model> &models);
-void sort(std::vector<File> &files);
 void sort(std::vector<Job> &jobs);
 void sort(std::vector<CostsBucket> &buckets);
 

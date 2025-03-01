@@ -53,12 +53,15 @@ std::string OpenAIUser::get_models()
     return response;
 }
 
-std::string OpenAIUser::get_uploaded_files()
+std::string OpenAIUser::get_uploaded_files(bool sort_asc)
 {
     this->set_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_FILES.c_str());
+    const std::string order = sort_asc ? "asc" : "desc";
+    const std::string endpoint = fmt::format("{}?order={}", endpoints::URL_FILES, order);
+
+    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
 
     std::string response;
