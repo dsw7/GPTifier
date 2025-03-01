@@ -44,9 +44,11 @@ void is_chat_completion_deleted(const nlohmann::json &json)
     }
 }
 
-bool is_embedding(const nlohmann::json &json)
+void is_embedding(const nlohmann::json &json)
 {
-    return json["object"] == "embedding";
+    if (json["object"] != "embedding") {
+        throw std::runtime_error("Object is not an embedding");
+    }
 }
 
 void is_model(const nlohmann::json &json)
