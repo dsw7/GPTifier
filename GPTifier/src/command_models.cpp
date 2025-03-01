@@ -8,6 +8,7 @@
 #include "utils.hpp"
 #include "validation.hpp"
 
+#include <algorithm>
 #include <fmt/core.h>
 #include <json.hpp>
 #include <map>
@@ -96,7 +97,9 @@ void print_models(std::vector<models::Model> &models)
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     print_sep();
 
-    models::sort(models);
+    std::sort(models.begin(), models.end(), [](const models::Model &left, const models::Model &right) {
+        return left.created_at < right.created_at;
+    });
 
     for (const auto &it: models) {
         fmt::print("{:<25}{:<35}{}\n", datetime_from_unix_timestamp(it.created_at), it.owned_by, it.id);

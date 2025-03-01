@@ -67,17 +67,6 @@ void CostsBucket::print()
     fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, this->cost, this->org_id);
 }
 
-void sort(std::vector<Model> &models)
-{
-    std::sort(models.begin(), models.end(), [](const Model &left, const Model &right) {
-        if (left.created_at != right.created_at) {
-            return left.created_at < right.created_at;
-        }
-
-        return left.id < right.id;
-    });
-}
-
 void sort(std::vector<Job> &jobs)
 {
     std::sort(jobs.begin(), jobs.end(), [](const Job &left, const Job &right) {

@@ -60,7 +60,6 @@ struct CostsBucket {
     void print();
 };
 
-void sort(std::vector<Model> &models);
 void sort(std::vector<Job> &jobs);
 void sort(std::vector<CostsBucket> &buckets);
 
