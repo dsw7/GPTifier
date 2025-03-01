@@ -37,12 +37,6 @@ nlohmann::json Embedding::jsonify() const
     return results;
 }
 
-void Model::print()
-{
-    const std::string dt_created_at = datetime_from_unix_timestamp(this->created_at);
-    fmt::print("{:<25}{:<35}{}\n", dt_created_at, this->owned_by, this->id);
-}
-
 void File::print()
 {
     const std::string dt_created_at = datetime_from_unix_timestamp(this->created_at);

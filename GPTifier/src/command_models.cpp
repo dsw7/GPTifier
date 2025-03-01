@@ -98,8 +98,8 @@ void print_models(std::vector<models::Model> &models)
 
     models::sort(models);
 
-    for (auto it = models.begin(); it != models.end(); ++it) {
-        it->print();
+    for (const auto &it: models) {
+        fmt::print("{:<25}{:<35}{}\n", datetime_from_unix_timestamp(it.created_at), it.owned_by, it.id);
     }
 
     print_sep();

@@ -33,8 +33,6 @@ struct Model {
     int created_at;
     std::string id;
     std::string owned_by;
-
-    void print();
 };
 
 struct File {
