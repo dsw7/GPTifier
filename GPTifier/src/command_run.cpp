@@ -78,9 +78,7 @@ void create_chat_completion(
     const std::string response = api.create_chat_completion(data.dump());
     const json results = parse_response(response);
 
-    if (not validation::is_chat_completion(results)) {
-        throw std::runtime_error("Response from OpenAI is not a chat completion");
-    }
+    validation::is_chat_completion(results);
 
     completion.completion_tokens = results["usage"]["completion_tokens"];
     completion.completion = results["choices"][0]["message"]["content"];
