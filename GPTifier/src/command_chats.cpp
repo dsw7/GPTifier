@@ -17,6 +17,39 @@ using json = nlohmann::json;
 
 namespace {
 
+// List chats -----------------------------------------------------------------------------------------------
+
+void unpack_results(const json &results, std::vector<models::ChatCompletion> &chat_completions)
+{
+    for (const auto &entry: results["data"]) {
+        validation::is_chat_completion(entry);
+
+        models::ChatCompletion cc;
+        if (entry["metadata"].contains("prompt")) {
+            cc.prompt = entry["metadata"]["prompt"];
+        }
+
+        cc.completion = entry["choices"][0]["message"]["content"];
+        cc.created = entry["created"];
+        cc.id = entry["id"];
+        chat_completions.push_back(cc);
+    }
+}
+
+void print_chat_completions(const std::vector<models::ChatCompletion> &chat_completions)
+{
+    print_sep();
+    fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
+    print_sep();
+
+    for (const auto &it: chat_completions) {
+        const std::string dt_created_at = datetime_from_unix_timestamp(it.created);
+        fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created_at, it.id, it.prompt, it.completion);
+    }
+
+    print_sep();
+}
+
 void command_chats_list(int argc, char **argv)
 {
     ParamsGetChatCompletions params = cli::get_opts_get_chat_completions(argc, argv);
@@ -32,32 +65,12 @@ void command_chats_list(int argc, char **argv)
 
     validation::is_list(results);
 
-    print_sep();
-    fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
-    print_sep();
-
-    std::vector<models::Completion> chat_completions;
-
-    for (const auto &entry: results["data"]) {
-        validation::is_chat_completion(entry);
-
-        models::Completion chat_completion;
-        if (entry["metadata"].contains("prompt")) {
-            chat_completion.prompt = entry["metadata"]["prompt"];
-        }
-
-        chat_completion.completion = entry["choices"][0]["message"]["content"];
-        chat_completion.created = entry["created"];
-        chat_completion.id = entry["id"];
-        chat_completions.push_back(chat_completion);
-    }
-
-    for (auto it = chat_completions.begin(); it != chat_completions.end(); ++it) {
-        it->print();
-    }
-
-    print_sep();
+    std::vector<models::ChatCompletion> chat_completions;
+    unpack_results(results, chat_completions);
+    print_chat_completions(chat_completions);
 }
+
+// Delete chat completion -----------------------------------------------------------------------------------
 
 void delete_chat_completion(const std::string &chat_completion_id)
 {
@@ -96,11 +109,11 @@ void command_chats_delete(int argc, char **argv)
 
     bool has_failed = false;
 
-    for (auto it = args.begin(); it != args.end(); it++) {
+    for (auto it: args) {
         try {
-            delete_chat_completion(*it);
+            delete_chat_completion(it);
         } catch (const std::runtime_error &e) {
-            fmt::print(stderr, "Failed to delete chat completion with ID: {}. The error was: \"{}\"\n", *it, e.what());
+            fmt::print(stderr, "Failed to delete chat completion with ID: {}. The error was: \"{}\"\n", it, e.what());
             has_failed = true;
             continue;
         }

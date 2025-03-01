@@ -9,6 +9,7 @@
 #include "utils.hpp"
 #include "validation.hpp"
 
+#include <algorithm>
 #include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
@@ -18,6 +19,8 @@
 using json = nlohmann::json;
 
 namespace {
+
+// Upload fine tuning file ----------------------------------------------------------------------------------
 
 void upload_fine_tuning_file(int argc, char **argv)
 {
@@ -44,6 +47,8 @@ void upload_fine_tuning_file(int argc, char **argv)
 
     fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", filename, id);
 }
+
+// Create fine tuning job -----------------------------------------------------------------------------------
 
 void create_fine_tuning_job(int argc, char **argv)
 {
@@ -77,6 +82,8 @@ void create_fine_tuning_job(int argc, char **argv)
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 
+// Delete fine tuned model-----------------------------------------------------------------------------------
+
 void delete_fine_tuned_model(int argc, char **argv)
 {
     if (argc < 4) {
@@ -105,6 +112,43 @@ void delete_fine_tuned_model(int argc, char **argv)
     }
 }
 
+// Print fine tuning jobs -----------------------------------------------------------------------------------
+
+void unpack_results(const json &results, std::vector<models::FineTuningJob> &jobs)
+{
+    for (const auto &entry: results["data"]) {
+        validation::is_fine_tuning_job(entry);
+        models::FineTuningJob job;
+
+        job.id = entry["id"];
+        job.created_at = entry["created_at"];
+
+        if (not entry["finished_at"].is_null()) {
+            job.finished_at = datetime_from_unix_timestamp(entry["finished_at"]);
+        }
+
+        if (not entry["estimated_finish"].is_null()) {
+            job.estimated_finish = datetime_from_unix_timestamp(entry["estimated_finish"]);
+        }
+
+        jobs.push_back(job);
+    }
+}
+
+void print_results(const std::vector<models::FineTuningJob> &jobs)
+{
+    print_sep();
+    fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
+    print_sep();
+
+    for (const auto &it: jobs) {
+        const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
+        fmt::print("{:<40}{:<30}{:<30}{}\n", it.id, dt_created_at, it.estimated_finish, it.finished_at);
+    }
+
+    print_sep();
+}
+
 void list_fine_tuning_jobs(int argc, char **argv)
 {
     ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
@@ -126,37 +170,14 @@ void list_fine_tuning_jobs(int argc, char **argv)
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
     }
 
-    print_sep();
-    fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
+    std::vector<models::FineTuningJob> jobs;
+    unpack_results(results, jobs);
 
-    print_sep();
-    std::vector<models::Job> jobs;
+    std::sort(jobs.begin(), jobs.end(), [](const models::FineTuningJob &left, const models::FineTuningJob &right) {
+        return left.created_at < right.created_at;
+    });
 
-    for (const auto &entry: results["data"]) {
-        validation::is_fine_tuning_job(entry);
-        models::Job job;
-
-        job.id = entry["id"];
-        job.created_at = entry["created_at"];
-
-        if (not entry["finished_at"].is_null()) {
-            job.finished_at = entry["finished_at"];
-        }
-
-        if (not entry["estimated_finish"].is_null()) {
-            job.estimated_finish = entry["estimated_finish"];
-        }
-
-        jobs.push_back(job);
-    }
-
-    models::sort(jobs);
-
-    for (auto it = jobs.begin(); it != jobs.end(); ++it) {
-        it->print();
-    }
-
-    print_sep();
+    print_results(jobs);
 }
 
 } // namespace

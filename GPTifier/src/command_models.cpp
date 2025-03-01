@@ -8,6 +8,7 @@
 #include "utils.hpp"
 #include "validation.hpp"
 
+#include <algorithm>
 #include <fmt/core.h>
 #include <json.hpp>
 #include <map>
@@ -54,11 +55,11 @@ void resolve_users_from_ids(std::map<std::string, std::string> &users)
     const json results = parse_response(response);
     validation::is_list(results);
 
-    for (auto user = results["data"].begin(); user != results["data"].end(); user++) {
-        validation::is_user(*user);
-        std::string id = user->at("id");
+    for (const auto &user: results["data"]) {
+        validation::is_user(user);
+        std::string id = user.at("id");
         str_to_lowercase(id);
-        users[id] = user->at("name");
+        users[id] = user.at("name");
     }
 }
 
@@ -90,16 +91,19 @@ void get_user_models(const json &response, std::vector<models::Model> &models)
 
 void print_models(std::vector<models::Model> &models)
 {
+    std::sort(models.begin(), models.end(), [](const models::Model &left, const models::Model &right) {
+        return left.created_at < right.created_at;
+    });
+
     fmt::print("> Number of models: {}\n", models.size());
     print_sep();
 
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     print_sep();
 
-    models::sort(models);
-
-    for (auto it = models.begin(); it != models.end(); ++it) {
-        it->print();
+    for (const auto &it: models) {
+        const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
+        fmt::print("{:<25}{:<35}{}\n", dt_created_at, it.owned_by, it.id);
     }
 
     print_sep();

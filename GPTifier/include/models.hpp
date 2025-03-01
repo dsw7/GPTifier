@@ -2,13 +2,12 @@
 
 #include <ctime>
 #include <json.hpp>
-#include <optional>
 #include <string>
 #include <vector>
 
 namespace models {
 
-struct Completion {
+struct ChatCompletion {
     int completion_tokens = 0;
     int prompt_tokens = 0;
     std::string completion;
@@ -17,7 +16,6 @@ struct Completion {
     std::string prompt;
     std::time_t created = 0;
 
-    void print();
     nlohmann::json jsonify() const;
 };
 
@@ -33,8 +31,6 @@ struct Model {
     int created_at;
     std::string id;
     std::string owned_by;
-
-    void print();
 };
 
 struct File {
@@ -42,17 +38,13 @@ struct File {
     std::string filename;
     std::string id;
     std::string purpose;
-
-    void print();
 };
 
-struct Job {
+struct FineTuningJob {
     int created_at;
-    std::optional<int> estimated_finish = std::nullopt;
-    std::optional<int> finished_at = std::nullopt;
+    std::string estimated_finish = "-";
+    std::string finished_at = "-";
     std::string id;
-
-    void print();
 };
 
 struct CostsBucket {
@@ -60,13 +52,6 @@ struct CostsBucket {
     std::string org_id;
     std::time_t end_time;
     std::time_t start_time;
-
-    void print();
 };
-
-void sort(std::vector<Model> &models);
-void sort(std::vector<File> &files);
-void sort(std::vector<Job> &jobs);
-void sort(std::vector<CostsBucket> &buckets);
 
 } // namespace models

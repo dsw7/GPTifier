@@ -18,6 +18,37 @@ using json = nlohmann::json;
 
 namespace {
 
+// List files -----------------------------------------------------------------------------------------------
+
+void unpack_results(const json &results, std::vector<models::File> &files)
+{
+    for (const auto &entry: results["data"]) {
+        validation::is_file(entry);
+
+        models::File file;
+        file.created_at = entry["created_at"];
+        file.filename = entry["filename"];
+        file.id = entry["id"];
+        file.purpose = entry["purpose"];
+
+        files.push_back(file);
+    }
+}
+
+void print_results(const std::vector<models::File> &files)
+{
+    print_sep();
+    fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
+    print_sep();
+
+    for (const auto &it: files) {
+        const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
+        fmt::print("{:<30}{:<30}{:<30}{}\n", it.id, it.filename, dt_created_at, it.purpose);
+    }
+
+    print_sep();
+}
+
 void command_files_list(int argc, char **argv)
 {
     bool print_raw_json = cli::get_opts_files_list(argc, argv);
@@ -33,30 +64,12 @@ void command_files_list(int argc, char **argv)
 
     validation::is_list(results);
 
-    print_sep();
-    fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
-
-    print_sep();
     std::vector<models::File> files;
-
-    for (const auto &entry: results["data"]) {
-        validation::is_file(entry);
-        models::File file;
-        file.created_at = entry["created_at"];
-        file.filename = entry["filename"];
-        file.id = entry["id"];
-        file.purpose = entry["purpose"];
-        files.push_back(file);
-    }
-
-    models::sort(files);
-
-    for (auto it = files.begin(); it != files.end(); ++it) {
-        it->print();
-    }
-
-    print_sep();
+    unpack_results(results, files);
+    print_results(files);
 }
+
+// Delete files ---------------------------------------------------------------------------------------------
 
 void delete_file(const std::string &file_id)
 {
@@ -95,11 +108,11 @@ void command_files_delete(int argc, char **argv)
 
     bool has_failed = false;
 
-    for (auto it = args.begin(); it != args.end(); it++) {
+    for (auto it: args) {
         try {
-            delete_file(*it);
+            delete_file(it);
         } catch (const std::runtime_error &e) {
-            fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", *it, e.what());
+            fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", it, e.what());
             has_failed = true;
             continue;
         }

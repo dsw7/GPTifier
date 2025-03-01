@@ -8,6 +8,7 @@
 #include "utils.hpp"
 #include "validation.hpp"
 
+#include <algorithm>
 #include <ctime>
 #include <fmt/core.h>
 #include <json.hpp>
@@ -33,9 +34,8 @@ std::time_t get_current_time_minus_days(int days)
     return now - offset;
 }
 
-void print_results(const json &results, int days)
+float unpack_results(const json &results, std::vector<models::CostsBucket> &buckets)
 {
-    std::vector<models::CostsBucket> buckets;
     float costs = 0.00;
 
     for (const auto &entry: results["data"]) {
@@ -55,22 +55,26 @@ void print_results(const json &results, int days)
         bucket.end_time = entry["end_time"];
         bucket.start_time = entry["start_time"];
         bucket.cost = cost;
-        bucket.org_id = entry["results"][0]["organization_id"];
+        bucket.org_id = cost_obj["organization_id"];
 
         buckets.push_back(bucket);
     }
 
+    return costs;
+}
+
+void print_results(const std::vector<models::CostsBucket> &buckets, int days, float costs)
+{
     print_sep();
     fmt::print("Overall usage (in USD) over {} days: {}\n", days, costs);
     print_sep();
-
     fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
     print_sep();
 
-    models::sort(buckets);
-
-    for (auto it = buckets.begin(); it != buckets.end(); it++) {
-        it->print();
+    for (const auto &it: buckets) {
+        const std::string dt_start = datetime_from_unix_timestamp(it.start_time);
+        const std::string dt_end = datetime_from_unix_timestamp(it.end_time);
+        fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, it.cost, it.org_id);
     }
 
     print_sep();
@@ -82,8 +86,9 @@ void command_costs(int argc, char **argv)
 {
     ParamsCosts params = cli::get_opts_get_costs(argc, argv);
 
-    std::time_t start_time = get_current_time_minus_days(std::get<int>(params.days));
     int limit = 180;
+    int days = std::get<int>(params.days);
+    std::time_t start_time = get_current_time_minus_days(days);
 
     OpenAIAdmin api;
     const std::string response = api.get_costs(start_time, limit);
@@ -95,5 +100,13 @@ void command_costs(int argc, char **argv)
     }
 
     validation::is_page(results);
-    print_results(results, std::get<int>(params.days));
+
+    std::vector<models::CostsBucket> buckets;
+    float costs = unpack_results(results, buckets);
+
+    std::sort(buckets.begin(), buckets.end(), [](const models::CostsBucket &left, const models::CostsBucket &right) {
+        return left.start_time < right.start_time;
+    });
+
+    print_results(buckets, days, costs);
 }
