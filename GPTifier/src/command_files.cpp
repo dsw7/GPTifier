@@ -33,12 +33,7 @@ void command_files_list(int argc, char **argv)
 
     validation::is_list(results);
 
-    print_sep();
-    fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
-
-    print_sep();
     std::vector<models::File> files;
-
     for (const auto &entry: results["data"]) {
         validation::is_file(entry);
         models::File file;
@@ -49,7 +44,9 @@ void command_files_list(int argc, char **argv)
         files.push_back(file);
     }
 
-    // models::sort(files);
+    print_sep();
+    fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
+    print_sep();
 
     for (const auto &it: files) {
         const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);

@@ -91,15 +91,15 @@ void get_user_models(const json &response, std::vector<models::Model> &models)
 
 void print_models(std::vector<models::Model> &models)
 {
+    std::sort(models.begin(), models.end(), [](const models::Model &left, const models::Model &right) {
+        return left.created_at < right.created_at;
+    });
+
     fmt::print("> Number of models: {}\n", models.size());
     print_sep();
 
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     print_sep();
-
-    std::sort(models.begin(), models.end(), [](const models::Model &left, const models::Model &right) {
-        return left.created_at < right.created_at;
-    });
 
     for (const auto &it: models) {
         const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);

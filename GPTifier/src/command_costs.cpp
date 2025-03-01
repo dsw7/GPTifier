@@ -63,14 +63,14 @@ void print_results(const json &results, int days)
 
     print_sep();
     fmt::print("Overall usage (in USD) over {} days: {}\n", days, costs);
-    print_sep();
-
-    fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
-    print_sep();
 
     std::sort(buckets.begin(), buckets.end(), [](const models::CostsBucket &left, const models::CostsBucket &right) {
         return left.start_time < right.start_time;
     });
+
+    print_sep();
+    fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
+    print_sep();
 
     for (const auto &it: buckets) {
         const std::string dt_start = datetime_from_unix_timestamp(it.start_time);

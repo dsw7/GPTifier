@@ -149,12 +149,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
     }
 
-    print_sep();
-    fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
-
-    print_sep();
     std::vector<models::FineTuningJob> jobs;
-
     for (const auto &entry: results["data"]) {
         validation::is_fine_tuning_job(entry);
         models::FineTuningJob job;
@@ -176,6 +171,10 @@ void list_fine_tuning_jobs(int argc, char **argv)
     std::sort(jobs.begin(), jobs.end(), [](const models::FineTuningJob &left, const models::FineTuningJob &right) {
         return left.created_at < right.created_at;
     });
+
+    print_sep();
+    fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
+    print_sep();
 
     for (const auto &it: jobs) {
         print_fine_tuning_job(it);

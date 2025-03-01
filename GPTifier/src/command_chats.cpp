@@ -32,12 +32,7 @@ void command_chats_list(int argc, char **argv)
 
     validation::is_list(results);
 
-    print_sep();
-    fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
-    print_sep();
-
     std::vector<models::ChatCompletion> chat_completions;
-
     for (const auto &entry: results["data"]) {
         validation::is_chat_completion(entry);
 
@@ -51,6 +46,10 @@ void command_chats_list(int argc, char **argv)
         chat_completion.id = entry["id"];
         chat_completions.push_back(chat_completion);
     }
+
+    print_sep();
+    fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
+    print_sep();
 
     for (const auto &it: chat_completions) {
         const std::string dt_created_at = datetime_from_unix_timestamp(it.created);
