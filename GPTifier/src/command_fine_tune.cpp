@@ -71,9 +71,7 @@ void create_fine_tuning_job(int argc, char **argv)
     const std::string response = api.create_fine_tuning_job(data.dump());
     const json results = parse_response(response);
 
-    if (not validation::is_fine_tuning_job(results)) {
-        throw std::runtime_error("Response from OpenAI is not a fine-tuning job object");
-    }
+    validation::is_fine_tuning_job(results);
 
     const std::string id = results["id"];
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
@@ -121,9 +119,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
         return;
     }
 
-    if (not validation::is_fine_tuning_jobs_list(results)) {
-        throw std::runtime_error("Response from OpenAI is not a list of fine-tuning jobs");
-    }
+    validation::is_list(results);
 
     if (not params.limit.has_value()) {
         print_sep();
@@ -137,6 +133,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
     std::vector<models::Job> jobs;
 
     for (const auto &entry: results["data"]) {
+        validation::is_fine_tuning_job(entry);
         models::Job job;
 
         job.id = entry["id"];

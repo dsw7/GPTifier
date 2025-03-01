@@ -77,9 +77,11 @@ bool is_cost(const nlohmann::json &json)
     return json["object"] == "organization.costs.result";
 }
 
-bool is_fine_tuning_job(const nlohmann::json &json)
+void is_fine_tuning_job(const nlohmann::json &json)
 {
-    return json["object"] == "fine_tuning.job";
+    if (json["object"] != "fine_tuning.job") {
+        throw std::runtime_error("Object is not an fine_tuning.job object");
+    }
 }
 
 bool is_costs_list(const nlohmann::json &json)
@@ -93,12 +95,6 @@ bool is_costs_list(const nlohmann::json &json)
     }
 
     return is_cost(json["data"][0]["results"][0]);
-}
-
-bool is_fine_tuning_jobs_list(const nlohmann::json &json)
-{
-    is_list(json);
-    return is_fine_tuning_job(json["data"][0]);
 }
 
 } // namespace validation
