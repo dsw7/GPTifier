@@ -8,7 +8,7 @@
 
 namespace models {
 
-struct Completion {
+struct ChatCompletion {
     int completion_tokens = 0;
     int prompt_tokens = 0;
     std::string completion;

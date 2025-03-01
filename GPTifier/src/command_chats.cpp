@@ -36,12 +36,12 @@ void command_chats_list(int argc, char **argv)
     fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
     print_sep();
 
-    std::vector<models::Completion> chat_completions;
+    std::vector<models::ChatCompletion> chat_completions;
 
     for (const auto &entry: results["data"]) {
         validation::is_chat_completion(entry);
 
-        models::Completion chat_completion;
+        models::ChatCompletion chat_completion;
         if (entry["metadata"].contains("prompt")) {
             chat_completion.prompt = entry["metadata"]["prompt"];
         }

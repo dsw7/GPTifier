@@ -7,7 +7,7 @@
 
 namespace models {
 
-nlohmann::json Completion::jsonify() const
+nlohmann::json ChatCompletion::jsonify() const
 {
     nlohmann::json results;
     results["completion"] = this->completion;
@@ -21,7 +21,7 @@ nlohmann::json Completion::jsonify() const
     return results;
 }
 
-void Completion::print()
+void ChatCompletion::print()
 {
     const std::string dt_created = datetime_from_unix_timestamp(this->created);
     fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created, this->id, this->prompt, this->completion);
