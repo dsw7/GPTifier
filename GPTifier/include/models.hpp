@@ -55,8 +55,6 @@ struct CostsBucket {
     std::string org_id;
     std::time_t end_time;
     std::time_t start_time;
-
-    void print();
 };
 
 void sort(std::vector<Job> &jobs);

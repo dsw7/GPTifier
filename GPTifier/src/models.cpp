@@ -53,14 +53,6 @@ void Job::print()
     fmt::print("{:<40}{:<30}{:<30}{}\n", this->id, dt_created_at, estimated_finish, finish_time);
 }
 
-void CostsBucket::print()
-{
-    const std::string dt_start = datetime_from_unix_timestamp(this->start_time);
-    const std::string dt_end = datetime_from_unix_timestamp(this->end_time);
-
-    fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, this->cost, this->org_id);
-}
-
 void sort(std::vector<Job> &jobs)
 {
     std::sort(jobs.begin(), jobs.end(), [](const Job &left, const Job &right) {

@@ -69,8 +69,10 @@ void print_results(const json &results, int days)
 
     models::sort(buckets);
 
-    for (auto it = buckets.begin(); it != buckets.end(); it++) {
-        it->print();
+    for (const auto &it: buckets) {
+        const std::string dt_start = datetime_from_unix_timestamp(it.start_time);
+        const std::string dt_end = datetime_from_unix_timestamp(it.end_time);
+        fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, it.cost, it.org_id);
     }
 
     print_sep();
