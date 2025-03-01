@@ -55,11 +55,11 @@ void resolve_users_from_ids(std::map<std::string, std::string> &users)
     const json results = parse_response(response);
     validation::is_list(results);
 
-    for (auto user = results["data"].begin(); user != results["data"].end(); user++) {
-        validation::is_user(*user);
-        std::string id = user->at("id");
+    for (const auto &user: results["data"]) {
+        validation::is_user(user);
+        std::string id = user.at("id");
         str_to_lowercase(id);
-        users[id] = user->at("name");
+        users[id] = user.at("name");
     }
 }
 
