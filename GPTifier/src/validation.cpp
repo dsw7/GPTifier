@@ -30,9 +30,11 @@ bool is_list_empty(const nlohmann::json &json)
     return json["data"].empty();
 }
 
-bool is_chat_completion(const nlohmann::json &json)
+void is_chat_completion(const nlohmann::json &json)
 {
-    return json["object"] == "chat.completion";
+    if (json["object"] != "chat.completion") {
+        throw std::runtime_error("Object is not a chat completion");
+    }
 }
 
 bool is_chat_completion_deleted(const nlohmann::json &json)
@@ -111,12 +113,6 @@ bool is_fine_tuning_jobs_list(const nlohmann::json &json)
 {
     is_list(json);
     return is_fine_tuning_job(json["data"][0]);
-}
-
-bool is_chat_completions_list(const nlohmann::json &json)
-{
-    is_list(json);
-    return is_chat_completion(json["data"][0]);
 }
 
 } // namespace validation
