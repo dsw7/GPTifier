@@ -21,12 +21,6 @@ nlohmann::json ChatCompletion::jsonify() const
     return results;
 }
 
-void ChatCompletion::print()
-{
-    const std::string dt_created = datetime_from_unix_timestamp(this->created);
-    fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created, this->id, this->prompt, this->completion);
-}
-
 nlohmann::json Embedding::jsonify() const
 {
     nlohmann::json results;

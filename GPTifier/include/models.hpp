@@ -17,7 +17,6 @@ struct ChatCompletion {
     std::string prompt;
     std::time_t created = 0;
 
-    void print();
     nlohmann::json jsonify() const;
 };
 

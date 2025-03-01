@@ -52,8 +52,9 @@ void command_chats_list(int argc, char **argv)
         chat_completions.push_back(chat_completion);
     }
 
-    for (auto it = chat_completions.begin(); it != chat_completions.end(); ++it) {
-        it->print();
+    for (const auto &it: chat_completions) {
+        fmt::print("{:<25}{:<40}{:<35}{}\n",
+            datetime_from_unix_timestamp(it.created), it.id, it.prompt, it.completion);
     }
 
     print_sep();
