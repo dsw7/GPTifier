@@ -47,9 +47,11 @@ bool is_embedding(const nlohmann::json &json)
     return json["object"] == "embedding";
 }
 
-bool is_model(const nlohmann::json &json)
+void is_model(const nlohmann::json &json)
 {
-    return json["object"] == "model";
+    if (json["object"] != "model") {
+        throw std::runtime_error("Object is not a model");
+    }
 }
 
 void is_file(const nlohmann::json &json)
@@ -78,12 +80,6 @@ bool is_embedding_list(const nlohmann::json &json)
 {
     is_list(json);
     return is_embedding(json["data"][0]);
-}
-
-bool is_model_list(const nlohmann::json &json)
-{
-    is_list(json);
-    return is_model(json["data"][0]);
 }
 
 bool is_users_list(const nlohmann::json &json)
