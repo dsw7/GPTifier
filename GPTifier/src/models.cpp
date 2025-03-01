@@ -64,15 +64,4 @@ void sort(std::vector<Job> &jobs)
     });
 }
 
-void sort(std::vector<CostsBucket> &buckets)
-{
-    std::sort(buckets.begin(), buckets.end(), [](const CostsBucket &left, const CostsBucket &right) {
-        if (left.start_time != right.start_time) {
-            return left.start_time < right.start_time;
-        }
-
-        return left.org_id < right.org_id;
-    });
-}
-
 } // namespace models

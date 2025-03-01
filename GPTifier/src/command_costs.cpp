@@ -8,6 +8,7 @@
 #include "utils.hpp"
 #include "validation.hpp"
 
+#include <algorithm>
 #include <ctime>
 #include <fmt/core.h>
 #include <json.hpp>
@@ -55,7 +56,7 @@ void print_results(const json &results, int days)
         bucket.end_time = entry["end_time"];
         bucket.start_time = entry["start_time"];
         bucket.cost = cost;
-        bucket.org_id = entry["results"][0]["organization_id"];
+        bucket.org_id = cost_obj["organization_id"];
 
         buckets.push_back(bucket);
     }
@@ -67,7 +68,9 @@ void print_results(const json &results, int days)
     fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
     print_sep();
 
-    models::sort(buckets);
+    std::sort(buckets.begin(), buckets.end(), [](const models::CostsBucket &left, const models::CostsBucket &right) {
+        return left.start_time < right.start_time;
+    });
 
     for (const auto &it: buckets) {
         const std::string dt_start = datetime_from_unix_timestamp(it.start_time);

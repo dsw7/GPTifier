@@ -58,6 +58,5 @@ struct CostsBucket {
 };
 
 void sort(std::vector<Job> &jobs);
-void sort(std::vector<CostsBucket> &buckets);
 
 } // namespace models
