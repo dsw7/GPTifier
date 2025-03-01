@@ -49,10 +49,11 @@ void command_files_list(int argc, char **argv)
         files.push_back(file);
     }
 
-    models::sort(files);
+    // models::sort(files);
 
-    for (auto it = files.begin(); it != files.end(); ++it) {
-        it->print();
+    for (const auto &it: files) {
+        fmt::print("{:<30}{:<30}{:<30}{}\n",
+            it.id, it.filename, datetime_from_unix_timestamp(it.created_at), it.purpose);
     }
 
     print_sep();

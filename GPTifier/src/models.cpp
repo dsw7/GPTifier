@@ -37,12 +37,6 @@ nlohmann::json Embedding::jsonify() const
     return results;
 }
 
-void File::print()
-{
-    const std::string dt_created_at = datetime_from_unix_timestamp(this->created_at);
-    fmt::print("{:<30}{:<30}{:<30}{}\n", this->id, this->filename, dt_created_at, this->purpose);
-}
-
 void Job::print()
 {
     const std::string dt_created_at = datetime_from_unix_timestamp(this->created_at);

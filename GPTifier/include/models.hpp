@@ -40,8 +40,6 @@ struct File {
     std::string filename;
     std::string id;
     std::string purpose;
-
-    void print();
 };
 
 struct Job {
