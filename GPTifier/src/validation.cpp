@@ -82,12 +82,6 @@ bool is_fine_tuning_job(const nlohmann::json &json)
     return json["object"] == "fine_tuning.job";
 }
 
-bool is_embedding_list(const nlohmann::json &json)
-{
-    is_list(json);
-    return is_embedding(json["data"][0]);
-}
-
 bool is_costs_list(const nlohmann::json &json)
 {
     if (not is_page(json)) {
