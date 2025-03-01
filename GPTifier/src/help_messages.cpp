@@ -97,9 +97,9 @@ void HelpMessages::print_commands()
 
     fmt::print(fg(white), "Commands:\n");
 
-    for (auto it = this->commands.begin(); it != this->commands.end(); it++) {
-        fmt::print(fg(blue), "{}{}\n", ws_2, it->name);
-        fmt::print("{} -> {}\n", ws_4, it->description);
+    for (const auto &it: this->commands) {
+        fmt::print(fg(blue), "{}{}\n", ws_2, it.name);
+        fmt::print("{} -> {}\n", ws_4, it.description);
     }
 
     fmt::print("\n{}Try gpt ", ws_2);
@@ -115,8 +115,8 @@ void HelpMessages::print_description()
 
     fmt::print(fg(white), "Description:\n");
 
-    for (auto it = this->description.begin(); it < this->description.end(); it++) {
-        fmt::print("{}{}\n", ws_2, *it);
+    for (const auto &it: this->description) {
+        fmt::print("{}{}\n", ws_2, it);
     }
 
     fmt::print("\n");
@@ -130,9 +130,9 @@ void HelpMessages::print_examples()
 
     fmt::print(fg(white), "Examples:\n");
 
-    for (auto it = this->examples.begin(); it != this->examples.end(); it++) {
-        fmt::print("{}{}:\n", ws_2, it->description);
-        print_bash_block(it->command);
+    for (const auto &it: this->examples) {
+        fmt::print("{}{}:\n", ws_2, it.description);
+        print_bash_block(it.command);
     }
 
     fmt::print("\n");
@@ -160,9 +160,9 @@ void HelpMessages::print_options()
 
     fmt::print(fg(white), "Options:\n");
 
-    for (auto it = this->options.begin(); it != this->options.end(); it++) {
-        fmt::print(fmt::emphasis::faint, "{}{}, {}\n", ws_2, it->opt_short, it->opt_long);
-        fmt::print("{} -> {}\n", ws_4, it->description);
+    for (const auto &it: this->options) {
+        fmt::print(fmt::emphasis::faint, "{}{}, {}\n", ws_2, it.opt_short, it.opt_long);
+        fmt::print("{} . {}\n", ws_4, it.description);
     }
 
     fmt::print("\n");
