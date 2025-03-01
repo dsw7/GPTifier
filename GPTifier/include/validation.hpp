@@ -4,6 +4,7 @@
 
 namespace validation {
 
+bool is_list(const nlohmann::json &json);
 bool is_chat_completion(const nlohmann::json &json);
 bool is_chat_completion_deleted(const nlohmann::json &json);
 bool is_embedding(const nlohmann::json &json);

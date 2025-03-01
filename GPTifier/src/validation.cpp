@@ -2,11 +2,6 @@
 
 namespace {
 
-bool is_list(const nlohmann::json &json)
-{
-    return json["object"] == "list";
-}
-
 bool is_page(const nlohmann::json &json)
 {
     return json["object"] == "page";
@@ -20,6 +15,11 @@ bool is_bucket(const nlohmann::json &json)
 } // namespace
 
 namespace validation {
+
+bool is_list(const nlohmann::json &json)
+{
+    return json["object"] == "list";
+}
 
 bool is_chat_completion(const nlohmann::json &json)
 {
