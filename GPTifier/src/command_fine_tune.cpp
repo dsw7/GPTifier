@@ -106,6 +106,28 @@ void delete_fine_tuned_model(int argc, char **argv)
     }
 }
 
+void print_fine_tuning_job(const models::FineTuningJob &job)
+{
+    const std::string dt_created_at = datetime_from_unix_timestamp(job.created_at);
+
+    std::string finish_time;
+    std::string estimated_finish;
+
+    if (job.finished_at.has_value()) {
+        finish_time = datetime_from_unix_timestamp(job.finished_at.value());
+    } else {
+        finish_time = '-';
+    }
+
+    if (job.estimated_finish.has_value()) {
+        finish_time = datetime_from_unix_timestamp(job.estimated_finish.value());
+    } else {
+        estimated_finish = '-';
+    }
+
+    fmt::print("{:<40}{:<30}{:<30}{}\n", job.id, dt_created_at, estimated_finish, finish_time);
+}
+
 void list_fine_tuning_jobs(int argc, char **argv)
 {
     ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
@@ -155,8 +177,8 @@ void list_fine_tuning_jobs(int argc, char **argv)
         return left.created_at < right.created_at;
     });
 
-    for (auto it = jobs.begin(); it != jobs.end(); ++it) {
-        it->print();
+    for (const auto &it: jobs) {
+        print_fine_tuning_job(it);
     }
 
     print_sep();

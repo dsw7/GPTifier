@@ -1,9 +1,5 @@
 #include "models.hpp"
 
-#include "utils.hpp"
-
-#include <fmt/core.h>
-
 namespace models {
 
 nlohmann::json ChatCompletion::jsonify() const
@@ -28,28 +24,6 @@ nlohmann::json Embedding::jsonify() const
     results["model"] = this->model;
 
     return results;
-}
-
-void FineTuningJob::print()
-{
-    const std::string dt_created_at = datetime_from_unix_timestamp(this->created_at);
-
-    std::string finish_time;
-    std::string estimated_finish;
-
-    if (this->finished_at.has_value()) {
-        finish_time = datetime_from_unix_timestamp(this->finished_at.value());
-    } else {
-        finish_time = '-';
-    }
-
-    if (this->estimated_finish.has_value()) {
-        finish_time = datetime_from_unix_timestamp(this->estimated_finish.value());
-    } else {
-        estimated_finish = '-';
-    }
-
-    fmt::print("{:<40}{:<30}{:<30}{}\n", this->id, dt_created_at, estimated_finish, finish_time);
 }
 
 } // namespace models

@@ -46,8 +46,6 @@ struct FineTuningJob {
     std::optional<int> estimated_finish = std::nullopt;
     std::optional<int> finished_at = std::nullopt;
     std::string id;
-
-    void print();
 };
 
 struct CostsBucket {
