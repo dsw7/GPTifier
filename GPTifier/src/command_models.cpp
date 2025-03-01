@@ -52,12 +52,10 @@ void resolve_users_from_ids(std::map<std::string, std::string> &users)
     }
 
     const json results = parse_response(response);
-
-    if (not validation::is_users_list(results)) {
-        throw std::runtime_error("Response from OpenAI is not a list of users");
-    }
+    validation::is_list(results);
 
     for (auto user = results["data"].begin(); user != results["data"].end(); user++) {
+        validation::is_user(*user);
         std::string id = user->at("id");
         str_to_lowercase(id);
         users[id] = user->at("name");
