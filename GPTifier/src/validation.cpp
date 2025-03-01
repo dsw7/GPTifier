@@ -1,5 +1,7 @@
 #include "validation.hpp"
 
+#include <stdexcept>
+
 namespace {
 
 bool is_page(const nlohmann::json &json)
@@ -16,9 +18,16 @@ bool is_bucket(const nlohmann::json &json)
 
 namespace validation {
 
-bool is_list(const nlohmann::json &json)
+void is_list(const nlohmann::json &json)
 {
-    return json["object"] == "list";
+    if (json["object"] != "list") {
+        throw std::runtime_error("Object is not a list");
+    }
+}
+
+bool is_list_empty(const nlohmann::json &json)
+{
+    return json["data"].empty();
 }
 
 bool is_chat_completion(const nlohmann::json &json)
@@ -63,37 +72,25 @@ bool is_fine_tuning_job(const nlohmann::json &json)
 
 bool is_embedding_list(const nlohmann::json &json)
 {
-    if (not is_list(json)) {
-        return false;
-    }
-
+    is_list(json);
     return is_embedding(json["data"][0]);
 }
 
 bool is_model_list(const nlohmann::json &json)
 {
-    if (not is_list(json)) {
-        return false;
-    }
-
+    is_list(json);
     return is_model(json["data"][0]);
 }
 
 bool is_file_list(const nlohmann::json &json)
 {
-    if (not is_list(json)) {
-        return false;
-    }
-
+    is_list(json);
     return is_file(json["data"][0]);
 }
 
 bool is_users_list(const nlohmann::json &json)
 {
-    if (not is_list(json)) {
-        return false;
-    }
-
+    is_list(json);
     return is_user(json["data"][0]);
 }
 
@@ -112,19 +109,13 @@ bool is_costs_list(const nlohmann::json &json)
 
 bool is_fine_tuning_jobs_list(const nlohmann::json &json)
 {
-    if (not is_list(json)) {
-        return false;
-    }
-
+    is_list(json);
     return is_fine_tuning_job(json["data"][0]);
 }
 
 bool is_chat_completions_list(const nlohmann::json &json)
 {
-    if (not is_list(json)) {
-        return false;
-    }
-
+    is_list(json);
     return is_chat_completion(json["data"][0]);
 }
 
