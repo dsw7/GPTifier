@@ -37,9 +37,11 @@ void is_chat_completion(const nlohmann::json &json)
     }
 }
 
-bool is_chat_completion_deleted(const nlohmann::json &json)
+void is_chat_completion_deleted(const nlohmann::json &json)
 {
-    return json["object"] == "chat.completion.deleted";
+    if (json["object"] != "chat.completion.deleted") {
+        throw std::runtime_error("Object is not a chat completion deletion");
+    }
 }
 
 bool is_embedding(const nlohmann::json &json)
@@ -61,9 +63,11 @@ void is_file(const nlohmann::json &json)
     }
 }
 
-bool is_user(const nlohmann::json &json)
+void is_user(const nlohmann::json &json)
 {
-    return json["object"] == "organization.user";
+    if (json["object"] != "organization.user") {
+        throw std::runtime_error("Object is not an organization.user object");
+    }
 }
 
 bool is_cost(const nlohmann::json &json)
@@ -80,12 +84,6 @@ bool is_embedding_list(const nlohmann::json &json)
 {
     is_list(json);
     return is_embedding(json["data"][0]);
-}
-
-bool is_users_list(const nlohmann::json &json)
-{
-    is_list(json);
-    return is_user(json["data"][0]);
 }
 
 bool is_costs_list(const nlohmann::json &json)
