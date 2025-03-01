@@ -52,8 +52,8 @@ void command_files_list(int argc, char **argv)
     // models::sort(files);
 
     for (const auto &it: files) {
-        fmt::print("{:<30}{:<30}{:<30}{}\n",
-            it.id, it.filename, datetime_from_unix_timestamp(it.created_at), it.purpose);
+        const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
+        fmt::print("{:<30}{:<30}{:<30}{}\n", it.id, it.filename, dt_created_at, it.purpose);
     }
 
     print_sep();

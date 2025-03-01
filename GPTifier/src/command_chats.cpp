@@ -53,8 +53,8 @@ void command_chats_list(int argc, char **argv)
     }
 
     for (const auto &it: chat_completions) {
-        fmt::print("{:<25}{:<40}{:<35}{}\n",
-            datetime_from_unix_timestamp(it.created), it.id, it.prompt, it.completion);
+        const std::string dt_created_at = datetime_from_unix_timestamp(it.created);
+        fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created_at, it.id, it.prompt, it.completion);
     }
 
     print_sep();
