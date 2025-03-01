@@ -34,6 +34,31 @@ def get_cosine_similarity(left: Embedding, right: Embedding) -> float:
     return dot_p / (mag_l * mag_r)
 
 
+class TestEmbed(TestCase):
+
+    def test_help(self) -> None:
+        for option in ["-h", "--help"]:
+            with self.subTest(option=option):
+                proc = run_process(["embed", option])
+                proc.assert_success()
+                self.assertIn(
+                    "Get embedding representing a block of text.", proc.stdout
+                )
+
+    def test_missing_input_file(self) -> None:
+        proc = run_process(["embed", "--read-from-file=/tmp/yU8nnkRs.txt"])
+        proc.assert_failure()
+        self.assertIn("Could not open file '/tmp/yU8nnkRs.txt'", proc.stderr)
+
+    def test_invalid_model(self) -> None:
+        proc = run_process(["embed", "-i'What is 3 + 5?'", "-mfoobar"])
+        proc.assert_failure()
+        self.assertIn(
+            "The model `foobar` does not exist or you do not have access to it.",
+            proc.stderr,
+        )
+
+
 class TestEmbedCosineSimilarityIdentical(TestCase):
 
     def setUp(self) -> None:
@@ -95,27 +120,3 @@ class TestEmbedCosineSimilarityOrthogonal(TestCase):
         embedding_2 = load_embedding(self.filename_2)
 
         self.assertTrue(0.6 <= get_cosine_similarity(embedding_1, embedding_2) <= 0.8)
-
-
-class TestEmbedOther(TestCase):
-
-    def test_help(self) -> None:
-        for option in ["-h", "--help"]:
-            with self.subTest(option=option):
-                proc = run_process(["embed", option])
-
-                proc.assert_success()
-                self.assertIn("Synopsis", proc.stdout)
-
-    def test_missing_input_file(self) -> None:
-        proc = run_process(["embed", "--read-from-file=/tmp/yU8nnkRs.txt"])
-        proc.assert_failure()
-        self.assertIn("Could not open file '/tmp/yU8nnkRs.txt'", proc.stderr)
-
-    def test_invalid_model(self) -> None:
-        proc = run_process(["embed", "-i'What is 3 + 5?'", "-mfoobar"])
-        proc.assert_failure()
-        self.assertIn(
-            "The model `foobar` does not exist or you do not have access to it.",
-            proc.stderr,
-        )
