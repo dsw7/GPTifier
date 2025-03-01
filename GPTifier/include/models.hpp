@@ -2,7 +2,6 @@
 
 #include <ctime>
 #include <json.hpp>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -43,8 +42,8 @@ struct File {
 
 struct FineTuningJob {
     int created_at;
-    std::optional<int> estimated_finish = std::nullopt;
-    std::optional<int> finished_at = std::nullopt;
+    std::string estimated_finish = "-";
+    std::string finished_at = "-";
     std::string id;
 };
 

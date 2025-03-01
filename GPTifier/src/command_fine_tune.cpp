@@ -124,36 +124,15 @@ void unpack_results(const json &results, std::vector<models::FineTuningJob> &job
         job.created_at = entry["created_at"];
 
         if (not entry["finished_at"].is_null()) {
-            job.finished_at = entry["finished_at"];
+            job.finished_at = datetime_from_unix_timestamp(entry["finished_at"]);
         }
 
         if (not entry["estimated_finish"].is_null()) {
-            job.estimated_finish = entry["estimated_finish"];
+            job.estimated_finish = datetime_from_unix_timestamp(entry["estimated_finish"]);
         }
 
         jobs.push_back(job);
     }
-}
-void print_fine_tuning_job(const models::FineTuningJob &job)
-{
-    const std::string dt_created_at = datetime_from_unix_timestamp(job.created_at);
-
-    std::string finish_time;
-    std::string estimated_finish;
-
-    if (job.finished_at.has_value()) {
-        finish_time = datetime_from_unix_timestamp(job.finished_at.value());
-    } else {
-        finish_time = '-';
-    }
-
-    if (job.estimated_finish.has_value()) {
-        finish_time = datetime_from_unix_timestamp(job.estimated_finish.value());
-    } else {
-        estimated_finish = '-';
-    }
-
-    fmt::print("{:<40}{:<30}{:<30}{}\n", job.id, dt_created_at, estimated_finish, finish_time);
 }
 
 void print_results(const std::vector<models::FineTuningJob> &jobs)
@@ -163,7 +142,8 @@ void print_results(const std::vector<models::FineTuningJob> &jobs)
     print_sep();
 
     for (const auto &it: jobs) {
-        print_fine_tuning_job(it);
+        const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
+        fmt::print("{:<40}{:<30}{:<30}{}\n", it.id, dt_created_at, it.estimated_finish, it.finished_at);
     }
 
     print_sep();
