@@ -30,9 +30,7 @@ void command_chats_list(int argc, char **argv)
         return;
     }
 
-    if (not validation::is_chat_completions_list(results)) {
-        throw std::runtime_error("Response from OpenAI is not a list of chat completions");
-    }
+    validation::is_list(results);
 
     print_sep();
     fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
@@ -41,6 +39,8 @@ void command_chats_list(int argc, char **argv)
     std::vector<models::Completion> chat_completions;
 
     for (const auto &entry: results["data"]) {
+        validation::is_chat_completion(entry);
+
         models::Completion chat_completion;
         if (entry["metadata"].contains("prompt")) {
             chat_completion.prompt = entry["metadata"]["prompt"];
@@ -66,10 +66,7 @@ void delete_chat_completion(const std::string &chat_completion_id)
     const std::string response = api.delete_chat_completion(chat_completion_id);
     const json results = parse_response(response);
 
-    if (not validation::is_chat_completion_deleted(results)) {
-        throw std::runtime_error("Response from OpenAI is not a chat completion deletion status");
-    }
-
+    validation::is_chat_completion_deleted(results);
     const std::string id = results["id"];
 
     if (results["deleted"]) {

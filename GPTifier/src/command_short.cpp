@@ -55,9 +55,7 @@ void command_short(int argc, char **argv)
         return;
     }
 
-    if (not validation::is_chat_completion(results)) {
-        throw std::runtime_error("Response from OpenAI is not a chat completion");
-    }
+    validation::is_chat_completion(results);
 
     const std::string completion = results["choices"][0]["message"]["content"];
     fmt::print("{}\n", completion);

@@ -9,7 +9,7 @@ class TestShort(TestCase):
             with self.subTest(option=option):
                 proc = run_process(["short", option])
                 proc.assert_success()
-                self.assertIn("Synopsis", proc.stdout)
+                self.assertIn("Create a chat completion but without threading or verbosity.", proc.stdout)
 
     prompt = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
 

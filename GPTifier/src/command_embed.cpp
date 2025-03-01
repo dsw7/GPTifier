@@ -39,12 +39,17 @@ models::Embedding query_embeddings_api(const std::string &model, const std::stri
     const std::string response = api.create_embedding(data.dump());
     const json results = parse_response(response);
 
-    if (not validation::is_embedding_list(results)) {
-        throw std::runtime_error("Response from OpenAI is not an embeddings list");
+    validation::is_list(results);
+
+    if (validation::is_list_empty(results)) {
+        throw std::runtime_error("List of embeddings from OpenAI is empty");
     }
 
+    const json first_embedding = results["data"][0];
+    validation::is_embedding(first_embedding);
+
     models::Embedding embedding;
-    embedding.embedding = results["data"][0]["embedding"].template get<std::vector<float>>();
+    embedding.embedding = first_embedding["embedding"].template get<std::vector<float>>();
     embedding.input = input;
     embedding.model = results["model"];
 

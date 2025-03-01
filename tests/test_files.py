@@ -10,15 +10,28 @@ class TestFiles(TestCase):
             with self.subTest(option=option):
                 proc = run_process(["files", option])
                 proc.assert_success()
-                self.assertIn("Synopsis", proc.stdout)
+                self.assertIn("Manage files uploaded to OpenAI.", proc.stdout)
 
-    def test_subcommand_help(self) -> None:
-        for subcommand in ["list", "delete"]:
-            for option in ["-h", "--help"]:
-                with self.subTest(subcommand=subcommand, option=option):
-                    proc = run_process(["files", subcommand, option])
-                    proc.assert_success()
-                    self.assertIn("Synopsis", proc.stdout)
+    def test_upload_then_delete(self) -> None:
+        jsonl_file = Path(__file__).resolve().parent / "dummy.jsonl"
+
+        proc = run_process(["fine-tune", "upload-file", str(jsonl_file)])
+        proc.assert_success()
+        last_line = proc.stdout.strip().rsplit("\n", maxsplit=1)[-1]
+        file_id = last_line.split(": ")[-1]
+
+        proc = run_process(["files", "delete", file_id])
+        proc.assert_success()
+
+
+class TestFilesList(TestCase):
+
+    def test_help(self) -> None:
+        for option in ["-h", "--help"]:
+            with self.subTest(option=option):
+                proc = run_process(["files", "list", option])
+                proc.assert_success()
+                self.assertIn("List uploaded files.", proc.stdout)
 
     pattern = r"File ID\s+Filename\s+Creation time\s+Purpose"
 
@@ -38,6 +51,16 @@ class TestFiles(TestCase):
                 proc = run_process(["files", "list", option])
                 proc.assert_success()
                 proc.load_stdout_to_json()
+
+
+class TestFilesDelete(TestCase):
+
+    def test_help(self) -> None:
+        for option in ["-h", "--help"]:
+            with self.subTest(option=option):
+                proc = run_process(["files", "delete", option])
+                proc.assert_success()
+                self.assertIn("Delete an uploaded file.", proc.stdout)
 
     def test_files_delete(self) -> None:
         proc = run_process(["files", "delete", "foobar"])
@@ -59,14 +82,3 @@ class TestFiles(TestCase):
             "One or more failures occurred when deleting files\n",
             proc.stderr,
         )
-
-    def test_upload_then_delete(self) -> None:
-        jsonl_file = Path(__file__).resolve().parent / "dummy.jsonl"
-
-        proc = run_process(["fine-tune", "upload-file", str(jsonl_file)])
-        proc.assert_success()
-        last_line = proc.stdout.strip().rsplit("\n", maxsplit=1)[-1]
-        file_id = last_line.split(": ")[-1]
-
-        proc = run_process(["files", "delete", file_id])
-        proc.assert_success()

@@ -10,7 +10,7 @@ class TestModels(TestCase):
                 proc = run_process(["models", option])
 
                 proc.assert_success()
-                self.assertIn("Synopsis", proc.stdout)
+                self.assertIn("List available OpenAI or user models.", proc.stdout)
 
     pattern = r"Creation time\s+Owner\s+Model ID"
 

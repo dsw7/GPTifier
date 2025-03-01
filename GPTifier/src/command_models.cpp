@@ -26,6 +26,8 @@ bool is_owned_by_openai(const std::string &owned_by)
 void get_openai_models(const json &response, std::vector<models::Model> &models)
 {
     for (const auto &entry: response["data"]) {
+        validation::is_model(entry);
+
         if (not is_owned_by_openai(entry["owned_by"])) {
             continue;
         }
@@ -50,12 +52,10 @@ void resolve_users_from_ids(std::map<std::string, std::string> &users)
     }
 
     const json results = parse_response(response);
-
-    if (not validation::is_users_list(results)) {
-        throw std::runtime_error("Response from OpenAI is not a list of users");
-    }
+    validation::is_list(results);
 
     for (auto user = results["data"].begin(); user != results["data"].end(); user++) {
+        validation::is_user(*user);
         std::string id = user->at("id");
         str_to_lowercase(id);
         users[id] = user->at("name");
@@ -68,6 +68,8 @@ void get_user_models(const json &response, std::vector<models::Model> &models)
     resolve_users_from_ids(users);
 
     for (const auto &entry: response["data"]) {
+        validation::is_model(entry);
+
         if (is_owned_by_openai(entry["owned_by"])) {
             continue;
         }
@@ -118,10 +120,7 @@ void command_models(int argc, char **argv)
         return;
     }
 
-    if (not validation::is_model_list(results)) {
-        throw std::runtime_error("Response from OpenAI is not a list of models");
-    }
-
+    validation::is_list(results);
     std::vector<models::Model> models;
 
     if (params.print_user_models) {

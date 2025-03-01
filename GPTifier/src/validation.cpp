@@ -1,131 +1,94 @@
 #include "validation.hpp"
 
-namespace {
-
-bool is_list(const nlohmann::json &json)
-{
-    return json["object"] == "list";
-}
-
-bool is_page(const nlohmann::json &json)
-{
-    return json["object"] == "page";
-}
-
-bool is_bucket(const nlohmann::json &json)
-{
-    return json["object"] == "bucket";
-}
-
-} // namespace
+#include <stdexcept>
 
 namespace validation {
 
-bool is_chat_completion(const nlohmann::json &json)
+void is_page(const nlohmann::json &json)
 {
-    return json["object"] == "chat.completion";
-}
-
-bool is_chat_completion_deleted(const nlohmann::json &json)
-{
-    return json["object"] == "chat.completion.deleted";
-}
-
-bool is_embedding(const nlohmann::json &json)
-{
-    return json["object"] == "embedding";
-}
-
-bool is_model(const nlohmann::json &json)
-{
-    return json["object"] == "model";
-}
-
-bool is_file(const nlohmann::json &json)
-{
-    return json["object"] == "file";
-}
-
-bool is_user(const nlohmann::json &json)
-{
-    return json["object"] == "organization.user";
-}
-
-bool is_cost(const nlohmann::json &json)
-{
-    return json["object"] == "organization.costs.result";
-}
-
-bool is_fine_tuning_job(const nlohmann::json &json)
-{
-    return json["object"] == "fine_tuning.job";
-}
-
-bool is_embedding_list(const nlohmann::json &json)
-{
-    if (not is_list(json)) {
-        return false;
+    if (json["object"] != "page") {
+        throw std::runtime_error("Object is not a page");
     }
-
-    return is_embedding(json["data"][0]);
 }
 
-bool is_model_list(const nlohmann::json &json)
+void is_bucket(const nlohmann::json &json)
 {
-    if (not is_list(json)) {
-        return false;
+    if (json["object"] != "bucket") {
+        throw std::runtime_error("Object is not a bucket");
     }
-
-    return is_model(json["data"][0]);
 }
 
-bool is_file_list(const nlohmann::json &json)
+bool is_bucket_empty(const nlohmann::json &json)
 {
-    if (not is_list(json)) {
-        return false;
-    }
-
-    return is_file(json["data"][0]);
+    return json["results"].empty();
 }
 
-bool is_users_list(const nlohmann::json &json)
+void is_list(const nlohmann::json &json)
 {
-    if (not is_list(json)) {
-        return false;
+    if (json["object"] != "list") {
+        throw std::runtime_error("Object is not a list");
     }
-
-    return is_user(json["data"][0]);
 }
 
-bool is_costs_list(const nlohmann::json &json)
+bool is_list_empty(const nlohmann::json &json)
 {
-    if (not is_page(json)) {
-        return false;
-    }
-
-    if (not is_bucket(json["data"][0])) {
-        return false;
-    }
-
-    return is_cost(json["data"][0]["results"][0]);
+    return json["data"].empty();
 }
 
-bool is_fine_tuning_jobs_list(const nlohmann::json &json)
+void is_chat_completion(const nlohmann::json &json)
 {
-    if (not is_list(json)) {
-        return false;
+    if (json["object"] != "chat.completion") {
+        throw std::runtime_error("Object is not a chat completion");
     }
-
-    return is_fine_tuning_job(json["data"][0]);
 }
 
-bool is_chat_completions_list(const nlohmann::json &json)
+void is_chat_completion_deleted(const nlohmann::json &json)
 {
-    if (not is_list(json)) {
-        return false;
+    if (json["object"] != "chat.completion.deleted") {
+        throw std::runtime_error("Object is not a chat completion deletion");
     }
+}
 
-    return is_chat_completion(json["data"][0]);
+void is_embedding(const nlohmann::json &json)
+{
+    if (json["object"] != "embedding") {
+        throw std::runtime_error("Object is not an embedding");
+    }
+}
+
+void is_model(const nlohmann::json &json)
+{
+    if (json["object"] != "model") {
+        throw std::runtime_error("Object is not a model");
+    }
+}
+
+void is_file(const nlohmann::json &json)
+{
+    if (json["object"] != "file") {
+        throw std::runtime_error("Object is not a file");
+    }
+}
+
+void is_user(const nlohmann::json &json)
+{
+    if (json["object"] != "organization.user") {
+        throw std::runtime_error("Object is not an organization.user object");
+    }
+}
+
+void is_cost(const nlohmann::json &json)
+{
+    if (json["object"] != "organization.costs.result") {
+        throw std::runtime_error("Object is not an organization.costs.result object");
+    }
+}
+
+void is_fine_tuning_job(const nlohmann::json &json)
+{
+    if (json["object"] != "fine_tuning.job") {
+        throw std::runtime_error("Object is not an fine_tuning.job object");
+    }
 }
 
 } // namespace validation

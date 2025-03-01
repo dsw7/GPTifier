@@ -39,11 +39,16 @@ void print_results(const json &results, int days)
     float costs = 0.00;
 
     for (const auto &entry: results["data"]) {
-        if (entry["results"].empty()) {
+        validation::is_bucket(entry);
+
+        if (validation::is_bucket_empty(entry)) {
             continue;
         }
 
-        float cost = entry["results"][0]["amount"]["value"];
+        const json cost_obj = entry["results"][0];
+        validation::is_cost(cost_obj);
+
+        float cost = cost_obj["amount"]["value"];
         costs += cost;
 
         models::CostsBucket bucket;
@@ -89,9 +94,6 @@ void command_costs(int argc, char **argv)
         return;
     }
 
-    if (not validation::is_costs_list(results)) {
-        throw std::runtime_error("Response from OpenAI is not a list of costs");
-    }
-
+    validation::is_page(results);
     print_results(results, std::get<int>(params.days));
 }

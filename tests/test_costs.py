@@ -14,7 +14,7 @@ class TestCosts(unittest.TestCase):
                 proc = run_process(["costs", option])
 
                 proc.assert_success()
-                self.assertIn("Synopsis", proc.stdout)
+                self.assertIn("Get OpenAI usage details.", proc.stdout)
 
     def test_costs(self) -> None:
         proc = run_process(["costs", "--days=4"])
