@@ -108,11 +108,11 @@ void command_files_delete(int argc, char **argv)
 
     bool has_failed = false;
 
-    for (auto it = args.begin(); it != args.end(); it++) {
+    for (auto it: args) {
         try {
-            delete_file(*it);
+            delete_file(it);
         } catch (const std::runtime_error &e) {
-            fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", *it, e.what());
+            fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", it, e.what());
             has_failed = true;
             continue;
         }

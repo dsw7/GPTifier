@@ -109,11 +109,11 @@ void command_chats_delete(int argc, char **argv)
 
     bool has_failed = false;
 
-    for (auto it = args.begin(); it != args.end(); it++) {
+    for (auto it: args) {
         try {
-            delete_chat_completion(*it);
+            delete_chat_completion(it);
         } catch (const std::runtime_error &e) {
-            fmt::print(stderr, "Failed to delete chat completion with ID: {}. The error was: \"{}\"\n", *it, e.what());
+            fmt::print(stderr, "Failed to delete chat completion with ID: {}. The error was: \"{}\"\n", it, e.what());
             has_failed = true;
             continue;
         }
