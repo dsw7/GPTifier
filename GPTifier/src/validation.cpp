@@ -18,6 +18,11 @@ void is_bucket(const nlohmann::json &json)
     }
 }
 
+bool is_bucket_empty(const nlohmann::json &json)
+{
+    return json["results"].empty();
+}
+
 void is_list(const nlohmann::json &json)
 {
     if (json["object"] != "list") {
@@ -84,19 +89,6 @@ void is_fine_tuning_job(const nlohmann::json &json)
     if (json["object"] != "fine_tuning.job") {
         throw std::runtime_error("Object is not an fine_tuning.job object");
     }
-}
-
-bool is_costs_list(const nlohmann::json &json)
-{
-    if (not is_page(json)) {
-        return false;
-    }
-
-    if (not is_bucket(json["data"][0])) {
-        return false;
-    }
-
-    return is_cost(json["data"][0]["results"][0]);
 }
 
 } // namespace validation
