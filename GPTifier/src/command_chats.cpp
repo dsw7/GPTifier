@@ -66,10 +66,7 @@ void delete_chat_completion(const std::string &chat_completion_id)
     const std::string response = api.delete_chat_completion(chat_completion_id);
     const json results = parse_response(response);
 
-    if (not validation::is_chat_completion_deleted(results)) {
-        throw std::runtime_error("Response from OpenAI is not a chat completion deletion status");
-    }
-
+    validation::is_chat_completion_deleted(results);
     const std::string id = results["id"];
 
     if (results["deleted"]) {
