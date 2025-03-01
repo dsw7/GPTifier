@@ -9,6 +9,7 @@
 #include "utils.hpp"
 #include "validation.hpp"
 
+#include <algorithm>
 #include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
@@ -150,7 +151,9 @@ void list_fine_tuning_jobs(int argc, char **argv)
         jobs.push_back(job);
     }
 
-    models::sort(jobs);
+    std::sort(jobs.begin(), jobs.end(), [](const models::FineTuningJob &left, const models::FineTuningJob &right) {
+        return left.created_at < right.created_at;
+    });
 
     for (auto it = jobs.begin(); it != jobs.end(); ++it) {
         it->print();

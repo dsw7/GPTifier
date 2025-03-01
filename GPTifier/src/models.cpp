@@ -2,7 +2,6 @@
 
 #include "utils.hpp"
 
-#include <algorithm>
 #include <fmt/core.h>
 
 namespace models {
@@ -51,17 +50,6 @@ void FineTuningJob::print()
     }
 
     fmt::print("{:<40}{:<30}{:<30}{}\n", this->id, dt_created_at, estimated_finish, finish_time);
-}
-
-void sort(std::vector<FineTuningJob> &jobs)
-{
-    std::sort(jobs.begin(), jobs.end(), [](const FineTuningJob &left, const FineTuningJob &right) {
-        if (left.created_at != right.created_at) {
-            return left.created_at < right.created_at;
-        }
-
-        return left.id < right.id;
-    });
 }
 
 } // namespace models

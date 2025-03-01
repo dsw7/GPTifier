@@ -57,6 +57,4 @@ struct CostsBucket {
     std::time_t start_time;
 };
 
-void sort(std::vector<FineTuningJob> &jobs);
-
 } // namespace models
