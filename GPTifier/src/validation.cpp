@@ -52,9 +52,11 @@ bool is_model(const nlohmann::json &json)
     return json["object"] == "model";
 }
 
-bool is_file(const nlohmann::json &json)
+void is_file(const nlohmann::json &json)
 {
-    return json["object"] == "file";
+    if (json["object"] != "file") {
+        throw std::runtime_error("Object is not a file");
+    }
 }
 
 bool is_user(const nlohmann::json &json)
