@@ -37,7 +37,7 @@ class TestChatCompletion(TestCase):
             with self.subTest(option=option):
                 proc = run_process(["run", option])
                 proc.assert_success()
-                self.assertIn("Synopsis", proc.stdout)
+                self.assertIn("Create a chat completion.", proc.stdout)
 
     def test_read_from_command_line(self) -> None:
         with NamedTemporaryFile(dir=gettempdir()) as f:
