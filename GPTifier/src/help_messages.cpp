@@ -162,7 +162,7 @@ void HelpMessages::print_options()
 
     for (const auto &it: this->options) {
         fmt::print(fmt::emphasis::faint, "{}{}, {}\n", ws_2, it.opt_short, it.opt_long);
-        fmt::print("{} . {}\n", ws_4, it.description);
+        fmt::print("{} -> {}\n", ws_4, it.description);
     }
 
     fmt::print("\n");
