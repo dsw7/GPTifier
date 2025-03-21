@@ -198,12 +198,12 @@ void write_message_to_file(const models::ChatCompletion &completion)
     std::string sep_inner(column_width, '-');
 
     st_filename << "{\n";
-    st_filename << "Created at: " + created + " (GMT) \n";
-    st_filename << "Model: " + completion.model + '\n';
-    st_filename << sep_inner + '\n';
-    st_filename << completion.prompt << '\n';
-    st_filename << sep_inner + '\n';
-    st_filename << completion.completion << '\n';
+    st_filename << "> Created at: " + created + " (GMT)\n";
+    st_filename << "> Model: " + completion.model + "\n\n";
+    st_filename << "> Prompt:\n"
+                << completion.prompt << "\n\n";
+    st_filename << "> Completion:\n"
+                << completion.completion << "\n";
     st_filename << "}\n\n";
 
     st_filename.close();
