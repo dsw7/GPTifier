@@ -19,6 +19,7 @@ protected:
 
     void set_content_type_submit_form();
     void set_content_type_transmit_json();
+    void run_easy_perform();
 };
 
 void catch_curl_error(CURLcode code);

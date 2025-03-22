@@ -50,6 +50,17 @@ void CurlBase::set_content_type_transmit_json()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
+void CurlBase::run_easy_perform()
+{
+    const CURLcode code = curl_easy_perform(this->handle);
+
+    curl_easy_reset(this->handle);
+
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
+}
+
 void catch_curl_error(CURLcode code)
 {
     if (code != CURLE_OK) {
