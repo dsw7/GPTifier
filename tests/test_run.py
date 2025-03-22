@@ -1,34 +1,106 @@
+from dataclasses import dataclass
+from functools import cache
 from json import loads
 from pathlib import Path
 from tempfile import NamedTemporaryFile, gettempdir
+from time import time
 from unittest import TestCase
 from .helpers import run_process
 
-Prompt = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
+
+@dataclass
+class Pair:
+    completion: str
+    prompt: str
 
 
-def load_content(json_file: str) -> str:
+@dataclass
+class Completion:
+    completion: str
+    completion_tokens: int
+    created: int
+    model: str
+    prompt: str
+    prompt_tokens: int
+    rtt: float
+
+
+@cache
+def get_prompt_completion_pair(x: int = 1) -> Pair:
+    return Pair(
+        prompt=f"What is 1 + {x}? Format the result as follows: >>>{{result}}<<<",
+        completion=f">>>{1 + x}<<<",
+    )
+
+
+def load_content(json_file: str) -> Completion:
     with open(json_file) as f:
         contents = loads(f.read())
 
-    result: str = contents["completion"]
-    return result
+    return Completion(
+        completion=contents["completion"],
+        completion_tokens=contents["completion_tokens"],
+        created=contents["created"],
+        model=contents["model"],
+        prompt=contents["prompt"],
+        prompt_tokens=contents["prompt_tokens"],
+        rtt=contents["rtt"],
+    )
 
 
 class TestChatCompletionReadFromInputfile(TestCase):
     def setUp(self) -> None:
         self.filename = Path.cwd() / "Inputfile"
-        self.filename.write_text(Prompt)
 
     def tearDown(self) -> None:
         self.filename.unlink()
 
     def test_read_from_inputfile(self) -> None:
+        pair = get_prompt_completion_pair(3)
+        self.filename.write_text(pair.prompt)
+
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
             proc = run_process(["run", "-t0", f"-o{json_file}", "-u"])
             proc.assert_success()
-            self.assertEqual(load_content(json_file), ">>>8<<<")
+            completion = load_content(json_file)
+            self.assertEqual(completion.completion, pair.completion)
+
+
+class TestChatCompletionJSON(TestCase):
+    def setUp(self) -> None:
+        self.pair = get_prompt_completion_pair(5)
+
+        with NamedTemporaryFile(dir=gettempdir()) as f:
+            t_start = time()
+            self.process = run_process(
+                ["run", f"-p{self.pair.prompt}", "-t0", f"-o{f.name}", "-u"]
+            )
+            self.rtt = time() - t_start
+            self.completion = load_content(f.name)
+
+    def test_exit_zero(self) -> None:
+        self.process.assert_success()
+
+    def test_equal_prompt(self) -> None:
+        self.assertEqual(self.completion.prompt, self.pair.prompt)
+
+    def test_equal_completion(self) -> None:
+        self.assertEqual(self.completion.completion, self.pair.completion)
+
+    def test_prompt_tokens(self) -> None:
+        self.assertEqual(self.completion.prompt_tokens, 26)
+
+    def test_completion_tokens(self) -> None:
+        self.assertEqual(self.completion.completion_tokens, 4)
+
+    def test_approx_rtt(self) -> None:
+        diff = abs(self.completion.rtt - self.rtt)
+        self.assertLessEqual(diff, 0.25, "RTT times are not within 0.25 seconds")
+
+    def test_approx_created(self) -> None:
+        diff = abs(self.completion.created - int(time()))
+        self.assertLessEqual(diff, 2.0, "Creation times are not within 2 seconds")
 
 
 class TestChatCompletion(TestCase):
@@ -39,23 +111,19 @@ class TestChatCompletion(TestCase):
                 proc.assert_success()
                 self.assertIn("Create a chat completion.", proc.stdout)
 
-    def test_read_from_command_line(self) -> None:
-        with NamedTemporaryFile(dir=gettempdir()) as f:
-            json_file = f.name
-            proc = run_process(["run", f"-p'{Prompt}'", "-t0", f"-o{json_file}", "-u"])
-            proc.assert_success()
-            self.assertEqual(load_content(json_file), ">>>8<<<")
-
     def test_read_from_file(self) -> None:
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
             prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
             proc = run_process(["run", f"-r{prompt}", "-t0", f"-o{json_file}", "-u"])
             proc.assert_success()
-            self.assertEqual(load_content(json_file), ">>>8<<<")
+            completion = load_content(json_file)
+            self.assertEqual(completion.completion, ">>>8<<<")
 
     def test_invalid_temp(self) -> None:
-        proc = run_process(["run", f"-p'{Prompt}'", "-tfoobar", "-u"])
+        prompt = get_prompt_completion_pair().prompt
+
+        proc = run_process(["run", f"-p'{prompt}'", "-tfoobar", "-u"])
         proc.assert_failure()
         self.assertIn("Failed to convert 'foobar' to float", proc.stderr)
 
@@ -65,12 +133,16 @@ class TestChatCompletion(TestCase):
         self.assertIn("Could not open file '/tmp/yU8nnkRs.txt'", proc.stderr)
 
     def test_invalid_dump_location(self) -> None:
-        proc = run_process(["run", f"--prompt='{Prompt}'", "--file=/tmp/a/b/c", "-u"])
+        prompt = get_prompt_completion_pair().prompt
+
+        proc = run_process(["run", f"--prompt='{prompt}'", "--file=/tmp/a/b/c", "-u"])
         proc.assert_failure()
         self.assertIn("Unable to open '/tmp/a/b/c'", proc.stderr)
 
     def test_invalid_model(self) -> None:
-        proc = run_process(["run", f"-p'{Prompt}'", "-mfoobar", "-u"])
+        prompt = get_prompt_completion_pair().prompt
+
+        proc = run_process(["run", f"-p'{prompt}'", "-mfoobar", "-u"])
         proc.assert_failure()
         self.assertIn(
             "The model `foobar` does not exist or you do not have access to it.",
@@ -78,8 +150,10 @@ class TestChatCompletion(TestCase):
         )
 
     def test_out_of_range_temp(self) -> None:
+        prompt = get_prompt_completion_pair().prompt
+
         for temp in [-2.5, 2.5]:
             with self.subTest(temp=temp):
-                proc = run_process(["run", f"-p'{Prompt}'", f"-t{temp}", "-u"])
+                proc = run_process(["run", f"-p'{prompt}'", f"-t{temp}", "-u"])
                 proc.assert_failure()
                 self.assertIn("Temperature must be between 0 and 2", proc.stderr)

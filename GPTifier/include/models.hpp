@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <ctime>
 #include <json.hpp>
 #include <string>
@@ -10,6 +11,7 @@ namespace models {
 struct ChatCompletion {
     int completion_tokens = 0;
     int prompt_tokens = 0;
+    std::chrono::duration<float> rtt;
     std::string completion;
     std::string id;
     std::string model;

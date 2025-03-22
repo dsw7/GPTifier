@@ -12,6 +12,7 @@ nlohmann::json ChatCompletion::jsonify() const
     results["model"] = this->model;
     results["prompt"] = this->prompt;
     results["prompt_tokens"] = this->prompt_tokens;
+    results["rtt"] = this->rtt.count();
 
     return results;
 }

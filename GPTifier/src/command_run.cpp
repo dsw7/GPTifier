@@ -41,21 +41,37 @@ bool TIMER_ENABLED = false;
 
 void time_api_call()
 {
-    auto delay = std::chrono::milliseconds(250);
-    auto start = std::chrono::high_resolution_clock::now();
+    auto delay = std::chrono::milliseconds(50);
+    int counter = 0;
 
     while (TIMER_ENABLED) {
+        switch (counter) {
+            case 0:
+                std::cout << "Processing .    \r" << std::flush;
+                break;
+            case 5:
+                std::cout << "Processing ..   \r" << std::flush;
+                break;
+            case 10:
+                std::cout << "Processing ...  \r" << std::flush;
+                break;
+            case 15:
+                std::cout << "Processing .... \r" << std::flush;
+                break;
+            case 20:
+                std::cout << "Processing .....\r" << std::flush;
+                break;
+        }
+        counter++;
+
+        if (counter > 24) {
+            counter = 0;
+        }
+
         std::this_thread::sleep_for(delay);
-
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> duration = end - start;
-
-        fmt::print(fg(white), "Time (s): ");
-        fmt::print("{}\r", duration.count());
-        std::cout.flush();
     }
 
-    std::cout << "\n";
+    std::cout << std::string(16, ' ') << '\r' << std::flush;
 }
 
 void create_chat_completion(
@@ -75,17 +91,22 @@ void create_chat_completion(
     }
 
     OpenAIUser api;
-    const std::string response = api.create_chat_completion(data.dump());
-    const json results = parse_response(response);
 
+    auto start = std::chrono::high_resolution_clock::now();
+    const std::string response = api.create_chat_completion(data.dump());
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> rtt = end - start;
+
+    const json results = parse_response(response);
     validation::is_chat_completion(results);
 
-    completion.completion_tokens = results["usage"]["completion_tokens"];
     completion.completion = results["choices"][0]["message"]["content"];
+    completion.completion_tokens = results["usage"]["completion_tokens"];
     completion.created = results["created"];
     completion.model = results["model"];
     completion.prompt = prompt;
     completion.prompt_tokens = results["usage"]["prompt_tokens"];
+    completion.rtt = rtt;
 }
 
 models::ChatCompletion run_query(
@@ -165,6 +186,7 @@ void print_usage_statistics(const models::ChatCompletion &completion)
 
     fmt::print(fg(white), "Usage:\n");
     fmt::print("Model: {}\n", completion.model);
+    fmt::print("RTT: {} s\n", completion.rtt.count());
     fmt::print("\n");
 
     fmt::print("Prompt tokens: ");
@@ -275,7 +297,6 @@ void command_run(int argc, char **argv)
     }
 
     const models::ChatCompletion completion = run_query(model, prompt, temperature, params.store_completion);
-    print_sep();
 
     if (params.json_dump_file.has_value()) {
         dump_chat_completion_response(completion, params.json_dump_file.value());
