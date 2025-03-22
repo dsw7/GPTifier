@@ -79,11 +79,3 @@ void CurlBase::run_easy_perform()
         throw std::runtime_error(curl_easy_strerror(code));
     }
 }
-
-void catch_curl_error(CURLcode code)
-{
-    if (code != CURLE_OK) {
-        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(code));
-        throw std::runtime_error(errmsg);
-    }
-}
