@@ -234,20 +234,20 @@ void write_message_to_file(const models::ChatCompletion &completion)
 void export_chat_completion_response(const models::ChatCompletion &completion)
 {
     fmt::print(fg(white), "Export:\n");
-    std::string choice;
+    char choice = 'n';
 
     while (true) {
         std::cout << "> Write reply to file? [y/n]: ";
-        std::cin >> choice;
+        choice = std::cin.get();
 
-        if (choice == "y" or choice == "n") {
+        if (choice == 'y' or choice == 'n') {
             break;
         } else {
             std::cout << "> Invalid choice. Input either 'y' or 'n'!\n";
         }
     }
 
-    if (choice == "n") {
+    if (choice == 'n') {
         std::cout << "> Not exporting response.\n";
         return;
     }
