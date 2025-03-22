@@ -6,27 +6,44 @@
 #include <fmt/core.h>
 #include <stdexcept>
 
+namespace {
+
+std::string get_admin_api_key()
+{
+    static std::string api_key;
+
+    if (api_key.empty()) {
+        const char *env_api_key = std::getenv("OPENAI_ADMIN_KEY");
+
+        if (env_api_key == nullptr) {
+            throw std::runtime_error("OPENAI_ADMIN_KEY environment variable not set");
+        }
+
+        api_key = env_api_key;
+    }
+    return api_key;
+}
+
+} // namespace
+
 namespace endpoints {
 
 const std::string URL_ORGANIZATION = "https://api.openai.com/v1/organization";
 
 } // namespace endpoints
 
-void OpenAIAdmin::set_admin_key()
+void OpenAIAdmin::reset_handle()
 {
-    const char *admin_key = std::getenv("OPENAI_ADMIN_KEY");
+    this->reset_easy_handle();
+    this->reset_headers_list();
 
-    if (admin_key == NULL) {
-        throw std::runtime_error("OPENAI_ADMIN_KEY environment variable not set");
-    }
-
-    const std::string header = fmt::format("Authorization: Bearer {}", admin_key);
-    this->headers = curl_slist_append(this->headers, header.c_str());
+    this->set_writefunction();
+    this->set_auth_token(get_admin_api_key());
 }
 
 std::string OpenAIAdmin::get_costs(const std::time_t &start_time, int limit)
 {
-    this->set_admin_key();
+    this->reset_handle();
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
@@ -45,7 +62,7 @@ std::string OpenAIAdmin::get_costs(const std::time_t &start_time, int limit)
 
 std::string OpenAIAdmin::get_users(int limit)
 {
-    this->set_admin_key();
+    this->reset_handle();
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
