@@ -77,7 +77,7 @@ std::string OpenAIUser::get_uploaded_files(bool sort_asc)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
@@ -96,7 +96,7 @@ std::string OpenAIUser::create_chat_completion(const std::string &post_fields)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
@@ -114,7 +114,7 @@ std::string OpenAIUser::get_chat_completions(int limit)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
@@ -132,7 +132,7 @@ std::string OpenAIUser::delete_chat_completion(const std::string &chat_completio
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
@@ -151,7 +151,7 @@ std::string OpenAIUser::create_embedding(const std::string &post_fields)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
@@ -180,10 +180,13 @@ std::string OpenAIUser::upload_file(const std::string &filename, const std::stri
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    const CURLcode rv = curl_easy_perform(this->handle);
+    const CURLcode code = curl_easy_perform(this->handle);
     curl_mime_free(form);
 
-    catch_curl_error(rv);
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
+
     return response;
 }
 
@@ -201,7 +204,7 @@ std::string OpenAIUser::delete_file(const std::string &file_id)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
@@ -221,7 +224,7 @@ std::string OpenAIUser::create_fine_tuning_job(const std::string &post_fields)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
@@ -239,7 +242,7 @@ std::string OpenAIUser::delete_model(const std::string &model_id)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
@@ -257,6 +260,6 @@ std::string OpenAIUser::get_fine_tuning_jobs(const std::string &limit)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
