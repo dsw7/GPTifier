@@ -56,7 +56,7 @@ std::string OpenAIAdmin::get_costs(const std::time_t &start_time, int limit)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
@@ -74,6 +74,6 @@ std::string OpenAIAdmin::get_users(int limit)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
