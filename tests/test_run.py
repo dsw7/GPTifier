@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from json import loads
 from pathlib import Path
 from tempfile import NamedTemporaryFile, gettempdir
@@ -7,12 +8,30 @@ from .helpers import run_process
 Prompt = "What is 3 + 5? Format the result as follows: >>>{result}<<<"
 
 
-def load_content(json_file: str) -> str:
+@dataclass
+class Completion:
+    completion: str
+    completion_tokens: int
+    created: int
+    model: str
+    prompt: str
+    prompt_tokens: int
+    rtt: float
+
+
+def load_content(json_file: str) -> Completion:
     with open(json_file) as f:
         contents = loads(f.read())
 
-    result: str = contents["completion"]
-    return result
+    return Completion(
+        completion=contents["completion"],
+        completion_tokens=contents["completion_tokens"],
+        created=contents["created"],
+        model=contents["model"],
+        prompt=contents["prompt"],
+        prompt_tokens=contents["prompt_tokens"],
+        rtt=contents["rtt"],
+    )
 
 
 class TestChatCompletionReadFromInputfile(TestCase):
@@ -28,7 +47,8 @@ class TestChatCompletionReadFromInputfile(TestCase):
             json_file = f.name
             proc = run_process(["run", "-t0", f"-o{json_file}", "-u"])
             proc.assert_success()
-            self.assertEqual(load_content(json_file), ">>>8<<<")
+            completion = load_content(json_file)
+            self.assertEqual(completion.completion, ">>>8<<<")
 
 
 class TestChatCompletion(TestCase):
@@ -44,7 +64,8 @@ class TestChatCompletion(TestCase):
             json_file = f.name
             proc = run_process(["run", f"-p'{Prompt}'", "-t0", f"-o{json_file}", "-u"])
             proc.assert_success()
-            self.assertEqual(load_content(json_file), ">>>8<<<")
+            completion = load_content(json_file)
+            self.assertEqual(completion.completion, ">>>8<<<")
 
     def test_read_from_file(self) -> None:
         with NamedTemporaryFile(dir=gettempdir()) as f:
@@ -52,7 +73,8 @@ class TestChatCompletion(TestCase):
             prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
             proc = run_process(["run", f"-r{prompt}", "-t0", f"-o{json_file}", "-u"])
             proc.assert_success()
-            self.assertEqual(load_content(json_file), ">>>8<<<")
+            completion = load_content(json_file)
+            self.assertEqual(completion.completion, ">>>8<<<")
 
     def test_invalid_temp(self) -> None:
         proc = run_process(["run", f"-p'{Prompt}'", "-tfoobar", "-u"])
