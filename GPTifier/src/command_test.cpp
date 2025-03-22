@@ -1,7 +1,18 @@
 #include "command_test.hpp"
 
-#include <fmt/core.h>
 #include <stdexcept>
+
+namespace {
+
+void test_create_chat_completion_api()
+{
+}
+
+void test_models_api()
+{
+}
+
+} // namespace
 
 void command_test(int argc, char **argv)
 {
@@ -9,6 +20,13 @@ void command_test(int argc, char **argv)
         throw std::runtime_error("Usage: gpt test (ccc | mod)");
     }
 
-    const std::string command = argv[2];
-    fmt::print("{}\n", command);
+    const std::string target = argv[2];
+
+    if (target == "ccc") {
+        test_create_chat_completion_api();
+    } else if (target == "mod") {
+        test_models_api();
+    } else {
+        throw std::runtime_error("Unknown test target: " + target);
+    }
 }
