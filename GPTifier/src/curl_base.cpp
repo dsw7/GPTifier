@@ -36,6 +36,14 @@ CurlBase::~CurlBase()
     curl_global_cleanup();
 }
 
+void CurlBase::reset_all()
+{
+    curl_slist_free_all(this->headers);
+    this->headers = NULL;
+
+    curl_easy_reset(this->handle);
+}
+
 void CurlBase::set_writefunction()
 {
     curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
@@ -56,8 +64,6 @@ void CurlBase::set_content_type_transmit_json()
 void CurlBase::run_easy_perform()
 {
     const CURLcode code = curl_easy_perform(this->handle);
-
-    curl_easy_reset(this->handle);
 
     if (code != CURLE_OK) {
         throw std::runtime_error(curl_easy_strerror(code));

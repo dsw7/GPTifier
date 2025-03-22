@@ -18,6 +18,7 @@ protected:
     struct curl_slist *headers = NULL;
 
     void set_writefunction();
+    void reset_all();
     void set_content_type_submit_form();
     void set_content_type_transmit_json();
     void run_easy_perform();
