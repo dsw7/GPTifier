@@ -36,12 +36,17 @@ CurlBase::~CurlBase()
     curl_global_cleanup();
 }
 
-void CurlBase::reset_all()
+void CurlBase::reset_easy_handle()
+{
+    if (this->handle) {
+        curl_easy_reset(this->handle);
+    }
+}
+
+void CurlBase::reset_headers_list()
 {
     curl_slist_free_all(this->headers);
     this->headers = NULL;
-
-    curl_easy_reset(this->handle);
 }
 
 void CurlBase::set_writefunction()
