@@ -44,13 +44,14 @@ void OpenAIAdmin::reset_handle()
 std::string OpenAIAdmin::get_costs(const std::time_t &start_time, int limit)
 {
     this->reset_handle();
+
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format(
         "{}/{}?start_time={}&limit={}", endpoints::URL_ORGANIZATION, "costs", start_time, limit);
-
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
 
     std::string response;
@@ -63,12 +64,13 @@ std::string OpenAIAdmin::get_costs(const std::time_t &start_time, int limit)
 std::string OpenAIAdmin::get_users(int limit)
 {
     this->reset_handle();
+
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}?limit={}", endpoints::URL_ORGANIZATION, "users", limit);
-
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
 
     std::string response;
