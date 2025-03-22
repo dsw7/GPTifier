@@ -6,6 +6,26 @@
 #include <fmt/core.h>
 #include <stdexcept>
 
+namespace {
+
+std::string get_user_api_key()
+{
+    static std::string api_key;
+
+    if (api_key.empty()) {
+        const char *env_api_key = std::getenv("OPENAI_API_KEY");
+
+        if (env_api_key == nullptr) {
+            throw std::runtime_error("OPENAI_API_KEY environment variable not set");
+        }
+
+        api_key = env_api_key;
+    }
+    return api_key;
+}
+
+} // namespace
+
 namespace endpoints {
 
 const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
@@ -16,87 +36,92 @@ const std::string URL_MODELS = "https://api.openai.com/v1/models";
 
 } // namespace endpoints
 
-void OpenAIUser::set_api_key()
+void OpenAIUser::reset_handle()
 {
-    const char *api_key = std::getenv("OPENAI_API_KEY");
+    this->reset_easy_handle();
+    this->reset_headers_list();
 
-    if (api_key == NULL) {
-        throw std::runtime_error("OPENAI_API_KEY environment variable not set");
-    }
-
-    const std::string header = fmt::format("Authorization: Bearer {}", api_key);
-    this->headers = curl_slist_append(this->headers, header.c_str());
+    this->set_writefunction();
+    this->set_auth_token(get_user_api_key());
 }
 
 std::string OpenAIUser::get_models()
 {
-    this->set_api_key();
+    this->reset_handle();
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_MODELS.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
 
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
 std::string OpenAIUser::get_uploaded_files(bool sort_asc)
 {
-    this->set_api_key();
+    this->reset_handle();
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string order = sort_asc ? "asc" : "desc";
     const std::string endpoint = fmt::format("{}?order={}", endpoints::URL_FILES, order);
-
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
 
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
 std::string OpenAIUser::create_chat_completion(const std::string &post_fields)
 {
-    this->set_api_key();
+    this->reset_handle();
+
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_CHAT_COMPLETIONS.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
     curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
 
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
 std::string OpenAIUser::get_chat_completions(int limit)
 {
-    this->set_api_key();
+    this->reset_handle();
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}?limit={}", endpoints::URL_CHAT_COMPLETIONS, limit);
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
 
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
 std::string OpenAIUser::delete_chat_completion(const std::string &chat_completion_id)
 {
-    this->set_api_key();
+    this->reset_handle();
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}", endpoints::URL_CHAT_COMPLETIONS, chat_completion_id);
@@ -107,30 +132,33 @@ std::string OpenAIUser::delete_chat_completion(const std::string &chat_completio
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
 std::string OpenAIUser::create_embedding(const std::string &post_fields)
 {
-    this->set_api_key();
+    this->reset_handle();
+
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_EMBEDDINGS.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
     curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
 
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
 std::string OpenAIUser::upload_file(const std::string &filename, const std::string &purpose)
 {
-    this->set_api_key();
+    this->reset_handle();
+
     this->set_content_type_submit_form();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
@@ -152,16 +180,20 @@ std::string OpenAIUser::upload_file(const std::string &filename, const std::stri
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    const CURLcode rv = curl_easy_perform(this->handle);
+    const CURLcode code = curl_easy_perform(this->handle);
     curl_mime_free(form);
 
-    catch_curl_error(rv);
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
+
     return response;
 }
 
 std::string OpenAIUser::delete_file(const std::string &file_id)
 {
-    this->set_api_key();
+    this->reset_handle();
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}", endpoints::URL_FILES, file_id);
@@ -172,32 +204,34 @@ std::string OpenAIUser::delete_file(const std::string &file_id)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
 std::string OpenAIUser::create_fine_tuning_job(const std::string &post_fields)
 {
-    this->set_api_key();
+    this->reset_handle();
+
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}", endpoints::URL_FINE_TUNING, "jobs");
-
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
     curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
 
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
 std::string OpenAIUser::delete_model(const std::string &model_id)
 {
-    this->set_api_key();
+    this->reset_handle();
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}", endpoints::URL_MODELS, model_id);
@@ -208,23 +242,24 @@ std::string OpenAIUser::delete_model(const std::string &model_id)
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
 std::string OpenAIUser::get_fine_tuning_jobs(const std::string &limit)
 {
-    this->set_api_key();
+    this->reset_handle();
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}?limit={}", endpoints::URL_FINE_TUNING, "jobs", limit);
-
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
 
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }

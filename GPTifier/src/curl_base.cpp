@@ -1,7 +1,6 @@
 #include "curl_base.hpp"
 
 #include <stdexcept>
-#include <string>
 
 namespace {
 
@@ -24,8 +23,6 @@ CurlBase::CurlBase()
     if (this->handle == NULL) {
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
-
-    curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
 }
 
 CurlBase::~CurlBase()
@@ -36,6 +33,30 @@ CurlBase::~CurlBase()
     }
 
     curl_global_cleanup();
+}
+
+void CurlBase::reset_easy_handle()
+{
+    if (this->handle) {
+        curl_easy_reset(this->handle);
+    }
+}
+
+void CurlBase::reset_headers_list()
+{
+    curl_slist_free_all(this->headers);
+    this->headers = NULL;
+}
+
+void CurlBase::set_writefunction()
+{
+    curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
+}
+
+void CurlBase::set_auth_token(const std::string &token)
+{
+    const std::string header = "Authorization: Bearer " + token;
+    this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
 void CurlBase::set_content_type_submit_form()
@@ -50,10 +71,11 @@ void CurlBase::set_content_type_transmit_json()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
-void catch_curl_error(CURLcode code)
+void CurlBase::run_easy_perform()
 {
+    const CURLcode code = curl_easy_perform(this->handle);
+
     if (code != CURLE_OK) {
-        const std::string errmsg = "Failed to run query. " + std::string(curl_easy_strerror(code));
-        throw std::runtime_error(errmsg);
+        throw std::runtime_error(curl_easy_strerror(code));
     }
 }

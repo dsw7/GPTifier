@@ -1,6 +1,7 @@
 #pragma once
 
 #include <curl/curl.h>
+#include <string>
 
 class CurlBase {
 public:
@@ -17,8 +18,11 @@ protected:
     CURL *handle = NULL;
     struct curl_slist *headers = NULL;
 
+    void reset_easy_handle();
+    void reset_headers_list();
+    void set_auth_token(const std::string &token);
+    void set_writefunction();
     void set_content_type_submit_form();
     void set_content_type_transmit_json();
+    void run_easy_perform();
 };
-
-void catch_curl_error(CURLcode code);

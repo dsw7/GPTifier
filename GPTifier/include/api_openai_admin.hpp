@@ -11,5 +11,5 @@ public:
     std::string get_users(int limit = 100);
 
 private:
-    void set_admin_key();
+    void reset_handle();
 };
