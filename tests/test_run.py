@@ -3,6 +3,7 @@ from functools import cache
 from json import loads
 from pathlib import Path
 from tempfile import NamedTemporaryFile, gettempdir
+from time import time
 from unittest import TestCase
 from .helpers import run_process
 
@@ -66,6 +67,42 @@ class TestChatCompletionReadFromInputfile(TestCase):
             self.assertEqual(completion.completion, pair.completion)
 
 
+class TestChatCompletionJSON(TestCase):
+    def setUp(self) -> None:
+        self.pair = get_prompt_completion_pair(5)
+
+        with NamedTemporaryFile(dir=gettempdir()) as f:
+            t_start = time()
+            self.process = run_process(
+                ["run", f"-p{self.pair.prompt}", "-t0", f"-o{f.name}", "-u"]
+            )
+            self.rtt = time() - t_start
+            self.completion = load_content(f.name)
+
+    def test_exit_zero(self) -> None:
+        self.process.assert_success()
+
+    def test_equal_prompt(self) -> None:
+        self.assertEqual(self.completion.prompt, self.pair.prompt)
+
+    def test_equal_completion(self) -> None:
+        self.assertEqual(self.completion.completion, self.pair.completion)
+
+    def test_prompt_tokens(self) -> None:
+        self.assertEqual(self.completion.prompt_tokens, 26)
+
+    def test_completion_tokens(self) -> None:
+        self.assertEqual(self.completion.completion_tokens, 4)
+
+    def test_approx_rtt(self) -> None:
+        diff = abs(self.completion.rtt - self.rtt)
+        self.assertLessEqual(diff, 0.25, "RTT times are not within 0.25 seconds")
+
+    def test_approx_created(self) -> None:
+        diff = abs(self.completion.created - int(time()))
+        self.assertLessEqual(diff, 2.0, "Creation times are not within 2 seconds")
+
+
 class TestChatCompletion(TestCase):
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
@@ -73,18 +110,6 @@ class TestChatCompletion(TestCase):
                 proc = run_process(["run", option])
                 proc.assert_success()
                 self.assertIn("Create a chat completion.", proc.stdout)
-
-    def test_read_from_command_line(self) -> None:
-        pair = get_prompt_completion_pair(5)
-
-        with NamedTemporaryFile(dir=gettempdir()) as f:
-            json_file = f.name
-            proc = run_process(
-                ["run", f"-p'{pair.prompt}'", "-t0", f"-o{json_file}", "-u"]
-            )
-            proc.assert_success()
-            completion = load_content(json_file)
-            self.assertEqual(completion.completion, pair.completion)
 
     def test_read_from_file(self) -> None:
         with NamedTemporaryFile(dir=gettempdir()) as f:
