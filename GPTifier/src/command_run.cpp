@@ -42,20 +42,32 @@ bool TIMER_ENABLED = false;
 void time_api_call()
 {
     auto delay = std::chrono::milliseconds(250);
-    auto start = std::chrono::high_resolution_clock::now();
+
+    int counter = 0;
 
     while (TIMER_ENABLED) {
+        counter++;
+
+        switch (counter) {
+            case 1:
+                std::cout << "Processing .    \r" << std::flush;
+                break;
+            case 2:
+                std::cout << "Processing ..   \r" << std::flush;
+                break;
+            case 3:
+                std::cout << "Processing ...  \r" << std::flush;
+                break;
+            case 4:
+                std::cout << "Processing .... \r" << std::flush;
+                break;
+            case 5:
+                std::cout << "Processing .....\r" << std::flush;
+                break;
+        }
+
         std::this_thread::sleep_for(delay);
-
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> duration = end - start;
-
-        fmt::print(fg(white), "Time (s): ");
-        fmt::print("{}\r", duration.count());
-        std::cout.flush();
     }
-
-    std::cout << "\n";
 }
 
 void create_chat_completion(
@@ -94,6 +106,9 @@ models::ChatCompletion run_query(
 {
     TIMER_ENABLED = true;
     std::thread timer(time_api_call);
+
+    auto delay = std::chrono::milliseconds(2000);
+    std::this_thread::sleep_for(delay);
 
     bool query_failed = false;
     models::ChatCompletion completion;
