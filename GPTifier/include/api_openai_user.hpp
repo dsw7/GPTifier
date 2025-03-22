@@ -20,5 +20,4 @@ public:
 
 private:
     void set_api_key();
-    void set_project_id();
 };

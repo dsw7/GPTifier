@@ -4,11 +4,6 @@
 # See https://github.com/dsw7/GPTifier for more information
 # --------------------------------------------------
 
-[profile]
-# Specify project ID
-# See https://platform.openai.com/settings/
-project-id = "<project-id>"
-
 [chat]
 # Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
 model = "<model-name>"

@@ -19,7 +19,6 @@ void Configs::load_configs_from_config_file()
         throw std::runtime_error(e);
     }
 
-    this->project_id = table["profile"]["project-id"].value<std::string>();
     this->chat.model = table["chat"]["model"].value<std::string>();
     this->embeddings.model = table["embeddings"]["model"].value<std::string>();
 }
