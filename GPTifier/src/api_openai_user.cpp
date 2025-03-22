@@ -16,7 +16,7 @@ const std::string URL_MODELS = "https://api.openai.com/v1/models";
 
 } // namespace endpoints
 
-void OpenAIUser::set_api_key()
+void OpenAIUser::set_user_api_key()
 {
     const char *api_key = std::getenv("OPENAI_API_KEY");
 
@@ -28,9 +28,18 @@ void OpenAIUser::set_api_key()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
+void OpenAIUser::reset_state()
+{
+    this->reset_easy_handle();
+    this->reset_headers_list();
+
+    this->set_writefunction();
+    this->set_user_api_key();
+}
+
 std::string OpenAIUser::get_models()
 {
-    this->set_api_key();
+    this->reset_state();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_MODELS.c_str());
@@ -39,13 +48,13 @@ std::string OpenAIUser::get_models()
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
 
-    catch_curl_error(curl_easy_perform(this->handle));
+    this->run_easy_perform();
     return response;
 }
 
 std::string OpenAIUser::get_uploaded_files(bool sort_asc)
 {
-    this->set_api_key();
+    this->set_user_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string order = sort_asc ? "asc" : "desc";
@@ -63,7 +72,7 @@ std::string OpenAIUser::get_uploaded_files(bool sort_asc)
 
 std::string OpenAIUser::create_chat_completion(const std::string &post_fields)
 {
-    this->set_api_key();
+    this->set_user_api_key();
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
@@ -80,7 +89,7 @@ std::string OpenAIUser::create_chat_completion(const std::string &post_fields)
 
 std::string OpenAIUser::get_chat_completions(int limit)
 {
-    this->set_api_key();
+    this->set_user_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}?limit={}", endpoints::URL_CHAT_COMPLETIONS, limit);
@@ -96,7 +105,7 @@ std::string OpenAIUser::get_chat_completions(int limit)
 
 std::string OpenAIUser::delete_chat_completion(const std::string &chat_completion_id)
 {
-    this->set_api_key();
+    this->set_user_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}", endpoints::URL_CHAT_COMPLETIONS, chat_completion_id);
@@ -113,7 +122,7 @@ std::string OpenAIUser::delete_chat_completion(const std::string &chat_completio
 
 std::string OpenAIUser::create_embedding(const std::string &post_fields)
 {
-    this->set_api_key();
+    this->set_user_api_key();
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
@@ -130,7 +139,7 @@ std::string OpenAIUser::create_embedding(const std::string &post_fields)
 
 std::string OpenAIUser::upload_file(const std::string &filename, const std::string &purpose)
 {
-    this->set_api_key();
+    this->set_user_api_key();
     this->set_content_type_submit_form();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
@@ -161,7 +170,7 @@ std::string OpenAIUser::upload_file(const std::string &filename, const std::stri
 
 std::string OpenAIUser::delete_file(const std::string &file_id)
 {
-    this->set_api_key();
+    this->set_user_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}", endpoints::URL_FILES, file_id);
@@ -178,7 +187,7 @@ std::string OpenAIUser::delete_file(const std::string &file_id)
 
 std::string OpenAIUser::create_fine_tuning_job(const std::string &post_fields)
 {
-    this->set_api_key();
+    this->set_user_api_key();
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
@@ -197,7 +206,7 @@ std::string OpenAIUser::create_fine_tuning_job(const std::string &post_fields)
 
 std::string OpenAIUser::delete_model(const std::string &model_id)
 {
-    this->set_api_key();
+    this->set_user_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}", endpoints::URL_MODELS, model_id);
@@ -214,7 +223,7 @@ std::string OpenAIUser::delete_model(const std::string &model_id)
 
 std::string OpenAIUser::get_fine_tuning_jobs(const std::string &limit)
 {
-    this->set_api_key();
+    this->set_user_api_key();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string endpoint = fmt::format("{}/{}?limit={}", endpoints::URL_FINE_TUNING, "jobs", limit);
