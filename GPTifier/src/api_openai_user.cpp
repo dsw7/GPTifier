@@ -28,16 +28,6 @@ void OpenAIUser::set_api_key()
     this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
-void OpenAIUser::set_project_id()
-{
-    if (not configs.project_id.has_value()) {
-        return;
-    }
-
-    const std::string header = "OpenAIUser-Project: " + configs.project_id.value();
-    this->headers = curl_slist_append(this->headers, header.c_str());
-}
-
 std::string OpenAIUser::get_models()
 {
     this->set_api_key();

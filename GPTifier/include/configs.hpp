@@ -16,7 +16,6 @@ struct Configs {
 
     Chat chat;
     Embeddings embeddings;
-    std::optional<std::string> project_id = std::nullopt;
 };
 
 extern Configs configs;
