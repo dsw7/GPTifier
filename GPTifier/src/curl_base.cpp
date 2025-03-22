@@ -1,7 +1,6 @@
 #include "curl_base.hpp"
 
 #include <stdexcept>
-#include <string>
 
 namespace {
 
@@ -52,6 +51,12 @@ void CurlBase::reset_headers_list()
 void CurlBase::set_writefunction()
 {
     curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
+}
+
+void CurlBase::set_auth_token(const std::string &token)
+{
+    const std::string header = "Authorization: Bearer " + token;
+    this->headers = curl_slist_append(this->headers, header.c_str());
 }
 
 void CurlBase::set_content_type_submit_form()

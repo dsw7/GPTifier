@@ -1,6 +1,7 @@
 #pragma once
 
 #include <curl/curl.h>
+#include <string>
 
 class CurlBase {
 public:
@@ -19,6 +20,7 @@ protected:
 
     void reset_easy_handle();
     void reset_headers_list();
+    void set_auth_token(const std::string &token);
     void set_writefunction();
     void set_content_type_submit_form();
     void set_content_type_transmit_json();
