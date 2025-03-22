@@ -19,6 +19,5 @@ public:
     std::string get_fine_tuning_jobs(const std::string &limit);
 
 private:
-    void set_user_api_key();
-    void reset_state();
+    void reset_handle();
 };
