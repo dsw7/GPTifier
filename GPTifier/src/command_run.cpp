@@ -91,17 +91,22 @@ void create_chat_completion(
     }
 
     OpenAIUser api;
-    const std::string response = api.create_chat_completion(data.dump());
-    const json results = parse_response(response);
 
+    auto start = std::chrono::high_resolution_clock::now();
+    const std::string response = api.create_chat_completion(data.dump());
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> rtt = end - start;
+
+    const json results = parse_response(response);
     validation::is_chat_completion(results);
 
-    completion.completion_tokens = results["usage"]["completion_tokens"];
     completion.completion = results["choices"][0]["message"]["content"];
+    completion.completion_tokens = results["usage"]["completion_tokens"];
     completion.created = results["created"];
     completion.model = results["model"];
     completion.prompt = prompt;
     completion.prompt_tokens = results["usage"]["prompt_tokens"];
+    completion.rtt = rtt;
 }
 
 models::ChatCompletion run_query(
@@ -181,6 +186,7 @@ void print_usage_statistics(const models::ChatCompletion &completion)
 
     fmt::print(fg(white), "Usage:\n");
     fmt::print("Model: {}\n", completion.model);
+    fmt::print("RTT: {} s\n", completion.rtt.count());
     fmt::print("\n");
 
     fmt::print("Prompt tokens: ");
