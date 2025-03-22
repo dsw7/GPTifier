@@ -24,8 +24,6 @@ CurlBase::CurlBase()
     if (this->handle == NULL) {
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
-
-    curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
 }
 
 CurlBase::~CurlBase()
@@ -36,6 +34,11 @@ CurlBase::~CurlBase()
     }
 
     curl_global_cleanup();
+}
+
+void CurlBase::set_writefunction()
+{
+    curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
 }
 
 void CurlBase::set_content_type_submit_form()

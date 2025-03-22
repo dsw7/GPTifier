@@ -17,6 +17,7 @@ protected:
     CURL *handle = NULL;
     struct curl_slist *headers = NULL;
 
+    void set_writefunction();
     void set_content_type_submit_form();
     void set_content_type_transmit_json();
     void run_easy_perform();
