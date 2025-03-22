@@ -41,33 +41,37 @@ bool TIMER_ENABLED = false;
 
 void time_api_call()
 {
-    auto delay = std::chrono::milliseconds(250);
-
+    auto delay = std::chrono::milliseconds(50);
     int counter = 0;
 
     while (TIMER_ENABLED) {
-        counter++;
-
         switch (counter) {
-            case 1:
+            case 0:
                 std::cout << "Processing .    \r" << std::flush;
                 break;
-            case 2:
+            case 5:
                 std::cout << "Processing ..   \r" << std::flush;
                 break;
-            case 3:
+            case 10:
                 std::cout << "Processing ...  \r" << std::flush;
                 break;
-            case 4:
+            case 15:
                 std::cout << "Processing .... \r" << std::flush;
                 break;
-            case 5:
+            case 20:
                 std::cout << "Processing .....\r" << std::flush;
                 break;
+        }
+        counter++;
+
+        if (counter > 24) {
+            counter = 0;
         }
 
         std::this_thread::sleep_for(delay);
     }
+
+    std::cout << std::string(16, ' ') << '\r' << std::flush;
 }
 
 void create_chat_completion(
@@ -106,9 +110,6 @@ models::ChatCompletion run_query(
 {
     TIMER_ENABLED = true;
     std::thread timer(time_api_call);
-
-    auto delay = std::chrono::milliseconds(2000);
-    std::this_thread::sleep_for(delay);
 
     bool query_failed = false;
     models::ChatCompletion completion;
@@ -290,7 +291,6 @@ void command_run(int argc, char **argv)
     }
 
     const models::ChatCompletion completion = run_query(model, prompt, temperature, params.store_completion);
-    print_sep();
 
     if (params.json_dump_file.has_value()) {
         dump_chat_completion_response(completion, params.json_dump_file.value());
