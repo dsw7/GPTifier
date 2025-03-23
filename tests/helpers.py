@@ -9,7 +9,7 @@ _EX_MEM_LEAK = 2
 
 
 @cache
-def _get_path_to_gptifier_binary() -> list[str]:
+def _get_command() -> list[str]:
     path_bin = environ["PATH_BIN"]
 
     if "TEST_MEMORY" not in environ:
@@ -40,7 +40,7 @@ class Process:
 
 
 def run_process(options: str | list[str]) -> Process:
-    command = [*_get_path_to_gptifier_binary()]
+    command = [*_get_command()]
 
     if isinstance(options, str):
         command.append(options)
