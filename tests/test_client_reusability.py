@@ -1,8 +1,9 @@
+import unittest
 from json import loads
 from os import EX_OK
 from pathlib import Path
+from platform import system
 from subprocess import run, PIPE, DEVNULL
-from unittest import TestCase
 from xml.etree import ElementTree
 from .helpers import get_path_to_gptifier_binary
 
@@ -40,7 +41,8 @@ def get_leaked_bytes_from_xml(xml_file: Path) -> int:
     return total_leaked_bytes
 
 
-class TestClientReusability(TestCase):
+@unittest.skipIf(system() == "Darwin", "Valgrind not supported on macOS")
+class TestClientReusability(unittest.TestCase):
 
     def setUp(self) -> None:
         self.xml_file = Path("/tmp/results.xml")
