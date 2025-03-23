@@ -1,3 +1,4 @@
+from json import loads
 from os import getenv, EX_OK
 from pathlib import Path
 from subprocess import run, PIPE, DEVNULL
@@ -58,3 +59,17 @@ class TestMemory(TestCase):
         self.assertEqual(process.returncode, EX_OK, process.stderr.decode())
         leaked_bytes = get_leaked_bytes_from_xml(self.xml_file)
         self.assertEqual(leaked_bytes, 0, msg=f"Found {leaked_bytes} leaked bytes")
+
+    def test_ccc(self) -> None:
+        command = get_test_command(target="ccc", xml_file=self.xml_file)
+        process = run(command, stdout=PIPE, stderr=PIPE)
+
+        self.assertEqual(process.returncode, EX_OK, process.stderr.decode())
+        leaked_bytes = get_leaked_bytes_from_xml(self.xml_file)
+        self.assertEqual(leaked_bytes, 0)
+
+        stdout = loads(process.stdout.decode())
+        self.assertDictEqual(
+            stdout,
+            {"result_1": ">>>10<<<", "result_2": ">>>10<<<", "result_3": ">>>10<<<"},
+        )
