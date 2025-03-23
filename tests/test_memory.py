@@ -14,18 +14,24 @@ def get_test_command(target: str, xml_file: Path) -> list[str]:
     return ["valgrind", "--xml=yes", f"--xml-file={xml_file}", path_bin, "test", target]
 
 
-def get_leaked_bytes_from_xml(xml_file: Path) -> int | None:
+def get_leaked_bytes_from_xml(xml_file: Path) -> int:
     root = ElementTree.fromstring(xml_file.read_text())
 
-    leaked_bytes: ElementTree.Element | None = root.find(".//leakedbytes")
+    total_leaked_bytes = 0
 
-    if leaked_bytes is None:
-        return None
+    for error in root.findall("error"):
+        leaked_bytes = error.find(".//leakedbytes")
 
-    if leaked_bytes.text is None:
-        return None
+        if leaked_bytes is None:
+            continue
 
-    return int(leaked_bytes.text)
+        if leaked_bytes.text is None:
+            continue
+
+        if leaked_bytes.text.isdigit():
+            total_leaked_bytes += int(leaked_bytes.text)
+
+    return total_leaked_bytes
 
 
 class TestMemory(TestCase):
@@ -43,7 +49,7 @@ class TestMemory(TestCase):
 
         self.assertEqual(process.returncode, EX_OK, process.stderr.decode())
         leaked_bytes = get_leaked_bytes_from_xml(self.xml_file)
-        self.assertEqual(leaked_bytes, 4)
+        self.assertEqual(leaked_bytes, 4, msg=f"Found {leaked_bytes} leaked bytes")
 
     def test_catch_no_memory_leak(self) -> None:
         command = get_test_command(target="mem-", xml_file=self.xml_file)
@@ -51,4 +57,4 @@ class TestMemory(TestCase):
 
         self.assertEqual(process.returncode, EX_OK, process.stderr.decode())
         leaked_bytes = get_leaked_bytes_from_xml(self.xml_file)
-        self.assertIsNone(leaked_bytes, msg=f"Found {leaked_bytes} leaked bytes")
+        self.assertEqual(leaked_bytes, 0, msg=f"Found {leaked_bytes} leaked bytes")
