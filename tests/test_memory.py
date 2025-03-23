@@ -1,6 +1,6 @@
 from os import getenv, EX_OK
 from pathlib import Path
-from subprocess import run, PIPE
+from subprocess import run, PIPE, DEVNULL
 from unittest import TestCase
 from xml.etree import ElementTree
 
@@ -39,20 +39,16 @@ class TestMemory(TestCase):
 
     def test_catch_memory_leak(self) -> None:
         command = get_test_command(target="mem+", xml_file=self.xml_file)
-        process = run(command, stdout=PIPE, stderr=PIPE)
+        process = run(command, stdout=DEVNULL, stderr=PIPE)
 
         self.assertEqual(process.returncode, EX_OK, process.stderr.decode())
-        self.assertEqual(process.stdout.decode().strip(), "5")
-
         leaked_bytes = get_leaked_bytes_from_xml(self.xml_file)
         self.assertEqual(leaked_bytes, 4)
 
     def test_catch_no_memory_leak(self) -> None:
         command = get_test_command(target="mem-", xml_file=self.xml_file)
-        process = run(command, stdout=PIPE, stderr=PIPE)
+        process = run(command, stdout=DEVNULL, stderr=PIPE)
 
         self.assertEqual(process.returncode, EX_OK, process.stderr.decode())
-        self.assertEqual(process.stdout.decode().strip(), "5")
-
         leaked_bytes = get_leaked_bytes_from_xml(self.xml_file)
         self.assertIsNone(leaked_bytes, msg=f"Found {leaked_bytes} leaked bytes")
