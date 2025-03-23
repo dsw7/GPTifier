@@ -12,6 +12,17 @@ using json = nlohmann::json;
 
 namespace {
 
+void test_intentional_mem_leak(bool free_memory)
+{
+    int *val = new int(5);
+
+    fmt::print("{}\n", *val);
+
+    if (free_memory) {
+        delete val;
+    }
+}
+
 void test_create_chat_completion_api()
 {
     const json messages = {
@@ -53,12 +64,16 @@ void test_models_api()
 void command_test(int argc, char **argv)
 {
     if (argc < 3) {
-        throw std::runtime_error("Usage: gpt test (ccc | mod)");
+        throw std::runtime_error("Usage: gpt test (<target>)");
     }
 
     const std::string target = argv[2];
 
-    if (target == "ccc") {
+    if (target == "mem+") {
+        test_intentional_mem_leak(false);
+    } else if (target == "mem-") {
+        test_intentional_mem_leak(true);
+    } else if (target == "ccc") {
         test_create_chat_completion_api();
     } else if (target == "mod") {
         test_models_api();
