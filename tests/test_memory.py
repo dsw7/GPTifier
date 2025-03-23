@@ -46,3 +46,13 @@ class TestMemory(TestCase):
 
         leaked_bytes = get_leaked_bytes_from_xml(self.xml_file)
         self.assertEqual(leaked_bytes, 4)
+
+    def test_catch_no_memory_leak(self) -> None:
+        command = get_test_command(target="mem-", xml_file=self.xml_file)
+        process = run(command, stdout=PIPE, stderr=PIPE)
+
+        self.assertEqual(process.returncode, EX_OK, process.stderr.decode())
+        self.assertEqual(process.stdout.decode().strip(), "5")
+
+        leaked_bytes = get_leaked_bytes_from_xml(self.xml_file)
+        self.assertIsNone(leaked_bytes, msg=f"Found {leaked_bytes} leaked bytes")
