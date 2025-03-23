@@ -12,7 +12,7 @@ using json = nlohmann::json;
 
 namespace {
 
-void test_intentional_mem_leak(bool free_memory)
+void test_catch_memory_leak(bool free_memory)
 {
     int *val = new int(5);
 
@@ -70,9 +70,9 @@ void command_test(int argc, char **argv)
     const std::string target = argv[2];
 
     if (target == "mem+") {
-        test_intentional_mem_leak(false);
+        test_catch_memory_leak(false);
     } else if (target == "mem-") {
-        test_intentional_mem_leak(true);
+        test_catch_memory_leak(true);
     } else if (target == "ccc") {
         test_create_chat_completion_api();
     } else if (target == "mod") {
