@@ -6,6 +6,8 @@ from unittest import TestCase
 from xml.etree import ElementTree
 from .helpers import get_path_to_gptifier_binary
 
+# We need to do Valgrind tests here since we're doing manual memory management in much of the libcurl code
+
 
 def get_test_command(target: str, xml_file: Path) -> list[str]:
     return [
@@ -38,7 +40,7 @@ def get_leaked_bytes_from_xml(xml_file: Path) -> int:
     return total_leaked_bytes
 
 
-class TestMemory(TestCase):
+class TestClientReusability(TestCase):
 
     def setUp(self) -> None:
         self.xml_file = Path("/tmp/results.xml")
