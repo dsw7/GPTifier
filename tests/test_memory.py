@@ -1,18 +1,21 @@
 from json import loads
-from os import getenv, EX_OK
+from os import EX_OK
 from pathlib import Path
 from subprocess import run, PIPE, DEVNULL
 from unittest import TestCase
 from xml.etree import ElementTree
+from .helpers import get_path_to_gptifier_binary
 
 
 def get_test_command(target: str, xml_file: Path) -> list[str]:
-    path_bin: str | None = getenv("PATH_BIN")
-
-    if path_bin is None:
-        raise SystemExit("Could not locate PATH_BIN environment variable")
-
-    return ["valgrind", "--xml=yes", f"--xml-file={xml_file}", path_bin, "test", target]
+    return [
+        "valgrind",
+        "--xml=yes",
+        f"--xml-file={xml_file}",
+        get_path_to_gptifier_binary(),
+        "test",
+        target,
+    ]
 
 
 def get_leaked_bytes_from_xml(xml_file: Path) -> int:
