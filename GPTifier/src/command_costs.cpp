@@ -1,8 +1,8 @@
 #include "command_costs.hpp"
 
-#include "api_openai_admin.hpp"
 #include "cli.hpp"
 #include "models.hpp"
+#include "networking/api_openai_admin.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"

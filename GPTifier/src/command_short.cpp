@@ -1,7 +1,7 @@
 #include "command_short.hpp"
 
-#include "api_openai_user.hpp"
 #include "cli.hpp"
+#include "networking/api_openai_user.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
 #include "selectors.hpp"

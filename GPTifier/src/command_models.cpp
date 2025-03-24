@@ -1,9 +1,9 @@
 #include "command_models.hpp"
 
-#include "api_openai_admin.hpp"
-#include "api_openai_user.hpp"
 #include "cli.hpp"
 #include "models.hpp"
+#include "networking/api_openai_admin.hpp"
+#include "networking/api_openai_user.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
 #include "validation.hpp"

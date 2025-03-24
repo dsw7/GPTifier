@@ -1,6 +1,6 @@
 #pragma once
 
-#include "curl_base.hpp"
+#include "networking/curl_base.hpp"
 
 #include <ctime>
 #include <string>

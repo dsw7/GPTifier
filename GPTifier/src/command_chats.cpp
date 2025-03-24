@@ -1,9 +1,9 @@
 #include "command_chats.hpp"
 
-#include "api_openai_user.hpp"
 #include "cli.hpp"
 #include "help_messages.hpp"
 #include "models.hpp"
+#include "networking/api_openai_user.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"
 #include "validation.hpp"

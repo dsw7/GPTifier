@@ -1,10 +1,10 @@
 #include "command_embed.hpp"
 
-#include "api_openai_user.hpp"
 #include "cli.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "models.hpp"
+#include "networking/api_openai_user.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
 #include "utils.hpp"

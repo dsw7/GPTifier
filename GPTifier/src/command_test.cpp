@@ -1,6 +1,6 @@
 #include "command_test.hpp"
 
-#include "api_openai_user.hpp"
+#include "networking/api_openai_user.hpp"
 #include "parsers.hpp"
 #include "selectors.hpp"
 

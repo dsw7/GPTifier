@@ -78,8 +78,6 @@ include_directories(
 )
 add_executable(
   "gpt"
-  "src/api_openai_admin.cpp"
-  "src/api_openai_user.cpp"
   "src/cli.cpp"
   "src/command_chats.cpp"
   "src/command_costs.cpp"
@@ -91,11 +89,13 @@ add_executable(
   "src/command_short.cpp"
   "src/command_test.cpp"
   "src/configs.cpp"
-  "src/curl_base.cpp"
   "src/datadir.cpp"
   "src/help_messages.cpp"
   "src/main.cpp"
   "src/models.cpp"
+  "src/networking/api_openai_admin.cpp"
+  "src/networking/api_openai_user.cpp"
+  "src/networking/curl_base.cpp"
   "src/params.cpp"
   "src/parsers.cpp"
   "src/selectors.cpp"
