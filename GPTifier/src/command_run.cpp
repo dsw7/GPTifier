@@ -2,26 +2,20 @@
 
 #include "cli.hpp"
 #include "datadir.hpp"
-#include "models.hpp"
 #include "networking/api_openai_user.hpp"
 #include "params.hpp"
-#include "parsers.hpp"
 #include "selectors.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
-#include "validation.hpp"
 
 #include <chrono>
 #include <filesystem>
 #include <fmt/core.h>
 #include <fstream>
 #include <iostream>
-#include <json.hpp>
 #include <stdexcept>
 #include <string>
 #include <thread>
-
-using json = nlohmann::json;
 
 namespace {
 
@@ -75,9 +69,7 @@ void time_api_call()
     std::cout << std::string(16, ' ') << '\r' << std::flush;
 }
 
-ChatCompletion run_query(
-    const std::string &model, const std::string &prompt,
-    float temperature, bool store_completion)
+ChatCompletion run_query(const std::string &model, const std::string &prompt, float temperature, bool store_completion)
 {
     TIMER_ENABLED = true;
     std::thread timer(time_api_call);
