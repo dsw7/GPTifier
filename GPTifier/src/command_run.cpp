@@ -7,6 +7,7 @@
 #include "params.hpp"
 #include "parsers.hpp"
 #include "selectors.hpp"
+#include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 #include "validation.hpp"
 
@@ -74,42 +75,7 @@ void time_api_call()
     std::cout << std::string(16, ' ') << '\r' << std::flush;
 }
 
-void create_chat_completion(
-    models::ChatCompletion &completion, const std::string &model,
-    const std::string &prompt, float temperature, bool store_completion)
-{
-    const json messages = { { "role", "user" }, { "content", prompt } };
-    json data = {
-        { "model", model },
-        { "temperature", temperature },
-        { "messages", json::array({ messages }) },
-        { "store", store_completion }
-    };
-
-    if (store_completion) {
-        data["metadata"] = { { "prompt", prompt } };
-    }
-
-    OpenAIUser api;
-
-    auto start = std::chrono::high_resolution_clock::now();
-    const std::string response = api.create_chat_completion(data.dump());
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> rtt = end - start;
-
-    const json results = parse_response(response);
-    validation::is_chat_completion(results);
-
-    completion.completion = results["choices"][0]["message"]["content"];
-    completion.completion_tokens = results["usage"]["completion_tokens"];
-    completion.created = results["created"];
-    completion.model = results["model"];
-    completion.prompt = prompt;
-    completion.prompt_tokens = results["usage"]["prompt_tokens"];
-    completion.rtt = rtt;
-}
-
-models::ChatCompletion run_query(
+ChatCompletion run_query(
     const std::string &model, const std::string &prompt,
     float temperature, bool store_completion)
 {
@@ -117,10 +83,10 @@ models::ChatCompletion run_query(
     std::thread timer(time_api_call);
 
     bool query_failed = false;
-    models::ChatCompletion completion;
+    ChatCompletion cc;
 
     try {
-        create_chat_completion(completion, model, prompt, temperature, store_completion);
+        cc = create_chat_completion(prompt, model, temperature, store_completion);
     } catch (std::runtime_error &e) {
         query_failed = true;
         fmt::print(stderr, "{}\n", e.what());
@@ -133,12 +99,12 @@ models::ChatCompletion run_query(
         throw std::runtime_error("Cannot proceed");
     }
 
-    return completion;
+    return cc;
 }
 
 // Output ---------------------------------------------------------------------------------------------------
 
-void dump_chat_completion_response(const models::ChatCompletion &completion, const std::string &json_dump_file)
+void dump_chat_completion_response(const ChatCompletion &completion, const std::string &json_dump_file)
 {
     fmt::print("Dumping results to '{}'\n", json_dump_file);
     std::ofstream st_filename(json_dump_file);
@@ -148,7 +114,7 @@ void dump_chat_completion_response(const models::ChatCompletion &completion, con
         throw std::runtime_error(errmsg);
     }
 
-    st_filename << std::setw(2) << completion.jsonify();
+    st_filename << std::setw(2) << jsonify_cc(completion);
     st_filename.close();
 }
 
@@ -179,7 +145,7 @@ void print_ratio(int num_tokens, int num_words)
     }
 }
 
-void print_usage_statistics(const models::ChatCompletion &completion)
+void print_usage_statistics(const ChatCompletion &completion)
 {
     int wc_prompt = get_word_count(completion.prompt);
     int wc_completion = get_word_count(completion.completion);
@@ -203,7 +169,7 @@ void print_usage_statistics(const models::ChatCompletion &completion)
     print_ratio(completion.completion_tokens, wc_completion);
 }
 
-void write_message_to_file(const models::ChatCompletion &completion)
+void write_message_to_file(const ChatCompletion &completion)
 {
     const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
 
@@ -231,7 +197,7 @@ void write_message_to_file(const models::ChatCompletion &completion)
     st_filename.close();
 }
 
-void export_chat_completion_response(const models::ChatCompletion &completion)
+void export_chat_completion_response(const ChatCompletion &completion)
 {
     fmt::print(fg(white), "Export:\n");
     char choice = 'n';
@@ -296,21 +262,21 @@ void command_run(int argc, char **argv)
         temperature = std::get<float>(params.temperature);
     }
 
-    const models::ChatCompletion completion = run_query(model, prompt, temperature, params.store_completion);
+    const ChatCompletion cc = run_query(model, prompt, temperature, params.store_completion);
 
     if (params.json_dump_file.has_value()) {
-        dump_chat_completion_response(completion, params.json_dump_file.value());
+        dump_chat_completion_response(cc, params.json_dump_file.value());
         return;
     }
 
-    print_usage_statistics(completion);
+    print_usage_statistics(cc);
     print_sep();
 
-    print_chat_completion_response(completion.completion);
+    print_chat_completion_response(cc.completion);
     print_sep();
 
     if (params.enable_export) {
-        export_chat_completion_response(completion);
+        export_chat_completion_response(cc);
         print_sep();
     }
 }
