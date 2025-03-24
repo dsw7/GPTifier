@@ -1,4 +1,4 @@
-#include "command_models.hpp"
+#include "interface/command_models.hpp"
 
 #include "cli.hpp"
 #include "serialization/models.hpp"
