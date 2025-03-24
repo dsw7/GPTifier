@@ -55,10 +55,6 @@ void test_create_chat_completion_api()
     fmt::print("{}\n", results.dump(4));
 }
 
-void test_models_api()
-{
-}
-
 } // namespace
 
 void command_test(int argc, char **argv)
@@ -75,8 +71,6 @@ void command_test(int argc, char **argv)
         test_catch_memory_leak(true);
     } else if (target == "ccc") {
         test_create_chat_completion_api();
-    } else if (target == "mod") {
-        test_models_api();
     } else {
         throw std::runtime_error("Unknown test target: " + target);
     }
