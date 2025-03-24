@@ -1,4 +1,4 @@
-#include "command_embed.hpp"
+#include "interface/command_embed.hpp"
 
 #include "cli.hpp"
 #include "configs.hpp"

@@ -1,4 +1,4 @@
-#include "command_short.hpp"
+#include "interface/command_short.hpp"
 
 #include "cli.hpp"
 #include "networking/api_openai_user.hpp"

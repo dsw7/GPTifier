@@ -1,4 +1,4 @@
-#include "command_run.hpp"
+#include "interface/command_run.hpp"
 
 #include "cli.hpp"
 #include "datadir.hpp"
