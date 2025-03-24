@@ -1,4 +1,4 @@
-#include "command_costs.hpp"
+#include "interface/command_costs.hpp"
 
 #include "cli.hpp"
 #include "params.hpp"
