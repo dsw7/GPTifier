@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from functools import cache
 from json import loads
-from os import environ, EX_OK
+from os import getenv, EX_OK
 from subprocess import run, PIPE
 from typing import Any
 
@@ -9,18 +9,34 @@ _EX_MEM_LEAK = 2
 
 
 @cache
-def _get_path_to_gptifier_binary() -> list[str]:
-    path_bin = environ["PATH_BIN"]
+def get_path_to_gptifier_binary() -> str:
+    path_bin: str | None = getenv("PATH_BIN")
 
-    if "TEST_MEMORY" not in environ:
-        return [path_bin]
+    if path_bin is None:
+        raise SystemExit("Could not locate PATH_BIN environment variable")
 
-    return [
-        "valgrind",
-        f"--error-exitcode={_EX_MEM_LEAK}",
-        "--leak-check=full",
-        path_bin,
-    ]
+    return path_bin
+
+
+@cache
+def is_memory_test() -> bool:
+    if getenv("TEST_MEMORY") is not None:
+        return True
+
+    return False
+
+
+@cache
+def _get_test_command() -> list[str]:
+    if is_memory_test():
+        return [
+            "valgrind",
+            f"--error-exitcode={_EX_MEM_LEAK}",
+            "--leak-check=full",
+            get_path_to_gptifier_binary(),
+        ]
+
+    return [get_path_to_gptifier_binary()]
 
 
 @dataclass
@@ -40,7 +56,8 @@ class Process:
 
 
 def run_process(options: str | list[str]) -> Process:
-    command = [*_get_path_to_gptifier_binary()]
+    command = []
+    command.extend(_get_test_command())
 
     if isinstance(options, str):
         command.append(options)
