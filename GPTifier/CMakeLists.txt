@@ -100,6 +100,7 @@ add_executable(
   "src/parsers.cpp"
   "src/selectors.cpp"
   "src/serialization/chat_completions.cpp"
+  "src/serialization/costs.cpp"
   "src/serialization/embeddings.cpp"
   "src/utils.cpp"
   "src/validation.cpp"

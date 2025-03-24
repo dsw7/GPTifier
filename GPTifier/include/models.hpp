@@ -41,11 +41,4 @@ struct FineTuningJob {
     std::string id;
 };
 
-struct CostsBucket {
-    float cost;
-    std::string org_id;
-    std::time_t end_time;
-    std::time_t start_time;
-};
-
 } // namespace models
