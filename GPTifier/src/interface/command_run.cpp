@@ -2,7 +2,6 @@
 
 #include "cli.hpp"
 #include "datadir.hpp"
-#include "networking/api_openai_user.hpp"
 #include "params.hpp"
 #include "selectors.hpp"
 #include "serialization/chat_completions.hpp"

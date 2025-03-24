@@ -3,7 +3,6 @@
 #include "cli.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
-#include "networking/api_openai_user.hpp"
 #include "params.hpp"
 #include "serialization/embeddings.hpp"
 #include "utils.hpp"

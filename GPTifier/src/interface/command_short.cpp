@@ -1,7 +1,6 @@
 #include "interface/command_short.hpp"
 
 #include "cli.hpp"
-#include "networking/api_openai_user.hpp"
 #include "params.hpp"
 #include "selectors.hpp"
 #include "serialization/chat_completions.hpp"
