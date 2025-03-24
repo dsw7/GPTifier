@@ -17,14 +17,4 @@ nlohmann::json ChatCompletion::jsonify() const
     return results;
 }
 
-nlohmann::json Embedding::jsonify() const
-{
-    nlohmann::json results;
-    results["embedding"] = this->embedding;
-    results["input"] = this->input;
-    results["model"] = this->model;
-
-    return results;
-}
-
 } // namespace models

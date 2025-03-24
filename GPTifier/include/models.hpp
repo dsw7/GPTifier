@@ -21,14 +21,6 @@ struct ChatCompletion {
     nlohmann::json jsonify() const;
 };
 
-struct Embedding {
-    std::string input;
-    std::string model;
-    std::vector<float> embedding;
-
-    nlohmann::json jsonify() const;
-};
-
 struct Model {
     int created_at;
     std::string id;

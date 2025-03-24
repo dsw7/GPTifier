@@ -3,12 +3,10 @@
 #include "cli.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
-#include "models.hpp"
 #include "networking/api_openai_user.hpp"
 #include "params.hpp"
-#include "parsers.hpp"
+#include "serialization/embeddings.hpp"
 #include "utils.hpp"
-#include "validation.hpp"
 
 #include <fmt/core.h>
 #include <fstream>
@@ -31,32 +29,7 @@ std::string read_text_from_stdin()
     return text;
 }
 
-models::Embedding query_embeddings_api(const std::string &model, const std::string &input)
-{
-    const json data = { { "model", model }, { "input", input } };
-
-    OpenAIUser api;
-    const std::string response = api.create_embedding(data.dump());
-    const json results = parse_response(response);
-
-    validation::is_list(results);
-
-    if (validation::is_list_empty(results)) {
-        throw std::runtime_error("List of embeddings from OpenAI is empty");
-    }
-
-    const json first_embedding = results["data"][0];
-    validation::is_embedding(first_embedding);
-
-    models::Embedding embedding;
-    embedding.embedding = first_embedding["embedding"].template get<std::vector<float>>();
-    embedding.input = input;
-    embedding.model = results["model"];
-
-    return embedding;
-}
-
-void export_embedding(const models::Embedding &embedding, const std::optional<std::string> &output_file)
+void export_embedding(const Embedding &em, const std::optional<std::string> &output_file)
 {
     std::string filename;
 
@@ -74,9 +47,13 @@ void export_embedding(const models::Embedding &embedding, const std::optional<st
         throw std::runtime_error(errmsg);
     }
 
-    const json results = embedding.jsonify();
-    st_filename << std::setw(2) << results;
+    json results;
 
+    results["embedding"] = em.embedding;
+    results["input"] = em.input;
+    results["model"] = em.model;
+
+    st_filename << std::setw(2) << results;
     st_filename.close();
 }
 
@@ -110,8 +87,8 @@ void command_embed(int argc, char **argv)
         throw std::runtime_error("No model provided via configuration file or command line");
     }
 
-    const models::Embedding embedding = query_embeddings_api(model, text_to_embed);
-    export_embedding(embedding, params.output_file);
+    const Embedding em = create_embedding(model, text_to_embed);
+    export_embedding(em, params.output_file);
 
     print_sep();
 }
