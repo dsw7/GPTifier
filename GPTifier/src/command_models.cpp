@@ -1,97 +1,37 @@
 #include "command_models.hpp"
 
 #include "cli.hpp"
-#include "models.hpp"
-#include "networking/api_openai_admin.hpp"
-#include "networking/api_openai_user.hpp"
-#include "parsers.hpp"
+#include "serialization/models.hpp"
 #include "utils.hpp"
-#include "validation.hpp"
 
 #include <algorithm>
 #include <fmt/core.h>
-#include <json.hpp>
-#include <map>
 #include <string>
 #include <vector>
 
-using json = nlohmann::json;
-
 namespace {
 
-bool is_owned_by_openai(const std::string &owned_by)
+void get_openai_models(const std::vector<Model> &left, std::vector<Model> &right)
 {
-    return owned_by.compare(0, 6, "openai") == 0 or owned_by.compare(0, 6, "system") == 0;
-}
-
-void get_openai_models(const json &response, std::vector<models::Model> &models)
-{
-    for (const auto &entry: response["data"]) {
-        validation::is_model(entry);
-
-        if (not is_owned_by_openai(entry["owned_by"])) {
-            continue;
+    for (const auto &it: left) {
+        if (it.owned_by_openai) {
+            right.push_back(it);
         }
-
-        models::Model m;
-        m.created_at = entry["created"];
-        m.id = entry["id"];
-        m.owned_by = entry["owned_by"];
-        models.push_back(m);
     }
 }
 
-void resolve_users_from_ids(std::map<std::string, std::string> &users)
+void get_user_models(const std::vector<Model> &left, std::vector<Model> &right)
 {
-    OpenAIAdmin api;
-    std::string response;
-
-    try {
-        response = api.get_users();
-    } catch (const std::runtime_error &e) {
-        return;
-    }
-
-    const json results = parse_response(response);
-    validation::is_list(results);
-
-    for (const auto &user: results["data"]) {
-        validation::is_user(user);
-        std::string id = user.at("id");
-        str_to_lowercase(id);
-        users[id] = user.at("name");
-    }
-}
-
-void get_user_models(const json &response, std::vector<models::Model> &models)
-{
-    std::map<std::string, std::string> users;
-    resolve_users_from_ids(users);
-
-    for (const auto &entry: response["data"]) {
-        validation::is_model(entry);
-
-        if (is_owned_by_openai(entry["owned_by"])) {
-            continue;
+    for (const auto &it: left) {
+        if (not it.owned_by_openai) {
+            right.push_back(it);
         }
-
-        models::Model m;
-
-        if (users.count(entry["owned_by"]) > 0) {
-            m.owned_by = users[entry["owned_by"]];
-        } else {
-            m.owned_by = "-";
-        }
-
-        m.created_at = entry["created"];
-        m.id = entry["id"];
-        models.push_back(m);
     }
 }
 
-void print_models(std::vector<models::Model> &models)
+void print_models(std::vector<Model> &models)
 {
-    std::sort(models.begin(), models.end(), [](const models::Model &left, const models::Model &right) {
+    std::sort(models.begin(), models.end(), [](const Model &left, const Model &right) {
         return left.created_at < right.created_at;
     });
 
@@ -103,7 +43,7 @@ void print_models(std::vector<models::Model> &models)
 
     for (const auto &it: models) {
         const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
-        fmt::print("{:<25}{:<35}{}\n", dt_created_at, it.owned_by, it.id);
+        fmt::print("{:<25}{:<35}{}\n", dt_created_at, it.owner, it.id);
     }
 
     print_sep();
@@ -114,24 +54,20 @@ void print_models(std::vector<models::Model> &models)
 void command_models(int argc, char **argv)
 {
     ParamsModels params = cli::get_opts_models(argc, argv);
-
-    OpenAIUser api;
-    const std::string response = api.get_models();
-    const json results = parse_response(response);
+    Models models = get_models();
 
     if (params.print_raw_json) {
-        fmt::print("{}\n", results.dump(4));
+        fmt::print("{}\n", models.raw_response);
         return;
     }
 
-    validation::is_list(results);
-    std::vector<models::Model> models;
+    std::vector<Model> filtered_models;
 
     if (params.print_user_models) {
-        get_user_models(results, models);
+        get_user_models(models.models, filtered_models);
     } else {
-        get_openai_models(results, models);
+        get_openai_models(models.models, filtered_models);
     }
 
-    print_models(models);
+    print_models(filtered_models);
 }
