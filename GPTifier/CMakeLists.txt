@@ -96,7 +96,6 @@ add_executable(
   "src/networking/api_openai_user.cpp"
   "src/networking/curl_base.cpp"
   "src/params.cpp"
-  "src/parsers.cpp"
   "src/selectors.cpp"
   "src/serialization/chat_completions.cpp"
   "src/serialization/costs.cpp"
@@ -104,6 +103,7 @@ add_executable(
   "src/serialization/files.cpp"
   "src/serialization/fine_tuning.cpp"
   "src/serialization/models.cpp"
+  "src/serialization/parse_response.cpp"
   "src/utils.cpp"
   "src/validation.cpp"
 )

@@ -1,7 +1,7 @@
 #include "serialization/embeddings.hpp"
 
 #include "networking/api_openai_user.hpp"
-#include "parsers.hpp"
+#include "serialization/parse_response.hpp"
 #include "validation.hpp"
 
 using json = nlohmann::json;
