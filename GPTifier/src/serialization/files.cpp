@@ -49,3 +49,15 @@ bool delete_file(const std::string &file_id)
     validation::is_file(results);
     return results["deleted"];
 }
+
+std::string upload_file(const std::string &filename)
+{
+    OpenAIUser api;
+
+    const std::string purpose = "fine-tune";
+    const std::string response = api.upload_file(filename, purpose);
+    const nlohmann::json results = parse_response(response);
+
+    validation::is_file(results);
+    return results["id"];
+}

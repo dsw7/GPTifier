@@ -6,6 +6,7 @@
 #include "networking/api_openai_user.hpp"
 #include "params.hpp"
 #include "parsers.hpp"
+#include "serialization/files.hpp"
 #include "utils.hpp"
 #include "validation.hpp"
 
@@ -36,16 +37,8 @@ void upload_fine_tuning_file(int argc, char **argv)
         return;
     }
 
-    OpenAIUser api;
-    const std::string purpose = "fine-tune";
-    const std::string response = api.upload_file(opt_or_filename, purpose);
-    const json results = parse_response(response);
-
-    validation::is_file(results);
-    const std::string filename = results["filename"];
-    const std::string id = results["id"];
-
-    fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", filename, id);
+    const std::string id = upload_file(opt_or_filename);
+    fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", opt_or_filename, id);
 }
 
 // Create fine tuning job -----------------------------------------------------------------------------------

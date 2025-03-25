@@ -17,3 +17,4 @@ struct Files {
 
 Files get_files();
 bool delete_file(const std::string &file_id);
+std::string upload_file(const std::string &filename);
