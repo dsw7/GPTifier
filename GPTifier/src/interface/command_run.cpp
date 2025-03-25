@@ -41,19 +41,19 @@ void time_api_call()
     while (TIMER_ENABLED) {
         switch (counter) {
             case 0:
-                std::cout << "Processing .    \r" << std::flush;
+                std::cout << "·....\r" << std::flush;
                 break;
             case 5:
-                std::cout << "Processing ..   \r" << std::flush;
+                std::cout << ".·...\r" << std::flush;
                 break;
             case 10:
-                std::cout << "Processing ...  \r" << std::flush;
+                std::cout << "..·..\r" << std::flush;
                 break;
             case 15:
-                std::cout << "Processing .... \r" << std::flush;
+                std::cout << "...·.\r" << std::flush;
                 break;
             case 20:
-                std::cout << "Processing .....\r" << std::flush;
+                std::cout << "....·\r" << std::flush;
                 break;
         }
         counter++;
