@@ -91,3 +91,13 @@ Models get_models()
     unpack_models(results, models);
     return models;
 }
+
+bool delete_model(const std::string &model_id)
+{
+    OpenAIUser api;
+    const std::string response = api.delete_model(model_id);
+    const nlohmann::json results = parse_response(response);
+
+    validation::is_model(results);
+    return results["deleted"];
+}

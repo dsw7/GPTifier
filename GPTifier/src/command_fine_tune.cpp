@@ -8,6 +8,7 @@
 #include "parsers.hpp"
 #include "serialization/files.hpp"
 #include "serialization/fine_tuning.hpp"
+#include "serialization/models.hpp"
 #include "utils.hpp"
 #include "validation.hpp"
 
@@ -83,17 +84,10 @@ void delete_fine_tuned_model(int argc, char **argv)
         return;
     }
 
-    OpenAIUser api;
-    const std::string response = api.delete_model(opt_or_model_id);
-    const json results = parse_response(response);
-
-    validation::is_model(results);
-    const std::string id = results["id"];
-
-    if (results["deleted"]) {
-        fmt::print("Success!\nDeleted model with ID: {}\n", id);
+    if (delete_model(opt_or_model_id)) {
+        fmt::print("Success!\nDeleted model with ID: {}\n", opt_or_model_id);
     } else {
-        fmt::print("Warning!\nDid not delete model with ID: {}\n", id);
+        fmt::print("Warning!\nDid not delete model with ID: {}\n", opt_or_model_id);
     }
 }
 

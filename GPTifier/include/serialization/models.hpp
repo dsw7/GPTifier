@@ -16,3 +16,4 @@ struct Models {
 };
 
 Models get_models();
+bool delete_model(const std::string &model_id);
