@@ -102,6 +102,7 @@ add_executable(
   "src/serialization/costs.cpp"
   "src/serialization/embeddings.cpp"
   "src/serialization/files.cpp"
+  "src/serialization/fine_tuning.cpp"
   "src/serialization/models.cpp"
   "src/utils.cpp"
   "src/validation.cpp"

@@ -7,6 +7,7 @@
 #include "params.hpp"
 #include "parsers.hpp"
 #include "serialization/files.hpp"
+#include "serialization/fine_tuning.hpp"
 #include "utils.hpp"
 #include "validation.hpp"
 
@@ -43,10 +44,9 @@ void upload_fine_tuning_file(int argc, char **argv)
 
 // Create fine tuning job -----------------------------------------------------------------------------------
 
-void create_fine_tuning_job(int argc, char **argv)
+void create_ft_job(int argc, char **argv)
 {
     ParamsFineTune params = cli::get_opts_create_fine_tuning_job(argc, argv);
-
     print_sep();
 
     if (params.training_file.has_value()) {
@@ -63,15 +63,7 @@ void create_fine_tuning_job(int argc, char **argv)
 
     print_sep();
 
-    const json data = { { "model", params.model.value() }, { "training_file", params.training_file.value() } };
-
-    OpenAIUser api;
-    const std::string response = api.create_fine_tuning_job(data.dump());
-    const json results = parse_response(response);
-
-    validation::is_fine_tuning_job(results);
-
-    const std::string id = results["id"];
+    const std::string id = create_fine_tuning_job(params.model.value(), params.training_file.value());
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 
@@ -192,7 +184,7 @@ void command_fine_tune(int argc, char **argv)
     if (subcommand == "upload-file") {
         upload_fine_tuning_file(argc, argv);
     } else if (subcommand == "create-job") {
-        create_fine_tuning_job(argc, argv);
+        create_ft_job(argc, argv);
     } else if (subcommand == "delete-model") {
         delete_fine_tuned_model(argc, argv);
     } else if (subcommand == "list-jobs") {
