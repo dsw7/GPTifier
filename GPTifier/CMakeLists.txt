@@ -92,7 +92,6 @@ add_executable(
   "src/interface/command_run.cpp"
   "src/interface/command_short.cpp"
   "src/main.cpp"
-  "src/models.cpp"
   "src/networking/api_openai_admin.cpp"
   "src/networking/api_openai_user.cpp"
   "src/networking/curl_base.cpp"
