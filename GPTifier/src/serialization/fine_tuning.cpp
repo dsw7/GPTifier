@@ -2,8 +2,8 @@
 
 #include "networking/api_openai_user.hpp"
 #include "serialization/parse_response.hpp"
+#include "serialization/validation.hpp"
 #include "utils.hpp"
-#include "validation.hpp"
 
 #include <json.hpp>
 

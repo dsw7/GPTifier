@@ -104,8 +104,8 @@ add_executable(
   "src/serialization/fine_tuning.cpp"
   "src/serialization/models.cpp"
   "src/serialization/parse_response.cpp"
+  "src/serialization/validation.cpp"
   "src/utils.cpp"
-  "src/validation.cpp"
 )
 target_link_libraries(
   "gpt"
