@@ -17,15 +17,17 @@ bool is_owned_by_openai(const std::string &owned_by)
     return owned_by.compare(0, 6, "openai") == 0 or owned_by.compare(0, 6, "system") == 0;
 }
 
-void resolve_users_from_ids(std::map<std::string, std::string> &users)
+std::map<std::string, std::string> resolve_users_from_ids()
 {
     OpenAIAdmin api;
+
     std::string response;
+    std::map<std::string, std::string> users;
 
     try {
         response = api.get_users();
     } catch (const std::runtime_error &e) {
-        return;
+        return users;
     }
 
     const nlohmann::json results = parse_response(response);
@@ -37,13 +39,23 @@ void resolve_users_from_ids(std::map<std::string, std::string> &users)
         str_to_lowercase(id);
         users[id] = user.at("name");
     }
+
+    return users;
+}
+
+std::string get_owner(const std::string &id)
+{
+    static std::map<std::string, std::string> users = resolve_users_from_ids();
+
+    if (users.count(id) > 0) {
+        return users[id];
+    }
+
+    return "-";
 }
 
 void unpack_models(const nlohmann::json &results, Models &models)
 {
-    std::map<std::string, std::string> users;
-    resolve_users_from_ids(users);
-
     for (const auto &entry: results["data"]) {
         validation::is_model(entry);
 
@@ -56,12 +68,7 @@ void unpack_models(const nlohmann::json &results, Models &models)
             model.owner = entry["owned_by"];
         } else {
             model.owned_by_openai = false;
-
-            if (users.count(entry["owned_by"]) > 0) {
-                model.owner = users[entry["owned_by"]];
-            } else {
-                model.owner = "-";
-            }
+            model.owner = get_owner(entry["owned_by"]);
         }
 
         models.models.push_back(model);
