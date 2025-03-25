@@ -1,4 +1,4 @@
-#include "command_fine_tune.hpp"
+#include "interface/command_fine_tune.hpp"
 
 #include "cli.hpp"
 #include "help_messages.hpp"
@@ -18,7 +18,7 @@ namespace {
 
 // Upload fine tuning file ----------------------------------------------------------------------------------
 
-void upload_fine_tuning_file(int argc, char **argv)
+void upload_ft_file(int argc, char **argv)
 {
     if (argc < 4) {
         cli::help_command_fine_tune_upload_file();
@@ -63,7 +63,7 @@ void create_ft_job(int argc, char **argv)
 
 // Delete fine tuned model-----------------------------------------------------------------------------------
 
-void delete_fine_tuned_model(int argc, char **argv)
+void delete_ft_model(int argc, char **argv)
 {
     if (argc < 4) {
         cli::help_command_fine_tune_delete_model();
@@ -100,7 +100,7 @@ void print_ft_jobs(const FineTuningJobs &ft_jobs)
     print_sep();
 }
 
-void list_fine_tuning_jobs(int argc, char **argv)
+void list_ft_jobs(int argc, char **argv)
 {
     ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
     std::string limit = params.limit.value_or("20");
@@ -141,13 +141,13 @@ void command_fine_tune(int argc, char **argv)
     }
 
     if (subcommand == "upload-file") {
-        upload_fine_tuning_file(argc, argv);
+        upload_ft_file(argc, argv);
     } else if (subcommand == "create-job") {
         create_ft_job(argc, argv);
     } else if (subcommand == "delete-model") {
-        delete_fine_tuned_model(argc, argv);
+        delete_ft_model(argc, argv);
     } else if (subcommand == "list-jobs") {
-        list_fine_tuning_jobs(argc, argv);
+        list_ft_jobs(argc, argv);
     } else {
         cli::help_command_fine_tune();
         exit(EXIT_FAILURE);

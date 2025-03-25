@@ -1,4 +1,3 @@
-#include "command_fine_tune.hpp"
 #include "command_test.hpp"
 #include "configs.hpp"
 #include "help_messages.hpp"
@@ -6,6 +5,7 @@
 #include "interface/command_costs.hpp"
 #include "interface/command_embed.hpp"
 #include "interface/command_files.hpp"
+#include "interface/command_fine_tune.hpp"
 #include "interface/command_models.hpp"
 #include "interface/command_run.hpp"
 #include "interface/command_short.hpp"

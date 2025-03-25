@@ -79,7 +79,6 @@ include_directories(
 add_executable(
   "gpt"
   "src/cli.cpp"
-  "src/command_fine_tune.cpp"
   "src/command_test.cpp"
   "src/configs.cpp"
   "src/datadir.cpp"
@@ -88,6 +87,7 @@ add_executable(
   "src/interface/command_costs.cpp"
   "src/interface/command_embed.cpp"
   "src/interface/command_files.cpp"
+  "src/interface/command_fine_tune.cpp"
   "src/interface/command_models.cpp"
   "src/interface/command_run.cpp"
   "src/interface/command_short.cpp"
