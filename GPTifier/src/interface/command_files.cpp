@@ -1,4 +1,4 @@
-#include "command_files.hpp"
+#include "interface/command_files.hpp"
 
 #include "cli.hpp"
 #include "help_messages.hpp"
