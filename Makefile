@@ -26,7 +26,9 @@ help:
 	@echo "$$HELP_LIST_TARGETS"
 
 format:
-	@clang-format -i --verbose --style=file GPTifier/src/*.cpp GPTifier/include/*.hpp
+	@clang-format -i --verbose --style=file \
+		GPTifier/src/*.cpp GPTifier/src/*/*.cpp \
+		GPTifier/include/*.hpp GPTifier/include/*/*.hpp
 
 compile: format
 	@cmake -S GPTifier -B $(BUILD_DIR_PROD)

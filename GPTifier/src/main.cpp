@@ -1,14 +1,14 @@
-#include "command_chats.hpp"
-#include "command_costs.hpp"
-#include "command_embed.hpp"
-#include "command_files.hpp"
-#include "command_fine_tune.hpp"
-#include "command_models.hpp"
-#include "command_run.hpp"
-#include "command_short.hpp"
 #include "command_test.hpp"
 #include "configs.hpp"
 #include "help_messages.hpp"
+#include "interface/command_chats.hpp"
+#include "interface/command_costs.hpp"
+#include "interface/command_embed.hpp"
+#include "interface/command_files.hpp"
+#include "interface/command_fine_tune.hpp"
+#include "interface/command_models.hpp"
+#include "interface/command_run.hpp"
+#include "interface/command_short.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
