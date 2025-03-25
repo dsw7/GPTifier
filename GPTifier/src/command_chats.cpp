@@ -2,19 +2,12 @@
 
 #include "cli.hpp"
 #include "help_messages.hpp"
-#include "models.hpp"
-#include "networking/api_openai_user.hpp"
-#include "parsers.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
-#include "validation.hpp"
 
 #include <fmt/core.h>
-#include <json.hpp>
 #include <string>
 #include <vector>
-
-using json = nlohmann::json;
 
 namespace {
 
@@ -49,21 +42,29 @@ void command_chats_list(int argc, char **argv)
 
 // Delete chat completion -----------------------------------------------------------------------------------
 
-void delete_chat_completion(const std::string &chat_completion_id)
+bool delete_chats(const std::vector<std::string> &ids)
 {
-    OpenAIUser api;
+    bool success = true;
 
-    const std::string response = api.delete_chat_completion(chat_completion_id);
-    const json results = parse_response(response);
+    for (auto it: ids) {
+        bool deleted = false;
 
-    validation::is_chat_completion_deleted(results);
-    const std::string id = results["id"];
+        try {
+            deleted = delete_chat_completion(it);
+        } catch (const std::runtime_error &e) {
+            fmt::print(stderr, "Failed to delete chat completion with ID: {}. The error was: \"{}\"\n", it, e.what());
+            success = false;
+            continue;
+        }
 
-    if (results["deleted"]) {
-        fmt::print("Success! Deleted chat completion with ID: {}\n", id);
-    } else {
-        fmt::print("Warning! Did not delete chat completion with ID: {}\n", id);
+        if (deleted) {
+            fmt::print("Success! Deleted chat completion with ID: {}\n", it);
+        } else {
+            fmt::print("Warning! Did not delete chat completion with ID: {}\n", it);
+        }
     }
+
+    return success;
 }
 
 void command_chats_delete(int argc, char **argv)
@@ -73,31 +74,19 @@ void command_chats_delete(int argc, char **argv)
         return;
     }
 
-    std::vector<std::string> args;
+    std::vector<std::string> args_or_ids;
 
     for (int i = 3; i < argc; i++) {
-        args.push_back(argv[i]);
+        args_or_ids.push_back(argv[i]);
     }
 
-    if (args[0] == "-h" or args[0] == "--help") {
+    if (args_or_ids[0] == "-h" or args_or_ids[0] == "--help") {
         cli::help_command_chats_delete();
         return;
     }
 
-    bool has_failed = false;
-
-    for (auto it: args) {
-        try {
-            delete_chat_completion(it);
-        } catch (const std::runtime_error &e) {
-            fmt::print(stderr, "Failed to delete chat completion with ID: {}. The error was: \"{}\"\n", it, e.what());
-            has_failed = true;
-            continue;
-        }
-    }
-
-    if (has_failed) {
-        throw std::runtime_error("One or more failures occurred when deleting chat completions");
+    if (not delete_chats(args_or_ids)) {
+        throw std::runtime_error("One or more failures occurred when deleting chats");
     }
 }
 

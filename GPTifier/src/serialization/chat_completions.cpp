@@ -95,3 +95,14 @@ ChatCompletions get_chat_completions(int limit)
     unpack_chat_completions(results, ccs);
     return ccs;
 }
+
+bool delete_chat_completion(const std::string &chat_completion_id)
+{
+    OpenAIUser api;
+
+    const std::string response = api.delete_chat_completion(chat_completion_id);
+    const nlohmann::json results = parse_response(response);
+
+    validation::is_chat_completion_deleted(results);
+    return results["deleted"];
+}
