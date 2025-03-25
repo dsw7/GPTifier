@@ -5,6 +5,7 @@
 #include "models.hpp"
 #include "networking/api_openai_user.hpp"
 #include "parsers.hpp"
+#include "serialization/files.hpp"
 #include "utils.hpp"
 #include "validation.hpp"
 
@@ -20,28 +21,13 @@ namespace {
 
 // List files -----------------------------------------------------------------------------------------------
 
-void unpack_results(const json &results, std::vector<models::File> &files)
-{
-    for (const auto &entry: results["data"]) {
-        validation::is_file(entry);
-
-        models::File file;
-        file.created_at = entry["created_at"];
-        file.filename = entry["filename"];
-        file.id = entry["id"];
-        file.purpose = entry["purpose"];
-
-        files.push_back(file);
-    }
-}
-
-void print_results(const std::vector<models::File> &files)
+void print_results(const Files &files)
 {
     print_sep();
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
     print_sep();
 
-    for (const auto &it: files) {
+    for (const auto &it: files.files) {
         const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
         fmt::print("{:<30}{:<30}{:<30}{}\n", it.id, it.filename, dt_created_at, it.purpose);
     }
@@ -53,19 +39,13 @@ void command_files_list(int argc, char **argv)
 {
     bool print_raw_json = cli::get_opts_files_list(argc, argv);
 
-    OpenAIUser api;
-    const std::string response = api.get_uploaded_files();
-    const json results = parse_response(response);
+    Files files = get_files();
 
     if (print_raw_json) {
-        fmt::print("{}\n", results.dump(4));
+        fmt::print("{}\n", files.raw_response);
         return;
     }
 
-    validation::is_list(results);
-
-    std::vector<models::File> files;
-    unpack_results(results, files);
     print_results(files);
 }
 
