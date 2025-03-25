@@ -2,24 +2,17 @@
 
 #include "cli.hpp"
 #include "help_messages.hpp"
-#include "models.hpp"
 #include "networking/api_openai_user.hpp"
 #include "params.hpp"
-#include "parsers.hpp"
 #include "serialization/files.hpp"
 #include "serialization/fine_tuning.hpp"
 #include "serialization/models.hpp"
 #include "utils.hpp"
-#include "validation.hpp"
 
 #include <algorithm>
 #include <fmt/core.h>
-#include <json.hpp>
 #include <stdexcept>
 #include <string>
-#include <vector>
-
-using json = nlohmann::json;
 
 namespace {
 
@@ -93,34 +86,13 @@ void delete_fine_tuned_model(int argc, char **argv)
 
 // Print fine tuning jobs -----------------------------------------------------------------------------------
 
-void unpack_results(const json &results, std::vector<models::FineTuningJob> &jobs)
-{
-    for (const auto &entry: results["data"]) {
-        validation::is_fine_tuning_job(entry);
-        models::FineTuningJob job;
-
-        job.id = entry["id"];
-        job.created_at = entry["created_at"];
-
-        if (not entry["finished_at"].is_null()) {
-            job.finished_at = datetime_from_unix_timestamp(entry["finished_at"]);
-        }
-
-        if (not entry["estimated_finish"].is_null()) {
-            job.estimated_finish = datetime_from_unix_timestamp(entry["estimated_finish"]);
-        }
-
-        jobs.push_back(job);
-    }
-}
-
-void print_results(const std::vector<models::FineTuningJob> &jobs)
+void print_ft_jobs(const FineTuningJobs &ft_jobs)
 {
     print_sep();
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
     print_sep();
 
-    for (const auto &it: jobs) {
+    for (const auto &it: ft_jobs.jobs) {
         const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
         fmt::print("{:<40}{:<30}{:<30}{}\n", it.id, dt_created_at, it.estimated_finish, it.finished_at);
     }
@@ -133,30 +105,23 @@ void list_fine_tuning_jobs(int argc, char **argv)
     ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
     std::string limit = params.limit.value_or("20");
 
-    OpenAIUser api;
-    const std::string response = api.get_fine_tuning_jobs(limit);
-    const json results = parse_response(response);
+    FineTuningJobs ft_jobs = get_fine_tuning_jobs(limit);
 
     if (params.print_raw_json) {
-        fmt::print("{}\n", results.dump(4));
+        fmt::print("{}\n", ft_jobs.raw_response);
         return;
     }
-
-    validation::is_list(results);
 
     if (not params.limit.has_value()) {
         print_sep();
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
     }
 
-    std::vector<models::FineTuningJob> jobs;
-    unpack_results(results, jobs);
-
-    std::sort(jobs.begin(), jobs.end(), [](const models::FineTuningJob &left, const models::FineTuningJob &right) {
+    std::sort(ft_jobs.jobs.begin(), ft_jobs.jobs.end(), [](const FineTuningJob &left, const FineTuningJob &right) {
         return left.created_at < right.created_at;
     });
 
-    print_results(jobs);
+    print_ft_jobs(ft_jobs);
 }
 
 } // namespace
