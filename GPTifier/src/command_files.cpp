@@ -2,26 +2,19 @@
 
 #include "cli.hpp"
 #include "help_messages.hpp"
-#include "models.hpp"
-#include "networking/api_openai_user.hpp"
-#include "parsers.hpp"
 #include "serialization/files.hpp"
 #include "utils.hpp"
-#include "validation.hpp"
 
 #include <fmt/core.h>
-#include <json.hpp>
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-using json = nlohmann::json;
 
 namespace {
 
 // List files -----------------------------------------------------------------------------------------------
 
-void print_results(const Files &files)
+void print_files(const Files &files)
 {
     print_sep();
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
@@ -46,26 +39,33 @@ void command_files_list(int argc, char **argv)
         return;
     }
 
-    print_results(files);
+    print_files(files);
 }
 
 // Delete files ---------------------------------------------------------------------------------------------
 
-void delete_file(const std::string &file_id)
+bool delete_files(const std::vector<std::string> &ids)
 {
-    OpenAIUser api;
+    bool success = true;
 
-    const std::string response = api.delete_file(file_id);
-    const json results = parse_response(response);
+    for (auto it: ids) {
+        FileDeleteStatus status;
+        try {
+            status = delete_file(it);
+        } catch (const std::runtime_error &e) {
+            fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", it, e.what());
+            success = false;
+            continue;
+        }
 
-    validation::is_file(results);
-    const std::string id = results["id"];
-
-    if (results["deleted"]) {
-        fmt::print("Success! Deleted file with ID: {}\n", id);
-    } else {
-        fmt::print("Warning! Did not delete file with ID: {}\n", id);
+        if (status.deleted) {
+            fmt::print("Success! Deleted file with ID: {}\n", status.id);
+        } else {
+            fmt::print("Warning! Did not delete file with ID: {}\n", status.id);
+        }
     }
+
+    return success;
 }
 
 void command_files_delete(int argc, char **argv)
@@ -75,30 +75,18 @@ void command_files_delete(int argc, char **argv)
         return;
     }
 
-    std::vector<std::string> args;
+    std::vector<std::string> args_or_ids;
 
     for (int i = 3; i < argc; i++) {
-        args.push_back(argv[i]);
+        args_or_ids.push_back(argv[i]);
     }
 
-    if (args[0] == "-h" or args[0] == "--help") {
+    if (args_or_ids[0] == "-h" or args_or_ids[0] == "--help") {
         cli::help_command_files_delete();
         return;
     }
 
-    bool has_failed = false;
-
-    for (auto it: args) {
-        try {
-            delete_file(it);
-        } catch (const std::runtime_error &e) {
-            fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", it, e.what());
-            has_failed = true;
-            continue;
-        }
-    }
-
-    if (has_failed) {
+    if (not delete_files(args_or_ids)) {
         throw std::runtime_error("One or more failures occurred when deleting files");
     }
 }

@@ -39,3 +39,18 @@ Files get_files()
     unpack_files(results, files);
     return files;
 }
+
+FileDeleteStatus delete_file(const std::string &file_id)
+{
+    OpenAIUser api;
+    const std::string response = api.delete_file(file_id);
+    const nlohmann::json results = parse_response(response);
+
+    validation::is_file(results);
+
+    FileDeleteStatus status;
+    status.deleted = results["deleted"];
+    status.id = results["id"];
+
+    return status;
+}

@@ -15,4 +15,10 @@ struct Files {
     std::vector<File> files;
 };
 
+struct FileDeleteStatus {
+    bool deleted = false;
+    std::string id;
+};
+
 Files get_files();
+FileDeleteStatus delete_file(const std::string &file_id);
