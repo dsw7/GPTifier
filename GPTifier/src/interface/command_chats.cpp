@@ -1,4 +1,4 @@
-#include "command_chats.hpp"
+#include "interface/command_chats.hpp"
 
 #include "cli.hpp"
 #include "help_messages.hpp"

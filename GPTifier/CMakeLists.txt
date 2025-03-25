@@ -79,12 +79,12 @@ include_directories(
 add_executable(
   "gpt"
   "src/cli.cpp"
-  "src/command_chats.cpp"
   "src/command_fine_tune.cpp"
   "src/command_test.cpp"
   "src/configs.cpp"
   "src/datadir.cpp"
   "src/help_messages.cpp"
+  "src/interface/command_chats.cpp"
   "src/interface/command_costs.cpp"
   "src/interface/command_embed.cpp"
   "src/interface/command_files.cpp"
