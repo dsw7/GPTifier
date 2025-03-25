@@ -4,6 +4,29 @@
 #include "parsers.hpp"
 #include "validation.hpp"
 
+namespace {
+
+void unpack_chat_completions(const nlohmann::json &results, ChatCompletions &ccs)
+{
+    for (const auto &entry: results["data"]) {
+        validation::is_chat_completion(entry);
+
+        ChatCompletion cc;
+
+        if (entry["metadata"].contains("prompt")) {
+            cc.prompt = entry["metadata"]["prompt"];
+        }
+
+        cc.completion = entry["choices"][0]["message"]["content"];
+        cc.created = entry["created"];
+        cc.id = entry["id"];
+
+        ccs.completions.push_back(cc);
+    }
+}
+
+} // namespace
+
 nlohmann::json jsonify_cc(const ChatCompletion &cc)
 {
     nlohmann::json results;
@@ -20,14 +43,12 @@ nlohmann::json jsonify_cc(const ChatCompletion &cc)
     return results;
 }
 
-ChatCompletion create_chat_completion(
-    const std::string &prompt, const std::string &model,
-    float temperature, bool store_completion)
+ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp, bool store_completion)
 {
     const nlohmann::json messages = { { "role", "user" }, { "content", prompt } };
     nlohmann::json data = {
         { "model", model },
-        { "temperature", temperature },
+        { "temperature", temp },
         { "messages", nlohmann::json::array({ messages }) },
         { "store", store_completion }
     };
@@ -58,4 +79,19 @@ ChatCompletion create_chat_completion(
     cc.rtt = rtt;
 
     return cc;
+}
+
+ChatCompletions get_chat_completions(int limit)
+{
+    OpenAIUser api;
+    const std::string response = api.get_chat_completions(limit);
+    const nlohmann::json results = parse_response(response);
+
+    validation::is_list(results);
+
+    ChatCompletions ccs;
+    ccs.raw_response = response;
+
+    unpack_chat_completions(results, ccs);
+    return ccs;
 }

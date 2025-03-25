@@ -5,6 +5,7 @@
 #include "models.hpp"
 #include "networking/api_openai_user.hpp"
 #include "parsers.hpp"
+#include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 #include "validation.hpp"
 
@@ -19,30 +20,13 @@ namespace {
 
 // List chats -----------------------------------------------------------------------------------------------
 
-void unpack_results(const json &results, std::vector<models::ChatCompletion> &chat_completions)
-{
-    for (const auto &entry: results["data"]) {
-        validation::is_chat_completion(entry);
-
-        models::ChatCompletion cc;
-        if (entry["metadata"].contains("prompt")) {
-            cc.prompt = entry["metadata"]["prompt"];
-        }
-
-        cc.completion = entry["choices"][0]["message"]["content"];
-        cc.created = entry["created"];
-        cc.id = entry["id"];
-        chat_completions.push_back(cc);
-    }
-}
-
-void print_chat_completions(const std::vector<models::ChatCompletion> &chat_completions)
+void print_chat_completions(const ChatCompletions &ccs)
 {
     print_sep();
     fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
     print_sep();
 
-    for (const auto &it: chat_completions) {
+    for (const auto &it: ccs.completions) {
         const std::string dt_created_at = datetime_from_unix_timestamp(it.created);
         fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created_at, it.id, it.prompt, it.completion);
     }
@@ -53,21 +37,14 @@ void print_chat_completions(const std::vector<models::ChatCompletion> &chat_comp
 void command_chats_list(int argc, char **argv)
 {
     ParamsGetChatCompletions params = cli::get_opts_get_chat_completions(argc, argv);
-
-    OpenAIUser api;
-    const std::string response = api.get_chat_completions(std::get<int>(params.limit));
-    const json results = parse_response(response);
+    ChatCompletions ccs = get_chat_completions(std::get<int>(params.limit));
 
     if (params.print_raw_json) {
-        fmt::print("{}\n", results.dump(4));
+        fmt::print("{}\n", ccs.raw_response);
         return;
     }
 
-    validation::is_list(results);
-
-    std::vector<models::ChatCompletion> chat_completions;
-    unpack_results(results, chat_completions);
-    print_chat_completions(chat_completions);
+    print_chat_completions(ccs);
 }
 
 // Delete chat completion -----------------------------------------------------------------------------------
