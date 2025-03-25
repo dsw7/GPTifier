@@ -4,11 +4,9 @@
 #include "parsers.hpp"
 #include "validation.hpp"
 
-using json = nlohmann::json;
-
-json jsonify_cc(const ChatCompletion &cc)
+nlohmann::json jsonify_cc(const ChatCompletion &cc)
 {
-    json results;
+    nlohmann::json results;
 
     results["completion"] = cc.completion;
     results["completion_tokens"] = cc.completion_tokens;
@@ -26,11 +24,11 @@ ChatCompletion create_chat_completion(
     const std::string &prompt, const std::string &model,
     float temperature, bool store_completion)
 {
-    const json messages = { { "role", "user" }, { "content", prompt } };
-    json data = {
+    const nlohmann::json messages = { { "role", "user" }, { "content", prompt } };
+    nlohmann::json data = {
         { "model", model },
         { "temperature", temperature },
-        { "messages", json::array({ messages }) },
+        { "messages", nlohmann::json::array({ messages }) },
         { "store", store_completion }
     };
 
@@ -45,7 +43,7 @@ ChatCompletion create_chat_completion(
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> rtt = end - start;
 
-    const json results = parse_response(response);
+    const nlohmann::json results = parse_response(response);
     validation::is_chat_completion(results);
 
     ChatCompletion cc;
