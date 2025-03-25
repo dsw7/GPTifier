@@ -49,19 +49,20 @@ bool delete_files(const std::vector<std::string> &ids)
     bool success = true;
 
     for (auto it: ids) {
-        FileDeleteStatus status;
+        bool deleted = false;
+
         try {
-            status = delete_file(it);
+            deleted = delete_file(it);
         } catch (const std::runtime_error &e) {
             fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", it, e.what());
             success = false;
             continue;
         }
 
-        if (status.deleted) {
-            fmt::print("Success! Deleted file with ID: {}\n", status.id);
+        if (deleted) {
+            fmt::print("Success! Deleted file with ID: {}\n", it);
         } else {
-            fmt::print("Warning! Did not delete file with ID: {}\n", status.id);
+            fmt::print("Warning! Did not delete file with ID: {}\n", it);
         }
     }
 

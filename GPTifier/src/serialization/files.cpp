@@ -40,17 +40,12 @@ Files get_files()
     return files;
 }
 
-FileDeleteStatus delete_file(const std::string &file_id)
+bool delete_file(const std::string &file_id)
 {
     OpenAIUser api;
     const std::string response = api.delete_file(file_id);
     const nlohmann::json results = parse_response(response);
 
     validation::is_file(results);
-
-    FileDeleteStatus status;
-    status.deleted = results["deleted"];
-    status.id = results["id"];
-
-    return status;
+    return results["deleted"];
 }
