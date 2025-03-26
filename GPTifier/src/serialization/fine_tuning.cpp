@@ -1,8 +1,6 @@
 #include "serialization/fine_tuning.hpp"
 
 #include "networking/api_openai_user.hpp"
-#include "serialization/parse_response.hpp"
-#include "serialization/validation.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -11,10 +9,9 @@
 
 namespace {
 
-void unpack_fine_tuning_jobs(const nlohmann::json &results, FineTuningJobs &ft_jobs)
+void unpack_fine_tuning_jobs(const nlohmann::json &results, FineTuningJobs &fine_tuning_jobs)
 {
     for (const auto &entry: results["data"]) {
-        validation::is_fine_tuning_job(entry);
         FineTuningJob job;
 
         job.id = entry["id"];
@@ -28,8 +25,30 @@ void unpack_fine_tuning_jobs(const nlohmann::json &results, FineTuningJobs &ft_j
             job.estimated_finish = datetime_from_unix_timestamp(entry["estimated_finish"]);
         }
 
-        ft_jobs.jobs.push_back(job);
+        fine_tuning_jobs.jobs.push_back(job);
     }
+}
+
+FineTuningJobs unpack_response(const std::string &response)
+{
+    FineTuningJobs fine_tuning_jobs;
+    nlohmann::json results;
+
+    try {
+        results = nlohmann::json::parse(response);
+    } catch (const nlohmann::json::parse_error &e) {
+        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
+    }
+
+    try {
+        unpack_fine_tuning_jobs(results, fine_tuning_jobs);
+    } catch (nlohmann::json::out_of_range &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    } catch (nlohmann::json::type_error &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    }
+
+    return fine_tuning_jobs;
 }
 
 } // namespace
@@ -38,15 +57,10 @@ FineTuningJobs get_fine_tuning_jobs(const std::string &limit)
 {
     OpenAIUser api;
     const std::string response = api.get_fine_tuning_jobs(limit);
-    const nlohmann::json results = parse_response(response);
 
-    validation::is_list(results);
-
-    FineTuningJobs ft_jobs;
-    ft_jobs.raw_response = response;
-
-    unpack_fine_tuning_jobs(results, ft_jobs);
-    return ft_jobs;
+    FineTuningJobs fine_tuning_jobs = unpack_response(response);
+    fine_tuning_jobs.raw_response = response;
+    return fine_tuning_jobs;
 }
 
 std::string create_fine_tuning_job(const std::string &model, const std::string &training_file)

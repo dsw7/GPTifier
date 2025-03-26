@@ -30,11 +30,4 @@ void is_chat_completion_deleted(const nlohmann::json &json)
     }
 }
 
-void is_fine_tuning_job(const nlohmann::json &json)
-{
-    if (json["object"] != "fine_tuning.job") {
-        throw std::runtime_error("Object is not an fine_tuning.job object");
-    }
-}
-
 } // namespace validation
