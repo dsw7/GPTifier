@@ -4,7 +4,9 @@
 #include "serialization/parse_response.hpp"
 #include "serialization/validation.hpp"
 
+#include <fmt/core.h>
 #include <json.hpp>
+#include <stdexcept>
 
 namespace {
 
@@ -44,9 +46,18 @@ bool delete_file(const std::string &file_id)
 {
     OpenAIUser api;
     const std::string response = api.delete_file(file_id);
-    const nlohmann::json results = parse_response(response);
 
-    validation::is_file(results);
+    nlohmann::json results;
+    try {
+        results = nlohmann::json::parse(response);
+    } catch (const nlohmann::json::parse_error &e) {
+        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
+    }
+
+    if (not results.contains("deleted")) {
+        throw std::runtime_error("Malformed response. Missing 'deleted' key");
+    }
+
     return results["deleted"];
 }
 
