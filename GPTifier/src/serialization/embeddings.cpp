@@ -1,29 +1,34 @@
 #include "serialization/embeddings.hpp"
 
 #include "networking/api_openai_user.hpp"
-#include "serialization/parse_response.hpp"
-#include "serialization/validation.hpp"
 
+#include <fmt/core.h>
 #include <json.hpp>
+#include <stdexcept>
 
 namespace {
 
-void unpack_response(const nlohmann::json &response, Embedding &embedding)
+Embedding unpack_response(const std::string &response)
 {
-    if (response["object"] != "list") {
-        throw std::runtime_error("Object is not a list of embeddings");
+    nlohmann::json results;
+    Embedding embedding;
+
+    try {
+        results = nlohmann::json::parse(response);
+    } catch (const nlohmann::json::parse_error &e) {
+        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
     }
 
-    if (response["data"].empty()) {
-        throw std::runtime_error("List of embeddings from OpenAI is empty");
+    try {
+        embedding.embedding = results["data"][0]["embedding"].template get<std::vector<float>>();
+        embedding.model = results["model"];
+    } catch (nlohmann::json::out_of_range &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    } catch (nlohmann::json::type_error &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     }
 
-    if (response["data"][0] != "embedding") {
-        throw std::runtime_error("Object is not an embedding");
-    }
-
-    embedding.embedding = response["data"][0]["embedding"].template get<std::vector<float>>();
-    embedding.model = response["model"];
+    return embedding;
 }
 
 } // namespace
@@ -34,10 +39,7 @@ Embedding create_embedding(const std::string &model, const std::string &input)
 
     OpenAIUser api;
     const std::string response = api.create_embedding(data.dump());
-    const nlohmann::json results = parse_response(response);
-
-    Embedding embedding;
-    unpack_response(results, embedding);
+    Embedding embedding = unpack_response(response);
 
     embedding.input = input;
     return embedding;
