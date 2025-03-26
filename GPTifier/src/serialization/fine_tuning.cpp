@@ -5,7 +5,9 @@
 #include "serialization/validation.hpp"
 #include "utils.hpp"
 
+#include <fmt/core.h>
 #include <json.hpp>
+#include <stdexcept>
 
 namespace {
 
@@ -32,18 +34,6 @@ void unpack_fine_tuning_jobs(const nlohmann::json &results, FineTuningJobs &ft_j
 
 } // namespace
 
-std::string create_fine_tuning_job(const std::string &model, const std::string &training_file)
-{
-    const nlohmann::json data = { { "model", model }, { "training_file", training_file } };
-
-    OpenAIUser api;
-    const std::string response = api.create_fine_tuning_job(data.dump());
-    const nlohmann::json results = parse_response(response);
-
-    validation::is_fine_tuning_job(results);
-    return results["id"];
-}
-
 FineTuningJobs get_fine_tuning_jobs(const std::string &limit)
 {
     OpenAIUser api;
@@ -57,4 +47,25 @@ FineTuningJobs get_fine_tuning_jobs(const std::string &limit)
 
     unpack_fine_tuning_jobs(results, ft_jobs);
     return ft_jobs;
+}
+
+std::string create_fine_tuning_job(const std::string &model, const std::string &training_file)
+{
+    const nlohmann::json data = { { "model", model }, { "training_file", training_file } };
+
+    OpenAIUser api;
+    const std::string response = api.create_fine_tuning_job(data.dump());
+
+    nlohmann::json results;
+    try {
+        results = nlohmann::json::parse(response);
+    } catch (const nlohmann::json::parse_error &e) {
+        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
+    }
+
+    if (not results.contains("id")) {
+        throw std::runtime_error("Malformed response. Missing 'id' key");
+    }
+
+    return results["id"];
 }
