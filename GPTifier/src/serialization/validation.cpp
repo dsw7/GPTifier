@@ -37,13 +37,6 @@ void is_model(const nlohmann::json &json)
     }
 }
 
-void is_file(const nlohmann::json &json)
-{
-    if (json["object"] != "file") {
-        throw std::runtime_error("Object is not a file");
-    }
-}
-
 void is_user(const nlohmann::json &json)
 {
     if (json["object"] != "organization.user") {
