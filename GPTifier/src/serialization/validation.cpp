@@ -4,25 +4,6 @@
 
 namespace validation {
 
-void is_page(const nlohmann::json &json)
-{
-    if (json["object"] != "page") {
-        throw std::runtime_error("Object is not a page");
-    }
-}
-
-void is_bucket(const nlohmann::json &json)
-{
-    if (json["object"] != "bucket") {
-        throw std::runtime_error("Object is not a bucket");
-    }
-}
-
-bool is_bucket_empty(const nlohmann::json &json)
-{
-    return json["results"].empty();
-}
-
 void is_list(const nlohmann::json &json)
 {
     if (json["object"] != "list") {
@@ -67,13 +48,6 @@ void is_user(const nlohmann::json &json)
 {
     if (json["object"] != "organization.user") {
         throw std::runtime_error("Object is not an organization.user object");
-    }
-}
-
-void is_cost(const nlohmann::json &json)
-{
-    if (json["object"] != "organization.costs.result") {
-        throw std::runtime_error("Object is not an organization.costs.result object");
     }
 }
 
