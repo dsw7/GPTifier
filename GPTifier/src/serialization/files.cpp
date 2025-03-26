@@ -64,11 +64,19 @@ bool delete_file(const std::string &file_id)
 std::string upload_file(const std::string &filename)
 {
     OpenAIUser api;
-
     const std::string purpose = "fine-tune";
     const std::string response = api.upload_file(filename, purpose);
-    const nlohmann::json results = parse_response(response);
 
-    validation::is_file(results);
+    nlohmann::json results;
+    try {
+        results = nlohmann::json::parse(response);
+    } catch (const nlohmann::json::parse_error &e) {
+        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
+    }
+
+    if (not results.contains("id")) {
+        throw std::runtime_error("Malformed response. Missing 'id' key");
+    }
+
     return results["id"];
 }
