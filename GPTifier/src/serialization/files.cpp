@@ -1,8 +1,6 @@
 #include "serialization/files.hpp"
 
 #include "networking/api_openai_user.hpp"
-#include "serialization/parse_response.hpp"
-#include "serialization/validation.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -13,8 +11,6 @@ namespace {
 void unpack_files(const nlohmann::json &results, Files &files)
 {
     for (const auto &entry: results["data"]) {
-        validation::is_file(entry);
-
         File file;
         file.created_at = entry["created_at"];
         file.filename = entry["filename"];
@@ -25,20 +21,37 @@ void unpack_files(const nlohmann::json &results, Files &files)
     }
 }
 
+Files unpack_response(const std::string &response)
+{
+    Files files;
+    nlohmann::json results;
+
+    try {
+        results = nlohmann::json::parse(response);
+    } catch (const nlohmann::json::parse_error &e) {
+        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
+    }
+
+    try {
+        unpack_files(results, files);
+    } catch (nlohmann::json::out_of_range &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    } catch (nlohmann::json::type_error &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    }
+
+    return files;
+}
+
 } // namespace
 
 Files get_files()
 {
     OpenAIUser api;
     const std::string response = api.get_uploaded_files();
-    const nlohmann::json results = parse_response(response);
 
-    validation::is_list(results);
-
-    Files files;
+    Files files = unpack_response(response);
     files.raw_response = response;
-
-    unpack_files(results, files);
     return files;
 }
 
