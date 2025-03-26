@@ -6,6 +6,8 @@
 #include "serialization/validation.hpp"
 #include "utils.hpp"
 
+#include <fmt/core.h>
+#include <json.hpp>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -96,8 +98,17 @@ bool delete_model(const std::string &model_id)
 {
     OpenAIUser api;
     const std::string response = api.delete_model(model_id);
-    const nlohmann::json results = parse_response(response);
 
-    validation::is_model(results);
+    nlohmann::json results;
+    try {
+        results = nlohmann::json::parse(response);
+    } catch (const nlohmann::json::parse_error &e) {
+        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
+    }
+
+    if (not results.contains("deleted")) {
+        throw std::runtime_error("Malformed response. Missing 'deleted' key");
+    }
+
     return results["deleted"];
 }
