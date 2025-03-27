@@ -1,9 +1,7 @@
 #include "serialization/chat_completions.hpp"
 
 #include "networking/api_openai_user.hpp"
-#include "serialization/parse_response.hpp"
 #include "serialization/response_to_json.hpp"
-#include "serialization/validation.hpp"
 
 #include <fmt/core.h>
 
@@ -69,19 +67,23 @@ ChatCompletion create_chat_completion(const std::string &prompt, const std::stri
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> rtt = end - start;
 
-    const nlohmann::json results = parse_response(response);
-    validation::is_chat_completion(results);
-
+    const nlohmann::json json = response_to_json(response);
     ChatCompletion cc;
 
-    cc.completion = results["choices"][0]["message"]["content"];
-    cc.completion_tokens = results["usage"]["completion_tokens"];
-    cc.created = results["created"];
-    cc.model = results["model"];
-    cc.prompt = prompt;
-    cc.prompt_tokens = results["usage"]["prompt_tokens"];
-    cc.raw_response = response;
-    cc.rtt = rtt;
+    try {
+        cc.completion = json["choices"][0]["message"]["content"];
+        cc.completion_tokens = json["usage"]["completion_tokens"];
+        cc.created = json["created"];
+        cc.model = json["model"];
+        cc.prompt = prompt;
+        cc.prompt_tokens = json["usage"]["prompt_tokens"];
+        cc.raw_response = response;
+        cc.rtt = rtt;
+    } catch (nlohmann::json::out_of_range &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    } catch (nlohmann::json::type_error &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    }
 
     return cc;
 }
