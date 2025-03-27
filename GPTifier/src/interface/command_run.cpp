@@ -183,9 +183,6 @@ void write_message_to_file(const ChatCompletion &completion)
 
     const std::string created = datetime_from_unix_timestamp(completion.created);
 
-    static int column_width = 110;
-    std::string sep_inner(column_width, '-');
-
     st_filename << "{\n";
     st_filename << "> Created at: " + created + " (GMT)\n";
     st_filename << "> Model: " + completion.model + "\n\n";
