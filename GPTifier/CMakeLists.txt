@@ -105,7 +105,6 @@ add_executable(
   "src/serialization/models.cpp"
   "src/serialization/parse_response.cpp"
   "src/serialization/response_to_json.cpp"
-  "src/serialization/validation.cpp"
   "src/utils.cpp"
 )
 target_link_libraries(
