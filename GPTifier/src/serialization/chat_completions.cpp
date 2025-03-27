@@ -2,6 +2,7 @@
 
 #include "networking/api_openai_user.hpp"
 #include "serialization/parse_response.hpp"
+#include "serialization/response_to_json.hpp"
 #include "serialization/validation.hpp"
 
 namespace {
@@ -99,10 +100,12 @@ ChatCompletions get_chat_completions(int limit)
 bool delete_chat_completion(const std::string &chat_completion_id)
 {
     OpenAIUser api;
-
     const std::string response = api.delete_chat_completion(chat_completion_id);
-    const nlohmann::json results = parse_response(response);
+    const nlohmann::json json = response_to_json(response);
 
-    validation::is_chat_completion_deleted(results);
-    return results["deleted"];
+    if (not json.contains("deleted")) {
+        throw std::runtime_error("Malformed response. Missing 'deleted' key");
+    }
+
+    return json["deleted"];
 }

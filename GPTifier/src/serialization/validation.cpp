@@ -18,11 +18,4 @@ void is_chat_completion(const nlohmann::json &json)
     }
 }
 
-void is_chat_completion_deleted(const nlohmann::json &json)
-{
-    if (json["object"] != "chat.completion.deleted") {
-        throw std::runtime_error("Object is not a chat completion deletion");
-    }
-}
-
 } // namespace validation
