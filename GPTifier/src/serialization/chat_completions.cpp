@@ -5,13 +5,13 @@
 #include "serialization/response_to_json.hpp"
 #include "serialization/validation.hpp"
 
+#include <fmt/core.h>
+
 namespace {
 
-void unpack_chat_completions(const nlohmann::json &results, ChatCompletions &ccs)
+void unpack_chat_completions(const nlohmann::json &json, ChatCompletions &ccs)
 {
-    for (const auto &entry: results["data"]) {
-        validation::is_chat_completion(entry);
-
+    for (const auto &entry: json["data"]) {
         ChatCompletion cc;
 
         if (entry["metadata"].contains("prompt")) {
@@ -32,15 +32,20 @@ ChatCompletions get_chat_completions(int limit)
 {
     OpenAIUser api;
     const std::string response = api.get_chat_completions(limit);
-    const nlohmann::json results = parse_response(response);
+    const nlohmann::json json = response_to_json(response);
 
-    validation::is_list(results);
+    ChatCompletions chat_completions;
+    chat_completions.raw_response = response;
 
-    ChatCompletions ccs;
-    ccs.raw_response = response;
+    try {
+        unpack_chat_completions(json, chat_completions);
+    } catch (nlohmann::json::out_of_range &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    } catch (nlohmann::json::type_error &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    }
 
-    unpack_chat_completions(results, ccs);
-    return ccs;
+    return chat_completions;
 }
 
 ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp, bool store_completion)
