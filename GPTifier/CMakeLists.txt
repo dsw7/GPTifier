@@ -104,6 +104,7 @@ add_executable(
   "src/serialization/fine_tuning.cpp"
   "src/serialization/models.cpp"
   "src/serialization/parse_response.cpp"
+  "src/serialization/response_to_json.cpp"
   "src/serialization/validation.cpp"
   "src/utils.cpp"
 )
