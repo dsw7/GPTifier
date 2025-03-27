@@ -23,8 +23,7 @@ struct ChatCompletions {
     std::vector<ChatCompletion> completions;
 };
 
-nlohmann::json jsonify_cc(const ChatCompletion &cc);
-
-ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp, bool store_completion);
 ChatCompletions get_chat_completions(int limit);
+nlohmann::json jsonify_cc(const ChatCompletion &cc);
+ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp, bool store_completion);
 bool delete_chat_completion(const std::string &chat_completion_id);

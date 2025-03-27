@@ -28,6 +28,21 @@ void unpack_chat_completions(const nlohmann::json &results, ChatCompletions &ccs
 
 } // namespace
 
+ChatCompletions get_chat_completions(int limit)
+{
+    OpenAIUser api;
+    const std::string response = api.get_chat_completions(limit);
+    const nlohmann::json results = parse_response(response);
+
+    validation::is_list(results);
+
+    ChatCompletions ccs;
+    ccs.raw_response = response;
+
+    unpack_chat_completions(results, ccs);
+    return ccs;
+}
+
 nlohmann::json jsonify_cc(const ChatCompletion &cc)
 {
     nlohmann::json results;
@@ -80,21 +95,6 @@ ChatCompletion create_chat_completion(const std::string &prompt, const std::stri
     cc.rtt = rtt;
 
     return cc;
-}
-
-ChatCompletions get_chat_completions(int limit)
-{
-    OpenAIUser api;
-    const std::string response = api.get_chat_completions(limit);
-    const nlohmann::json results = parse_response(response);
-
-    validation::is_list(results);
-
-    ChatCompletions ccs;
-    ccs.raw_response = response;
-
-    unpack_chat_completions(results, ccs);
-    return ccs;
 }
 
 bool delete_chat_completion(const std::string &chat_completion_id)
