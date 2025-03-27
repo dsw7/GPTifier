@@ -2,13 +2,11 @@
 
 #include "networking/api_openai_user.hpp"
 #include "selectors.hpp"
-#include "serialization/parse_response.hpp"
+#include "serialization/response_to_json.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
-
-using json = nlohmann::json;
 
 namespace {
 
@@ -25,31 +23,31 @@ void test_catch_memory_leak(bool free_memory)
 
 void test_create_chat_completion_api()
 {
-    const json messages = {
+    const nlohmann::json messages = {
         { "role", "user" },
         { "content", "What is 5 + 5? Return the result as follows: >>>{result}<<<" }
     };
-    const json data = {
+    const nlohmann::json data = {
         { "model", select_chat_model() },
         { "temperature", 0.00 },
-        { "messages", json::array({ messages }) }
+        { "messages", nlohmann::json::array({ messages }) }
     };
 
     OpenAIUser api;
 
     const std::string dump = data.dump();
-    const std::string c_1 = api.create_chat_completion(dump);
-    const std::string c_2 = api.create_chat_completion(dump);
-    const std::string c_3 = api.create_chat_completion(dump);
+    const std::string response_1 = api.create_chat_completion(dump);
+    const std::string response_2 = api.create_chat_completion(dump);
+    const std::string response_3 = api.create_chat_completion(dump);
 
-    const json r_1 = parse_response(c_1);
-    const json r_2 = parse_response(c_2);
-    const json r_3 = parse_response(c_3);
+    const nlohmann::json json_1 = response_to_json(response_1);
+    const nlohmann::json json_2 = response_to_json(response_2);
+    const nlohmann::json json_3 = response_to_json(response_3);
 
-    const json results = {
-        { "result_1", r_1["choices"][0]["message"]["content"] },
-        { "result_2", r_2["choices"][0]["message"]["content"] },
-        { "result_3", r_3["choices"][0]["message"]["content"] },
+    const nlohmann::json results = {
+        { "result_1", json_1["choices"][0]["message"]["content"] },
+        { "result_2", json_2["choices"][0]["message"]["content"] },
+        { "result_3", json_3["choices"][0]["message"]["content"] },
     };
 
     fmt::print("{}\n", results.dump(4));
