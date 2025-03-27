@@ -32,7 +32,7 @@ void unpack_costs(const nlohmann::json &json, Costs &costs)
 
 Costs unpack_response(const std::string &response)
 {
-    nlohmann::json json = response_to_json(response);
+    const nlohmann::json json = response_to_json(response);
     Costs costs;
 
     try {

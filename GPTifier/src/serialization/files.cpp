@@ -24,7 +24,7 @@ void unpack_files(const nlohmann::json &json, Files &files)
 
 Files unpack_response(const std::string &response)
 {
-    nlohmann::json json = response_to_json(response);
+    const nlohmann::json json = response_to_json(response);
     Files files;
 
     try {
@@ -55,7 +55,7 @@ bool delete_file(const std::string &file_id)
     OpenAIUser api;
     const std::string response = api.delete_file(file_id);
 
-    nlohmann::json json = response_to_json(response);
+    const nlohmann::json json = response_to_json(response);
 
     if (not json.contains("deleted")) {
         throw std::runtime_error("Malformed response. Missing 'deleted' key");
@@ -70,7 +70,7 @@ std::string upload_file(const std::string &filename)
     const std::string purpose = "fine-tune";
     const std::string response = api.upload_file(filename, purpose);
 
-    nlohmann::json json = response_to_json(response);
+    const nlohmann::json json = response_to_json(response);
 
     if (not json.contains("id")) {
         throw std::runtime_error("Malformed response. Missing 'id' key");

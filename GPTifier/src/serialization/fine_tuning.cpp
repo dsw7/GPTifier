@@ -32,7 +32,7 @@ void unpack_fine_tuning_jobs(const nlohmann::json &json, FineTuningJobs &fine_tu
 
 FineTuningJobs unpack_response(const std::string &response)
 {
-    nlohmann::json json = response_to_json(response);
+    const nlohmann::json json = response_to_json(response);
     FineTuningJobs fine_tuning_jobs;
 
     try {
@@ -65,7 +65,7 @@ std::string create_fine_tuning_job(const std::string &model, const std::string &
     OpenAIUser api;
     const std::string response = api.create_fine_tuning_job(data.dump());
 
-    nlohmann::json json = response_to_json(response);
+    const nlohmann::json json = response_to_json(response);
 
     if (not json.contains("id")) {
         throw std::runtime_error("Malformed response. Missing 'id' key");

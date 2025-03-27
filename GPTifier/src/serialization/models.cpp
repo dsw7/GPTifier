@@ -29,7 +29,7 @@ void unpack_models(const nlohmann::json &json, Models &models)
 
 Models unpack_response(const std::string &response)
 {
-    nlohmann::json json = response_to_json(response);
+    const nlohmann::json json = response_to_json(response);
     Models models;
 
     try {
@@ -59,7 +59,7 @@ bool delete_model(const std::string &model_id)
 {
     OpenAIUser api;
     const std::string response = api.delete_model(model_id);
-    nlohmann::json json = response_to_json(response);
+    const nlohmann::json json = response_to_json(response);
 
     if (not json.contains("deleted")) {
         throw std::runtime_error("Malformed response. Missing 'deleted' key");

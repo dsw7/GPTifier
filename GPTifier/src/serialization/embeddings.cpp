@@ -12,7 +12,7 @@ namespace {
 Embedding unpack_response(const std::string &response)
 {
     Embedding embedding;
-    nlohmann::json json = response_to_json(response);
+    const nlohmann::json json = response_to_json(response);
 
     try {
         embedding.embedding = json["data"][0]["embedding"].template get<std::vector<float>>();
