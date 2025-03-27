@@ -1,6 +1,7 @@
 #include "serialization/fine_tuning.hpp"
 
 #include "networking/api_openai_user.hpp"
+#include "serialization/response_to_json.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -9,9 +10,9 @@
 
 namespace {
 
-void unpack_fine_tuning_jobs(const nlohmann::json &results, FineTuningJobs &fine_tuning_jobs)
+void unpack_fine_tuning_jobs(const nlohmann::json &json, FineTuningJobs &fine_tuning_jobs)
 {
-    for (const auto &entry: results["data"]) {
+    for (const auto &entry: json["data"]) {
         FineTuningJob job;
 
         job.id = entry["id"];
@@ -31,17 +32,11 @@ void unpack_fine_tuning_jobs(const nlohmann::json &results, FineTuningJobs &fine
 
 FineTuningJobs unpack_response(const std::string &response)
 {
+    nlohmann::json json = response_to_json(response);
     FineTuningJobs fine_tuning_jobs;
-    nlohmann::json results;
 
     try {
-        results = nlohmann::json::parse(response);
-    } catch (const nlohmann::json::parse_error &e) {
-        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
-    }
-
-    try {
-        unpack_fine_tuning_jobs(results, fine_tuning_jobs);
+        unpack_fine_tuning_jobs(json, fine_tuning_jobs);
     } catch (nlohmann::json::out_of_range &e) {
         throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     } catch (nlohmann::json::type_error &e) {
@@ -70,16 +65,11 @@ std::string create_fine_tuning_job(const std::string &model, const std::string &
     OpenAIUser api;
     const std::string response = api.create_fine_tuning_job(data.dump());
 
-    nlohmann::json results;
-    try {
-        results = nlohmann::json::parse(response);
-    } catch (const nlohmann::json::parse_error &e) {
-        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
-    }
+    nlohmann::json json = response_to_json(response);
 
-    if (not results.contains("id")) {
+    if (not json.contains("id")) {
         throw std::runtime_error("Malformed response. Missing 'id' key");
     }
 
-    return results["id"];
+    return json["id"];
 }

@@ -1,6 +1,7 @@
 #include "serialization/embeddings.hpp"
 
 #include "networking/api_openai_user.hpp"
+#include "serialization/response_to_json.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -10,18 +11,12 @@ namespace {
 
 Embedding unpack_response(const std::string &response)
 {
-    nlohmann::json results;
     Embedding embedding;
+    nlohmann::json json = response_to_json(response);
 
     try {
-        results = nlohmann::json::parse(response);
-    } catch (const nlohmann::json::parse_error &e) {
-        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
-    }
-
-    try {
-        embedding.embedding = results["data"][0]["embedding"].template get<std::vector<float>>();
-        embedding.model = results["model"];
+        embedding.embedding = json["data"][0]["embedding"].template get<std::vector<float>>();
+        embedding.model = json["model"];
     } catch (nlohmann::json::out_of_range &e) {
         throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     } catch (nlohmann::json::type_error &e) {

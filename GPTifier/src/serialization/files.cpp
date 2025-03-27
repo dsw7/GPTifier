@@ -1,6 +1,7 @@
 #include "serialization/files.hpp"
 
 #include "networking/api_openai_user.hpp"
+#include "serialization/response_to_json.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -8,9 +9,9 @@
 
 namespace {
 
-void unpack_files(const nlohmann::json &results, Files &files)
+void unpack_files(const nlohmann::json &json, Files &files)
 {
-    for (const auto &entry: results["data"]) {
+    for (const auto &entry: json["data"]) {
         File file;
         file.created_at = entry["created_at"];
         file.filename = entry["filename"];
@@ -23,17 +24,11 @@ void unpack_files(const nlohmann::json &results, Files &files)
 
 Files unpack_response(const std::string &response)
 {
+    nlohmann::json json = response_to_json(response);
     Files files;
-    nlohmann::json results;
 
     try {
-        results = nlohmann::json::parse(response);
-    } catch (const nlohmann::json::parse_error &e) {
-        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
-    }
-
-    try {
-        unpack_files(results, files);
+        unpack_files(json, files);
     } catch (nlohmann::json::out_of_range &e) {
         throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     } catch (nlohmann::json::type_error &e) {
@@ -60,18 +55,13 @@ bool delete_file(const std::string &file_id)
     OpenAIUser api;
     const std::string response = api.delete_file(file_id);
 
-    nlohmann::json results;
-    try {
-        results = nlohmann::json::parse(response);
-    } catch (const nlohmann::json::parse_error &e) {
-        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
-    }
+    nlohmann::json json = response_to_json(response);
 
-    if (not results.contains("deleted")) {
+    if (not json.contains("deleted")) {
         throw std::runtime_error("Malformed response. Missing 'deleted' key");
     }
 
-    return results["deleted"];
+    return json["deleted"];
 }
 
 std::string upload_file(const std::string &filename)
@@ -80,16 +70,11 @@ std::string upload_file(const std::string &filename)
     const std::string purpose = "fine-tune";
     const std::string response = api.upload_file(filename, purpose);
 
-    nlohmann::json results;
-    try {
-        results = nlohmann::json::parse(response);
-    } catch (const nlohmann::json::parse_error &e) {
-        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
-    }
+    nlohmann::json json = response_to_json(response);
 
-    if (not results.contains("id")) {
+    if (not json.contains("id")) {
         throw std::runtime_error("Malformed response. Missing 'id' key");
     }
 
-    return results["id"];
+    return json["id"];
 }

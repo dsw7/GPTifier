@@ -1,6 +1,7 @@
 #include "serialization/costs.hpp"
 
 #include "networking/api_openai_admin.hpp"
+#include "serialization/response_to_json.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -8,9 +9,9 @@
 
 namespace {
 
-void unpack_costs(const nlohmann::json &results, Costs &costs)
+void unpack_costs(const nlohmann::json &json, Costs &costs)
 {
-    for (const auto &entry: results["data"]) {
+    for (const auto &entry: json["data"]) {
         if (entry["results"].empty()) {
             continue;
         }
@@ -31,17 +32,11 @@ void unpack_costs(const nlohmann::json &results, Costs &costs)
 
 Costs unpack_response(const std::string &response)
 {
+    nlohmann::json json = response_to_json(response);
     Costs costs;
-    nlohmann::json results;
 
     try {
-        results = nlohmann::json::parse(response);
-    } catch (const nlohmann::json::parse_error &e) {
-        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
-    }
-
-    try {
-        unpack_costs(results, costs);
+        unpack_costs(json, costs);
     } catch (nlohmann::json::out_of_range &e) {
         throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     } catch (nlohmann::json::type_error &e) {

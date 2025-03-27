@@ -1,6 +1,7 @@
 #include "serialization/models.hpp"
 
 #include "networking/api_openai_user.hpp"
+#include "serialization/response_to_json.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -14,9 +15,9 @@ bool is_owned_by_openai(const std::string &owned_by)
     return owned_by.compare(0, 6, "openai") == 0 or owned_by.compare(0, 6, "system") == 0;
 }
 
-void unpack_models(const nlohmann::json &results, Models &models)
+void unpack_models(const nlohmann::json &json, Models &models)
 {
-    for (const auto &entry: results["data"]) {
+    for (const auto &entry: json["data"]) {
         Model model;
         model.created_at = entry["created"];
         model.id = entry["id"];
@@ -28,17 +29,11 @@ void unpack_models(const nlohmann::json &results, Models &models)
 
 Models unpack_response(const std::string &response)
 {
+    nlohmann::json json = response_to_json(response);
     Models models;
-    nlohmann::json results;
 
     try {
-        results = nlohmann::json::parse(response);
-    } catch (const nlohmann::json::parse_error &e) {
-        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
-    }
-
-    try {
-        unpack_models(results, models);
+        unpack_models(json, models);
     } catch (nlohmann::json::out_of_range &e) {
         throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     } catch (nlohmann::json::type_error &e) {
@@ -64,17 +59,11 @@ bool delete_model(const std::string &model_id)
 {
     OpenAIUser api;
     const std::string response = api.delete_model(model_id);
+    nlohmann::json json = response_to_json(response);
 
-    nlohmann::json results;
-    try {
-        results = nlohmann::json::parse(response);
-    } catch (const nlohmann::json::parse_error &e) {
-        throw std::runtime_error(fmt::format("Failed to parse response: {}", e.what()));
-    }
-
-    if (not results.contains("deleted")) {
+    if (not json.contains("deleted")) {
         throw std::runtime_error("Malformed response. Missing 'deleted' key");
     }
 
-    return results["deleted"];
+    return json["deleted"];
 }
