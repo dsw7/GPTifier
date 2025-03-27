@@ -43,22 +43,6 @@ ChatCompletions get_chat_completions(int limit)
     return ccs;
 }
 
-nlohmann::json jsonify_cc(const ChatCompletion &cc)
-{
-    nlohmann::json results;
-
-    results["completion"] = cc.completion;
-    results["completion_tokens"] = cc.completion_tokens;
-    results["created"] = cc.created;
-    results["id"] = cc.id;
-    results["model"] = cc.model;
-    results["prompt"] = cc.prompt;
-    results["prompt_tokens"] = cc.prompt_tokens;
-    results["rtt"] = cc.rtt.count();
-
-    return results;
-}
-
 ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp, bool store_completion)
 {
     const nlohmann::json messages = { { "role", "user" }, { "content", prompt } };
