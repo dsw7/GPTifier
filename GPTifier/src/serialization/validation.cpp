@@ -11,11 +11,6 @@ void is_list(const nlohmann::json &json)
     }
 }
 
-bool is_list_empty(const nlohmann::json &json)
-{
-    return json["data"].empty();
-}
-
 void is_chat_completion(const nlohmann::json &json)
 {
     if (json["object"] != "chat.completion") {
