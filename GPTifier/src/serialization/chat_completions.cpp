@@ -1,16 +1,15 @@
 #include "serialization/chat_completions.hpp"
 
 #include "networking/api_openai_user.hpp"
-#include "serialization/parse_response.hpp"
-#include "serialization/validation.hpp"
+#include "serialization/response_to_json.hpp"
+
+#include <fmt/core.h>
 
 namespace {
 
-void unpack_chat_completions(const nlohmann::json &results, ChatCompletions &ccs)
+void unpack_chat_completions(const nlohmann::json &json, ChatCompletions &ccs)
 {
-    for (const auto &entry: results["data"]) {
-        validation::is_chat_completion(entry);
-
+    for (const auto &entry: json["data"]) {
         ChatCompletion cc;
 
         if (entry["metadata"].contains("prompt")) {
@@ -27,20 +26,24 @@ void unpack_chat_completions(const nlohmann::json &results, ChatCompletions &ccs
 
 } // namespace
 
-nlohmann::json jsonify_cc(const ChatCompletion &cc)
+ChatCompletions get_chat_completions(int limit)
 {
-    nlohmann::json results;
+    OpenAIUser api;
+    const std::string response = api.get_chat_completions(limit);
+    const nlohmann::json json = response_to_json(response);
 
-    results["completion"] = cc.completion;
-    results["completion_tokens"] = cc.completion_tokens;
-    results["created"] = cc.created;
-    results["id"] = cc.id;
-    results["model"] = cc.model;
-    results["prompt"] = cc.prompt;
-    results["prompt_tokens"] = cc.prompt_tokens;
-    results["rtt"] = cc.rtt.count();
+    ChatCompletions chat_completions;
+    chat_completions.raw_response = response;
 
-    return results;
+    try {
+        unpack_chat_completions(json, chat_completions);
+    } catch (nlohmann::json::out_of_range &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    } catch (nlohmann::json::type_error &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    }
+
+    return chat_completions;
 }
 
 ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp, bool store_completion)
@@ -64,45 +67,36 @@ ChatCompletion create_chat_completion(const std::string &prompt, const std::stri
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> rtt = end - start;
 
-    const nlohmann::json results = parse_response(response);
-    validation::is_chat_completion(results);
-
+    const nlohmann::json json = response_to_json(response);
     ChatCompletion cc;
 
-    cc.completion = results["choices"][0]["message"]["content"];
-    cc.completion_tokens = results["usage"]["completion_tokens"];
-    cc.created = results["created"];
-    cc.model = results["model"];
-    cc.prompt = prompt;
-    cc.prompt_tokens = results["usage"]["prompt_tokens"];
-    cc.raw_response = response;
-    cc.rtt = rtt;
+    try {
+        cc.completion = json["choices"][0]["message"]["content"];
+        cc.completion_tokens = json["usage"]["completion_tokens"];
+        cc.created = json["created"];
+        cc.model = json["model"];
+        cc.prompt = prompt;
+        cc.prompt_tokens = json["usage"]["prompt_tokens"];
+        cc.raw_response = response;
+        cc.rtt = rtt;
+    } catch (nlohmann::json::out_of_range &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    } catch (nlohmann::json::type_error &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    }
 
     return cc;
-}
-
-ChatCompletions get_chat_completions(int limit)
-{
-    OpenAIUser api;
-    const std::string response = api.get_chat_completions(limit);
-    const nlohmann::json results = parse_response(response);
-
-    validation::is_list(results);
-
-    ChatCompletions ccs;
-    ccs.raw_response = response;
-
-    unpack_chat_completions(results, ccs);
-    return ccs;
 }
 
 bool delete_chat_completion(const std::string &chat_completion_id)
 {
     OpenAIUser api;
-
     const std::string response = api.delete_chat_completion(chat_completion_id);
-    const nlohmann::json results = parse_response(response);
+    const nlohmann::json json = response_to_json(response);
 
-    validation::is_chat_completion_deleted(results);
-    return results["deleted"];
+    if (not json.contains("deleted")) {
+        throw std::runtime_error("Malformed response. Missing 'deleted' key");
+    }
+
+    return json["deleted"];
 }

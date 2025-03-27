@@ -95,7 +95,7 @@ ChatCompletion run_query(const std::string &model, const std::string &prompt, fl
 
 // Output ---------------------------------------------------------------------------------------------------
 
-void dump_chat_completion_response(const ChatCompletion &completion, const std::string &json_dump_file)
+void dump_chat_completion_response(const ChatCompletion &cc, const std::string &json_dump_file)
 {
     fmt::print("Dumping results to '{}'\n", json_dump_file);
     std::ofstream st_filename(json_dump_file);
@@ -105,7 +105,17 @@ void dump_chat_completion_response(const ChatCompletion &completion, const std::
         throw std::runtime_error(errmsg);
     }
 
-    st_filename << std::setw(2) << jsonify_cc(completion);
+    nlohmann::json json;
+    json["completion"] = cc.completion;
+    json["completion_tokens"] = cc.completion_tokens;
+    json["created"] = cc.created;
+    json["id"] = cc.id;
+    json["model"] = cc.model;
+    json["prompt"] = cc.prompt;
+    json["prompt_tokens"] = cc.prompt_tokens;
+    json["rtt"] = cc.rtt.count();
+
+    st_filename << json.dump(2);
     st_filename.close();
 }
 
@@ -172,9 +182,6 @@ void write_message_to_file(const ChatCompletion &completion)
     }
 
     const std::string created = datetime_from_unix_timestamp(completion.created);
-
-    static int column_width = 110;
-    std::string sep_inner(column_width, '-');
 
     st_filename << "{\n";
     st_filename << "> Created at: " + created + " (GMT)\n";

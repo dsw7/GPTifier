@@ -1,25 +1,22 @@
 #include "serialization/costs.hpp"
 
 #include "networking/api_openai_admin.hpp"
-#include "serialization/parse_response.hpp"
-#include "serialization/validation.hpp"
+#include "serialization/response_to_json.hpp"
 
+#include <fmt/core.h>
 #include <json.hpp>
+#include <stdexcept>
 
 namespace {
 
-void unpack_costs(const nlohmann::json &results, Costs &costs)
+void unpack_costs(const nlohmann::json &json, Costs &costs)
 {
-    for (const auto &entry: results["data"]) {
-        validation::is_bucket(entry);
-
-        if (validation::is_bucket_empty(entry)) {
+    for (const auto &entry: json["data"]) {
+        if (entry["results"].empty()) {
             continue;
         }
 
         const nlohmann::json cost_obj = entry["results"][0];
-        validation::is_cost(cost_obj);
-
         float cost = cost_obj["amount"]["value"];
         costs.total_cost += cost;
 
@@ -33,19 +30,30 @@ void unpack_costs(const nlohmann::json &results, Costs &costs)
     }
 }
 
+Costs unpack_response(const std::string &response)
+{
+    const nlohmann::json json = response_to_json(response);
+    Costs costs;
+
+    try {
+        unpack_costs(json, costs);
+    } catch (nlohmann::json::out_of_range &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    } catch (nlohmann::json::type_error &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    }
+
+    return costs;
+}
+
 } // namespace
 
 Costs get_costs(std::time_t start_time, int limit)
 {
     OpenAIAdmin api;
     const std::string response = api.get_costs(start_time, limit);
-    const nlohmann::json results = parse_response(response);
 
-    validation::is_page(results);
-
-    Costs costs;
+    Costs costs = unpack_response(response);
     costs.raw_response = response;
-
-    unpack_costs(results, costs);
     return costs;
 }

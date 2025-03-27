@@ -1,7 +1,5 @@
 #include "utils.hpp"
 
-#include <algorithm>
-#include <cctype>
 #include <fmt/core.h>
 #include <fstream>
 #include <sstream>
@@ -24,14 +22,6 @@ short get_terminal_columns()
 }
 
 } // namespace
-
-void str_to_lowercase(std::string &str)
-{
-    std::transform(
-        str.begin(), str.end(), str.begin(), [](unsigned char c) {
-            return std::tolower(c);
-        });
-}
 
 void print_sep()
 {

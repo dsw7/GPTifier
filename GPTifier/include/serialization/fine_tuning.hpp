@@ -15,5 +15,5 @@ struct FineTuningJobs {
     std::vector<FineTuningJob> jobs;
 };
 
-std::string create_fine_tuning_job(const std::string &model, const std::string &training_file);
 FineTuningJobs get_fine_tuning_jobs(const std::string &limit);
+std::string create_fine_tuning_job(const std::string &model, const std::string &training_file);

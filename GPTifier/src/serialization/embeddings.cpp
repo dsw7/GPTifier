@@ -1,10 +1,32 @@
 #include "serialization/embeddings.hpp"
 
 #include "networking/api_openai_user.hpp"
-#include "serialization/parse_response.hpp"
-#include "serialization/validation.hpp"
+#include "serialization/response_to_json.hpp"
 
+#include <fmt/core.h>
 #include <json.hpp>
+#include <stdexcept>
+
+namespace {
+
+Embedding unpack_response(const std::string &response)
+{
+    Embedding embedding;
+    const nlohmann::json json = response_to_json(response);
+
+    try {
+        embedding.embedding = json["data"][0]["embedding"].template get<std::vector<float>>();
+        embedding.model = json["model"];
+    } catch (nlohmann::json::out_of_range &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    } catch (nlohmann::json::type_error &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    }
+
+    return embedding;
+}
+
+} // namespace
 
 Embedding create_embedding(const std::string &model, const std::string &input)
 {
@@ -12,22 +34,8 @@ Embedding create_embedding(const std::string &model, const std::string &input)
 
     OpenAIUser api;
     const std::string response = api.create_embedding(data.dump());
-    const nlohmann::json results = parse_response(response);
+    Embedding embedding = unpack_response(response);
 
-    validation::is_list(results);
-
-    if (validation::is_list_empty(results)) {
-        throw std::runtime_error("List of embeddings from OpenAI is empty");
-    }
-
-    const nlohmann::json first_embedding = results["data"][0];
-    validation::is_embedding(first_embedding);
-
-    Embedding em;
-
-    em.embedding = first_embedding["embedding"].template get<std::vector<float>>();
-    em.input = input;
-    em.model = results["model"];
-
-    return em;
+    embedding.input = input;
+    return embedding;
 }
