@@ -77,7 +77,7 @@ int main(int argc, char **argv)
         } else if (command == "test") {
             command_test(argc, argv);
         } else {
-            fmt::print(stderr, "Received unknown command. Re-run with -h or --help\n");
+            throw std::runtime_error("Received unknown command. Re-run with -h or --help");
         }
     } catch (std::runtime_error &e) {
         fmt::print(stderr, "{}\n", e.what());
