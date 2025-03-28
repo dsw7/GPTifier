@@ -19,6 +19,9 @@ def get_path_to_gptifier_binary() -> str:
 
 @cache
 def is_memory_test() -> bool:
+    if getenv("TEST_MEMORY") is not None:
+        return True
+
     return False
 
 
@@ -38,7 +41,9 @@ class TestCaseExtended(TestCase):
         command.extend(args)
 
         process = run(command, stdout=PIPE, stderr=PIPE)
-        assert process.returncode == EX_OK
+        assert (
+            process.returncode == EX_OK
+        ), f"Program exited with code {process.returncode}"
 
         return _Process(
             stderr=process.stderr.decode(),
@@ -56,7 +61,9 @@ class TestCaseExtended(TestCase):
         command.extend(args)
 
         process = run(command, stdout=PIPE, stderr=PIPE)
-        assert process.returncode != ex_mem_leak
+        assert (
+            process.returncode != ex_mem_leak
+        ), f"Program is leaking memory.\nRun ```{' '.join(process.args)}``` to inspect leak"
 
         return _Process(
             stderr=process.stderr.decode(),
