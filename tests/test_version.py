@@ -1,25 +1,20 @@
 from datetime import datetime
-from unittest import TestCase
-from .helpers import run_process
+from .extended_testcase import TestCaseExtended
 
 
-class TestVersion(TestCase):
+class TestVersion(TestCaseExtended):
 
     def test_version_version(self) -> None:
         for option in ["-v", "--version"]:
             with self.subTest(option=option):
-                proc = run_process(option)
-                proc.assert_success()
-
+                proc = self.assertSuccess(option)
                 stdout = proc.load_stdout_to_json()
                 self.assertIn("version", stdout)
 
     def test_version_build_type(self) -> None:
         for option in ["-v", "--version"]:
             with self.subTest(option=option):
-                proc = run_process(option)
-                proc.assert_success()
-
+                proc = self.assertSuccess(option)
                 stdout = proc.load_stdout_to_json()
                 self.assertIn("build_type", stdout)
                 self.assertEqual(stdout["build_type"], "Testing")
@@ -27,9 +22,7 @@ class TestVersion(TestCase):
     def test_version_build_date(self) -> None:
         for option in ["-v", "--version"]:
             with self.subTest(option=option):
-                proc = run_process(option)
-                proc.assert_success()
-
+                proc = self.assertSuccess(option)
                 stdout = proc.load_stdout_to_json()
                 self.assertIn("build_date", stdout)
 
