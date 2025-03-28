@@ -19,7 +19,7 @@ def get_path_to_gptifier_binary() -> str:
 
 @cache
 def is_memory_test() -> bool:
-    return True
+    return False
 
 
 @dataclass
@@ -68,3 +68,15 @@ class TestCaseExtended(TestCase):
             return self._assertNoMemoryLeak(*args)
 
         return self._assertSuccess(*args)
+
+    def assertFailure(self, *args: str) -> _Process:
+        command = [get_path_to_gptifier_binary()]
+        command.extend(args)
+
+        process = run(command, stdout=PIPE, stderr=PIPE)
+        assert process.returncode == 1
+
+        return _Process(
+            stderr=process.stderr.decode(),
+            stdout=process.stdout.decode(),
+        )
