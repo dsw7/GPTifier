@@ -13,8 +13,10 @@ class TestUnknownCommand(TestCaseExtended):
 class TestCatchMemoryLeak(TestCaseExtended):
 
     def test_catch_memory_leak(self) -> None:
-        proc = self.assertSuccess("test", "leak")
-        self.assertEqual(proc.stdout.strip(), "5")
+        # Test that our custom assertSuccess catches a fake memory leak
+        with self.assertRaises(AssertionError):
+            proc = self.assertSuccess("test", "leak")
+            self.assertEqual(proc.stdout.strip(), "5")
 
 
 class TestCurlHandleReusability(TestCaseExtended):
