@@ -1,4 +1,3 @@
-#include "command_test.hpp"
 #include "configs.hpp"
 #include "help_messages.hpp"
 #include "interface/command_chats.hpp"
@@ -9,6 +8,7 @@
 #include "interface/command_models.hpp"
 #include "interface/command_run.hpp"
 #include "interface/command_short.hpp"
+#include "interface/command_test.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
