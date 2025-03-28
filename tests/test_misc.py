@@ -1,6 +1,15 @@
 from .extended_testcase import TestCaseExtended
 
 
+class TestUnknownCommand(TestCaseExtended):
+
+    def test_unknown_command(self) -> None:
+        proc = self.assertFailure("foobar")
+        self.assertEqual(
+            proc.stderr.strip(), "Received unknown command. Re-run with -h or --help"
+        )
+
+
 class TestCatchMemoryLeak(TestCaseExtended):
 
     def test_catch_memory_leak(self) -> None:
