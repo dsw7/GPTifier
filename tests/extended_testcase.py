@@ -23,30 +23,29 @@ def is_memory_test() -> bool:
 
 
 @dataclass
-class Process:
-    exit_code: int
+class _Process:
     stderr: str
     stdout: str
-
-    def assert_success(self) -> None:
-        assert self.exit_code == EX_OK
-
-    def assert_failure(self) -> None:
-        assert self.exit_code != EX_OK
 
     def load_stdout_to_json(self) -> Any:
         return loads(self.stdout)
 
 
 class TestCaseExtended(TestCase):
-    def _assertSuccess(self, *args: str) -> None:
+
+    def _assertSuccess(self, *args: str) -> _Process:
         command = [get_path_to_gptifier_binary()]
         command.extend(args)
 
         process = run(command, stdout=PIPE, stderr=PIPE)
         assert process.returncode == EX_OK
 
-    def _assertNoMemoryLeak(self, *args: str) -> None:
+        return _Process(
+            stderr=process.stderr.decode(),
+            stdout=process.stdout.decode(),
+        )
+
+    def _assertNoMemoryLeak(self, *args: str) -> _Process:
         ex_mem_leak = 2
         command = [
             "valgrind",
@@ -59,9 +58,13 @@ class TestCaseExtended(TestCase):
         process = run(command, stdout=PIPE, stderr=PIPE)
         assert process.returncode != ex_mem_leak
 
-    def assertSuccess(self, *args: str) -> None:
+        return _Process(
+            stderr=process.stderr.decode(),
+            stdout=process.stdout.decode(),
+        )
 
+    def assertSuccess(self, *args: str) -> _Process:
         if is_memory_test():
-            self._assertNoMemoryLeak(*args)
-        else:
-            self._assertSuccess(*args)
+            return self._assertNoMemoryLeak(*args)
+
+        return self._assertSuccess(*args)
