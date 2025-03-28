@@ -1,4 +1,3 @@
-#include "command_test.hpp"
 #include "configs.hpp"
 #include "help_messages.hpp"
 #include "interface/command_chats.hpp"
@@ -9,6 +8,7 @@
 #include "interface/command_models.hpp"
 #include "interface/command_run.hpp"
 #include "interface/command_short.hpp"
+#include "interface/command_test.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
         } else if (command == "test") {
             command_test(argc, argv);
         } else {
-            fmt::print(stderr, "Received unknown command. Re-run with -h or --help\n");
+            throw std::runtime_error("Received unknown command. Re-run with -h or --help");
         }
     } catch (std::runtime_error &e) {
         fmt::print(stderr, "{}\n", e.what());

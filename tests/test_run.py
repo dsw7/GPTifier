@@ -4,8 +4,7 @@ from json import loads
 from pathlib import Path
 from tempfile import NamedTemporaryFile, gettempdir
 from time import time
-from unittest import TestCase
-from .helpers import run_process
+from .extended_testcase import TestCaseExtended
 
 
 @dataclass
@@ -48,7 +47,7 @@ def load_content(json_file: str) -> Completion:
     )
 
 
-class TestChatCompletionReadFromInputfile(TestCase):
+class TestChatCompletionReadFromInputfile(TestCaseExtended):
     def setUp(self) -> None:
         self.filename = Path.cwd() / "Inputfile"
 
@@ -61,26 +60,23 @@ class TestChatCompletionReadFromInputfile(TestCase):
 
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
-            proc = run_process(["run", "-t0", f"-o{json_file}", "-u"])
-            proc.assert_success()
+            self.assertSuccess("run", "-t0", f"-o{json_file}", "-u")
             completion = load_content(json_file)
             self.assertEqual(completion.completion, pair.completion)
 
 
-class TestChatCompletionJSON(TestCase):
+class TestChatCompletionJSON(TestCaseExtended):
     def setUp(self) -> None:
         self.pair = get_prompt_completion_pair(5)
 
         with NamedTemporaryFile(dir=gettempdir()) as f:
             t_start = time()
-            self.process = run_process(
-                ["run", f"-p{self.pair.prompt}", "-t0", f"-o{f.name}", "-u"]
+            # Yes... a hack :)
+            self.assertSuccess(
+                "run", f"-p{self.pair.prompt}", "-t0", f"-o{f.name}", "-u"
             )
             self.rtt = time() - t_start
             self.completion = load_content(f.name)
-
-    def test_exit_zero(self) -> None:
-        self.process.assert_success()
 
     def test_equal_prompt(self) -> None:
         self.assertEqual(self.completion.prompt, self.pair.prompt)
@@ -103,47 +99,43 @@ class TestChatCompletionJSON(TestCase):
         self.assertLessEqual(diff, 2.0, "Creation times are not within 2 seconds")
 
 
-class TestChatCompletion(TestCase):
+class TestChatCompletion(TestCaseExtended):
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
-                proc = run_process(["run", option])
-                proc.assert_success()
+                proc = self.assertSuccess("run", option)
                 self.assertIn("Create a chat completion.", proc.stdout)
 
     def test_read_from_file(self) -> None:
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
             prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
-            proc = run_process(["run", f"-r{prompt}", "-t0", f"-o{json_file}", "-u"])
-            proc.assert_success()
+            self.assertSuccess("run", f"-r{prompt}", "-t0", f"-o{json_file}", "-u")
             completion = load_content(json_file)
             self.assertEqual(completion.completion, ">>>8<<<")
 
     def test_invalid_temp(self) -> None:
         prompt = get_prompt_completion_pair().prompt
 
-        proc = run_process(["run", f"-p'{prompt}'", "-tfoobar", "-u"])
-        proc.assert_failure()
+        proc = self.assertFailure("run", f"-p'{prompt}'", "-tfoobar", "-u")
         self.assertIn("Failed to convert 'foobar' to float", proc.stderr)
 
     def test_missing_prompt_file(self) -> None:
-        proc = run_process(["run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u"])
-        proc.assert_failure()
+        proc = self.assertFailure("run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u")
         self.assertIn("Could not open file '/tmp/yU8nnkRs.txt'", proc.stderr)
 
     def test_invalid_dump_location(self) -> None:
         prompt = get_prompt_completion_pair().prompt
 
-        proc = run_process(["run", f"--prompt='{prompt}'", "--file=/tmp/a/b/c", "-u"])
-        proc.assert_failure()
+        proc = self.assertFailure(
+            "run", f"--prompt='{prompt}'", "--file=/tmp/a/b/c", "-u"
+        )
         self.assertIn("Unable to open '/tmp/a/b/c'", proc.stderr)
 
     def test_invalid_model(self) -> None:
         prompt = get_prompt_completion_pair().prompt
 
-        proc = run_process(["run", f"-p'{prompt}'", "-mfoobar", "-u"])
-        proc.assert_failure()
+        proc = self.assertFailure("run", f"-p'{prompt}'", "-mfoobar", "-u")
         self.assertIn(
             "The model `foobar` does not exist or you do not have access to it.",
             proc.stderr,
@@ -154,6 +146,5 @@ class TestChatCompletion(TestCase):
 
         for temp in [-2.5, 2.5]:
             with self.subTest(temp=temp):
-                proc = run_process(["run", f"-p'{prompt}'", f"-t{temp}", "-u"])
-                proc.assert_failure()
+                proc = self.assertFailure("run", f"-p'{prompt}'", f"-t{temp}", "-u")
                 self.assertIn("Temperature must be between 0 and 2", proc.stderr)

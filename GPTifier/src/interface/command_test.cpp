@@ -1,4 +1,4 @@
-#include "command_test.hpp"
+#include "interface/command_test.hpp"
 
 #include "networking/api_openai_user.hpp"
 #include "selectors.hpp"
@@ -10,15 +10,10 @@
 
 namespace {
 
-void test_catch_memory_leak(bool free_memory)
+void test_catch_memory_leak()
 {
     int *val = new int(5);
-
     fmt::print("{}\n", *val);
-
-    if (free_memory) {
-        delete val;
-    }
 }
 
 void test_create_chat_completion_api()
@@ -63,10 +58,8 @@ void command_test(int argc, char **argv)
 
     const std::string target = argv[2];
 
-    if (target == "mem+") {
-        test_catch_memory_leak(false);
-    } else if (target == "mem-") {
-        test_catch_memory_leak(true);
+    if (target == "leak") {
+        test_catch_memory_leak();
     } else if (target == "ccc") {
         test_create_chat_completion_api();
     } else {

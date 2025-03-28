@@ -2,8 +2,7 @@ from dataclasses import dataclass
 from json import loads
 from pathlib import Path
 from tempfile import gettempdir
-from unittest import TestCase
-from .helpers import run_process
+from .extended_testcase import TestCaseExtended
 
 
 @dataclass
@@ -34,32 +33,29 @@ def get_cosine_similarity(left: Embedding, right: Embedding) -> float:
     return dot_p / (mag_l * mag_r)
 
 
-class TestEmbed(TestCase):
+class TestEmbed(TestCaseExtended):
 
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
-                proc = run_process(["embed", option])
-                proc.assert_success()
+                proc = self.assertSuccess("embed", option)
                 self.assertIn(
                     "Get embedding representing a block of text.", proc.stdout
                 )
 
     def test_missing_input_file(self) -> None:
-        proc = run_process(["embed", "--read-from-file=/tmp/yU8nnkRs.txt"])
-        proc.assert_failure()
+        proc = self.assertFailure("embed", "--read-from-file=/tmp/yU8nnkRs.txt")
         self.assertIn("Could not open file '/tmp/yU8nnkRs.txt'", proc.stderr)
 
     def test_invalid_model(self) -> None:
-        proc = run_process(["embed", "-i'What is 3 + 5?'", "-mfoobar"])
-        proc.assert_failure()
+        proc = self.assertFailure("embed", "-i'What is 3 + 5?'", "-mfoobar")
         self.assertIn(
             "The model `foobar` does not exist or you do not have access to it.",
             proc.stderr,
         )
 
 
-class TestEmbedCosineSimilarityIdentical(TestCase):
+class TestEmbedCosineSimilarityIdentical(TestCaseExtended):
 
     def setUp(self) -> None:
         self.input_file = Path(__file__).resolve().parent / "prompt_basic.txt"
@@ -71,10 +67,9 @@ class TestEmbedCosineSimilarityIdentical(TestCase):
 
     def test_compute_cosine_similarities(self) -> None:
         model = "text-embedding-3-small"
-        proc = run_process(
-            ["embed", f"-r{self.input_file}", f"-m{model}", f"-o{self.output_file}"]
+        self.assertSuccess(
+            "embed", f"-r{self.input_file}", f"-m{model}", f"-o{self.output_file}"
         )
-        proc.assert_success()
 
         embedding = load_embedding(self.output_file)
 
@@ -89,7 +84,7 @@ class TestEmbedCosineSimilarityIdentical(TestCase):
         )
 
 
-class TestEmbedCosineSimilarityOrthogonal(TestCase):
+class TestEmbedCosineSimilarityOrthogonal(TestCaseExtended):
 
     def setUp(self) -> None:
         self.filename_1 = Path(gettempdir()) / "result_1.gpt"
@@ -106,17 +101,11 @@ class TestEmbedCosineSimilarityOrthogonal(TestCase):
         model = "text-embedding-ada-002"
 
         text_1 = "The cat meowed softly."
-        proc_1 = run_process(
-            ["embed", f"-i{text_1}", f"-m{model}", f"-o{self.filename_1}"]
-        )
-        proc_1.assert_success()
+        self.assertSuccess("embed", f"-i{text_1}", f"-m{model}", f"-o{self.filename_1}")
         embedding_1 = load_embedding(self.filename_1)
 
         text_2 = "Quantum physics is fascinating."
-        proc_2 = run_process(
-            ["embed", f"-i{text_2}", f"-m{model}", f"-o{self.filename_2}"]
-        )
-        proc_2.assert_success()
+        self.assertSuccess("embed", f"-i{text_2}", f"-m{model}", f"-o{self.filename_2}")
         embedding_2 = load_embedding(self.filename_2)
 
         self.assertTrue(0.6 <= get_cosine_similarity(embedding_1, embedding_2) <= 0.8)
