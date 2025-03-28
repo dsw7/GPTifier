@@ -8,7 +8,7 @@ from unittest import TestCase
 
 
 @cache
-def get_path_to_gptifier_binary() -> str:
+def _get_path_to_gptifier_binary() -> str:
     path_bin: str | None = getenv("PATH_BIN")
 
     if path_bin is None:
@@ -37,7 +37,7 @@ class _Process:
 class TestCaseExtended(TestCase):
 
     def _assertSuccess(self, *args: str) -> _Process:
-        command = [get_path_to_gptifier_binary()]
+        command = [_get_path_to_gptifier_binary()]
         command.extend(args)
 
         process = run(command, stdout=PIPE, stderr=PIPE)
@@ -56,7 +56,7 @@ class TestCaseExtended(TestCase):
             "valgrind",
             f"--error-exitcode={ex_mem_leak}",
             "--leak-check=full",
-            get_path_to_gptifier_binary(),
+            _get_path_to_gptifier_binary(),
         ]
         command.extend(args)
 
@@ -77,7 +77,7 @@ class TestCaseExtended(TestCase):
         return self._assertSuccess(*args)
 
     def assertFailure(self, *args: str) -> _Process:
-        command = [get_path_to_gptifier_binary()]
+        command = [_get_path_to_gptifier_binary()]
         command.extend(args)
 
         process = run(command, stdout=PIPE, stderr=PIPE)

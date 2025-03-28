@@ -1,4 +1,5 @@
-from .extended_testcase import TestCaseExtended
+from unittest import skipIf
+from .extended_testcase import TestCaseExtended, is_memory_test
 
 
 class TestUnknownCommand(TestCaseExtended):
@@ -12,8 +13,13 @@ class TestUnknownCommand(TestCaseExtended):
 
 class TestCatchMemoryLeak(TestCaseExtended):
 
+    @skipIf(
+        not is_memory_test(),
+        "Test will not raise AssertionError if running outside of Valgrind context",
+    )
     def test_catch_memory_leak(self) -> None:
         # Test that our custom assertSuccess catches a fake memory leak
+
         with self.assertRaises(AssertionError):
             proc = self.assertSuccess("test", "leak")
             self.assertEqual(proc.stdout.strip(), "5")
