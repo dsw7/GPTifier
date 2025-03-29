@@ -10,7 +10,6 @@
 #include <chrono>
 #include <filesystem>
 #include <fmt/core.h>
-#include <fstream>
 #include <getopt.h>
 #include <iostream>
 #include <stdexcept>
@@ -223,27 +222,19 @@ void print_usage_statistics(const ChatCompletion &completion)
 
 void write_message_to_file(const ChatCompletion &completion)
 {
-    const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
-
-    fmt::print("> Writing completion to file {}\n", path_completions_file);
-    std::ofstream st_filename(path_completions_file, std::ios::app);
-
-    if (not st_filename.is_open()) {
-        throw std::runtime_error("Unable to open " + path_completions_file);
-    }
-
     const std::string created = datetime_from_unix_timestamp(completion.created);
 
-    st_filename << "{\n";
-    st_filename << "> Created at: " + created + " (GMT)\n";
-    st_filename << "> Model: " + completion.model + "\n\n";
-    st_filename << "> Prompt:\n"
-                << completion.prompt << "\n\n";
-    st_filename << "> Completion:\n"
-                << completion.completion << "\n";
-    st_filename << "}\n\n";
+    std::string text = "{\n";
+    text += "> Created at: " + created + " (GMT)\n";
+    text += "> Model: " + completion.model + "\n\n";
+    text += "> Prompt:\n" + completion.prompt + "\n\n";
+    text += "> Completion:\n" + completion.completion + "\n";
+    text += "}\n\n";
 
-    st_filename.close();
+    const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
+    fmt::print("> Writing completion to file {}\n", path_completions_file);
+
+    utils::append_to_file(path_completions_file, text);
 }
 
 void export_chat_completion_response(const ChatCompletion &completion)
