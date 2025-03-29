@@ -2,7 +2,6 @@
 
 #include "datadir.hpp"
 #include "interface/help_messages.hpp"
-#include "interface/params.hpp"
 #include "selectors.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
@@ -12,16 +11,25 @@
 #include <fmt/core.h>
 #include <getopt.h>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <thread>
 
 namespace {
 
-ParamsRun read_cli(int argc, char **argv)
-{
-    ParamsRun params;
+struct Params {
+    bool enable_export = true;
+    bool store_completion = false;
+    std::optional<std::string> json_dump_file = std::nullopt;
+    std::optional<std::string> model = std::nullopt;
+    std::optional<std::string> prompt = std::nullopt;
+    std::optional<std::string> prompt_file = std::nullopt;
+    std::string temperature = "1.00";
+};
 
+void read_cli(int argc, char **argv, Params &params)
+{
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -71,9 +79,6 @@ ParamsRun read_cli(int argc, char **argv)
                 cli::exit_on_failure();
         }
     };
-
-    params.sanitize();
-    return params;
 }
 
 // Input ----------------------------------------------------------------------------------------------------
@@ -265,8 +270,17 @@ void export_chat_completion_response(const ChatCompletion &completion)
 
 void command_run(int argc, char **argv)
 {
-    ParamsRun params = read_cli(argc, argv);
+    Params params;
+    read_cli(argc, argv, params);
+
     print_sep();
+
+    std::string model;
+    if (params.model) {
+        model = params.model.value();
+    } else {
+        model = select_chat_model();
+    }
 
     static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
     std::string prompt;
@@ -290,17 +304,9 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("No input text provided anywhere. Cannot proceed");
     }
 
-    std::string model;
-
-    if (params.model) {
-        model = params.model.value();
-    } else {
-        model = select_chat_model();
-    }
-
-    float temperature = 1.00;
-    if (std::holds_alternative<float>(params.temperature)) {
-        temperature = std::get<float>(params.temperature);
+    float temperature = utils::string_to_float(params.temperature);
+    if (temperature < 0 || temperature > 2) {
+        throw std::runtime_error("Temperature must be between 0 and 2");
     }
 
     const ChatCompletion cc = run_query(model, prompt, temperature, params.store_completion);

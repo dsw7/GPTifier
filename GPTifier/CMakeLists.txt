@@ -91,7 +91,6 @@ add_executable(
   "src/interface/command_short.cpp"
   "src/interface/command_test.cpp"
   "src/interface/help_messages.cpp"
-  "src/interface/params.cpp"
   "src/main.cpp"
   "src/networking/api_openai_admin.cpp"
   "src/networking/api_openai_user.cpp"
