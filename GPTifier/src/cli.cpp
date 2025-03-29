@@ -6,17 +6,13 @@
 #include <getopt.h>
 #include <string.h>
 
-namespace {
+namespace cli {
 
 void exit_on_failure()
 {
     fmt::print(stderr, "Try running with -h or --help for more information\n");
     exit(EXIT_FAILURE);
 }
-
-} // namespace
-
-namespace cli {
 
 ParamsRun get_opts_run(int argc, char **argv)
 {
@@ -71,55 +67,6 @@ ParamsRun get_opts_run(int argc, char **argv)
                 exit_on_failure();
         }
     };
-
-    params.sanitize();
-    return params;
-}
-
-ParamsShort get_opts_short(int argc, char **argv)
-{
-    ParamsShort params;
-
-    while (true) {
-        static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' },
-            { "json", no_argument, 0, 'j' },
-            { "store-completion", no_argument, 0, 's' },
-            { "temperature", required_argument, 0, 't' },
-            { 0, 0, 0, 0 }
-        };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "hjst:", long_options, &option_index);
-
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
-            case 'h':
-                help_command_short();
-                exit(EXIT_SUCCESS);
-            case 'j':
-                params.print_raw_json = true;
-                break;
-            case 's':
-                params.store_completion = true;
-                break;
-            case 't':
-                params.temperature = optarg;
-                break;
-            default:
-                exit_on_failure();
-        }
-    }
-
-    for (int i = optind; i < argc; i++) {
-        if (strcmp("short", argv[i]) != 0) {
-            params.prompt = argv[i];
-            break;
-        }
-    }
 
     params.sanitize();
     return params;
