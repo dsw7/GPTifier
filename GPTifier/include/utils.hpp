@@ -15,5 +15,6 @@ std::string datetime_from_unix_timestamp(const std::time_t &timestamp);
 int get_word_count(const std::string &str);
 
 namespace utils {
-std::string read_file(const std::string &filename);
-}
+std::string read_from_file(const std::string &filename);
+void write_to_file(const std::string &filename, const std::string &text);
+} // namespace utils

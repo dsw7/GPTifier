@@ -54,12 +54,12 @@ int get_word_count(const std::string &str)
 
 namespace utils {
 
-std::string read_file(const std::string &filename)
+std::string read_from_file(const std::string &filename)
 {
     std::ifstream file(filename);
 
     if (not file.is_open()) {
-        const std::string errmsg = fmt::format("Could not open file '{}'", filename);
+        const std::string errmsg = fmt::format("Unable to open '{}'", filename);
         throw std::runtime_error(errmsg);
     }
 
@@ -70,6 +70,19 @@ std::string read_file(const std::string &filename)
 
     const std::string text = buffer.str();
     return text;
+}
+
+void write_to_file(const std::string &filename, const std::string &text)
+{
+    std::ofstream file(filename);
+
+    if (not file.is_open()) {
+        const std::string errmsg = fmt::format("Unable to open '{}'", filename);
+        throw std::runtime_error(errmsg);
+    }
+
+    file << text;
+    file.close();
 }
 
 } // namespace utils
