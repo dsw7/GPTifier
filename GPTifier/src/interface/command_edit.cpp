@@ -10,6 +10,7 @@
 #include <getopt.h>
 #include <iostream>
 #include <optional>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -81,18 +82,31 @@ std::string build_prompt(const std::string &instructions, const std::string &inp
 
 std::optional<std::string> get_output_from_completion(const std::string &completion)
 {
-    const std::string start = "```";
-    const std::string end = "```";
+    std::stringstream ss(completion);
+    std::string line;
+    std::vector<std::string> lines;
 
-    size_t start_pos = completion.find(start);
-    size_t end_pos = completion.find(end, start_pos + start.length());
+    while (std::getline(ss, line)) {
+        lines.push_back(line);
+    }
 
-    if (start_pos == std::string::npos || end_pos == std::string::npos) {
+    int num_lines = lines.size();
+
+    if (num_lines <= 2) {
         return std::nullopt;
     }
 
-    start_pos += start.length();
-    return completion.substr(start_pos, end_pos - start_pos);
+    std::string output_code;
+
+    for (int i = 1; i < num_lines - 1; ++i) {
+        output_code += lines[i] + "\n";
+    }
+
+    if (!output_code.empty()) {
+        output_code.pop_back();
+    }
+
+    return output_code;
 }
 
 void apply_transformation(const Params &params)
