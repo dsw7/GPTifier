@@ -42,13 +42,17 @@ class TestEdit(TestCaseExtended):
                     "Edit one or more files according to a prompt.", proc.stdout
                 )
 
-    def test_missing_prompt_file(self) -> None:
+    def test_missing_prompt_file_argument(self) -> None:
         proc = self.assertFailure("edit")
         self.assertIn("No prompt file provided. Cannot proceed", proc.stderr)
 
-    def test_missing_edit_file(self) -> None:
+    def test_missing_edit_file_argument(self) -> None:
         proc = self.assertFailure("edit", "prompt")
         self.assertIn("No file to edit provided. Cannot proceed", proc.stderr)
+
+    def test_missing_prompt_file(self) -> None:
+        proc = self.assertFailure("edit", "foobar", "test.cpp")
+        self.assertIn("Unable to open 'foobar'", proc.stderr)
 
 
 class TestEditFile(TestCaseExtended):
@@ -66,6 +70,10 @@ class TestEditFile(TestCaseExtended):
 
         if self.output_file.exists():
             self.output_file.unlink()
+
+    def test_missing_edit_file(self) -> None:
+        proc = self.assertFailure("edit", str(self.prompt_file), "test.cpp")
+        self.assertIn("Unable to open 'test.cpp'", proc.stderr)
 
     def test_debug_flag(self) -> None:
         proc = self.assertSuccess(
