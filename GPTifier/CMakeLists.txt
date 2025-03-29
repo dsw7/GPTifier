@@ -82,6 +82,7 @@ add_executable(
   "src/datadir.cpp"
   "src/interface/command_chats.cpp"
   "src/interface/command_costs.cpp"
+  "src/interface/command_edit.cpp"
   "src/interface/command_embed.cpp"
   "src/interface/command_files.cpp"
   "src/interface/command_fine_tune.cpp"
