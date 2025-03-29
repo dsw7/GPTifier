@@ -72,43 +72,6 @@ ParamsRun get_opts_run(int argc, char **argv)
     return params;
 }
 
-ParamsModels get_opts_models(int argc, char **argv)
-{
-    ParamsModels params;
-
-    while (true) {
-        static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' },
-            { "json", no_argument, 0, 'j' },
-            { "user", no_argument, 0, 'u' },
-            { 0, 0, 0, 0 }
-        };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "hju", long_options, &option_index);
-
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
-            case 'h':
-                help_command_models();
-                exit(EXIT_SUCCESS);
-            case 'j':
-                params.print_raw_json = true;
-                break;
-            case 'u':
-                params.print_user_models = true;
-                break;
-            default:
-                exit_on_failure();
-        }
-    }
-
-    return params;
-}
-
 ParamsEmbedding get_opts_embed(int argc, char **argv)
 {
     ParamsEmbedding params;

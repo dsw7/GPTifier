@@ -1,15 +1,54 @@
 #include "interface/command_models.hpp"
 
 #include "cli.hpp"
+#include "help_messages.hpp"
 #include "serialization/models.hpp"
 #include "utils.hpp"
 
 #include <algorithm>
 #include <fmt/core.h>
+#include <getopt.h>
 #include <string>
 #include <vector>
 
 namespace {
+
+ParamsModels read_cli(int argc, char **argv)
+{
+    ParamsModels params;
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' },
+            { "json", no_argument, 0, 'j' },
+            { "user", no_argument, 0, 'u' },
+            { 0, 0, 0, 0 }
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hju", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                cli::help_command_models();
+                exit(EXIT_SUCCESS);
+            case 'j':
+                params.print_raw_json = true;
+                break;
+            case 'u':
+                params.print_user_models = true;
+                break;
+            default:
+                cli::exit_on_failure();
+        }
+    }
+
+    return params;
+}
 
 void get_openai_models(const std::vector<Model> &left, std::vector<Model> &right)
 {
@@ -53,7 +92,7 @@ void print_models(std::vector<Model> &models)
 
 void command_models(int argc, char **argv)
 {
-    ParamsModels params = cli::get_opts_models(argc, argv);
+    ParamsModels params = read_cli(argc, argv);
     Models models = get_models();
 
     if (params.print_raw_json) {
