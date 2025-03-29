@@ -214,6 +214,7 @@ void help_root_messages()
     help.add_command("files", "Manage files uploaded to OpenAI");
     help.add_command("fine-tune", "Manage fine tuning operations");
     help.add_command("costs", "Get OpenAI usage details");
+    help.add_command("edit", "Edit one or more files according to a prompt");
     help.print();
 }
 
@@ -403,6 +404,15 @@ void help_command_chats_delete()
     HelpMessages help;
     help.add_description("Delete an uploaded chat completion.");
     help.add_synopsis("chats delete [-h | --help] <chat-completion-id...>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.print();
+}
+
+void help_command_edit()
+{
+    HelpMessages help;
+    help.add_description("Edit one or more files according to a prompt.");
+    help.add_synopsis("edit [-h | --help] <prompt-file> <files-to-edit...>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.print();
 }

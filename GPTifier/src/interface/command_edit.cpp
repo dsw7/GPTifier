@@ -31,7 +31,7 @@ void read_cli(int argc, char **argv, Params &params)
 
         switch (opt) {
             case 'h':
-                cli::help_command_short();
+                cli::help_command_edit();
                 exit(EXIT_SUCCESS);
             default:
                 cli::exit_on_failure();
