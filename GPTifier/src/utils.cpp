@@ -112,4 +112,18 @@ float string_to_float(const std::string &str)
     return f;
 }
 
+int string_to_int(const std::string &str)
+{
+    int i = 0;
+
+    try {
+        i = std::stoi(str);
+    } catch (std::invalid_argument &e) {
+        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to int", e.what(), str);
+        throw std::runtime_error(errmsg);
+    }
+
+    return i;
+}
+
 } // namespace utils
