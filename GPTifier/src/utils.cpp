@@ -39,7 +39,22 @@ std::string datetime_from_unix_timestamp(const std::time_t &timestamp)
     return buffer;
 }
 
-std::string read_text_from_file(const std::string &filename)
+int get_word_count(const std::string &str)
+{
+    std::stringstream stream(str);
+    std::string word;
+    int count = 0;
+
+    while (stream >> word) {
+        ++count;
+    }
+
+    return count;
+}
+
+namespace utils {
+
+std::string read_file(const std::string &filename)
 {
     std::ifstream file(filename);
 
@@ -57,15 +72,4 @@ std::string read_text_from_file(const std::string &filename)
     return text;
 }
 
-int get_word_count(const std::string &str)
-{
-    std::stringstream stream(str);
-    std::string word;
-    int count = 0;
-
-    while (stream >> word) {
-        ++count;
-    }
-
-    return count;
-}
+} // namespace utils

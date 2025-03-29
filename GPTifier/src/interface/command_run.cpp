@@ -293,10 +293,10 @@ void command_run(int argc, char **argv)
     } else {
         if (params.prompt_file.has_value()) {
             fmt::print("Reading text from file: '{}'\n", params.prompt_file.value());
-            prompt = read_text_from_file(params.prompt_file.value());
+            prompt = utils::read_file(params.prompt_file.value());
         } else if (std::filesystem::exists(inputfile)) {
             fmt::print("Found an Inputfile in current working directory!\n");
-            prompt = read_text_from_file(inputfile);
+            prompt = utils::read_file(inputfile);
         } else {
             prompt = read_text_from_stdin();
         }
