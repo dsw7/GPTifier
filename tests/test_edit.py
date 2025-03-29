@@ -67,6 +67,14 @@ class TestEditFile(TestCaseExtended):
         if self.output_file.exists():
             self.output_file.unlink()
 
+    def test_debug_flag(self) -> None:
+        proc = self.assertSuccess(
+            "edit", str(self.prompt_file), str(self.input_file), "--debug"
+        )
+        self.assertIn("The prompt was:", proc.stdout)
+        self.assertIn("The completion was:", proc.stdout)
+        self.assertFalse(self.output_file.exists())
+
     def test_write_to_stdout(self) -> None:
         proc = self.assertSuccess("edit", str(self.prompt_file), str(self.input_file))
         self.assertIn(proc.stdout, OUTPUT_CODE)
