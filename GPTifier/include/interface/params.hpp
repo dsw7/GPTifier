@@ -16,11 +16,6 @@ struct ParamsRun {
     void sanitize();
 };
 
-struct ParamsModels {
-    bool print_raw_json = false;
-    bool print_user_models = false;
-};
-
 struct ParamsFineTune {
     std::optional<std::string> model = std::nullopt;
     std::optional<std::string> training_file = std::nullopt;
