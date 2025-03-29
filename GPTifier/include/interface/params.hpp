@@ -30,13 +30,6 @@ struct ParamsModels {
     bool print_user_models = false;
 };
 
-struct ParamsEmbedding {
-    std::optional<std::string> input = std::nullopt;
-    std::optional<std::string> input_file = std::nullopt;
-    std::optional<std::string> model = std::nullopt;
-    std::optional<std::string> output_file = std::nullopt;
-};
-
 struct ParamsFineTune {
     std::optional<std::string> model = std::nullopt;
     std::optional<std::string> training_file = std::nullopt;
