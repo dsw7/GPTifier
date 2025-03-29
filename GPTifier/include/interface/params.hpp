@@ -16,16 +16,6 @@ struct ParamsRun {
     void sanitize();
 };
 
-struct ParamsFineTune {
-    std::optional<std::string> model = std::nullopt;
-    std::optional<std::string> training_file = std::nullopt;
-};
-
-struct ParamsGetFineTuningJobs {
-    bool print_raw_json = false;
-    std::optional<std::string> limit = std::nullopt;
-};
-
 struct ParamsGetChatCompletions {
     bool print_raw_json = false;
     std::variant<std::string, int> limit = "20";

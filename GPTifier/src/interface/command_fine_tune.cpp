@@ -1,7 +1,6 @@
 #include "interface/command_fine_tune.hpp"
 
 #include "interface/help_messages.hpp"
-#include "interface/params.hpp"
 #include "networking/api_openai_user.hpp"
 #include "serialization/files.hpp"
 #include "serialization/fine_tuning.hpp"
@@ -11,6 +10,7 @@
 #include <algorithm>
 #include <fmt/core.h>
 #include <getopt.h>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -38,10 +38,13 @@ void upload_ft_file(int argc, char **argv)
 
 // Create fine tuning job -----------------------------------------------------------------------------------
 
-ParamsFineTune read_cli_create_ft_job(int argc, char **argv)
-{
-    ParamsFineTune params;
+struct ParamsCreateFineTuningJob {
+    std::optional<std::string> model = std::nullopt;
+    std::optional<std::string> training_file = std::nullopt;
+};
 
+void read_cli_create_ft_job(int argc, char **argv, ParamsCreateFineTuningJob &params)
+{
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -71,22 +74,22 @@ ParamsFineTune read_cli_create_ft_job(int argc, char **argv)
                 cli::exit_on_failure();
         }
     };
-
-    return params;
 }
 
 void create_ft_job(int argc, char **argv)
 {
-    ParamsFineTune params = read_cli_create_ft_job(argc, argv);
+    ParamsCreateFineTuningJob params;
+    read_cli_create_ft_job(argc, argv, params);
+
     print_sep();
 
-    if (params.training_file.has_value()) {
+    if (params.training_file) {
         fmt::print("Training using file with ID: {}\n", params.training_file.value());
     } else {
         throw std::runtime_error("No training file ID provided");
     }
 
-    if (params.model.has_value()) {
+    if (params.model) {
         fmt::print("Training model: {}\n", params.model.value());
     } else {
         throw std::runtime_error("No model provided");
@@ -123,10 +126,13 @@ void delete_ft_model(int argc, char **argv)
 
 // Print fine tuning jobs -----------------------------------------------------------------------------------
 
-ParamsGetFineTuningJobs read_cli_list_ft_jobs(int argc, char **argv)
-{
-    ParamsGetFineTuningJobs params;
+struct ParamsGetFineTuningJobs {
+    bool print_raw_json = false;
+    std::optional<std::string> limit = std::nullopt;
+};
 
+void read_cli_list_ft_jobs(int argc, char **argv, ParamsGetFineTuningJobs &params)
+{
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -156,8 +162,6 @@ ParamsGetFineTuningJobs read_cli_list_ft_jobs(int argc, char **argv)
                 cli::exit_on_failure();
         }
     };
-
-    return params;
 }
 
 void print_ft_jobs(const FineTuningJobs &ft_jobs)
@@ -176,7 +180,9 @@ void print_ft_jobs(const FineTuningJobs &ft_jobs)
 
 void list_ft_jobs(int argc, char **argv)
 {
-    ParamsGetFineTuningJobs params = read_cli_list_ft_jobs(argc, argv);
+    ParamsGetFineTuningJobs params;
+    read_cli_list_ft_jobs(argc, argv, params);
+
     std::string limit = params.limit.value_or("20");
 
     FineTuningJobs ft_jobs = get_fine_tuning_jobs(limit);
@@ -186,7 +192,7 @@ void list_ft_jobs(int argc, char **argv)
         return;
     }
 
-    if (not params.limit.has_value()) {
+    if (not params.limit) {
         print_sep();
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
     }
