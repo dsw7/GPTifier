@@ -1,4 +1,4 @@
-#include "help_messages.hpp"
+#include "interface/help_messages.hpp"
 
 #include "utils.hpp"
 
@@ -191,6 +191,12 @@ void HelpMessages::print()
 } // namespace
 
 namespace cli {
+
+void exit_on_failure()
+{
+    fmt::print(stderr, "Try running with -h or --help for more information\n");
+    exit(EXIT_FAILURE);
+}
 
 void help_root_messages()
 {

@@ -1,9 +1,8 @@
 #include "interface/command_fine_tune.hpp"
 
-#include "cli.hpp"
-#include "help_messages.hpp"
+#include "interface/help_messages.hpp"
+#include "interface/params.hpp"
 #include "networking/api_openai_user.hpp"
-#include "params.hpp"
 #include "serialization/files.hpp"
 #include "serialization/fine_tuning.hpp"
 #include "serialization/models.hpp"
@@ -11,6 +10,7 @@
 
 #include <algorithm>
 #include <fmt/core.h>
+#include <getopt.h>
 #include <stdexcept>
 #include <string>
 
@@ -38,9 +38,46 @@ void upload_ft_file(int argc, char **argv)
 
 // Create fine tuning job -----------------------------------------------------------------------------------
 
+ParamsFineTune read_cli_create_ft_job(int argc, char **argv)
+{
+    ParamsFineTune params;
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' },
+            { "file-id", required_argument, 0, 'f' },
+            { "model", required_argument, 0, 'm' },
+            { 0, 0, 0, 0 },
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hf:m:", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                cli::help_command_fine_tune_create_job();
+                exit(EXIT_SUCCESS);
+            case 'f':
+                params.training_file = optarg;
+                break;
+            case 'm':
+                params.model = optarg;
+                break;
+            default:
+                cli::exit_on_failure();
+        }
+    };
+
+    return params;
+}
+
 void create_ft_job(int argc, char **argv)
 {
-    ParamsFineTune params = cli::get_opts_create_fine_tuning_job(argc, argv);
+    ParamsFineTune params = read_cli_create_ft_job(argc, argv);
     print_sep();
 
     if (params.training_file.has_value()) {
@@ -86,6 +123,43 @@ void delete_ft_model(int argc, char **argv)
 
 // Print fine tuning jobs -----------------------------------------------------------------------------------
 
+ParamsGetFineTuningJobs read_cli_list_ft_jobs(int argc, char **argv)
+{
+    ParamsGetFineTuningJobs params;
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' },
+            { "json", no_argument, 0, 'j' },
+            { "limit", required_argument, 0, 'l' },
+            { 0, 0, 0, 0 },
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hjl:", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                cli::help_command_fine_tune_list_jobs();
+                exit(EXIT_SUCCESS);
+            case 'j':
+                params.print_raw_json = true;
+                break;
+            case 'l':
+                params.limit = optarg;
+                break;
+            default:
+                cli::exit_on_failure();
+        }
+    };
+
+    return params;
+}
+
 void print_ft_jobs(const FineTuningJobs &ft_jobs)
 {
     print_sep();
@@ -102,7 +176,7 @@ void print_ft_jobs(const FineTuningJobs &ft_jobs)
 
 void list_ft_jobs(int argc, char **argv)
 {
-    ParamsGetFineTuningJobs params = cli::get_opts_get_fine_tuning_jobs(argc, argv);
+    ParamsGetFineTuningJobs params = read_cli_list_ft_jobs(argc, argv);
     std::string limit = params.limit.value_or("20");
 
     FineTuningJobs ft_jobs = get_fine_tuning_jobs(limit);

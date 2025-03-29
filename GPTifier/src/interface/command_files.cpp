@@ -1,11 +1,11 @@
 #include "interface/command_files.hpp"
 
-#include "cli.hpp"
-#include "help_messages.hpp"
+#include "interface/help_messages.hpp"
 #include "serialization/files.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
+#include <getopt.h>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -13,6 +13,39 @@
 namespace {
 
 // List files -----------------------------------------------------------------------------------------------
+
+bool read_cli(int argc, char **argv)
+{
+    bool print_raw_json = false;
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' },
+            { "json", no_argument, 0, 'j' },
+            { 0, 0, 0, 0 }
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hj", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                cli::help_command_files_list();
+                exit(EXIT_SUCCESS);
+            case 'j':
+                print_raw_json = true;
+                break;
+            default:
+                cli::exit_on_failure();
+        }
+    }
+
+    return print_raw_json;
+}
 
 void print_files(const Files &files)
 {
@@ -30,7 +63,7 @@ void print_files(const Files &files)
 
 void command_files_list(int argc, char **argv)
 {
-    bool print_raw_json = cli::get_opts_files_list(argc, argv);
+    bool print_raw_json = read_cli(argc, argv);
 
     Files files = get_files();
 

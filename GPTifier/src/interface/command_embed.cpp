@@ -1,11 +1,12 @@
 #include "interface/command_embed.hpp"
 
-#include "cli.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
-#include "params.hpp"
+#include "interface/help_messages.hpp"
+#include "interface/params.hpp"
 #include "serialization/embeddings.hpp"
 #include "utils.hpp"
+#include <getopt.h>
 
 #include <fmt/core.h>
 #include <fstream>
@@ -15,9 +16,50 @@
 #include <stdexcept>
 #include <string>
 
-using json = nlohmann::json;
-
 namespace {
+
+ParamsEmbedding read_cli(int argc, char **argv)
+{
+    ParamsEmbedding params;
+
+    while (true) {
+        static struct option long_options[] = { { "help", no_argument, 0, 'h' },
+            { "model", required_argument, 0, 'm' },
+            { "input", required_argument, 0, 'i' },
+            { "output-file", required_argument, 0, 'o' },
+            { "read-from-file", required_argument, 0, 'r' },
+            { 0, 0, 0, 0 } };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hm:i:o:r:", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                cli::help_command_embed();
+                exit(EXIT_SUCCESS);
+            case 'm':
+                params.model = optarg;
+                break;
+            case 'i':
+                params.input = optarg;
+                break;
+            case 'o':
+                params.output_file = optarg;
+                break;
+            case 'r':
+                params.input_file = optarg;
+                break;
+            default:
+                cli::exit_on_failure();
+        }
+    }
+
+    return params;
+}
 
 std::string read_text_from_stdin()
 {
@@ -46,7 +88,7 @@ void export_embedding(const Embedding &em, const std::optional<std::string> &out
         throw std::runtime_error(errmsg);
     }
 
-    json results;
+    nlohmann::json results;
 
     results["embedding"] = em.embedding;
     results["input"] = em.input;
@@ -60,7 +102,7 @@ void export_embedding(const Embedding &em, const std::optional<std::string> &out
 
 void command_embed(int argc, char **argv)
 {
-    ParamsEmbedding params = cli::get_opts_embed(argc, argv);
+    ParamsEmbedding params = read_cli(argc, argv);
 
     std::string text_to_embed;
 

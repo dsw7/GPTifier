@@ -1,16 +1,55 @@
 #include "interface/command_costs.hpp"
 
-#include "cli.hpp"
-#include "params.hpp"
+#include "interface/help_messages.hpp"
+#include "interface/params.hpp"
 #include "serialization/costs.hpp"
 #include "utils.hpp"
 
 #include <algorithm>
 #include <ctime>
 #include <fmt/core.h>
+#include <getopt.h>
 #include <string>
 
 namespace {
+
+ParamsCosts read_cli(int argc, char **argv)
+{
+    ParamsCosts params;
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' },
+            { "json", no_argument, 0, 'j' },
+            { "days", required_argument, 0, 'd' },
+            { 0, 0, 0, 0 },
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hjd:", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                cli::help_command_costs();
+                exit(EXIT_SUCCESS);
+            case 'j':
+                params.print_raw_json = true;
+                break;
+            case 'd':
+                params.days = optarg;
+                break;
+            default:
+                cli::exit_on_failure();
+        }
+    };
+
+    params.sanitize();
+    return params;
+}
 
 std::time_t get_current_time_minus_days(int days)
 {
@@ -48,7 +87,7 @@ void print_results(const Costs &costs, int days)
 
 void command_costs(int argc, char **argv)
 {
-    ParamsCosts params = cli::get_opts_get_costs(argc, argv);
+    ParamsCosts params = read_cli(argc, argv);
 
     int limit = 180;
     int days = std::get<int>(params.days);

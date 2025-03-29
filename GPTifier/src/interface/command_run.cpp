@@ -1,8 +1,8 @@
 #include "interface/command_run.hpp"
 
-#include "cli.hpp"
 #include "datadir.hpp"
-#include "params.hpp"
+#include "interface/help_messages.hpp"
+#include "interface/params.hpp"
 #include "selectors.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
@@ -11,12 +11,71 @@
 #include <filesystem>
 #include <fmt/core.h>
 #include <fstream>
+#include <getopt.h>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <thread>
 
 namespace {
+
+ParamsRun read_cli(int argc, char **argv)
+{
+    ParamsRun params;
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' },
+            { "no-interactive-export", no_argument, 0, 'u' },
+            { "store-completion", no_argument, 0, 's' },
+            { "file", required_argument, 0, 'o' },
+            { "model", required_argument, 0, 'm' },
+            { "prompt", required_argument, 0, 'p' },
+            { "read-from-file", required_argument, 0, 'r' },
+            { "temperature", required_argument, 0, 't' },
+            { 0, 0, 0, 0 },
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "huso:m:p:r:t:", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                cli::help_command_run();
+                exit(EXIT_SUCCESS);
+            case 'u':
+                params.enable_export = false;
+                break;
+            case 's':
+                params.store_completion = true;
+                break;
+            case 'o':
+                params.json_dump_file = optarg;
+                break;
+            case 'p':
+                params.prompt = optarg;
+                break;
+            case 't':
+                params.temperature = optarg;
+                break;
+            case 'r':
+                params.prompt_file = optarg;
+                break;
+            case 'm':
+                params.model = optarg;
+                break;
+            default:
+                cli::exit_on_failure();
+        }
+    };
+
+    params.sanitize();
+    return params;
+}
 
 // Input ----------------------------------------------------------------------------------------------------
 
@@ -223,7 +282,7 @@ void export_chat_completion_response(const ChatCompletion &completion)
 
 void command_run(int argc, char **argv)
 {
-    ParamsRun params = cli::get_opts_run(argc, argv);
+    ParamsRun params = read_cli(argc, argv);
     print_sep();
 
     static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
