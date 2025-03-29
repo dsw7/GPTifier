@@ -1,6 +1,6 @@
 #include "interface/command_files.hpp"
 
-#include "help_messages.hpp"
+#include "interface/help_messages.hpp"
 #include "serialization/files.hpp"
 #include "utils.hpp"
 

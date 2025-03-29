@@ -1,6 +1,6 @@
 #include "interface/command_fine_tune.hpp"
 
-#include "help_messages.hpp"
+#include "interface/help_messages.hpp"
 #include "interface/params.hpp"
 #include "networking/api_openai_user.hpp"
 #include "serialization/files.hpp"

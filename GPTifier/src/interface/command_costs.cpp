@@ -1,6 +1,6 @@
 #include "interface/command_costs.hpp"
 
-#include "help_messages.hpp"
+#include "interface/help_messages.hpp"
 #include "interface/params.hpp"
 #include "serialization/costs.hpp"
 #include "utils.hpp"

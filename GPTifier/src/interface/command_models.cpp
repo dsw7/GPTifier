@@ -1,6 +1,6 @@
 #include "interface/command_models.hpp"
 
-#include "help_messages.hpp"
+#include "interface/help_messages.hpp"
 #include "interface/params.hpp"
 #include "serialization/models.hpp"
 #include "utils.hpp"

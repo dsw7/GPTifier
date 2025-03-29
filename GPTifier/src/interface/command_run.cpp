@@ -1,7 +1,7 @@
 #include "interface/command_run.hpp"
 
 #include "datadir.hpp"
-#include "help_messages.hpp"
+#include "interface/help_messages.hpp"
 #include "interface/params.hpp"
 #include "selectors.hpp"
 #include "serialization/chat_completions.hpp"
