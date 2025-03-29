@@ -8,7 +8,6 @@
 #include <cstring>
 #include <fmt/core.h>
 #include <getopt.h>
-#include <iostream>
 #include <optional>
 #include <sstream>
 #include <stdexcept>
@@ -21,6 +20,7 @@ struct Params {
     bool debug = false;
     std::optional<std::string> instructions_file = std::nullopt;
     std::optional<std::string> model = std::nullopt;
+    std::optional<std::string> output_file = std::nullopt;
     std::vector<std::string> files;
 };
 
@@ -31,11 +31,12 @@ void read_cli(int argc, char **argv, Params &params)
             { "help", no_argument, 0, 'h' },
             { "debug", no_argument, 0, 'd' },
             { "model", required_argument, 0, 'm' },
+            { "file", required_argument, 0, 'o' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int opt = getopt_long(argc, argv, "hdm:", long_options, &option_index);
+        int opt = getopt_long(argc, argv, "hdm:o:", long_options, &option_index);
 
         if (opt == -1) {
             break;
@@ -50,6 +51,9 @@ void read_cli(int argc, char **argv, Params &params)
                 break;
             case 'm':
                 params.model = optarg;
+                break;
+            case 'o':
+                params.output_file = optarg;
                 break;
             default:
                 cli::exit_on_failure();
@@ -109,6 +113,15 @@ std::optional<std::string> get_output_from_completion(const std::string &complet
     return output_code;
 }
 
+void print_code_to_stdout(const std::optional<std::string> &output_code)
+{
+    if (output_code) {
+        fmt::print("{}\n", output_code.value());
+    } else {
+        fmt::print(stderr, "Could not parse code from completion. Try again\n");
+    }
+}
+
 void apply_transformation(const Params &params)
 {
     std::string instructions = utils::read_from_file(params.instructions_file.value());
@@ -116,6 +129,7 @@ void apply_transformation(const Params &params)
     std::string prompt = build_prompt(instructions, input_code);
 
     std::string model;
+
     if (params.model) {
         model = params.model.value();
     } else {
@@ -134,8 +148,10 @@ void apply_transformation(const Params &params)
 
     std::optional<std::string> output_code = get_output_from_completion(cc.completion);
 
-    if (output_code) {
-        std::cout << output_code.value() << '\n';
+    if (params.output_file) {
+        utils::write_to_file(params.output_file.value(), output_code.value());
+    } else {
+        print_code_to_stdout(output_code);
     }
 }
 
