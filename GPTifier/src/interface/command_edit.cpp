@@ -71,13 +71,28 @@ void read_cli(int argc, char **argv, Params &params)
 
 std::string build_prompt(const std::string &instructions, const std::string &input_code)
 {
-    return fmt::format("I am editing some code. Apply the following instructions:\n"
-                       "```\n{}\n```\n"
-                       "To the following code:\n"
-                       "```\n{}\n```\n"
-                       "And return the answer in the following format: "
-                       "<code>(the updated code here)</code>\n",
-        instructions, input_code);
+    std::string prompt;
+    prompt += "I am editing some code. Apply the following instructions:\n";
+    prompt += fmt::format("```\n{}\n```\n", instructions);
+    prompt += fmt::format("To the following code:\n```\n{}\n```\n", input_code);
+    prompt += "And return the answer formatted as follows: ```(the updated code here)```\n";
+    return prompt;
+}
+
+std::optional<std::string> get_output_from_completion(const std::string &completion)
+{
+    const std::string start = "```";
+    const std::string end = "```";
+
+    size_t start_pos = completion.find(start);
+    size_t end_pos = completion.find(end, start_pos + start.length());
+
+    if (start_pos == std::string::npos || end_pos == std::string::npos) {
+        return std::nullopt;
+    }
+
+    start_pos += start.length();
+    return completion.substr(start_pos, end_pos - start_pos);
 }
 
 void apply_transformation(const Params &params)
@@ -86,11 +101,6 @@ void apply_transformation(const Params &params)
     std::string input_code = utils::read_from_file(params.files[0]);
     std::string prompt = build_prompt(instructions, input_code);
 
-    if (params.debug) {
-        fmt::print(prompt);
-        return;
-    }
-
     std::string model;
     if (params.model) {
         model = params.model.value();
@@ -98,7 +108,21 @@ void apply_transformation(const Params &params)
         model = select_chat_model();
     }
 
-    // ChatCompletion cc = create_chat_completion(prompt, model, 1.00, false);
+    ChatCompletion cc = create_chat_completion(prompt, model, 1.00, false);
+
+    if (params.debug) {
+        fmt::print("The prompt was:\n");
+        fmt::print(fg(blue), "{}\n", prompt);
+        fmt::print("The completion was:\n");
+        fmt::print(fg(green), "{}\n", cc.completion);
+        return;
+    }
+
+    std::optional<std::string> output_code = get_output_from_completion(cc.completion);
+
+    if (output_code) {
+        std::cout << output_code.value() << '\n';
+    }
 }
 
 } // namespace
