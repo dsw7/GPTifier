@@ -122,7 +122,7 @@ class TestChatCompletion(TestCaseExtended):
 
     def test_missing_prompt_file(self) -> None:
         proc = self.assertFailure("run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u")
-        self.assertIn("Could not open file '/tmp/yU8nnkRs.txt'", proc.stderr)
+        self.assertIn("Unable to open '/tmp/yU8nnkRs.txt'", proc.stderr)
 
     def test_invalid_dump_location(self) -> None:
         prompt = get_prompt_completion_pair().prompt

@@ -45,7 +45,7 @@ class TestEmbed(TestCaseExtended):
 
     def test_missing_input_file(self) -> None:
         proc = self.assertFailure("embed", "--read-from-file=/tmp/yU8nnkRs.txt")
-        self.assertIn("Could not open file '/tmp/yU8nnkRs.txt'", proc.stderr)
+        self.assertIn("Unable to open '/tmp/yU8nnkRs.txt'", proc.stderr)
 
     def test_invalid_model(self) -> None:
         proc = self.assertFailure("embed", "-i'What is 3 + 5?'", "-mfoobar")
