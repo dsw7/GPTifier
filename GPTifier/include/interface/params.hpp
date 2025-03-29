@@ -15,10 +15,3 @@ struct ParamsRun {
 
     void sanitize();
 };
-
-struct ParamsGetChatCompletions {
-    bool print_raw_json = false;
-    std::variant<std::string, int> limit = "20";
-
-    void sanitize();
-};

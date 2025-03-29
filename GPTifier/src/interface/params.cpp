@@ -16,11 +16,6 @@ bool is_valid_temp(float temperature)
     return true;
 }
 
-bool is_valid_limit(int limit)
-{
-    return limit > 0;
-}
-
 } // namespace
 
 void ParamsRun::sanitize()
@@ -35,22 +30,6 @@ void ParamsRun::sanitize()
     if (std::holds_alternative<float>(this->temperature)) {
         if (not is_valid_temp(std::get<float>(this->temperature))) {
             throw std::runtime_error("Temperature must be between 0 and 2");
-        }
-    }
-}
-
-void ParamsGetChatCompletions::sanitize()
-{
-    if (std::holds_alternative<int>(this->limit)) {
-        throw std::runtime_error("Limit value is already an int!");
-    }
-
-    std::string limit = std::get<std::string>(this->limit);
-    this->limit = utils::string_to_int(limit);
-
-    if (std::holds_alternative<int>(this->limit)) {
-        if (not is_valid_limit(std::get<int>(this->limit))) {
-            throw std::runtime_error("Limit must be greater than 0");
         }
     }
 }
