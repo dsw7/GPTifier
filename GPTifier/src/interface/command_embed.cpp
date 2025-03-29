@@ -9,7 +9,6 @@
 #include <getopt.h>
 
 #include <fmt/core.h>
-#include <fstream>
 #include <iostream>
 #include <json.hpp>
 #include <optional>
@@ -80,22 +79,13 @@ void export_embedding(const Embedding &em, const std::optional<std::string> &out
         filename = datadir::GPT_EMBEDDINGS.string();
     }
 
+    nlohmann::json json;
+    json["embedding"] = em.embedding;
+    json["input"] = em.input;
+    json["model"] = em.model;
+
     fmt::print("Dumping JSON to '{}'\n", filename);
-    std::ofstream st_filename(filename);
-
-    if (not st_filename.is_open()) {
-        const std::string errmsg = fmt::format("Unable to open '{}'", filename);
-        throw std::runtime_error(errmsg);
-    }
-
-    nlohmann::json results;
-
-    results["embedding"] = em.embedding;
-    results["input"] = em.input;
-    results["model"] = em.model;
-
-    st_filename << std::setw(2) << results;
-    st_filename.close();
+    utils::write_to_file(filename, json.dump(2));
 }
 
 } // namespace

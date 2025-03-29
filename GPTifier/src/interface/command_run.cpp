@@ -156,14 +156,6 @@ ChatCompletion run_query(const std::string &model, const std::string &prompt, fl
 
 void dump_chat_completion_response(const ChatCompletion &cc, const std::string &json_dump_file)
 {
-    fmt::print("Dumping results to '{}'\n", json_dump_file);
-    std::ofstream st_filename(json_dump_file);
-
-    if (not st_filename.is_open()) {
-        const std::string errmsg = fmt::format("Unable to open '{}'\n", json_dump_file);
-        throw std::runtime_error(errmsg);
-    }
-
     nlohmann::json json;
     json["completion"] = cc.completion;
     json["completion_tokens"] = cc.completion_tokens;
@@ -174,8 +166,8 @@ void dump_chat_completion_response(const ChatCompletion &cc, const std::string &
     json["prompt_tokens"] = cc.prompt_tokens;
     json["rtt"] = cc.rtt.count();
 
-    st_filename << json.dump(2);
-    st_filename.close();
+    fmt::print("Dumping results to '{}'\n", json_dump_file);
+    utils::write_to_file(json_dump_file, json.dump(2));
 }
 
 void print_chat_completion_response(const std::string &completion)
