@@ -14,64 +14,6 @@ void exit_on_failure()
     exit(EXIT_FAILURE);
 }
 
-ParamsRun get_opts_run(int argc, char **argv)
-{
-    ParamsRun params;
-
-    while (true) {
-        static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' },
-            { "no-interactive-export", no_argument, 0, 'u' },
-            { "store-completion", no_argument, 0, 's' },
-            { "file", required_argument, 0, 'o' },
-            { "model", required_argument, 0, 'm' },
-            { "prompt", required_argument, 0, 'p' },
-            { "read-from-file", required_argument, 0, 'r' },
-            { "temperature", required_argument, 0, 't' },
-            { 0, 0, 0, 0 },
-        };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "huso:m:p:r:t:", long_options, &option_index);
-
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
-            case 'h':
-                help_command_run();
-                exit(EXIT_SUCCESS);
-            case 'u':
-                params.enable_export = false;
-                break;
-            case 's':
-                params.store_completion = true;
-                break;
-            case 'o':
-                params.json_dump_file = optarg;
-                break;
-            case 'p':
-                params.prompt = optarg;
-                break;
-            case 't':
-                params.temperature = optarg;
-                break;
-            case 'r':
-                params.prompt_file = optarg;
-                break;
-            case 'm':
-                params.model = optarg;
-                break;
-            default:
-                exit_on_failure();
-        }
-    };
-
-    params.sanitize();
-    return params;
-}
-
 ParamsEmbedding get_opts_embed(int argc, char **argv)
 {
     ParamsEmbedding params;
