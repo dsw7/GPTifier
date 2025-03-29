@@ -7,20 +7,6 @@
 
 namespace {
 
-int parse_int(const std::string &val)
-{
-    int val_i = 0;
-
-    try {
-        val_i = std::stoi(val);
-    } catch (std::invalid_argument &e) {
-        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to int", e.what(), val);
-        throw std::runtime_error(errmsg);
-    }
-
-    return val_i;
-}
-
 bool is_valid_temp(float temperature)
 {
     if (temperature < 0 || temperature > 2) {
@@ -28,11 +14,6 @@ bool is_valid_temp(float temperature)
     }
 
     return true;
-}
-
-bool is_valid_days(int days)
-{
-    return days > 0;
 }
 
 bool is_valid_limit(int limit)
@@ -58,22 +39,6 @@ void ParamsRun::sanitize()
     }
 }
 
-void ParamsCosts::sanitize()
-{
-    if (std::holds_alternative<int>(this->days)) {
-        throw std::runtime_error("Days value is already an int!");
-    }
-
-    std::string days = std::get<std::string>(this->days);
-    this->days = parse_int(days);
-
-    if (std::holds_alternative<int>(this->days)) {
-        if (not is_valid_days(std::get<int>(this->days))) {
-            throw std::runtime_error("Days must be greater than 0");
-        }
-    }
-}
-
 void ParamsGetChatCompletions::sanitize()
 {
     if (std::holds_alternative<int>(this->limit)) {
@@ -81,7 +46,7 @@ void ParamsGetChatCompletions::sanitize()
     }
 
     std::string limit = std::get<std::string>(this->limit);
-    this->limit = parse_int(limit);
+    this->limit = utils::string_to_int(limit);
 
     if (std::holds_alternative<int>(this->limit)) {
         if (not is_valid_limit(std::get<int>(this->limit))) {
