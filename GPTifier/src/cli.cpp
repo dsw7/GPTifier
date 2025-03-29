@@ -222,42 +222,4 @@ ParamsGetFineTuningJobs get_opts_get_fine_tuning_jobs(int argc, char **argv)
     return params;
 }
 
-ParamsGetChatCompletions get_opts_get_chat_completions(int argc, char **argv)
-{
-    ParamsGetChatCompletions params;
-
-    while (true) {
-        static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' },
-            { "json", no_argument, 0, 'j' },
-            { "limit", required_argument, 0, 'l' },
-            { 0, 0, 0, 0 },
-        };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "hjl:", long_options, &option_index);
-
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
-            case 'h':
-                help_command_chats_list();
-                exit(EXIT_SUCCESS);
-            case 'j':
-                params.print_raw_json = true;
-                break;
-            case 'l':
-                params.limit = optarg;
-                break;
-            default:
-                exit_on_failure();
-        }
-    };
-
-    params.sanitize();
-    return params;
-}
-
 } // namespace cli
