@@ -2,6 +2,7 @@
 
 #include "cli.hpp"
 #include "help_messages.hpp"
+#include "params.hpp"
 #include "serialization/models.hpp"
 #include "utils.hpp"
 

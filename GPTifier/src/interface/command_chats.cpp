@@ -2,6 +2,7 @@
 
 #include "cli.hpp"
 #include "help_messages.hpp"
+#include "params.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 
