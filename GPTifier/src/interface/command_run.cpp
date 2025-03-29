@@ -271,10 +271,10 @@ void command_run(int argc, char **argv)
     static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
     std::string prompt;
 
-    if (params.prompt.has_value()) {
+    if (params.prompt) {
         prompt = params.prompt.value();
     } else {
-        if (params.prompt_file.has_value()) {
+        if (params.prompt_file) {
             fmt::print("Reading text from file: '{}'\n", params.prompt_file.value());
             prompt = utils::read_from_file(params.prompt_file.value());
         } else if (std::filesystem::exists(inputfile)) {
@@ -292,7 +292,7 @@ void command_run(int argc, char **argv)
 
     std::string model;
 
-    if (params.model.has_value()) {
+    if (params.model) {
         model = params.model.value();
     } else {
         model = select_chat_model();
@@ -305,7 +305,7 @@ void command_run(int argc, char **argv)
 
     const ChatCompletion cc = run_query(model, prompt, temperature, params.store_completion);
 
-    if (params.json_dump_file.has_value()) {
+    if (params.json_dump_file) {
         dump_chat_completion_response(cc, params.json_dump_file.value());
         return;
     }
