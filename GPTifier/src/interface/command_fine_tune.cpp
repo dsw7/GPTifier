@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <fmt/core.h>
+#include <getopt.h>
 #include <stdexcept>
 #include <string>
 
@@ -38,9 +39,46 @@ void upload_ft_file(int argc, char **argv)
 
 // Create fine tuning job -----------------------------------------------------------------------------------
 
+ParamsFineTune read_cli_create_ft_job(int argc, char **argv)
+{
+    ParamsFineTune params;
+
+    while (true) {
+        static struct option long_options[] = {
+            { "help", no_argument, 0, 'h' },
+            { "file-id", required_argument, 0, 'f' },
+            { "model", required_argument, 0, 'm' },
+            { 0, 0, 0, 0 },
+        };
+
+        int option_index = 0;
+        int c = getopt_long(argc, argv, "hf:m:", long_options, &option_index);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+            case 'h':
+                cli::help_command_fine_tune_create_job();
+                exit(EXIT_SUCCESS);
+            case 'f':
+                params.training_file = optarg;
+                break;
+            case 'm':
+                params.model = optarg;
+                break;
+            default:
+                cli::exit_on_failure();
+        }
+    };
+
+    return params;
+}
+
 void create_ft_job(int argc, char **argv)
 {
-    ParamsFineTune params = cli::get_opts_create_fine_tuning_job(argc, argv);
+    ParamsFineTune params = read_cli_create_ft_job(argc, argv);
     print_sep();
 
     if (params.training_file.has_value()) {
