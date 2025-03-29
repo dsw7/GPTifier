@@ -1,23 +1,11 @@
 #include "interface/params.hpp"
 
+#include "utils.hpp"
+
 #include <fmt/core.h>
 #include <stdexcept>
 
 namespace {
-
-float parse_float(const std::string &val)
-{
-    float val_f = 0.00;
-
-    try {
-        val_f = std::stof(val);
-    } catch (std::invalid_argument &e) {
-        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), val);
-        throw std::runtime_error(errmsg);
-    }
-
-    return val_f;
-}
 
 int parse_int(const std::string &val)
 {
@@ -61,27 +49,7 @@ void ParamsRun::sanitize()
     }
 
     const std::string temperature = std::get<std::string>(this->temperature);
-    this->temperature = parse_float(temperature);
-
-    if (std::holds_alternative<float>(this->temperature)) {
-        if (not is_valid_temp(std::get<float>(this->temperature))) {
-            throw std::runtime_error("Temperature must be between 0 and 2");
-        }
-    }
-}
-
-void ParamsShort::sanitize()
-{
-    if (not this->prompt.has_value()) {
-        throw std::runtime_error("Prompt is empty");
-    }
-
-    if (std::holds_alternative<float>(this->temperature)) {
-        throw std::runtime_error("Temperature is already a float!");
-    }
-
-    const std::string temperature = std::get<std::string>(this->temperature);
-    this->temperature = parse_float(temperature);
+    this->temperature = utils::string_to_float(temperature);
 
     if (std::holds_alternative<float>(this->temperature)) {
         if (not is_valid_temp(std::get<float>(this->temperature))) {

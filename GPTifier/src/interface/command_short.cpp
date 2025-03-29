@@ -1,20 +1,26 @@
 #include "interface/command_short.hpp"
 
 #include "interface/help_messages.hpp"
-#include "interface/params.hpp"
 #include "selectors.hpp"
 #include "serialization/chat_completions.hpp"
+#include "utils.hpp"
 
 #include <fmt/core.h>
 #include <getopt.h>
+#include <optional>
 #include <string>
 
 namespace {
 
-ParamsShort read_cli(int argc, char **argv)
-{
-    ParamsShort params;
+struct Params {
+    bool print_raw_json = false;
+    bool store_completion = false;
+    std::optional<std::string> prompt = std::nullopt;
+    std::optional<std::string> temperature = std::nullopt;
+};
 
+void read_cli(int argc, char **argv, Params &params)
+{
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -55,20 +61,26 @@ ParamsShort read_cli(int argc, char **argv)
             break;
         }
     }
-
-    params.sanitize();
-    return params;
 }
 
 } // namespace
 
 void command_short(int argc, char **argv)
 {
-    ParamsShort params = read_cli(argc, argv);
+    Params params;
+    read_cli(argc, argv, params);
+
+    if (not params.prompt) {
+        throw std::runtime_error("Prompt is empty");
+    }
 
     float temperature = 1.00;
-    if (std::holds_alternative<float>(params.temperature)) {
-        temperature = std::get<float>(params.temperature);
+    if (params.temperature) {
+        temperature = utils::string_to_float(params.temperature.value());
+    }
+
+    if (temperature < 0 || temperature > 2) {
+        throw std::runtime_error("Temperature must be between 0 and 2");
     }
 
     const std::string model = select_chat_model();

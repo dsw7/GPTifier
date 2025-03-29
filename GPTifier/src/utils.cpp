@@ -98,4 +98,18 @@ void append_to_file(const std::string &filename, const std::string &text)
     file.close();
 }
 
+float string_to_float(const std::string &str)
+{
+    float f = 0.00;
+
+    try {
+        f = std::stof(str);
+    } catch (std::invalid_argument &e) {
+        const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), str);
+        throw std::runtime_error(errmsg);
+    }
+
+    return f;
+}
+
 } // namespace utils
