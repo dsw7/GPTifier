@@ -5,12 +5,15 @@
 #include <cstring>
 #include <getopt.h>
 #include <iostream>
+#include <optional>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace {
 
 struct Params {
+    std::optional<std::string> prompt_file = std::nullopt;
     std::vector<std::string> files;
 };
 
@@ -38,9 +41,16 @@ void read_cli(int argc, char **argv, Params &params)
         }
     }
 
+    bool prompt_set = false;
+
     for (int i = optind; i < argc; i++) {
         if (strcmp("edit", argv[i]) != 0) {
-            params.files.push_back(argv[i]);
+            if (prompt_set) {
+                params.files.push_back(argv[i]);
+            } else {
+                params.prompt_file = argv[i];
+                prompt_set = true;
+            }
             break;
         }
     }
@@ -52,6 +62,10 @@ void command_edit(int argc, char **argv)
 {
     Params params;
     read_cli(argc, argv, params);
+
+    if (not params.prompt_file) {
+        throw std::runtime_error("No prompt file provided. Cannot proceed");
+    }
 
     std::cout << params.files[0] << '\n';
 }
