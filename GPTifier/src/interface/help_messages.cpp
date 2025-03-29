@@ -412,11 +412,12 @@ void help_command_edit()
 {
     HelpMessages help;
     help.add_description("Edit one or more files according to a prompt.");
-    help.add_synopsis("edit [-h | --help] [-d | --debug]\n  "
-                      "[-m <model> | --model <model>] <prompt-file> <files-to-edit...>");
+    help.add_synopsis("edit [-h | --help] [-d | --debug] [-m <model> | --model <model>]\n  "
+                      "[-o <filename> | --file <filename>] <prompt-file> <files-to-edit...>");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-d", "--debug", "Print raw prompt and completion. Will not edit file");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
+    help.add_option("-o <filename>", "--file=<filename>", "Specify where to export edited code");
     help.print();
 }
 
