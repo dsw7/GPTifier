@@ -10,3 +10,7 @@ class TestEdit(TestCaseExtended):
                 self.assertIn(
                     "Edit one or more files according to a prompt.", proc.stdout
                 )
+
+    def test_missing_prompt_file(self) -> None:
+        proc = self.assertFailure("edit")
+        self.assertIn("No prompt file provided. Cannot proceed", proc.stderr)
