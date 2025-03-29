@@ -1,8 +1,8 @@
 #include "interface/command_fine_tune.hpp"
 
 #include "help_messages.hpp"
+#include "interface/params.hpp"
 #include "networking/api_openai_user.hpp"
-#include "params.hpp"
 #include "serialization/files.hpp"
 #include "serialization/fine_tuning.hpp"
 #include "serialization/models.hpp"

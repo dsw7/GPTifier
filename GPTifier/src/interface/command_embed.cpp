@@ -3,7 +3,7 @@
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "help_messages.hpp"
-#include "params.hpp"
+#include "interface/params.hpp"
 #include "serialization/embeddings.hpp"
 #include "utils.hpp"
 #include <getopt.h>

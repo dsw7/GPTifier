@@ -1,7 +1,7 @@
 #include "interface/command_short.hpp"
 
 #include "help_messages.hpp"
-#include "params.hpp"
+#include "interface/params.hpp"
 #include "selectors.hpp"
 #include "serialization/chat_completions.hpp"
 
