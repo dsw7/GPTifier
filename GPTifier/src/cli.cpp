@@ -14,49 +14,6 @@ void exit_on_failure()
     exit(EXIT_FAILURE);
 }
 
-ParamsEmbedding get_opts_embed(int argc, char **argv)
-{
-    ParamsEmbedding params;
-
-    while (true) {
-        static struct option long_options[] = { { "help", no_argument, 0, 'h' },
-            { "model", required_argument, 0, 'm' },
-            { "input", required_argument, 0, 'i' },
-            { "output-file", required_argument, 0, 'o' },
-            { "read-from-file", required_argument, 0, 'r' },
-            { 0, 0, 0, 0 } };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "hm:i:o:r:", long_options, &option_index);
-
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
-            case 'h':
-                help_command_embed();
-                exit(EXIT_SUCCESS);
-            case 'm':
-                params.model = optarg;
-                break;
-            case 'i':
-                params.input = optarg;
-                break;
-            case 'o':
-                params.output_file = optarg;
-                break;
-            case 'r':
-                params.input_file = optarg;
-                break;
-            default:
-                exit_on_failure();
-        }
-    }
-
-    return params;
-}
-
 bool get_opts_files_list(int argc, char **argv)
 {
     bool print_raw_json = false;
