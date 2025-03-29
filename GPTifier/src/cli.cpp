@@ -222,44 +222,6 @@ ParamsGetFineTuningJobs get_opts_get_fine_tuning_jobs(int argc, char **argv)
     return params;
 }
 
-ParamsCosts get_opts_get_costs(int argc, char **argv)
-{
-    ParamsCosts params;
-
-    while (true) {
-        static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' },
-            { "json", no_argument, 0, 'j' },
-            { "days", required_argument, 0, 'd' },
-            { 0, 0, 0, 0 },
-        };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "hjd:", long_options, &option_index);
-
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
-            case 'h':
-                help_command_costs();
-                exit(EXIT_SUCCESS);
-            case 'j':
-                params.print_raw_json = true;
-                break;
-            case 'd':
-                params.days = optarg;
-                break;
-            default:
-                exit_on_failure();
-        }
-    };
-
-    params.sanitize();
-    return params;
-}
-
 ParamsGetChatCompletions get_opts_get_chat_completions(int argc, char **argv)
 {
     ParamsGetChatCompletions params;
