@@ -67,6 +67,7 @@ void command_embed(int argc, char **argv)
     if (params.input.has_value()) {
         text_to_embed = params.input.value();
     } else if (params.input_file.has_value()) {
+        fmt::print("Reading text from file: '{}'\n", params.input_file.value());
         text_to_embed = read_text_from_file(params.input_file.value());
     } else {
         text_to_embed = read_text_from_stdin();
