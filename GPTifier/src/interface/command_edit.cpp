@@ -51,7 +51,6 @@ void read_cli(int argc, char **argv, Params &params)
                 params.prompt_file = argv[i];
                 prompt_set = true;
             }
-            break;
         }
     }
 }
@@ -67,5 +66,7 @@ void command_edit(int argc, char **argv)
         throw std::runtime_error("No prompt file provided. Cannot proceed");
     }
 
-    std::cout << params.files[0] << '\n';
+    if (params.files.size() == 0) {
+        throw std::runtime_error("No files to edit provided");
+    }
 }
