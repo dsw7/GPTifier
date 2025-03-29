@@ -18,10 +18,10 @@ namespace {
 
 struct Params {
     bool debug = false;
+    std::optional<std::string> input_file = std::nullopt;
     std::optional<std::string> instructions_file = std::nullopt;
     std::optional<std::string> model = std::nullopt;
     std::optional<std::string> output_file = std::nullopt;
-    std::vector<std::string> files;
 };
 
 void read_cli(int argc, char **argv, Params &params)
@@ -60,16 +60,18 @@ void read_cli(int argc, char **argv, Params &params)
         }
     }
 
-    bool prompt_set = false;
+    int counter = 0;
 
     for (int i = optind; i < argc; i++) {
         if (strcmp("edit", argv[i]) != 0) {
-            if (prompt_set) {
-                params.files.push_back(argv[i]);
-            } else {
+            if (counter == 0) {
                 params.instructions_file = argv[i];
-                prompt_set = true;
+            } else if (counter == 1) {
+                params.input_file = argv[i];
+            } else {
+                break;
             }
+            counter++;
         }
     }
 }
@@ -125,7 +127,7 @@ void print_code_to_stdout(const std::optional<std::string> &output_code)
 void apply_transformation(const Params &params)
 {
     std::string instructions = utils::read_from_file(params.instructions_file.value());
-    std::string input_code = utils::read_from_file(params.files[0]);
+    std::string input_code = utils::read_from_file(params.input_file.value());
     std::string prompt = build_prompt(instructions, input_code);
 
     std::string model;
@@ -166,8 +168,8 @@ void command_edit(int argc, char **argv)
         throw std::runtime_error("No prompt file provided. Cannot proceed");
     }
 
-    if (params.files.size() == 0) {
-        throw std::runtime_error("No files to edit provided");
+    if (not params.input_file) {
+        throw std::runtime_error("No file to edit provided. Cannot proceed");
     }
 
     apply_transformation(params);
