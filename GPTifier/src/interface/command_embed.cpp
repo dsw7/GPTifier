@@ -1,6 +1,5 @@
 #include "interface/command_embed.hpp"
 
-#include "cli.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "help_messages.hpp"

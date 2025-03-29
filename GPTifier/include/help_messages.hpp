@@ -1,6 +1,7 @@
 #pragma once
 
 namespace cli {
+void exit_on_failure();
 void help_root_messages();
 void help_command_embed();
 void help_command_models();

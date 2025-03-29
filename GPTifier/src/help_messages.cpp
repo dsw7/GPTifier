@@ -192,6 +192,12 @@ void HelpMessages::print()
 
 namespace cli {
 
+void exit_on_failure()
+{
+    fmt::print(stderr, "Try running with -h or --help for more information\n");
+    exit(EXIT_FAILURE);
+}
+
 void help_root_messages()
 {
     HelpMessages help;

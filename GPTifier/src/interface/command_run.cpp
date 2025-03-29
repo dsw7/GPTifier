@@ -1,6 +1,5 @@
 #include "interface/command_run.hpp"
 
-#include "cli.hpp"
 #include "datadir.hpp"
 #include "help_messages.hpp"
 #include "params.hpp"

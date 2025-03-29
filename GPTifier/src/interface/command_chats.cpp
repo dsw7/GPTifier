@@ -1,6 +1,5 @@
 #include "interface/command_chats.hpp"
 
-#include "cli.hpp"
 #include "help_messages.hpp"
 #include "params.hpp"
 #include "serialization/chat_completions.hpp"
