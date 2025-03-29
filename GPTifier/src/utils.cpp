@@ -85,4 +85,17 @@ void write_to_file(const std::string &filename, const std::string &text)
     file.close();
 }
 
+void append_to_file(const std::string &filename, const std::string &text)
+{
+    std::ofstream file(filename, std::ios::app);
+
+    if (not file.is_open()) {
+        const std::string errmsg = fmt::format("Unable to open '{}'", filename);
+        throw std::runtime_error(errmsg);
+    }
+
+    file << text;
+    file.close();
+}
+
 } // namespace utils
