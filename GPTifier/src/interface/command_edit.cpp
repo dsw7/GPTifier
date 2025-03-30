@@ -31,12 +31,13 @@ void read_cli(int argc, char **argv, Params &params)
             { "help", no_argument, 0, 'h' },
             { "debug", no_argument, 0, 'd' },
             { "model", required_argument, 0, 'm' },
-            { "file", required_argument, 0, 'o' },
+            { "output", required_argument, 0, 'o' },
+            { "prompt", required_argument, 0, 'p' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int opt = getopt_long(argc, argv, "hdm:o:", long_options, &option_index);
+        int opt = getopt_long(argc, argv, "hdm:o:p:", long_options, &option_index);
 
         if (opt == -1) {
             break;
@@ -55,23 +56,18 @@ void read_cli(int argc, char **argv, Params &params)
             case 'o':
                 params.output_file = optarg;
                 break;
+            case 'p':
+                params.instructions_file = optarg;
+                break;
             default:
                 cli::exit_on_failure();
         }
     }
 
-    int counter = 0;
-
     for (int i = optind; i < argc; i++) {
         if (strcmp("edit", argv[i]) != 0) {
-            if (counter == 0) {
-                params.instructions_file = argv[i];
-            } else if (counter == 1) {
-                params.input_file = argv[i];
-            } else {
-                break;
-            }
-            counter++;
+            params.input_file = argv[i];
+            break;
         }
     }
 }
