@@ -157,7 +157,11 @@ void apply_transformation(const Params &params)
         throw std::runtime_error(e.what());
     }
 
-    fmt::print("{}\nComplete!\n", params.output_file.value());
+    if (params.output_file) {
+        fmt::print("{}\nComplete!\n", params.output_file.value());
+    } else {
+        fmt::print("stdout\n");
+    }
 
     if (params.debug) {
         print_debug(prompt, cc.completion);
@@ -169,6 +173,7 @@ void apply_transformation(const Params &params)
     if (params.output_file) {
         utils::write_to_file(params.output_file.value(), output_code.value());
     } else {
+        print_sep();
         print_code_to_stdout(output_code);
     }
 }
