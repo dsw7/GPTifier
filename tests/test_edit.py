@@ -72,8 +72,19 @@ class TestEditFile(TestCaseExtended):
             self.output_file.unlink()
 
     def test_missing_output_file_option(self) -> None:
-        proc = self.assertFailure("edit", f"-p{self.prompt_file}", "test.cpp")
+        proc = self.assertFailure("edit", f"-p{self.prompt_file}", str(self.input_file))
         self.assertIn("Unable to open 'test.cpp'", proc.stderr)
+
+    def test_invalid_model(self) -> None:
+        for option in ["-mabc", "--model=abc"]:
+            with self.subTest(option=option):
+                proc = self.assertFailure(
+                    "edit", option, f"-p{self.prompt_file}", str(self.input_file)
+                )
+                self.assertIn(
+                    "The model `abc` does not exist or you do not have access to it.",
+                    proc.stderr,
+                )
 
     def test_debug_flag(self) -> None:
         proc = self.assertSuccess(
@@ -90,8 +101,8 @@ class TestEditFile(TestCaseExtended):
     def test_write_to_file(self) -> None:
         self.assertSuccess(
             "edit",
-            f"-p{self.prompt_file}",
             str(self.input_file),
+            f"-p{self.prompt_file}",
             f"-o{self.output_file}",
         )
         self.assertTrue(self.output_file.exists())
