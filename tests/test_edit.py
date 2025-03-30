@@ -51,8 +51,10 @@ class TestEdit(TestCaseExtended):
         self.assertIn("No file to edit provided. Cannot proceed", proc.stderr)
 
     def test_missing_prompt_file(self) -> None:
-        proc = self.assertFailure("edit", "-pfoobar", "test.cpp")
-        self.assertIn("Unable to open 'foobar'", proc.stderr)
+        for option in ["-pfoobar.txt", "--prompt=foobar.txt"]:
+            with self.subTest(option=option):
+                proc = self.assertFailure("edit", option, "test.cpp")
+                self.assertIn("Unable to open 'foobar.txt'", proc.stderr)
 
 
 class TestEditFile(TestCaseExtended):
