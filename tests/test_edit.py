@@ -42,16 +42,16 @@ class TestEdit(TestCaseExtended):
                     "Edit one or more files according to a prompt.", proc.stdout
                 )
 
-    def test_missing_prompt_file_argument(self) -> None:
+    def test_missing_prompt_file_option(self) -> None:
         proc = self.assertFailure("edit")
         self.assertIn("No prompt file provided. Cannot proceed", proc.stderr)
 
-    def test_missing_edit_file_argument(self) -> None:
-        proc = self.assertFailure("edit", "prompt")
+    def test_missing_output_file_argument(self) -> None:
+        proc = self.assertFailure("edit", "-pprompt")
         self.assertIn("No file to edit provided. Cannot proceed", proc.stderr)
 
     def test_missing_prompt_file(self) -> None:
-        proc = self.assertFailure("edit", "foobar", "test.cpp")
+        proc = self.assertFailure("edit", "-pfoobar", "test.cpp")
         self.assertIn("Unable to open 'foobar'", proc.stderr)
 
 
@@ -71,25 +71,28 @@ class TestEditFile(TestCaseExtended):
         if self.output_file.exists():
             self.output_file.unlink()
 
-    def test_missing_edit_file(self) -> None:
-        proc = self.assertFailure("edit", str(self.prompt_file), "test.cpp")
+    def test_missing_output_file_option(self) -> None:
+        proc = self.assertFailure("edit", f"-p{self.prompt_file}", "test.cpp")
         self.assertIn("Unable to open 'test.cpp'", proc.stderr)
 
     def test_debug_flag(self) -> None:
         proc = self.assertSuccess(
-            "edit", str(self.prompt_file), str(self.input_file), "--debug"
+            "edit", f"-p{self.prompt_file}", str(self.input_file), "--debug"
         )
         self.assertIn("The prompt was:", proc.stdout)
         self.assertIn("The completion was:", proc.stdout)
         self.assertFalse(self.output_file.exists())
 
     def test_write_to_stdout(self) -> None:
-        proc = self.assertSuccess("edit", str(self.prompt_file), str(self.input_file))
+        proc = self.assertSuccess("edit", f"-p{self.prompt_file}", str(self.input_file))
         self.assertIn(proc.stdout, OUTPUT_CODE)
 
     def test_write_to_file(self) -> None:
         self.assertSuccess(
-            "edit", str(self.prompt_file), str(self.input_file), f"-o{self.output_file}"
+            "edit",
+            f"-p{self.prompt_file}",
+            str(self.input_file),
+            f"-o{self.output_file}",
         )
         self.assertTrue(self.output_file.exists())
         self.assertIn(self.output_file.read_text(), OUTPUT_CODE)
