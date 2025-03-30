@@ -134,13 +134,13 @@ void print_code_to_stdout(const std::optional<std::string> &output_code)
 
 void apply_transformation(const Params &params)
 {
-    std::string instructions = utils::read_from_file(params.instructions_file.value());
+    const std::string instructions = utils::read_from_file(params.instructions_file.value());
 
     fmt::print("Read instructions from: {}\n", params.instructions_file.value());
     std::cout << fmt::format("{} -> ", params.input_file.value()) << std::flush;
 
-    std::string input_code = utils::read_from_file(params.input_file.value());
-    std::string prompt = build_prompt(instructions, input_code);
+    const std::string input_code = utils::read_from_file(params.input_file.value());
+    const std::string prompt = build_prompt(instructions, input_code);
 
     std::string model;
     if (params.model) {
@@ -149,7 +149,14 @@ void apply_transformation(const Params &params)
         model = select_chat_model();
     }
 
-    ChatCompletion cc = create_chat_completion(prompt, model, 1.00, false);
+    ChatCompletion cc;
+    try {
+        cc = create_chat_completion(prompt, model, 1.00, false);
+    } catch (std::runtime_error &e) {
+        fmt::print("?\n");
+        throw std::runtime_error(e.what());
+    }
+
     fmt::print("{}\nComplete!\n", params.output_file.value());
 
     if (params.debug) {
@@ -157,7 +164,7 @@ void apply_transformation(const Params &params)
         return;
     }
 
-    std::optional<std::string> output_code = get_output_from_completion(cc.completion);
+    const std::optional<std::string> output_code = get_output_from_completion(cc.completion);
 
     if (params.output_file) {
         utils::write_to_file(params.output_file.value(), output_code.value());
