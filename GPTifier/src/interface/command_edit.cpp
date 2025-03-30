@@ -8,6 +8,7 @@
 #include <cstring>
 #include <fmt/core.h>
 #include <getopt.h>
+#include <iostream>
 #include <optional>
 #include <sstream>
 #include <stdexcept>
@@ -78,8 +79,19 @@ std::string build_prompt(const std::string &instructions, const std::string &inp
     prompt += "I am editing some code. Apply the following instructions:\n";
     prompt += fmt::format("```\n{}\n```\n", instructions);
     prompt += fmt::format("To the following code:\n```\n{}\n```\n", input_code);
-    prompt += "And return the answer formatted as follows: ```(the updated code here)```\n";
+    prompt += "And return the answer formatted as follows: ```(the updated code here)```";
     return prompt;
+}
+
+void print_debug(const std::string &prompt, const std::string &completion)
+{
+    print_sep();
+    fmt::print("The prompt was:\n");
+    fmt::print(fg(blue), "{}\n", prompt);
+
+    print_sep();
+    fmt::print("The completion was:\n");
+    fmt::print(fg(green), "{}\n", completion);
 }
 
 std::optional<std::string> get_output_from_completion(const std::string &completion)
@@ -123,11 +135,14 @@ void print_code_to_stdout(const std::optional<std::string> &output_code)
 void apply_transformation(const Params &params)
 {
     std::string instructions = utils::read_from_file(params.instructions_file.value());
+
+    fmt::print("Read instructions from: {}\n", params.instructions_file.value());
+    std::cout << fmt::format("{} -> ", params.input_file.value()) << std::flush;
+
     std::string input_code = utils::read_from_file(params.input_file.value());
     std::string prompt = build_prompt(instructions, input_code);
 
     std::string model;
-
     if (params.model) {
         model = params.model.value();
     } else {
@@ -135,12 +150,10 @@ void apply_transformation(const Params &params)
     }
 
     ChatCompletion cc = create_chat_completion(prompt, model, 1.00, false);
+    fmt::print("{}\nComplete!\n", params.output_file.value());
 
     if (params.debug) {
-        fmt::print("The prompt was:\n");
-        fmt::print(fg(blue), "{}\n", prompt);
-        fmt::print("The completion was:\n");
-        fmt::print(fg(green), "{}\n", cc.completion);
+        print_debug(prompt, cc.completion);
         return;
     }
 
