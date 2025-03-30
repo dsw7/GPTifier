@@ -71,8 +71,8 @@ class TestEditFile(TestCaseExtended):
         if self.output_file.exists():
             self.output_file.unlink()
 
-    def test_missing_output_file_option(self) -> None:
-        proc = self.assertFailure("edit", f"-p{self.prompt_file}", str(self.input_file))
+    def test_missing_input_file_argument(self) -> None:
+        proc = self.assertFailure("edit", f"-p{self.prompt_file}", "test.cpp")
         self.assertIn("Unable to open 'test.cpp'", proc.stderr)
 
     def test_invalid_model(self) -> None:
@@ -96,7 +96,7 @@ class TestEditFile(TestCaseExtended):
 
     def test_write_to_stdout(self) -> None:
         proc = self.assertSuccess("edit", f"-p{self.prompt_file}", str(self.input_file))
-        self.assertIn(proc.stdout, OUTPUT_CODE)
+        self.assertIn(OUTPUT_CODE, proc.stdout)
 
     def test_write_to_file(self) -> None:
         self.assertSuccess(
