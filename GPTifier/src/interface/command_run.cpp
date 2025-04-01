@@ -203,8 +203,8 @@ void print_ratio(int num_tokens, int num_words)
 
 void print_usage_statistics(const ChatCompletion &completion)
 {
-    int wc_prompt = get_word_count(completion.prompt);
-    int wc_completion = get_word_count(completion.completion);
+    int wc_prompt = utils::get_word_count(completion.prompt);
+    int wc_completion = utils::get_word_count(completion.completion);
 
     fmt::print(fg(white), "Usage:\n");
     fmt::print("Model: {}\n", completion.model);
