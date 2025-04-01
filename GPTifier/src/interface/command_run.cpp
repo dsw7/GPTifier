@@ -227,7 +227,7 @@ void print_usage_statistics(const ChatCompletion &completion)
 
 void write_message_to_file(const ChatCompletion &completion)
 {
-    const std::string created = datetime_from_unix_timestamp(completion.created);
+    const std::string created = utils::datetime_from_unix_timestamp(completion.created);
 
     std::string text = "{\n";
     text += "> Created at: " + created + " (GMT)\n";

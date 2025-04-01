@@ -11,7 +11,6 @@ constexpr fmt::terminal_color white = fmt::terminal_color::bright_white;
 constexpr fmt::terminal_color yellow = fmt::terminal_color::bright_yellow;
 
 void print_sep();
-std::string datetime_from_unix_timestamp(const std::time_t &timestamp);
 
 namespace utils {
 std::string read_from_file(const std::string &filename);
@@ -20,4 +19,5 @@ void append_to_file(const std::string &filename, const std::string &text);
 float string_to_float(const std::string &str);
 int string_to_int(const std::string &str);
 int get_word_count(const std::string &str);
+std::string datetime_from_unix_timestamp(const std::time_t &timestamp);
 } // namespace utils

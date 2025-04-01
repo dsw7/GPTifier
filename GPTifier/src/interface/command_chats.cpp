@@ -58,7 +58,7 @@ void print_chat_completions(const ChatCompletions &ccs)
     print_sep();
 
     for (const auto &it: ccs.completions) {
-        const std::string dt_created_at = datetime_from_unix_timestamp(it.created);
+        const std::string dt_created_at = utils::datetime_from_unix_timestamp(it.created);
         fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created_at, it.id, it.prompt, it.completion);
     }
 

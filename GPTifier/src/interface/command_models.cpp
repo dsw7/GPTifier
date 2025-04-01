@@ -81,7 +81,7 @@ void print_models(std::vector<Model> &models)
     print_sep();
 
     for (const auto &it: models) {
-        const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
+        const std::string dt_created_at = utils::datetime_from_unix_timestamp(it.created_at);
         fmt::print("{:<25}{:<35}{}\n", dt_created_at, it.owner, it.id);
     }
 

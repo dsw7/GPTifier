@@ -19,11 +19,11 @@ void unpack_fine_tuning_jobs(const nlohmann::json &json, FineTuningJobs &fine_tu
         job.created_at = entry["created_at"];
 
         if (not entry["finished_at"].is_null()) {
-            job.finished_at = datetime_from_unix_timestamp(entry["finished_at"]);
+            job.finished_at = utils::datetime_from_unix_timestamp(entry["finished_at"]);
         }
 
         if (not entry["estimated_finish"].is_null()) {
-            job.estimated_finish = datetime_from_unix_timestamp(entry["estimated_finish"]);
+            job.estimated_finish = utils::datetime_from_unix_timestamp(entry["estimated_finish"]);
         }
 
         fine_tuning_jobs.jobs.push_back(job);

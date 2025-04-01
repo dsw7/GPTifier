@@ -171,7 +171,7 @@ void print_ft_jobs(const FineTuningJobs &ft_jobs)
     print_sep();
 
     for (const auto &it: ft_jobs.jobs) {
-        const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
+        const std::string dt_created_at = utils::datetime_from_unix_timestamp(it.created_at);
         fmt::print("{:<40}{:<30}{:<30}{}\n", it.id, dt_created_at, it.estimated_finish, it.finished_at);
     }
 

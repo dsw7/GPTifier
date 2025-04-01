@@ -30,15 +30,6 @@ void print_sep()
     fmt::print("{}\n", separator);
 }
 
-std::string datetime_from_unix_timestamp(const std::time_t &timestamp)
-{
-    const std::tm *datetime = std::gmtime(&timestamp);
-    char buffer[80];
-
-    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", datetime);
-    return buffer;
-}
-
 namespace utils {
 
 std::string read_from_file(const std::string &filename)
@@ -124,6 +115,15 @@ int get_word_count(const std::string &str)
     }
 
     return count;
+}
+
+std::string datetime_from_unix_timestamp(const std::time_t &timestamp)
+{
+    const std::tm *datetime = std::gmtime(&timestamp);
+    char buffer[80];
+
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", datetime);
+    return buffer;
 }
 
 } // namespace utils
