@@ -1,7 +1,7 @@
 #include "interface/command_test.hpp"
 
+#include "interface/model_selector.hpp"
 #include "networking/api_openai_user.hpp"
-#include "selectors.hpp"
 #include "serialization/response_to_json.hpp"
 
 #include <fmt/core.h>

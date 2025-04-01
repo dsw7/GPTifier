@@ -2,7 +2,7 @@
 
 #include "datadir.hpp"
 #include "interface/help_messages.hpp"
-#include "selectors.hpp"
+#include "interface/model_selector.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 
