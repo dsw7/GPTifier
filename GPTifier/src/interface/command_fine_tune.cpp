@@ -81,7 +81,7 @@ void create_ft_job(int argc, char **argv)
     ParamsCreateFineTuningJob params;
     read_cli_create_ft_job(argc, argv, params);
 
-    print_sep();
+    utils::separator();
 
     if (params.training_file) {
         fmt::print("Training using file with ID: {}\n", params.training_file.value());
@@ -95,7 +95,7 @@ void create_ft_job(int argc, char **argv)
         throw std::runtime_error("No model provided");
     }
 
-    print_sep();
+    utils::separator();
 
     const std::string id = create_fine_tuning_job(params.model.value(), params.training_file.value());
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
@@ -166,16 +166,16 @@ void read_cli_list_ft_jobs(int argc, char **argv, ParamsGetFineTuningJobs &param
 
 void print_ft_jobs(const FineTuningJobs &ft_jobs)
 {
-    print_sep();
+    utils::separator();
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
-    print_sep();
+    utils::separator();
 
     for (const auto &it: ft_jobs.jobs) {
         const std::string dt_created_at = utils::datetime_from_unix_timestamp(it.created_at);
         fmt::print("{:<40}{:<30}{:<30}{}\n", it.id, dt_created_at, it.estimated_finish, it.finished_at);
     }
 
-    print_sep();
+    utils::separator();
 }
 
 void list_ft_jobs(int argc, char **argv)
@@ -193,7 +193,7 @@ void list_ft_jobs(int argc, char **argv)
     }
 
     if (not params.limit) {
-        print_sep();
+        utils::separator();
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
     }
 

@@ -125,5 +125,5 @@ void command_embed(int argc, char **argv)
     const Embedding em = create_embedding(model, text_to_embed);
     export_embedding(em, params.output_file);
 
-    print_sep();
+    utils::separator();
 }

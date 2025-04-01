@@ -67,11 +67,11 @@ std::time_t get_current_time_minus_days(int days)
 
 void print_results(const Costs &costs, int days)
 {
-    print_sep();
+    utils::separator();
     fmt::print("Overall usage (in USD) over {} days: {}\n", days, costs.total_cost);
-    print_sep();
+    utils::separator();
     fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
-    print_sep();
+    utils::separator();
 
     for (const auto &it: costs.buckets) {
         const std::string dt_start = utils::datetime_from_unix_timestamp(it.start_time);
@@ -79,7 +79,7 @@ void print_results(const Costs &costs, int days)
         fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, it.cost, it.org_id);
     }
 
-    print_sep();
+    utils::separator();
 }
 
 } // namespace

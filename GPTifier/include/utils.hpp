@@ -10,9 +10,8 @@ constexpr fmt::terminal_color red = fmt::terminal_color::bright_red;
 constexpr fmt::terminal_color white = fmt::terminal_color::bright_white;
 constexpr fmt::terminal_color yellow = fmt::terminal_color::bright_yellow;
 
-void print_sep();
-
 namespace utils {
+void separator();
 std::string read_from_file(const std::string &filename);
 void write_to_file(const std::string &filename, const std::string &text);
 void append_to_file(const std::string &filename, const std::string &text);

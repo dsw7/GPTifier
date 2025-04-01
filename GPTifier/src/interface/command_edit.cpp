@@ -85,11 +85,11 @@ std::string build_prompt(const std::string &instructions, const std::string &inp
 
 void print_debug(const std::string &prompt, const std::string &completion)
 {
-    print_sep();
+    utils::separator();
     fmt::print("The prompt was:\n");
     fmt::print(fg(blue), "{}\n", prompt);
 
-    print_sep();
+    utils::separator();
     fmt::print("The completion was:\n");
     fmt::print(fg(green), "{}\n", completion);
 }
@@ -173,7 +173,7 @@ void apply_transformation(const Params &params)
     if (params.output_file) {
         utils::write_to_file(params.output_file.value(), output_code.value());
     } else {
-        print_sep();
+        utils::separator();
         print_code_to_stdout(output_code);
     }
 }

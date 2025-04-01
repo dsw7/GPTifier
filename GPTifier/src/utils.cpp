@@ -23,14 +23,14 @@ short get_terminal_columns()
 
 } // namespace
 
-void print_sep()
+namespace utils {
+
+void separator()
 {
     static short columns = get_terminal_columns();
     static std::string separator = std::string(columns, '-');
     fmt::print("{}\n", separator);
 }
-
-namespace utils {
 
 std::string read_from_file(const std::string &filename)
 {

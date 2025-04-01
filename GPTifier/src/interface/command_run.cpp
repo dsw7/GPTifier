@@ -273,7 +273,7 @@ void command_run(int argc, char **argv)
     Params params;
     read_cli(argc, argv, params);
 
-    print_sep();
+    utils::separator();
 
     std::string model;
     if (params.model) {
@@ -297,7 +297,7 @@ void command_run(int argc, char **argv)
         } else {
             prompt = read_text_from_stdin();
         }
-        print_sep();
+        utils::separator();
     }
 
     if (prompt.empty()) {
@@ -317,13 +317,13 @@ void command_run(int argc, char **argv)
     }
 
     print_usage_statistics(cc);
-    print_sep();
+    utils::separator();
 
     print_chat_completion_response(cc.completion);
-    print_sep();
+    utils::separator();
 
     if (params.enable_export) {
         export_chat_completion_response(cc);
-        print_sep();
+        utils::separator();
     }
 }
