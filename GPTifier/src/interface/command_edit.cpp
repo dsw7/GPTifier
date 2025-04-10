@@ -107,22 +107,12 @@ struct Output {
 
 void get_output_from_completion(const std::string &completion, Output &output)
 {
-    std::stringstream ss(completion);
+    bool append_enabled = false;
     std::string line;
-    std::vector<std::string> lines;
+    std::string raw_json;
+    std::stringstream ss(completion);
 
     while (std::getline(ss, line)) {
-        lines.push_back(line);
-    }
-
-    if (lines.size() <= 2) {
-        throw std::runtime_error("Could not get lines from completion");
-    }
-
-    bool append_enabled = false;
-    std::string raw_json;
-
-    for (const auto &line: lines) {
         if (line == "```json") {
             append_enabled = true;
         } else if (line == "```") {
