@@ -9,6 +9,7 @@
 #include <fmt/core.h>
 #include <getopt.h>
 #include <iostream>
+#include <json.hpp>
 #include <optional>
 #include <sstream>
 #include <stdexcept>
@@ -99,6 +100,11 @@ void print_debug(const std::string &prompt, const std::string &completion)
     fmt::print(fg(green), "{}\n", completion);
 }
 
+struct Output {
+    std::string code;
+    std::string description;
+};
+
 std::optional<std::string> get_output_from_completion(const std::string &completion)
 {
     std::stringstream ss(completion);
@@ -115,17 +121,34 @@ std::optional<std::string> get_output_from_completion(const std::string &complet
         return std::nullopt;
     }
 
-    std::string output_code;
+    bool append_enabled = false;
+    std::string raw_json;
 
-    for (int i = 1; i < num_lines - 1; ++i) {
-        output_code += lines[i] + "\n";
+    for (const auto &line: lines) {
+        if (line == "```json") {
+            append_enabled = true;
+        } else if (line == "```") {
+            append_enabled = false;
+        } else {
+            if (append_enabled) {
+                raw_json += line;
+            }
+        }
     }
 
-    if (!output_code.empty()) {
-        output_code.pop_back();
+    nlohmann::json json;
+
+    try {
+        json = nlohmann::json::parse(raw_json);
+    } catch (const nlohmann::json::parse_error &e) {
+        throw std::runtime_error(fmt::format("Failed to parse JSON: {}", e.what()));
     }
 
-    return output_code;
+    Output output;
+    output.code = json["code"];
+    output.description = json["description"];
+
+    return output.code;
 }
 
 void print_code_to_stdout(const std::optional<std::string> &output_code)
