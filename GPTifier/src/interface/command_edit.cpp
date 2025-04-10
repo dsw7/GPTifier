@@ -77,9 +77,14 @@ std::string build_prompt(const std::string &instructions, const std::string &inp
 {
     std::string prompt;
     prompt += "I am editing some code. Apply the following instructions:\n";
-    prompt += fmt::format("```\n{}\n```\n", instructions);
+    prompt += fmt::format("```plaintext\n{}\n```\n", instructions);
     prompt += fmt::format("To the following code:\n```\n{}\n```\n", input_code);
-    prompt += "And return the answer formatted as follows: ```(the updated code here)```";
+    prompt += ("Please return the code edits in a JSON format with keys \"code\" and \"description.\" "
+               "For example:\n"
+               "{\n"
+               "  \"code\": \"Your updated code here\",\n"
+               "  \"description\": \"A brief explanation of the changes\",\n"
+               "}\n");
     return prompt;
 }
 
@@ -87,7 +92,7 @@ void print_debug(const std::string &prompt, const std::string &completion)
 {
     utils::separator();
     fmt::print("The prompt was:\n");
-    fmt::print(fg(blue), "{}\n", prompt);
+    fmt::print(fg(blue), "{}", prompt);
 
     utils::separator();
     fmt::print("The completion was:\n");
