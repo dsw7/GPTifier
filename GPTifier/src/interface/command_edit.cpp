@@ -105,7 +105,7 @@ struct Output {
     std::string description;
 };
 
-std::optional<std::string> get_output_from_completion(const std::string &completion)
+void get_output_from_completion(const std::string &completion, Output &output)
 {
     std::stringstream ss(completion);
     std::string line;
@@ -115,10 +115,8 @@ std::optional<std::string> get_output_from_completion(const std::string &complet
         lines.push_back(line);
     }
 
-    int num_lines = lines.size();
-
-    if (num_lines <= 2) {
-        return std::nullopt;
+    if (lines.size() <= 2) {
+        throw std::runtime_error("Could not get lines from completion");
     }
 
     bool append_enabled = false;
@@ -144,20 +142,19 @@ std::optional<std::string> get_output_from_completion(const std::string &complet
         throw std::runtime_error(fmt::format("Failed to parse JSON: {}", e.what()));
     }
 
-    Output output;
     output.code = json["code"];
     output.description = json["description"];
-
-    return output.code;
 }
 
-void print_code_to_stdout(const std::optional<std::string> &output_code)
+void print_code_to_stdout(const Output &output)
 {
-    if (output_code) {
-        fmt::print("{}\n", output_code.value());
-    } else {
-        fmt::print(stderr, "Could not parse code from completion. Try again\n");
-    }
+    utils::separator();
+    fmt::print("The updated code is:\n");
+    fmt::print(fg(green), "```\n{}\n```\n", output.code);
+
+    utils::separator();
+    fmt::print("A description of the changes:\n");
+    fmt::print(fg(green), "{}\n", output.description);
 }
 
 void apply_transformation(const Params &params)
@@ -196,13 +193,13 @@ void apply_transformation(const Params &params)
         return;
     }
 
-    const std::optional<std::string> output_code = get_output_from_completion(cc.completion);
+    Output output;
+    get_output_from_completion(cc.completion, output);
 
     if (params.output_file) {
-        utils::write_to_file(params.output_file.value(), output_code.value());
+        utils::write_to_file(params.output_file.value(), output.code);
     } else {
-        utils::separator();
-        print_code_to_stdout(output_code);
+        print_code_to_stdout(output);
     }
 }
 
