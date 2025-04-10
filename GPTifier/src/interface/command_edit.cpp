@@ -134,8 +134,15 @@ void get_output_from_completion(const std::string &completion, Output &output)
         }
     }
 
-    nlohmann::json json;
+    if (append_enabled) {
+        throw std::runtime_error("Closing triple backticks not found. Raw JSON might be malformed");
+    }
 
+    if (raw_json.empty()) {
+        throw std::runtime_error("JSON with code and description is empty. Cannot proceed");
+    }
+
+    nlohmann::json json;
     try {
         json = nlohmann::json::parse(raw_json);
     } catch (const nlohmann::json::parse_error &e) {
