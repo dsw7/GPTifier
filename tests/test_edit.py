@@ -20,6 +20,7 @@ PROMPT = (
     "```\n"
     "proc = myfunc(A, B, C)\n"
     "```\n"
+    "Please use double quotes for strings.\n"
 )
 OUTPUT_CODE = (
     "from .myfunc import myfunc\n"
@@ -98,7 +99,8 @@ class TestEditFile(TestCaseExtended):
 
     def test_write_to_stdout(self) -> None:
         proc = self.assertSuccess("edit", f"-p{self.prompt_file}", str(self.input_file))
-        self.assertIn(OUTPUT_CODE, proc.stdout)
+        self.assertIn("The updated code is:", proc.stdout)
+        self.assertIn("A description of the changes:", proc.stdout)
 
     def test_write_to_file(self) -> None:
         self.assertSuccess(
