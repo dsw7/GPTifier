@@ -111,3 +111,13 @@ class TestEditFile(TestCaseExtended):
         )
         self.assertTrue(self.output_file.exists())
         self.assertIn(self.output_file.read_text(), OUTPUT_CODE)
+
+    def test_overwrite_file(self) -> None:
+        self.assertSuccess(
+            "edit",
+            str(self.input_file),
+            f"-p{self.prompt_file}",
+            f"-o{self.input_file}",
+        )
+        self.assertTrue(self.input_file.exists())
+        self.assertIn(self.input_file.read_text(), OUTPUT_CODE)
