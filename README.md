@@ -280,6 +280,9 @@ And to simply overwrite `foo.cpp`, run:
 ```console
 gpt edit foo.cpp -p prompt.txt -o foo.cpp
 ```
+> [!NOTE]
+> No prompt engineering is needed when writing `prompt.txt`. The instructions written to `prompt.txt` are
+> concatenated into a larger prompt complete with context, output format specifications, etc.
 
 ### Input selection
 For certain commands, a hierarchy exists for choosing where input text comes from. The hierarchy roughly
