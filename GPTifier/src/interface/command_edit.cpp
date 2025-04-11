@@ -102,6 +102,23 @@ void print_debug(const std::string &prompt, const std::string &completion)
 
 void get_stringified_json_from_completion(const std::string &completion, std::string &raw_json)
 {
+    /*
+     * Some models return a JSON completion without triple backticks:
+     * {
+     *   k: v,
+     * }
+     * Others return a JSON completion with triple backticks:
+     * ```json
+     * {
+     *   k: v,
+     * }
+     * ```
+     */
+    if (completion[0] == '{' and completion.back() == '}') {
+        raw_json = completion;
+        return;
+    }
+
     bool append_enabled = false;
     std::string line;
     std::stringstream ss(completion);
