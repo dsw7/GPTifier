@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-
-
 def main() -> None:
     nums = [1, c, 3]
     print(sum(nums))

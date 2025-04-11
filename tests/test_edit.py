@@ -1,6 +1,5 @@
 from pathlib import Path
 from shutil import copy
-from stat import S_IEXEC
 import subprocess
 from .extended_testcase import TestCaseExtended
 
@@ -85,8 +84,7 @@ class TestEditFile(TestCaseExtended):
             f"-o{self.output_file}",
         )
 
-        self.output_file.chmod(self.output_file.stat().st_mode | S_IEXEC)
-        process = subprocess.run(str(self.output_file), capture_output=True)
+        process = subprocess.run(["python3", self.output_file], capture_output=True)
         self.assertEqual(process.returncode, 0)
         self.assertEqual(process.stdout.decode(), "6\n")
 
@@ -98,7 +96,6 @@ class TestEditFile(TestCaseExtended):
             f"-o{self.input_file}",
         )
 
-        self.input_file.chmod(self.input_file.stat().st_mode | S_IEXEC)
-        process = subprocess.run(str(self.input_file), capture_output=True)
+        process = subprocess.run(["python3", self.input_file], capture_output=True)
         self.assertEqual(process.returncode, 0)
         self.assertEqual(process.stdout.decode(), "6\n")
