@@ -1,0 +1,1 @@
+Replace the undefined variable `c` with the integer 2.
