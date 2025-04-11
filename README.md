@@ -26,6 +26,7 @@ A beautiful C++ libcurl / ChatGPT interface
     - [Delete files](#delete-files)
   - [The `fine-tune` command](#the-fine-tune-command)
     - [Fine tuning workflow](#fine-tuning-workflow)
+  - [The `edit` command](#the-edit-command)
   - [Input selection](#input-selection)
 - [Administration](#administration)
   - [The `costs` command](#the-costs-command)
@@ -259,6 +260,29 @@ The model ID can be found from the `User models` section listed by running:
 ```console
 gpt models
 ```
+
+### The `edit` command
+Use this command to edit files according to instructions written into a text file. For example, suppose
+`foo.cpp` contains Camel case formatted code, and suppose there's a need to change the format to snake case.
+Instructions for applying this change can be written into a prompt file, say `prompt.txt`:
+```plaintext
+Convert all code from camel case to snake case.
+```
+The following command will print the results to `stdout`:
+```console
+gpt edit foo.cpp -p prompt.txt
+```
+To write the updated code to a new file, say `bar.cpp`:
+```console
+gpt edit foo.cpp -p prompt.txt -o bar.cpp
+```
+And to simply overwrite `foo.cpp`, run:
+```console
+gpt edit foo.cpp -p prompt.txt -o foo.cpp
+```
+> [!NOTE]
+> No prompt engineering is needed when writing `prompt.txt`. The instructions written to `prompt.txt` are
+> concatenated into a larger prompt complete with context, output format specifications, etc.
 
 ### Input selection
 For certain commands, a hierarchy exists for choosing where input text comes from. The hierarchy roughly

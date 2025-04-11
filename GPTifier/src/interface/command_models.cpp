@@ -1,7 +1,6 @@
 #include "interface/command_models.hpp"
 
 #include "interface/help_messages.hpp"
-#include "interface/params.hpp"
 #include "serialization/models.hpp"
 #include "utils.hpp"
 
@@ -13,10 +12,13 @@
 
 namespace {
 
-ParamsModels read_cli(int argc, char **argv)
-{
-    ParamsModels params;
+struct Params {
+    bool print_raw_json = false;
+    bool print_user_models = false;
+};
 
+void read_cli(int argc, char **argv, Params &params)
+{
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -46,8 +48,6 @@ ParamsModels read_cli(int argc, char **argv)
                 cli::exit_on_failure();
         }
     }
-
-    return params;
 }
 
 void get_openai_models(const std::vector<Model> &left, std::vector<Model> &right)
@@ -75,24 +75,26 @@ void print_models(std::vector<Model> &models)
     });
 
     fmt::print("> Number of models: {}\n", models.size());
-    print_sep();
+    utils::separator();
 
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
-    print_sep();
+    utils::separator();
 
     for (const auto &it: models) {
-        const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
+        const std::string dt_created_at = utils::datetime_from_unix_timestamp(it.created_at);
         fmt::print("{:<25}{:<35}{}\n", dt_created_at, it.owner, it.id);
     }
 
-    print_sep();
+    utils::separator();
 }
 
 } // namespace
 
 void command_models(int argc, char **argv)
 {
-    ParamsModels params = read_cli(argc, argv);
+    Params params;
+    read_cli(argc, argv, params);
+
     Models models = get_models();
 
     if (params.print_raw_json) {

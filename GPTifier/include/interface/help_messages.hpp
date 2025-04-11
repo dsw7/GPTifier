@@ -19,4 +19,5 @@ void help_command_costs();
 void help_command_chats();
 void help_command_chats_list();
 void help_command_chats_delete();
+void help_command_edit();
 } // namespace cli

@@ -3,13 +3,11 @@
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "interface/help_messages.hpp"
-#include "interface/params.hpp"
 #include "serialization/embeddings.hpp"
 #include "utils.hpp"
 #include <getopt.h>
 
 #include <fmt/core.h>
-#include <fstream>
 #include <iostream>
 #include <json.hpp>
 #include <optional>
@@ -18,10 +16,15 @@
 
 namespace {
 
-ParamsEmbedding read_cli(int argc, char **argv)
-{
-    ParamsEmbedding params;
+struct Params {
+    std::optional<std::string> input = std::nullopt;
+    std::optional<std::string> input_file = std::nullopt;
+    std::optional<std::string> model = std::nullopt;
+    std::optional<std::string> output_file = std::nullopt;
+};
 
+void read_cli(int argc, char **argv, Params &params)
+{
     while (true) {
         static struct option long_options[] = { { "help", no_argument, 0, 'h' },
             { "model", required_argument, 0, 'm' },
@@ -57,8 +60,6 @@ ParamsEmbedding read_cli(int argc, char **argv)
                 cli::exit_on_failure();
         }
     }
-
-    return params;
 }
 
 std::string read_text_from_stdin()
@@ -74,43 +75,35 @@ void export_embedding(const Embedding &em, const std::optional<std::string> &out
 {
     std::string filename;
 
-    if (output_file.has_value()) {
+    if (output_file) {
         filename = output_file.value();
     } else {
         filename = datadir::GPT_EMBEDDINGS.string();
     }
 
+    nlohmann::json json;
+    json["embedding"] = em.embedding;
+    json["input"] = em.input;
+    json["model"] = em.model;
+
     fmt::print("Dumping JSON to '{}'\n", filename);
-    std::ofstream st_filename(filename);
-
-    if (not st_filename.is_open()) {
-        const std::string errmsg = fmt::format("Unable to open '{}'", filename);
-        throw std::runtime_error(errmsg);
-    }
-
-    nlohmann::json results;
-
-    results["embedding"] = em.embedding;
-    results["input"] = em.input;
-    results["model"] = em.model;
-
-    st_filename << std::setw(2) << results;
-    st_filename.close();
+    utils::write_to_file(filename, json.dump(2));
 }
 
 } // namespace
 
 void command_embed(int argc, char **argv)
 {
-    ParamsEmbedding params = read_cli(argc, argv);
+    Params params;
+    read_cli(argc, argv, params);
 
     std::string text_to_embed;
 
-    if (params.input.has_value()) {
+    if (params.input) {
         text_to_embed = params.input.value();
-    } else if (params.input_file.has_value()) {
+    } else if (params.input_file) {
         fmt::print("Reading text from file: '{}'\n", params.input_file.value());
-        text_to_embed = read_text_from_file(params.input_file.value());
+        text_to_embed = utils::read_from_file(params.input_file.value());
     } else {
         text_to_embed = read_text_from_stdin();
     }
@@ -121,9 +114,9 @@ void command_embed(int argc, char **argv)
 
     std::string model;
 
-    if (params.model.has_value()) {
+    if (params.model) {
         model = params.model.value();
-    } else if (configs.embeddings.model.has_value()) {
+    } else if (configs.embeddings.model) {
         model = configs.embeddings.model.value();
     } else {
         throw std::runtime_error("No model provided via configuration file or command line");
@@ -132,5 +125,5 @@ void command_embed(int argc, char **argv)
     const Embedding em = create_embedding(model, text_to_embed);
     export_embedding(em, params.output_file);
 
-    print_sep();
+    utils::separator();
 }

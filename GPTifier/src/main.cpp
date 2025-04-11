@@ -1,6 +1,7 @@
 #include "configs.hpp"
 #include "interface/command_chats.hpp"
 #include "interface/command_costs.hpp"
+#include "interface/command_edit.hpp"
 #include "interface/command_embed.hpp"
 #include "interface/command_files.hpp"
 #include "interface/command_fine_tune.hpp"
@@ -74,6 +75,8 @@ int main(int argc, char **argv)
             command_costs(argc, argv);
         } else if (command == "chats") {
             command_chats(argc, argv);
+        } else if (command == "edit") {
+            command_edit(argc, argv);
         } else if (command == "test") {
             command_test(argc, argv);
         } else {

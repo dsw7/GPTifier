@@ -1,4 +1,4 @@
-#include "selectors.hpp"
+#include "interface/model_selector.hpp"
 
 #include "configs.hpp"
 

@@ -1,7 +1,6 @@
 #include "interface/command_costs.hpp"
 
 #include "interface/help_messages.hpp"
-#include "interface/params.hpp"
 #include "serialization/costs.hpp"
 #include "utils.hpp"
 
@@ -13,10 +12,13 @@
 
 namespace {
 
-ParamsCosts read_cli(int argc, char **argv)
-{
-    ParamsCosts params;
+struct Params {
+    bool print_raw_json = false;
+    std::string days = "30";
+};
 
+void read_cli(int argc, char **argv, Params &params)
+{
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -46,9 +48,6 @@ ParamsCosts read_cli(int argc, char **argv)
                 cli::exit_on_failure();
         }
     };
-
-    params.sanitize();
-    return params;
 }
 
 std::time_t get_current_time_minus_days(int days)
@@ -68,31 +67,36 @@ std::time_t get_current_time_minus_days(int days)
 
 void print_results(const Costs &costs, int days)
 {
-    print_sep();
+    utils::separator();
     fmt::print("Overall usage (in USD) over {} days: {}\n", days, costs.total_cost);
-    print_sep();
+    utils::separator();
     fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
-    print_sep();
+    utils::separator();
 
     for (const auto &it: costs.buckets) {
-        const std::string dt_start = datetime_from_unix_timestamp(it.start_time);
-        const std::string dt_end = datetime_from_unix_timestamp(it.end_time);
+        const std::string dt_start = utils::datetime_from_unix_timestamp(it.start_time);
+        const std::string dt_end = utils::datetime_from_unix_timestamp(it.end_time);
         fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, it.cost, it.org_id);
     }
 
-    print_sep();
+    utils::separator();
 }
 
 } // namespace
 
 void command_costs(int argc, char **argv)
 {
-    ParamsCosts params = read_cli(argc, argv);
+    Params params;
+    read_cli(argc, argv, params);
 
-    int limit = 180;
-    int days = std::get<int>(params.days);
+    int days = utils::string_to_int(params.days);
+    if (days < 1) {
+        throw std::runtime_error("Days must be greater than 0");
+    }
+
     std::time_t start_time = get_current_time_minus_days(days);
 
+    int limit = 180;
     Costs costs = get_costs(start_time, limit);
 
     if (params.print_raw_json) {

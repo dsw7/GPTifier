@@ -1,7 +1,6 @@
 #include "interface/command_chats.hpp"
 
 #include "interface/help_messages.hpp"
-#include "interface/params.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 
@@ -14,10 +13,13 @@ namespace {
 
 // List chats -----------------------------------------------------------------------------------------------
 
-ParamsGetChatCompletions read_cli_list_cc(int argc, char **argv)
-{
-    ParamsGetChatCompletions params;
+struct Params {
+    bool print_raw_json = false;
+    std::string limit = "20";
+};
 
+void read_cli_list_cc(int argc, char **argv, Params &params)
+{
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -47,29 +49,33 @@ ParamsGetChatCompletions read_cli_list_cc(int argc, char **argv)
                 cli::exit_on_failure();
         }
     };
-
-    params.sanitize();
-    return params;
 }
 
 void print_chat_completions(const ChatCompletions &ccs)
 {
-    print_sep();
+    utils::separator();
     fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
-    print_sep();
+    utils::separator();
 
     for (const auto &it: ccs.completions) {
-        const std::string dt_created_at = datetime_from_unix_timestamp(it.created);
+        const std::string dt_created_at = utils::datetime_from_unix_timestamp(it.created);
         fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created_at, it.id, it.prompt, it.completion);
     }
 
-    print_sep();
+    utils::separator();
 }
 
 void command_chats_list(int argc, char **argv)
 {
-    ParamsGetChatCompletions params = read_cli_list_cc(argc, argv);
-    ChatCompletions ccs = get_chat_completions(std::get<int>(params.limit));
+    Params params;
+    read_cli_list_cc(argc, argv, params);
+
+    int limit = utils::string_to_int(params.limit);
+    if (limit < 1) {
+        throw std::runtime_error("Limit must be greater than 0");
+    }
+
+    ChatCompletions ccs = get_chat_completions(limit);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", ccs.raw_response);

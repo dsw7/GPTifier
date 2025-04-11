@@ -49,16 +49,16 @@ bool read_cli(int argc, char **argv)
 
 void print_files(const Files &files)
 {
-    print_sep();
+    utils::separator();
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
-    print_sep();
+    utils::separator();
 
     for (const auto &it: files.files) {
-        const std::string dt_created_at = datetime_from_unix_timestamp(it.created_at);
+        const std::string dt_created_at = utils::datetime_from_unix_timestamp(it.created_at);
         fmt::print("{:<30}{:<30}{:<30}{}\n", it.id, it.filename, dt_created_at, it.purpose);
     }
 
-    print_sep();
+    utils::separator();
 }
 
 void command_files_list(int argc, char **argv)

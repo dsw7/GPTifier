@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from functools import cache
 from json import loads
 from os import getenv, EX_OK
-from subprocess import run, PIPE
+from subprocess import run, PIPE, CompletedProcess
 from typing import Any
 from unittest import TestCase
 
@@ -34,6 +34,23 @@ class _Process:
         return loads(self.stdout)
 
 
+def _get_debug_messages(process: CompletedProcess[bytes]) -> str:
+    message = f"Program exited with code {process.returncode}.\n"
+
+    message += "The failing command is:\n"
+    message += f"```\n{' '.join(process.args)}\n```\n"
+
+    for line in process.stdout.decode().splitlines():
+        message += f"stdout > {line}\n"
+
+    message += "\n"
+
+    for line in process.stderr.decode().splitlines():
+        message += f"stderr > {line}\n"
+
+    return message
+
+
 class TestCaseExtended(TestCase):
 
     def _assertSuccess(self, *args: str) -> _Process:
@@ -41,9 +58,7 @@ class TestCaseExtended(TestCase):
         command.extend(args)
 
         process = run(command, stdout=PIPE, stderr=PIPE)
-        assert (
-            process.returncode == EX_OK
-        ), f"Program exited with code {process.returncode}"
+        assert process.returncode == EX_OK, _get_debug_messages(process)
 
         return _Process(
             stderr=process.stderr.decode(),
