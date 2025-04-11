@@ -420,6 +420,9 @@ void help_command_edit()
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
     help.add_option("-o <filename>", "--output=<filename>", "Specify where to export edited code");
     help.add_option("-p <filename>", "--prompt=<filename>", "Specify instructions to apply to input file");
+    help.add_example("Edit a file and print changes to stdout", "gpt edit foo.cpp -p prompt.txt");
+    help.add_example("Edit a file and write changes to new file", "gpt edit foo.cpp -p prompt.txt -o bar.cpp");
+    help.add_example("Overwrite an existing file with edits", "gpt edit foo.cpp -o foo.cpp -p prompt.txt");
     help.print();
 }
 
