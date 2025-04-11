@@ -100,16 +100,10 @@ void print_debug(const std::string &prompt, const std::string &completion)
     fmt::print(fg(green), "{}\n", completion);
 }
 
-struct Output {
-    std::string code;
-    std::string description;
-};
-
-void get_output_from_completion(const std::string &completion, Output &output)
+void get_stringified_json_from_completion(const std::string &completion, std::string &raw_json)
 {
     bool append_enabled = false;
     std::string line;
-    std::string raw_json;
     std::stringstream ss(completion);
 
     while (std::getline(ss, line)) {
@@ -127,6 +121,17 @@ void get_output_from_completion(const std::string &completion, Output &output)
     if (append_enabled) {
         throw std::runtime_error("Closing triple backticks not found. Raw JSON might be malformed");
     }
+}
+
+struct Output {
+    std::string code;
+    std::string description;
+};
+
+void get_output_from_completion(const std::string &completion, Output &output)
+{
+    std::string raw_json;
+    get_stringified_json_from_completion(completion, raw_json);
 
     if (raw_json.empty()) {
         throw std::runtime_error("JSON with code and description is empty. Cannot proceed");
