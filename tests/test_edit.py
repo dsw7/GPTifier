@@ -1,36 +1,10 @@
 from pathlib import Path
+from shutil import copy
+from stat import S_IEXEC
+import subprocess
 from .extended_testcase import TestCaseExtended
 
-
-INPUT_CODE = (
-    "from .myfunc import myfunc\n"
-    "\n"
-    "def main() -> None:\n"
-    '    myfunc(["a", "b", "c"])\n'
-    "\n"
-    'if __name__ == "__main__":\n'
-    "    main()\n"
-)
-PROMPT = (
-    "Given we have a function call of form:\n"
-    "```\n"
-    "proc = myfunc([A, B, C])\n"
-    "```\n"
-    "Replace this call with a call of form:\n"
-    "```\n"
-    "proc = myfunc(A, B, C)\n"
-    "```\n"
-    "Please use double quotes for strings.\n"
-)
-OUTPUT_CODE = (
-    "from .myfunc import myfunc\n"
-    "\n"
-    "def main() -> None:\n"
-    '    myfunc("a", "b", "c")\n'
-    "\n"
-    'if __name__ == "__main__":\n'
-    "    main()\n"
-)
+PathToData = Path(__file__).resolve().parent / "test_edit"
 
 
 class TestEdit(TestCaseExtended):
@@ -64,8 +38,9 @@ class TestEditFile(TestCaseExtended):
         self.input_file = Path("/tmp/foo.py")
         self.output_file = Path("/tmp/bar.py")
         self.prompt_file = Path("/tmp/prompt")
-        self.input_file.write_text(INPUT_CODE)
-        self.prompt_file.write_text(PROMPT)
+
+        copy(PathToData / "dummy.py", self.input_file)
+        copy(PathToData / "prompt.txt", self.prompt_file)
 
     def tearDown(self) -> None:
         self.input_file.unlink()
@@ -109,8 +84,11 @@ class TestEditFile(TestCaseExtended):
             f"-p{self.prompt_file}",
             f"-o{self.output_file}",
         )
-        self.assertTrue(self.output_file.exists())
-        self.assertIn(self.output_file.read_text(), OUTPUT_CODE)
+
+        self.output_file.chmod(self.output_file.stat().st_mode | S_IEXEC)
+        process = subprocess.run(str(self.output_file), capture_output=True)
+        self.assertEqual(process.returncode, 0)
+        self.assertEqual(process.stdout.decode(), "6\n")
 
     def test_overwrite_file(self) -> None:
         self.assertSuccess(
@@ -119,5 +97,8 @@ class TestEditFile(TestCaseExtended):
             f"-p{self.prompt_file}",
             f"-o{self.input_file}",
         )
-        self.assertTrue(self.input_file.exists())
-        self.assertIn(self.input_file.read_text(), OUTPUT_CODE)
+
+        self.input_file.chmod(self.input_file.stat().st_mode | S_IEXEC)
+        process = subprocess.run(str(self.input_file), capture_output=True)
+        self.assertEqual(process.returncode, 0)
+        self.assertEqual(process.stdout.decode(), "6\n")
