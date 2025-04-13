@@ -1,5 +1,5 @@
 # GPTifier
-A beautiful C++ libcurl / ChatGPT interface
+A C++ OpenAI CLI interface!
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dsw7/GPTifier/master/LICENSE)
 [![GitHub Releases](https://img.shields.io/github/release/dsw7/GPTifier.svg)](https://github.com/dsw7/GPTifier/releases)
@@ -26,6 +26,7 @@ A beautiful C++ libcurl / ChatGPT interface
     - [Delete files](#delete-files)
   - [The `fine-tune` command](#the-fine-tune-command)
     - [Fine tuning workflow](#fine-tuning-workflow)
+  - [The `chats` command](#the-chats-command)
   - [The `edit` command](#the-edit-command)
   - [Input selection](#input-selection)
 - [Administration](#administration)
@@ -260,6 +261,21 @@ The model ID can be found from the `User models` section listed by running:
 ```console
 gpt models
 ```
+
+### The `chats` command
+The `chats` family of subcommands can be used to manage stored chat completions (for example, chat completions
+that were saved with the `--store-completion` flag when using `gpt run`). Run:
+```console
+gpt chats
+# or
+gpt chats list
+```
+To list stored completions. A chat completion can be deleted by running:
+```console
+gpt chats delete <chat-completion-id>
+```
+Where `<chat-completion-id>` is collected from `gpt chats` and corresponds to a chat completion that is to be
+deleted.
 
 ### The `edit` command
 Use this command to edit files according to instructions written into a text file. For example, suppose
