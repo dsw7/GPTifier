@@ -115,7 +115,7 @@ bool delete_chats(const std::vector<std::string> &ids)
 void command_chats_delete(int argc, char **argv)
 {
     if (argc < 4) {
-        cli::help_command_files_delete();
+        cli::help_command_chats_delete();
         return;
     }
 
