@@ -16,6 +16,26 @@
 #include <stdexcept>
 #include <string>
 
+void print_help_messages()
+{
+    HelpMessages help;
+    help.add_name_version();
+    help.add_description("A command line program for interactively querying OpenAI via the OpenAI API.");
+    help.add_description("See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.");
+    help.add_synopsis("[-v | --version] [-h | --help] <command> [<args>]");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-v", "--version", "Print version and exit");
+    help.add_command("run", "Run a query against an appropriate model");
+    help.add_command("short", "Run a query against an appropriate model but with no threading and limited verbosity");
+    help.add_command("models", "List available OpenAI models");
+    help.add_command("embed", "Get embedding representing a block of text");
+    help.add_command("files", "Manage files uploaded to OpenAI");
+    help.add_command("fine-tune", "Manage fine tuning operations");
+    help.add_command("costs", "Get OpenAI usage details");
+    help.add_command("edit", "Edit one or more files according to a prompt");
+    help.print();
+}
+
 void print_build_information()
 {
     nlohmann::json data;
@@ -35,14 +55,14 @@ void print_build_information()
 int main(int argc, char **argv)
 {
     if (argc < 2) {
-        cli::help_root_messages();
+        print_help_messages();
         return EXIT_FAILURE;
     }
 
     const std::string command = argv[1];
 
     if (command == "-h" or command == "--help") {
-        cli::help_root_messages();
+        print_help_messages();
         return EXIT_SUCCESS;
     }
 

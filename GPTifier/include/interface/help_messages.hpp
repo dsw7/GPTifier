@@ -49,5 +49,4 @@ public:
 
 namespace cli {
 void exit_on_failure();
-void help_root_messages();
 } // namespace cli
