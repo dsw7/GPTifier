@@ -253,9 +253,9 @@ The `fine-tune` command is used for managing fine-tuning operations.
     ```console
     gpt fine-tune delete-model <model-id>
     ```
-   To find the model ID, refer to the `User models` section by running:
+   To find the model ID, run:
     ```console
-    gpt models
+    gpt models -u
     ```
 
 ### The `chats` command
@@ -273,28 +273,43 @@ gpt chats delete <chat-completion-id>
 Where `<chat-completion-id>` is collected from `gpt chats` and corresponds to a chat completion that is to be
 deleted.
 
-### The `edit` command
-Use this command to edit files according to instructions written into a text file. For example, suppose
-`foo.cpp` contains Camel case formatted code, and suppose there's a need to change the format to snake case.
-Instructions for applying this change can be written into a prompt file, say `prompt.txt`:
-```plaintext
-Convert all code from camel case to snake case.
+### The `chats` command
+The `chats` family of subcommands is used to manage stored chat completions, such as those saved using the
+`--store-completion` flag with the `gpt run` command. To list stored chat completions, you can run:
+```console
+gpt chats
+# or
+gpt chats list
 ```
-The following command will print the results to `stdout`:
+To delete a specific chat completion, use the following command:
+```console
+gpt chats delete <chat-completion-id>
+```
+Here, `<chat-completion-id>` is the identifier obtained from `gpt chats`, corresponding to the chat completion
+you wish to delete.
+
+### The `edit` command
+The `edit` command allows users to modify files according to instructions specified in a separate text file.
+For instance, if `foo.cpp` uses CamelCase formatting and needs to be converted to snake_case, you can outline
+the necessary changes in an instruction file, such as `prompt.txt`:
+```plaintext
+Convert all code from CamelCase to snake_case.
+```
+To display the results in the terminal, use the following command:
 ```console
 gpt edit foo.cpp -p prompt.txt
 ```
-To write the updated code to a new file, say `bar.cpp`:
+To save the updated code to a new file, such as `bar.cpp`, execute:
 ```console
 gpt edit foo.cpp -p prompt.txt -o bar.cpp
 ```
-And to simply overwrite `foo.cpp`, run:
+If you wish to overwrite the original file, simply run:
 ```console
 gpt edit foo.cpp -p prompt.txt -o foo.cpp
 ```
 > [!NOTE]
-> No prompt engineering is needed when writing `prompt.txt`. The instructions written to `prompt.txt` are
-> concatenated into a larger prompt complete with context, output format specifications, etc.
+> The instructions in `prompt.txt` do not require prompt engineering. When processed, these instructions
+> are combined with additional context and output format specifications to create a complete prompt.
 
 ### Input selection
 For certain commands, a hierarchy exists for choosing where input text comes from. The hierarchy roughly
