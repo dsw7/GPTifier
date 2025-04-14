@@ -14,7 +14,7 @@ namespace {
 
 void help_short()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Create a chat completion but without threading or verbosity.");
     help.add_synopsis("short [-h | --help] [-j | --json] [-t <temp> | --temperature=<temp>]\n  "
                       "[-s | --store-completion] PROMPT");
@@ -65,7 +65,7 @@ void read_cli(int argc, char **argv, Params &params)
                 params.temperature = optarg;
                 break;
             default:
-                cli::exit_on_failure();
+                help::exit_on_failure();
         }
     }
 

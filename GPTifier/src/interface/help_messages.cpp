@@ -16,6 +16,14 @@ void print_bash_block(const std::string &command)
 
 } // namespace
 
+namespace help {
+
+void exit_on_failure()
+{
+    fmt::print(stderr, "Try running with -h or --help for more information\n");
+    exit(EXIT_FAILURE);
+}
+
 void HelpMessages::add_command(const std::string &name, const std::string &description)
 {
     this->commands.push_back({ description, name });
@@ -145,12 +153,4 @@ void HelpMessages::print()
     this->print_examples();
 }
 
-namespace cli {
-
-void exit_on_failure()
-{
-    fmt::print(stderr, "Try running with -h or --help for more information\n");
-    exit(EXIT_FAILURE);
-}
-
-} // namespace cli
+} // namespace help

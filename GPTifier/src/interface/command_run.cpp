@@ -20,7 +20,7 @@ namespace {
 
 void help_run()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Create a chat completion.");
     help.add_synopsis(
         "run [-h | --help] [-m <model-name> | --model=<model-name>]\n  "
@@ -98,7 +98,7 @@ void read_cli(int argc, char **argv, Params &params)
                 params.model = optarg;
                 break;
             default:
-                cli::exit_on_failure();
+                help::exit_on_failure();
         }
     };
 }

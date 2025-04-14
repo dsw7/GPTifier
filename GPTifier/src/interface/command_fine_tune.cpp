@@ -18,7 +18,7 @@ namespace {
 
 void help_fine_tune()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Manage fine tuning operations.");
     help.add_synopsis("fine-tune [-h | --help] (upload-file | create-job | delete-model | list-jobs)");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -31,7 +31,7 @@ void help_fine_tune()
 
 void help_fine_tune_upload_file()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Upload a fine-tuning file.");
     help.add_synopsis("fine-tune upload-file [-h | --help] <file>");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -40,7 +40,7 @@ void help_fine_tune_upload_file()
 
 void help_fine_tune_create_job()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Create a fine-tuning job.");
     help.add_synopsis(
         "fine-tune create-job [-h | --help] "
@@ -53,7 +53,7 @@ void help_fine_tune_create_job()
 
 void help_fine_tune_delete_model()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Delete a fine-tuned model.");
     help.add_synopsis("fine-tune delete-model [-h | --help] <model>");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -62,7 +62,7 @@ void help_fine_tune_delete_model()
 
 void help_fine_tune_list_jobs()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("List fine-tuning jobs.");
     help.add_synopsis("fine-tune list-jobs [-h | --help] [-j | --json] -l <limit> | --limit <limit>");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -126,7 +126,7 @@ void read_cli_create_ft_job(int argc, char **argv, ParamsCreateFineTuningJob &pa
                 params.model = optarg;
                 break;
             default:
-                cli::exit_on_failure();
+                help::exit_on_failure();
         }
     };
 }
@@ -214,7 +214,7 @@ void read_cli_list_ft_jobs(int argc, char **argv, ParamsGetFineTuningJobs &param
                 params.limit = optarg;
                 break;
             default:
-                cli::exit_on_failure();
+                help::exit_on_failure();
         }
     };
 }

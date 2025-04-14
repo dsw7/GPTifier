@@ -20,7 +20,7 @@ namespace {
 
 void help_edit()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Edit one or more files according to a prompt.");
     help.add_synopsis("edit [-h | --help] [-d | --debug]\n  "
                       "[-m <model> | --model <model>] [-o <filename> | --output <filename>]\n  "
@@ -80,7 +80,7 @@ void read_cli(int argc, char **argv, Params &params)
                 params.instructions_file = optarg;
                 break;
             default:
-                cli::exit_on_failure();
+                help::exit_on_failure();
         }
     }
 

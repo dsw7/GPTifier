@@ -13,7 +13,7 @@ namespace {
 
 void help_chats()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Manage chat completions uploaded to OpenAI.");
     help.add_synopsis("chats [-h | --help] (list | delete)");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -24,7 +24,7 @@ void help_chats()
 
 void help_chats_list()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("List uploaded chat completions.");
     help.add_synopsis("chats list [-h | --help] [-j | --json] -l <limit> | --limit <limit>");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -35,7 +35,7 @@ void help_chats_list()
 
 void help_chats_delete()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Delete an uploaded chat completion.");
     help.add_synopsis("chats delete [-h | --help] <chat-completion-id...>");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -77,7 +77,7 @@ void read_cli_list_cc(int argc, char **argv, Params &params)
                 params.limit = optarg;
                 break;
             default:
-                cli::exit_on_failure();
+                help::exit_on_failure();
         }
     };
 }

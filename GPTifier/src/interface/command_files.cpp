@@ -14,7 +14,7 @@ namespace {
 
 void help_files()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Manage files uploaded to OpenAI.");
     help.add_synopsis("files [-h | --help] (list | delete)");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -25,7 +25,7 @@ void help_files()
 
 void help_files_list()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("List uploaded files.");
     help.add_synopsis("files list [-h | --help] [-j | --json]");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -35,7 +35,7 @@ void help_files_list()
 
 void help_files_delete()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Delete an uploaded file.");
     help.add_synopsis("files delete [-h | --help] <file-id...>");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -70,7 +70,7 @@ bool read_cli(int argc, char **argv)
                 print_raw_json = true;
                 break;
             default:
-                cli::exit_on_failure();
+                help::exit_on_failure();
         }
     }
 

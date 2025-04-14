@@ -14,7 +14,7 @@ namespace {
 
 void help_models()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("List available OpenAI or user models.");
     help.add_synopsis("models [-h | --help] [-j | --json] [-u | --user]");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -56,7 +56,7 @@ void read_cli(int argc, char **argv, Params &params)
                 params.print_user_models = true;
                 break;
             default:
-                cli::exit_on_failure();
+                help::exit_on_failure();
         }
     }
 }

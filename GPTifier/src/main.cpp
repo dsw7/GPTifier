@@ -18,7 +18,7 @@
 
 void print_help_messages()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_name_version();
     help.add_description("A command line program for interactively querying OpenAI via the OpenAI API.");
     help.add_description("See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.");

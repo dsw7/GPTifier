@@ -18,7 +18,7 @@ namespace {
 
 void help_embed()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Get embedding representing a block of text.");
     help.add_synopsis(
         "embed [-h | --help] [-m <model> | --model=<model>]\n  "
@@ -73,7 +73,7 @@ void read_cli(int argc, char **argv, Params &params)
                 params.input_file = optarg;
                 break;
             default:
-                cli::exit_on_failure();
+                help::exit_on_failure();
         }
     }
 }

@@ -3,6 +3,10 @@
 #include <string>
 #include <vector>
 
+namespace help {
+
+void exit_on_failure();
+
 struct Option {
     std::string description;
     std::string opt_long;
@@ -47,6 +51,4 @@ public:
     void print();
 };
 
-namespace cli {
-void exit_on_failure();
-} // namespace cli
+} // namespace help

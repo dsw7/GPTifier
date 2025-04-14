@@ -14,7 +14,7 @@ namespace {
 
 void help_costs()
 {
-    HelpMessages help;
+    help::HelpMessages help;
     help.add_description("Get OpenAI usage details.");
     help.add_synopsis("costs [-h | --help] [-j | --json] -d <days> | --days <days>");
     help.add_option("-h", "--help", "Print help information and exit");
@@ -56,7 +56,7 @@ void read_cli(int argc, char **argv, Params &params)
                 params.days = optarg;
                 break;
             default:
-                cli::exit_on_failure();
+                help::exit_on_failure();
         }
     };
 }
