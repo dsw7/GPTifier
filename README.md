@@ -9,7 +9,7 @@ to "look and feel" similar to `git`. I wrote this program in C++ to enhance perf
 resulting in a faster and more efficient user experience.
 
 ## Table of Contents
-- [Features](#features)
+- [What can GPTifier do?](#what-can-gptifier-do)
 - [Installation](#installation)
 - [Usage](#usage)
   - [The `run` command](#the-run-command)
@@ -23,12 +23,10 @@ resulting in a faster and more efficient user experience.
 - [Administration](#administration)
   - [The `costs` command](#the-costs-command)
 - [Integrations](#integrations)
-  - [Coupling with `vim`](#coupling-with-vim)
-  - [GPTifier administration via OpenAI platform](#gptifier-administration-via-openai-platform)
 - [Use cases](#use-cases)
   - [Using GPTifier to maximize token efficiency](#using-gptifier-to-maximize-token-efficiency)
 
-## Features
+## What can GPTifier do?
 - **Run Queries**: Execute prompts and receive completions via the CLI, similar to querying ChatGPT.
 - **Retrieve Models**: List the latest OpenAI models and custom models.
 - **Edit Files**: Modify individual files with an approach akin to `sed`, but with enhanced intelligence.
@@ -323,39 +321,31 @@ gpt costs --days=5
 Will return the usage per day over the past 5 days and the overall usage over the 5 days.
 
 ## Integrations
-### Coupling with `vim`
-In the [Exporting a result](#exporting-a-result) section, it was stated that results can be voluntarily
-exported to `~/.gptifier/completions.gpt`. One may be interested in integrating this into a `vim` workflow.
-This can be achieved as follows. First, add the following function to `~/.vimrc`:
+
+### Integrating `vim` with `GPTifier`
+In the [run command](#the-run-command) section, we discussed how completions can be optionally exported to
+`~/.gptifier/completions.gpt`. If you wish to integrate access to these completions into your `vim` workflow,
+you can do so by first adding the function below to your `~/.vimrc` file:
 ```vim
 function OpenGPTifierResults()
-  let l:results_file = expand('~') . '/.gptifier/completions.gpt'
+ let l:results_file = expand('~') . '/.gptifier/completions.gpt'
 
-  if filereadable(l:results_file)
-    execute 'vs' . l:results_file
-  else
-    echoerr l:results_file . ' does not exist'
-  endif
+ if filereadable(l:results_file)
+   execute 'vs' . l:results_file
+ else
+   echoerr l:results_file . ' does not exist'
+ endif
 endfunction
 ```
-Then add a command to `~/.vimrc`:
+This function checks if the results file exists, and if so, opens it in a vertical split within `vim`. Define
+a custom command in your `~/.vimrc`:
 ```vim
 " Open GPTifier results file
 command G :call OpenGPTifierResults()
 ```
-The command `G` will open `~/.gptifier/completions.gpt` in a separate vertical split, thus allowing for cherry
-picking saved OpenAI completions into a source file, for example.
-
-### GPTifier administration via OpenAI platform
-GPTifier's access to OpenAI resources can be managed by setting up a GPTifier project under [OpenAI's user
-platform](https://platform.openai.com/). Some possibilities include setting usage and model limits. To
-integrate GPTifier with an OpenAI project, open GPTifier's configuration file:
-```console
-vim +/project-id ~/.gptifier/gptifier.toml
-```
-And set `project-id` to the project ID associated with the newly created GPTifier project. The ID can be
-obtained from the [General settings](https://platform.openai.com/settings/organization/general) page
-(authentication is required).
+With this command configured, you can use `:G` in `vim` to open the `~/.gptifier/completions.gpt` file in a
+separate vertical split. This setup allows for easy access and selective copying of saved OpenAI completions
+into your code or text files.
 
 ## Use cases
 ### Using GPTifier to maximize token efficiency
