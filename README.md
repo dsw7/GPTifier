@@ -76,7 +76,7 @@ This project requires a specific "project directory" (`~/.gptifier`). Set it up 
 
 ### Step 3: Edit configurations
 The setup script generates a configuration file at `~/.gptifier/gptifier.toml`. Open this file and adjust the
-configurations accordingly. 
+configurations accordingly.
 
 Next, start the program:
 ```bash
@@ -132,7 +132,7 @@ Use the `-s` or `--store-completion` flag to temporarily store prompt/completion
 Retrieve them later with the [chats command](#the-chats-command).
 
 ### The `short` command
-The `short` command is almost identical to the [the `run` command](#the-run-command), but this command returns
+The `short` command is almost identical to the [run command](#the-run-command), but this command returns
 a chat completion under the following conditions:
 
 1. Threading is disabled; that is, no timer will run in the background to time the round trip
@@ -151,35 +151,29 @@ Which will print out:
 > [!TIP]
 > Use this command if running GPTifier via something like `vim`'s `system()` function
 
-### The `embed` command
-This command converts some input text into a vector representation of the text. To use the command, run:
+### The `embed` Command
+The `embed` command converts input text into a vector representation. To embed text, execute the following:
 ```console
 gpt embed
-------------------------------------------------------------------------------------------
-Input: Convert me to a vector!
 ```
-And hit <kbd>Enter</kbd>. The program will dispatch a request and return:
+You will then be prompted with:
 ```
 ------------------------------------------------------------------------------------------
-Request: {
-  "input": "Convert me to a vector!",
-  "model": "text-embedding-ada-002"
-}
-...
+Input text to embed:
 ```
-The results will be exported to a JSON file: `~/.gptifier/embeddings.gpt`. In a nutshell, the `embeddings.gpt`
-file will contain a vector:
+Enter the text you wish to embed:
+```
+------------------------------------------------------------------------------------------
+Input text to embed: Convert me to a vector!
+```
+Press <kbd>Enter</kbd> to proceed. The program will generate the embedding, and the results will be saved to a
+JSON file located at `~/.gptifier/embeddings.gpt`.
 
-$$
-\begin{bmatrix}a\_1 & a\_2 & \dots & a_{1536}\end{bmatrix},
-$$
-
-Where 1536 is the dimension of the output vector corresponding to model `text-embedding-ada-002`. The cosine
-similarity of a set of such vectors can be used to evaluate the similarity between text.
-
-> [!NOTE]
-> See [Input selection](#input-selection) for more information regarding how to pass
-> embedding text into this command
+#### Embedding large text blocks
+For large blocks of text, you can read from a file:
+```console
+gpt embed -r my_text.txt -o my_embedding.json # and export embedding to a custom file!
+```
 
 ### The `models` command
 This command returns a list of currently available models. Simply run:
