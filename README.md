@@ -10,13 +10,7 @@ resulting in a faster and more efficient user experience.
 
 ## Table of Contents
 - [Features](#features)
-- [Setup](#setup)
-  - [Prerequisites](#prerequisites)
-  - [Get specific release](#get-specific-release)
-  - [Compile binary](#compile-binary)
-  - [Get `{fmt}`](#get-fmt)
-  - [Set up project files](#set-up-project-files)
-  - [Clean up](#clean-up)
+- [Installation](#installation)
 - [Usage](#usage)
   - [The `run` command](#the-run-command)
     - [Basic example](#basic-example)
@@ -49,7 +43,8 @@ resulting in a faster and more efficient user experience.
 - **Fine-Tuning Management**: Fully manage fine-tuning workflows directly from the command line.
 - **Additional Tasks**: Handle uploaded files, monitor usage, and perform various other tasks.
 
-## Setup
+## Installation
+
 ### Prerequisites
 Ensure that you have access to a valid OpenAI API key and ensure that this API key is set as the following
 environment variable:
@@ -60,42 +55,33 @@ For running administrative commands, an additional administrative key must also 
 ```
 OPENAI_ADMIN_KEY="<your-admin-key>"
 ```
-### Get specific release
-Interested in a specific release? To download `1.0.0`, for example:
-```console
-wget https://github.com/dsw7/GPTifier/archive/refs/tags/v1.0.0.tar.gz
-```
-Which will yield:
-```
-v1.0.0.tar.gz
-```
-Then run:
-```console
-tar -xvf v1.0.0.tar.gz
-```
-Which will generate:
-```
-GPTifier-1.0.0
-```
-Change directories into `GPTifier-1.0.0` and proceed with the next steps.
-### Compile binary
+
+### Step 1. Compile binary
 To set the product up, simply run the `make` target:
 ```console
 make compile
 ```
 The binary will be installed into whatever install directory is resolved by CMake's
-[install()](https://cmake.org/cmake/help/latest/command/install.html#command:install).
+[install()](https://cmake.org/cmake/help/latest/command/install.html#command:install). The build process
+generates various artifacts. To remove these artifacts, run:
+```console
+make clean
+```
+
 ### Get `{fmt}`
 This project uses [{fmt}](https://fmt.dev/latest/) for string formatting. The compiler will abort if `{fmt}`
 cannot be found anywhere. See [Get Started](https://fmt.dev/latest/get-started/) for instructions on
 installing `{fmt}`.
-### Set up project files
+
+### Step 2. Run setup script
 This project makes reference to a "home directory" (`~/.gptifier`, specifically) that must be set up prior to
 running the program. To set up `~/.gptifier`, run:
 ```console
 ./setup
 ```
-This script will dump a configuration file under `~/.gptifier`. Open the file:
+
+### Step 3. Edit configurations
+The setup script will dump a configuration file under `~/.gptifier`. Open the file:
 ```console
 ~/.gptifier/gptifier.toml
 ```
@@ -104,11 +90,6 @@ And apply the relevant configurations. Next, drop into the program:
 gpt run
 ```
 The program should start an interactive session if the configuration file was properly set up.
-### Clean up
-The compilation process will generate many build artifacts. Clean up the build artifacts by running:
-```console
-make clean
-```
 
 ## Usage
 ### The `run` command
