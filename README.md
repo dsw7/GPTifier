@@ -23,6 +23,7 @@ resulting in a faster and more efficient user experience.
 - [Administration](#administration)
   - [The `costs` command](#the-costs-command)
 - [Integrations](#integrations)
+- [License](#license)
 
 ## What can GPTifier do?
 - **Run Queries**: Execute prompts and receive completions via the CLI, similar to querying ChatGPT.
@@ -344,3 +345,6 @@ command G :call OpenGPTifierResults()
 With this command configured, you can use `:G` in `vim` to open the `~/.gptifier/completions.gpt` file in a
 separate vertical split. This setup allows for easy access and selective copying of saved OpenAI completions
 into your code or text files.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
