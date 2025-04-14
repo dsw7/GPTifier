@@ -212,46 +212,51 @@ gpt files delete <file-id>
 ```
 You can obtain the file ID by running the [list subcommand](#list-files).
 
-
-
-
-
-
 ### The `fine-tune` command
-The `fine-tune` command can be used for managing fine-tuning operations.
-#### Fine tuning workflow
-Start off by creating a dataset. See [Preparing your
-dataset](https://platform.openai.com/docs/guides/fine-tuning#preparing-your-dataset) for more information.
-Next, upload the dataset:
-```console
-gpt fine-tune upload-file jessica_training.jsonl # jessica_training.jsonl is the dataset
-```
-Which will print out:
-```
-Success!
-Uploaded file: jessica_training.jsonl
-With ID: file-6Vf...8t7
-```
-Next, create a fine-tuning job:
-```console
-gpt fine-tune create-job --file-id=file-6Vf...8t7 --model=gpt-4o-mini-2024-07-18
-```
-Then check the status of the job:
-```console
-gpt fine-tune list-jobs
-```
-If the training file is no longer needed, the file can be deleted from OpenAI servers:
-```console
-gpt files delete file-6Vf...8t7
-```
-And if the model is no longer needed, the model can be deleted using:
-```console
-gpt fine-tune delete-model <model-id>
-```
-The model ID can be found from the `User models` section listed by running:
-```console
-gpt models
-```
+The `fine-tune` command is used for managing fine-tuning operations.
+
+#### Fine-tuning workflow
+1. **Create a dataset:** Begin by creating a dataset. Refer to [Preparing your
+   dataset](https://platform.openai.com/docs/guides/fine-tuning#preparing-your-dataset) for detailed
+   instructions.
+
+2. **Upload the dataset:**
+    ```console
+    gpt fine-tune upload-file jessica_training.jsonl
+    ```
+   Here, `jessica_training.jsonl` is the name of your dataset file. Upon successful upload, you should see a
+   confirmation message similar to the following:
+    ```
+    Success!
+    Uploaded file: jessica_training.jsonl
+    With ID: file-6Vf...8t7
+    ```
+
+3. **Create a fine-tuning job:**
+    ```console
+    gpt fine-tune create-job --file-id=file-6Vf...8t7 --model=gpt-4o-mini-2024-07-18
+    ```
+
+4. **Check the status of the job:**
+    ```console
+    gpt fine-tune list-jobs
+    ```
+
+5. **Delete unneeded files:**
+   If you no longer need the training file, you can delete it from the OpenAI servers:
+    ```console
+    gpt files delete file-6Vf...8t7
+    ```
+
+6. **Delete unneeded models:**
+   If the fine-tuned model is no longer required, you can delete it using:
+    ```console
+    gpt fine-tune delete-model <model-id>
+    ```
+   To find the model ID, refer to the `User models` section by running:
+    ```console
+    gpt models
+    ```
 
 ### The `chats` command
 The `chats` family of subcommands can be used to manage stored chat completions (for example, chat completions
