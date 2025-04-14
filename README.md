@@ -46,6 +46,71 @@ resulting in a faster and more efficient user experience.
 ## Installation
 
 ### Prerequisites
+1. Ensure you possess a valid OpenAI API key. Set it as an environment variable:
+   ```bash
+   export OPENAI_API_KEY="<your-api-key>"
+   ```
+
+2. Set an additional administrative key as an environment variable for running administrative commands:
+   ```bash
+   export OPENAI_ADMIN_KEY="<your-admin-key>"
+   ```
+
+3. Install [{fmt}](https://fmt.dev/latest/) for string formatting. If `{fmt}` is not found, the compiler will abort. Install it via:
+
+   ```bash
+   apt install libfmt-dev
+   ```
+
+   Alternatively, refer to the [{fmt} Get Started guide](https://fmt.dev/latest/get-started/) for other installation methods.
+
+### Step 1: Compile the Binary
+Compile the binary by executing the `make` target:
+
+```bash
+make compile
+```
+
+The binary will be installed into the directory specified by CMake's [install() function](https://cmake.org/cmake/help/latest/command/install.html#command:install). To clean up generated artifacts:
+
+```bash
+make clean
+```
+
+### Step 2: Run the Setup Script
+This project requires a specific "home directory" (`~/.gptifier`). Set it up by running:
+
+```bash
+./setup
+```
+
+### Step 3: Edit Configurations
+The setup script generates a configuration file at `~/.gptifier/gptifier.toml`. Open this file and adjust the configurations accordingly. 
+
+Next, start the program:
+
+```bash
+gpt run
+```
+
+The program will initiate an interactive session if the configuration file is set up correctly.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Installation
+
+### Prerequisites
 Ensure that you have access to a valid OpenAI API key and ensure that this API key is set as the following
 environment variable:
 ```
@@ -55,6 +120,12 @@ For running administrative commands, an additional administrative key must also 
 ```
 OPENAI_ADMIN_KEY="<your-admin-key>"
 ```
+This project uses [{fmt}](https://fmt.dev/latest/) for string formatting. The compiler will abort if `{fmt}`
+cannot be found anywhere. Run:
+```console
+apt install libfmt-dev
+```
+To install `{fmt}` (or see [Get Started](https://fmt.dev/latest/get-started/) for other installation options).
 
 ### Step 1. Compile binary
 To set the product up, simply run the `make` target:
@@ -67,11 +138,6 @@ generates various artifacts. To remove these artifacts, run:
 ```console
 make clean
 ```
-
-### Get `{fmt}`
-This project uses [{fmt}](https://fmt.dev/latest/) for string formatting. The compiler will abort if `{fmt}`
-cannot be found anywhere. See [Get Started](https://fmt.dev/latest/get-started/) for instructions on
-installing `{fmt}`.
 
 ### Step 2. Run setup script
 This project makes reference to a "home directory" (`~/.gptifier`, specifically) that must be set up prior to
