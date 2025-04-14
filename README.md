@@ -191,21 +191,31 @@ davinci-002                   system                        2023-08-21 16:11:41
 ...                           ...                           ...
 ```
 
+#### User models
+User models (say fine-tuned models) can be selectively listed by passing the `-u` or `--user` flag.
+
 ### The `files` command
-Use this command to manage files uploaded to OpenAI.
+This command is used to manage files uploaded to OpenAI.
+
 #### List files
-To list uploaded files, run:
+To list the uploaded files, use:
 ```console
 gpt files
 # or
 gpt files list
 ```
+
 #### Delete files
-To delete one or more uploaded files, run:
+To delete one or more uploaded files, use:
 ```console
 gpt files delete <file-id>
 ```
-The file ID corresponding to a file can be obtained by running [the `list` subcommand](#list-files).
+You can obtain the file ID by running the [list subcommand](#list-files).
+
+
+
+
+
 
 ### The `fine-tune` command
 The `fine-tune` command can be used for managing fine-tuning operations.
