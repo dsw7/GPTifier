@@ -20,7 +20,6 @@ resulting in a faster and more efficient user experience.
   - [The `fine-tune` command](#the-fine-tune-command)
   - [The `chats` command](#the-chats-command)
   - [The `edit` command](#the-edit-command)
-  - [Input selection](#input-selection)
 - [Administration](#administration)
   - [The `costs` command](#the-costs-command)
 - [Integrations](#integrations)
@@ -310,25 +309,6 @@ gpt edit foo.cpp -p prompt.txt -o foo.cpp
 > [!NOTE]
 > The instructions in `prompt.txt` do not require prompt engineering. When processed, these instructions
 > are combined with additional context and output format specifications to create a complete prompt.
-
-### Input selection
-For certain commands, a hierarchy exists for choosing where input text comes from. The hierarchy roughly
-follows:
-
-1. **Check for raw input via command line option**:
-   - If raw input is provided through a command line option, use this input
-   - Example: `gpt run -p "What is 3 + 5?"` or `gpt embed -i "A foo that bars"`
-
-2. **Check for input file specified via command line**:
-   - If a file path is provided as a command line argument, read from this file
-   - Example: `gpt [run | embed] -r <filename>`
-
-3. **Check for a default input file in the current working directory**:
-   - If a file named `Inputfile` exists in the current directory, read from this file
-   - This is analogous to a `Makefile` or perhaps a `Dockerfile`
-
-4. **Read from stdin**:
-   - If none of the above conditions are met, read input from standard input (stdin)
 
 ## Administration
 > [!NOTE]
