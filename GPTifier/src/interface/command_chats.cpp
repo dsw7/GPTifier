@@ -11,6 +11,37 @@
 
 namespace {
 
+void help_chats()
+{
+    HelpMessages help;
+    help.add_description("Manage chat completions uploaded to OpenAI.");
+    help.add_synopsis("chats [-h | --help] (list | delete)");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_command("list", "List uploaded chat completions");
+    help.add_command("delete", "Delete an uploaded chat completion");
+    help.print();
+}
+
+void help_chats_list()
+{
+    HelpMessages help;
+    help.add_description("List uploaded chat completions.");
+    help.add_synopsis("chats list [-h | --help] [-j | --json] -l <limit> | --limit <limit>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
+    help.add_option("-l", "--limit", "Number of chat completions to show");
+    help.print();
+}
+
+void help_chats_delete()
+{
+    HelpMessages help;
+    help.add_description("Delete an uploaded chat completion.");
+    help.add_synopsis("chats delete [-h | --help] <chat-completion-id...>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.print();
+}
+
 // List chats -----------------------------------------------------------------------------------------------
 
 struct Params {
@@ -37,7 +68,7 @@ void read_cli_list_cc(int argc, char **argv, Params &params)
 
         switch (c) {
             case 'h':
-                cli::help_command_chats_list();
+                help_chats_list();
                 exit(EXIT_SUCCESS);
             case 'j':
                 params.print_raw_json = true;
@@ -115,7 +146,7 @@ bool delete_chats(const std::vector<std::string> &ids)
 void command_chats_delete(int argc, char **argv)
 {
     if (argc < 4) {
-        cli::help_command_chats_delete();
+        help_chats_delete();
         return;
     }
 
@@ -126,7 +157,7 @@ void command_chats_delete(int argc, char **argv)
     }
 
     if (args_or_ids[0] == "-h" or args_or_ids[0] == "--help") {
-        cli::help_command_chats_delete();
+        help_chats_delete();
         return;
     }
 
@@ -147,7 +178,7 @@ void command_chats(int argc, char **argv)
     const std::string subcommand = argv[2];
 
     if (subcommand == "-h" or subcommand == "--help") {
-        cli::help_command_chats();
+        help_chats();
         exit(EXIT_SUCCESS);
     }
 
@@ -156,7 +187,7 @@ void command_chats(int argc, char **argv)
     } else if (subcommand == "delete") {
         command_chats_delete(argc, argv);
     } else {
-        cli::help_command_chats();
+        help_chats();
         exit(EXIT_FAILURE);
     }
 }
