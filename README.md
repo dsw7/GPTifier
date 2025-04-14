@@ -13,17 +13,11 @@ resulting in a faster and more efficient user experience.
 - [Installation](#installation)
 - [Usage](#usage)
   - [The `run` command](#the-run-command)
-    - [Basic example](#basic-example)
-    - [Exporting a result](#exporting-a-result)
-    - [Specifying a model](#specifying-a-model)
   - [The `short` command](#the-short-command)
   - [The `embed` command](#the-embed-command)
   - [The `models` command](#the-models-command)
   - [The `files` command](#the-files-command)
-    - [List files](#list-files)
-    - [Delete files](#delete-files)
   - [The `fine-tune` command](#the-fine-tune-command)
-    - [Fine tuning workflow](#fine-tuning-workflow)
   - [The `chats` command](#the-chats-command)
   - [The `edit` command](#the-edit-command)
   - [Input selection](#input-selection)
@@ -91,16 +85,18 @@ gpt run
 The program will initiate an interactive session if the configuration file is set up correctly.
 
 ## Usage
+
 ### The `run` command
-This command works with OpenAI's chat completion models, such as GPT-4 Turbo and GPT-4.
-#### Basic example
-Simply run `gpt run`! This will begin an interactive session. Type in a prompt:
+The `run` command allows you to query OpenAI models like GPT-4. To start an interactive session, enter:
 ```console
-$ gpt run
+gpt run
+```
+You'll see a prompt where you can type your query:
+```
 ------------------------------------------------------------------------------------------
 Input: What is 3 + 5?
 ```
-And hit <kbd>Enter</kbd>. The program will dispatch a request and return:
+The program processes the request and returns the answer:
 ```console
 ...
 Results: 3 + 5 equals 8.
@@ -108,29 +104,32 @@ Results: 3 + 5 equals 8.
 Export:
 > Write reply to file? [y/n]:
 ```
-#### Exporting a result
-In the above example, the user is prompted to export the completion a file. Entering <kbd>y</kbd> will print:
+You will be asked if you want to save the response to a file. If you choose <kbd>y</kbd>, the output will be
+saved:
 ```console
 ...
 > Writing reply to file /home/<your-username>/.gptifier/completions.gpt
 ------------------------------------------------------------------------------------------
 ```
-Subsequent requests will append to this file. In some cases, prompting interactively may be undesirable, such
-as when running automated unit tests. To disable the <kbd>y/n</kbd> prompt, run `gpt run` with the `-u` or
-`--no-interactive-export` flags.
+Any new responses will append to this file. To bypass the save-file prompt during operations like automated
+tests, use the `-u` or `--no-interactive-export` flags.
+
 #### Specifying a model
-A chat completion can be run against an available model by specifying the model name using the `-m` or
-`--model` option. For example, to create a chat completion via command line using the GPT-4 model, run:
+To specify a model for chat completion, use the `-m` or `--model` option. For example, to use GPT-4:
 ```console
 gpt run --model gpt-4 --prompt "What is 3 + 5?"
 ```
 
 > [!TIP]
-> A full list of models can be found by running the [models command](#the-models-command)
+> To see all available models, use the [models command](#the-models-command).
 
-> [!NOTE]
-> See [Input selection](#input-selection) for more information regarding how to pass
-> a prompt into this command
+#### Handling long, multiline prompts
+For multiline prompts, create a file named `Inputfile` in your working directory. GPTifier will automatically
+read from it. Alternatively, use the `-r` or `--read-from-file` option to specify a custom file.
+
+#### Storing prompt/completion pairs
+Use the `-s` or `--store-completion` flag to temporarily store prompt/completion pairs on OpenAI servers.
+Retrieve them later with the [chats command](#the-chats-command).
 
 ### The `short` command
 The `short` command is almost identical to the [the `run` command](#the-run-command), but this command returns
