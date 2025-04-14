@@ -1,11 +1,15 @@
 # GPTifier
-A C++ OpenAI CLI interface!
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dsw7/GPTifier/master/LICENSE)
 [![GitHub Releases](https://img.shields.io/github/release/dsw7/GPTifier.svg)](https://github.com/dsw7/GPTifier/releases)
 
+## Overview
+**GPTifier** is a command-line tool designed to interact seamlessly with OpenAI's API. I designed this program
+to "look and feel" similar to `git`. I wrote this program in C++ to enhance performance and responsiveness,
+resulting in a faster and more efficient user experience.
+
 ## Table of Contents
-- [Motivation](#motivation)
+- [Features](#features)
 - [Setup](#setup)
   - [Prerequisites](#prerequisites)
   - [Get specific release](#get-specific-release)
@@ -37,9 +41,13 @@ A C++ OpenAI CLI interface!
 - [Use cases](#use-cases)
   - [Using GPTifier to maximize token efficiency](#using-gptifier-to-maximize-token-efficiency)
 
-## Motivation
-There are numerous ChatGPT command line programs currently available. Many of them are written in Python. I
-wanted something a bit quicker and a bit easier to install, so I wrote this program in C++.
+## Features
+- **Run Queries**: Execute prompts and receive completions via the CLI, similar to querying ChatGPT.
+- **Retrieve Models**: List the latest OpenAI models and custom models.
+- **Edit Files**: Modify individual files with an approach akin to `sed`, but with enhanced intelligence.
+- **Create Embeddings**: Generate and export vector embeddings.
+- **Fine-Tuning Management**: Fully manage fine-tuning workflows directly from the command line.
+- **Additional Tasks**: Handle uploaded files, monitor usage, and perform various other tasks.
 
 ## Setup
 ### Prerequisites
