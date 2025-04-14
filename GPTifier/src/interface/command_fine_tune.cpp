@@ -16,19 +16,74 @@
 
 namespace {
 
+void help_fine_tune()
+{
+    HelpMessages help;
+    help.add_description("Manage fine tuning operations.");
+    help.add_synopsis("fine-tune [-h | --help] (upload-file | create-job | delete-model | list-jobs)");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_command("upload-file", "Upload a fine-tuning file");
+    help.add_command("create-job", "Create a fine-tuning job");
+    help.add_command("delete-model", "Delete a fine-tuned model");
+    help.add_command("list-jobs", "List fine-tuning jobs");
+    help.print();
+}
+
+void help_fine_tune_upload_file()
+{
+    HelpMessages help;
+    help.add_description("Upload a fine-tuning file.");
+    help.add_synopsis("fine-tune upload-file [-h | --help] <file>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.print();
+}
+
+void help_fine_tune_create_job()
+{
+    HelpMessages help;
+    help.add_description("Create a fine-tuning job.");
+    help.add_synopsis(
+        "fine-tune create-job [-h | --help] "
+        "-f <file-id> | --file-id <file-id> -m <model> | --model <model>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-f", "--file-id", "The ID of an uploaded file that contains the training data");
+    help.add_option("-m", "--model", "The name of the model to fine-tune");
+    help.print();
+}
+
+void help_fine_tune_delete_model()
+{
+    HelpMessages help;
+    help.add_description("Delete a fine-tuned model.");
+    help.add_synopsis("fine-tune delete-model [-h | --help] <model>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.print();
+}
+
+void help_fine_tune_list_jobs()
+{
+    HelpMessages help;
+    help.add_description("List fine-tuning jobs.");
+    help.add_synopsis("fine-tune list-jobs [-h | --help] [-j | --json] -l <limit> | --limit <limit>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
+    help.add_option("-l", "--limit", "Number of fine-tuning jobs to show");
+    help.print();
+}
+
 // Upload fine tuning file ----------------------------------------------------------------------------------
 
 void upload_ft_file(int argc, char **argv)
 {
     if (argc < 4) {
-        cli::help_command_fine_tune_upload_file();
+        help_fine_tune_upload_file();
         return;
     }
 
     const std::string opt_or_filename = argv[3];
 
     if (opt_or_filename == "-h" or opt_or_filename == "--help") {
-        cli::help_command_fine_tune_upload_file();
+        help_fine_tune_upload_file();
         return;
     }
 
@@ -62,7 +117,7 @@ void read_cli_create_ft_job(int argc, char **argv, ParamsCreateFineTuningJob &pa
 
         switch (c) {
             case 'h':
-                cli::help_command_fine_tune_create_job();
+                help_fine_tune_create_job();
                 exit(EXIT_SUCCESS);
             case 'f':
                 params.training_file = optarg;
@@ -106,14 +161,14 @@ void create_ft_job(int argc, char **argv)
 void delete_ft_model(int argc, char **argv)
 {
     if (argc < 4) {
-        cli::help_command_fine_tune_delete_model();
+        help_fine_tune_delete_model();
         return;
     }
 
     const std::string opt_or_model_id = argv[3];
 
     if (opt_or_model_id == "-h" or opt_or_model_id == "--help") {
-        cli::help_command_fine_tune_delete_model();
+        help_fine_tune_delete_model();
         return;
     }
 
@@ -150,7 +205,7 @@ void read_cli_list_ft_jobs(int argc, char **argv, ParamsGetFineTuningJobs &param
 
         switch (c) {
             case 'h':
-                cli::help_command_fine_tune_list_jobs();
+                help_fine_tune_list_jobs();
                 exit(EXIT_SUCCESS);
             case 'j':
                 params.print_raw_json = true;
@@ -209,14 +264,14 @@ void list_ft_jobs(int argc, char **argv)
 void command_fine_tune(int argc, char **argv)
 {
     if (argc < 3) {
-        cli::help_command_fine_tune();
+        help_fine_tune();
         exit(EXIT_FAILURE);
     }
 
     std::string subcommand = argv[2];
 
     if (subcommand == "-h" or subcommand == "--help") {
-        cli::help_command_fine_tune();
+        help_fine_tune();
         exit(EXIT_SUCCESS);
     }
 
@@ -229,7 +284,7 @@ void command_fine_tune(int argc, char **argv)
     } else if (subcommand == "list-jobs") {
         list_ft_jobs(argc, argv);
     } else {
-        cli::help_command_fine_tune();
+        help_fine_tune();
         exit(EXIT_FAILURE);
     }
 }

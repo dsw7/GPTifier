@@ -12,6 +12,36 @@
 
 namespace {
 
+void help_files()
+{
+    HelpMessages help;
+    help.add_description("Manage files uploaded to OpenAI.");
+    help.add_synopsis("files [-h | --help] (list | delete)");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_command("list", "List uploaded files");
+    help.add_command("delete", "Delete an uploaded file");
+    help.print();
+}
+
+void help_files_list()
+{
+    HelpMessages help;
+    help.add_description("List uploaded files.");
+    help.add_synopsis("files list [-h | --help] [-j | --json]");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
+    help.print();
+}
+
+void help_files_delete()
+{
+    HelpMessages help;
+    help.add_description("Delete an uploaded file.");
+    help.add_synopsis("files delete [-h | --help] <file-id...>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.print();
+}
+
 // List files -----------------------------------------------------------------------------------------------
 
 bool read_cli(int argc, char **argv)
@@ -34,7 +64,7 @@ bool read_cli(int argc, char **argv)
 
         switch (c) {
             case 'h':
-                cli::help_command_files_list();
+                help_files_list();
                 exit(EXIT_SUCCESS);
             case 'j':
                 print_raw_json = true;
@@ -105,7 +135,7 @@ bool delete_files(const std::vector<std::string> &ids)
 void command_files_delete(int argc, char **argv)
 {
     if (argc < 4) {
-        cli::help_command_files_delete();
+        help_files_delete();
         return;
     }
 
@@ -116,7 +146,7 @@ void command_files_delete(int argc, char **argv)
     }
 
     if (args_or_ids[0] == "-h" or args_or_ids[0] == "--help") {
-        cli::help_command_files_delete();
+        help_files_delete();
         return;
     }
 
@@ -137,7 +167,7 @@ void command_files(int argc, char **argv)
     std::string subcommand = argv[2];
 
     if (subcommand == "-h" or subcommand == "--help") {
-        cli::help_command_files();
+        help_files();
         exit(EXIT_SUCCESS);
     }
 
@@ -146,7 +176,7 @@ void command_files(int argc, char **argv)
     } else if (subcommand == "delete") {
         command_files_delete(argc, argv);
     } else {
-        cli::help_command_files();
+        help_files();
         exit(EXIT_FAILURE);
     }
 }

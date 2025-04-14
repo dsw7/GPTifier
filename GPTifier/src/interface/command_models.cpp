@@ -12,6 +12,17 @@
 
 namespace {
 
+void help_models()
+{
+    HelpMessages help;
+    help.add_description("List available OpenAI or user models.");
+    help.add_synopsis("models [-h | --help] [-j | --json] [-u | --user]");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
+    help.add_option("-u", "--user", "Print user models if they exist");
+    help.print();
+}
+
 struct Params {
     bool print_raw_json = false;
     bool print_user_models = false;
@@ -36,7 +47,7 @@ void read_cli(int argc, char **argv, Params &params)
 
         switch (c) {
             case 'h':
-                cli::help_command_models();
+                help_models();
                 exit(EXIT_SUCCESS);
             case 'j':
                 params.print_raw_json = true;

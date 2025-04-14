@@ -16,6 +16,22 @@
 
 namespace {
 
+void help_embed()
+{
+    HelpMessages help;
+    help.add_description("Get embedding representing a block of text.");
+    help.add_synopsis(
+        "embed [-h | --help] [-m <model> | --model=<model>]\n  "
+        "[-i <text> | --input=<text>] [-o <filename> | --output-file=<filename>]\n  "
+        "[-r <filename> | --read-from-file=<filename>]");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid embedding model");
+    help.add_option("-i <text>", "--input=<text>", "Input text to embed");
+    help.add_option("-r <filename>", "--read-from-file=<filename>", "Read input text to embed from a file");
+    help.add_option("-o <filename>", "--output-file=<filename>", "Export embedding to <filename>");
+    help.print();
+}
+
 struct Params {
     std::optional<std::string> input = std::nullopt;
     std::optional<std::string> input_file = std::nullopt;
@@ -42,7 +58,7 @@ void read_cli(int argc, char **argv, Params &params)
 
         switch (c) {
             case 'h':
-                cli::help_command_embed();
+                help_embed();
                 exit(EXIT_SUCCESS);
             case 'm':
                 params.model = optarg;

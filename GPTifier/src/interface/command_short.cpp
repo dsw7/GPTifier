@@ -12,6 +12,20 @@
 
 namespace {
 
+void help_short()
+{
+    HelpMessages help;
+    help.add_description("Create a chat completion but without threading or verbosity.");
+    help.add_synopsis("short [-h | --help] [-j | --json] [-t <temp> | --temperature=<temp>]\n  "
+                      "[-s | --store-completion] PROMPT");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
+    help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
+    help.add_option("-s", "--store-completion", "Store results of completion on OpenAI servers");
+    help.add_example("Create a chat completion", "gpt short \"What is 2 + 2?\"");
+    help.print();
+}
+
 struct Params {
     bool print_raw_json = false;
     bool store_completion = false;
@@ -39,7 +53,7 @@ void read_cli(int argc, char **argv, Params &params)
 
         switch (c) {
             case 'h':
-                cli::help_command_short();
+                help_short();
                 exit(EXIT_SUCCESS);
             case 'j':
                 params.print_raw_json = true;

@@ -12,6 +12,17 @@
 
 namespace {
 
+void help_costs()
+{
+    HelpMessages help;
+    help.add_description("Get OpenAI usage details.");
+    help.add_synopsis("costs [-h | --help] [-j | --json] -d <days> | --days <days>");
+    help.add_option("-h", "--help", "Print help information and exit");
+    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
+    help.add_option("-d", "--days", "Select number of days to go back");
+    help.print();
+}
+
 struct Params {
     bool print_raw_json = false;
     std::string days = "30";
@@ -36,7 +47,7 @@ void read_cli(int argc, char **argv, Params &params)
 
         switch (c) {
             case 'h':
-                cli::help_command_costs();
+                help_costs();
                 exit(EXIT_SUCCESS);
             case 'j':
                 params.print_raw_json = true;
