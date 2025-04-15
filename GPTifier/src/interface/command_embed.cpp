@@ -132,8 +132,8 @@ void command_embed(int argc, char **argv)
 
     if (params.model) {
         model = params.model.value();
-    } else if (configs.embeddings.model) {
-        model = configs.embeddings.model.value();
+    } else if (configs.model_embed) {
+        model = configs.model_embed.value();
     } else {
         throw std::runtime_error("No model provided via configuration file or command line");
     }

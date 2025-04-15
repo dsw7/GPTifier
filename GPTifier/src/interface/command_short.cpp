@@ -77,7 +77,7 @@ void read_cli(int argc, char **argv, Params &params)
     }
 }
 
-std::string get_model()
+std::string get_model_from_config_file()
 {
 #ifdef TESTING_ENABLED
     static std::string low_cost_model = "gpt-3.5-turbo";
@@ -111,7 +111,7 @@ void command_short(int argc, char **argv)
         throw std::runtime_error("Temperature must be between 0 and 2");
     }
 
-    const std::string model = get_model();
+    const std::string model = get_model_from_config_file();
     ChatCompletion cc = create_chat_completion(params.prompt.value(), model, temperature, params.store_completion);
 
     if (params.print_raw_json) {

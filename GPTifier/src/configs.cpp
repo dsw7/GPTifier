@@ -19,8 +19,9 @@ void Configs::load_configs_from_config_file()
         throw std::runtime_error(e);
     }
 
-    this->chat.model = table["chat"]["model"].value<std::string>();
-    this->embeddings.model = table["embeddings"]["model"].value<std::string>();
+    this->model_edit = table["command"]["edit"]["model"].value<std::string>();
+    this->model_embed = table["command"]["embed"]["model"].value<std::string>();
+    this->model_run = table["command"]["run"]["model"].value<std::string>();
     this->model_short = table["command"]["short"]["model"].value<std::string>();
 }
 

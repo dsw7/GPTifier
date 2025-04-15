@@ -1,8 +1,8 @@
 #include "interface/command_run.hpp"
 
+#include "configs.hpp"
 #include "datadir.hpp"
 #include "interface/help_messages.hpp"
-#include "interface/model_selector.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 
@@ -103,6 +103,20 @@ void read_cli(int argc, char **argv, Params &params)
                 help::exit_on_failure();
         }
     };
+}
+
+std::string get_model_from_config_file()
+{
+#ifdef TESTING_ENABLED
+    static std::string low_cost_model = "gpt-3.5-turbo";
+    return low_cost_model;
+#endif
+
+    if (configs.model_run) {
+        return configs.model_run.value();
+    }
+
+    throw std::runtime_error("Could not determine which model to use");
 }
 
 // Input ----------------------------------------------------------------------------------------------------
@@ -302,12 +316,12 @@ void command_run(int argc, char **argv)
     read_cli(argc, argv, params);
 
     utils::separator();
-
     std::string model;
+
     if (params.model) {
         model = params.model.value();
     } else {
-        model = select_chat_model();
+        model = get_model_from_config_file();
     }
 
     static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";

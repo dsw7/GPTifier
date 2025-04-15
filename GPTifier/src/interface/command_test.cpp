@@ -1,6 +1,5 @@
 #include "interface/command_test.hpp"
 
-#include "interface/model_selector.hpp"
 #include "networking/api_openai_user.hpp"
 #include "serialization/response_to_json.hpp"
 
@@ -18,12 +17,13 @@ void test_catch_memory_leak()
 
 void test_create_chat_completion_api()
 {
+    static std::string low_cost_model = "gpt-3.5-turbo";
     const nlohmann::json messages = {
         { "role", "user" },
         { "content", "What is 5 + 5? Return the result as follows: >>>{result}<<<" }
     };
     const nlohmann::json data = {
-        { "model", select_chat_model() },
+        { "model", low_cost_model },
         { "temperature", 0.00 },
         { "messages", nlohmann::json::array({ messages }) }
     };

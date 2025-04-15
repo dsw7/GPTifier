@@ -1,7 +1,7 @@
 #include "interface/command_edit.hpp"
 
+#include "configs.hpp"
 #include "interface/help_messages.hpp"
-#include "interface/model_selector.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 
@@ -90,6 +90,20 @@ void read_cli(int argc, char **argv, Params &params)
             break;
         }
     }
+}
+
+std::string get_model_from_config_file()
+{
+#ifdef TESTING_ENABLED
+    static std::string low_cost_model = "gpt-3.5-turbo";
+    return low_cost_model;
+#endif
+
+    if (configs.model_edit) {
+        return configs.model_edit.value();
+    }
+
+    throw std::runtime_error("Could not determine which model to use");
 }
 
 std::string build_prompt(const std::string &instructions, const std::string &input_code)
@@ -201,15 +215,15 @@ void apply_transformation(const Params &params)
     fmt::print("Read instructions from: {}\n", params.instructions_file.value());
     std::cout << fmt::format("{} -> ", params.input_file.value()) << std::flush;
 
-    const std::string input_code = utils::read_from_file(params.input_file.value());
-    const std::string prompt = build_prompt(instructions, input_code);
-
     std::string model;
     if (params.model) {
         model = params.model.value();
     } else {
-        model = select_chat_model();
+        model = get_model_from_config_file();
     }
+
+    const std::string input_code = utils::read_from_file(params.input_file.value());
+    const std::string prompt = build_prompt(instructions, input_code);
 
     ChatCompletion cc;
     try {
