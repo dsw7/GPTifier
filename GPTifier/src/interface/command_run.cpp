@@ -6,6 +6,7 @@
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 
+#include <atomic>
 #include <chrono>
 #include <filesystem>
 #include <fmt/core.h>
@@ -116,14 +117,14 @@ std::string read_text_from_stdin()
 
 // Completion -----------------------------------------------------------------------------------------------
 
-bool TIMER_ENABLED = false;
+std::atomic<bool> TIMER_ENABLED(false);
 
 void time_api_call()
 {
     auto delay = std::chrono::milliseconds(50);
     int counter = 0;
 
-    while (TIMER_ENABLED) {
+    while (TIMER_ENABLED.load()) {
         switch (counter) {
             case 0:
                 std::cout << "·....\r" << std::flush;
@@ -155,7 +156,7 @@ void time_api_call()
 
 ChatCompletion run_query(const std::string &model, const std::string &prompt, float temperature, bool store_completion)
 {
-    TIMER_ENABLED = true;
+    TIMER_ENABLED.store(true);
     std::thread timer(time_api_call);
 
     bool query_failed = false;
@@ -168,7 +169,7 @@ ChatCompletion run_query(const std::string &model, const std::string &prompt, fl
         fmt::print(stderr, "{}\n", e.what());
     }
 
-    TIMER_ENABLED = false;
+    TIMER_ENABLED.store(false);
     timer.join();
 
     if (query_failed) {
