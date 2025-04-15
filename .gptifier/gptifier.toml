@@ -1,13 +1,20 @@
 # --------------------------------------------------
 # GPTifier
-# Written by David Weber
 # See https://github.com/dsw7/GPTifier for more information
 # --------------------------------------------------
 
-[chat]
+[command.run]
 # Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
-model = "<model-name>"
+model = "gpt-4o"
 
-[embeddings]
+[command.short]
+# Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
+model = "gpt-4o"
+
+[command.edit]
+# Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
+model = "gpt-4o"
+
+[command.embed]
 # Specify a default embeddings model to use such as "text-embedding-ada-002"
-model = "<model-name>"
+model = "text-embedding-ada-002"
