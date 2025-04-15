@@ -92,7 +92,7 @@ void read_cli(int argc, char **argv, Params &params)
     }
 }
 
-std::string get_model_from_config_file()
+std::string get_model()
 {
 #ifdef TESTING_ENABLED
     static std::string low_cost_model = "gpt-3.5-turbo";
@@ -219,7 +219,7 @@ void apply_transformation(const Params &params)
     if (params.model) {
         model = params.model.value();
     } else {
-        model = get_model_from_config_file();
+        model = get_model();
     }
 
     const std::string input_code = utils::read_from_file(params.input_file.value());
