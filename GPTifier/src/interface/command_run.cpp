@@ -12,6 +12,7 @@
 #include <fmt/core.h>
 #include <getopt.h>
 #include <iostream>
+#include <mutex>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -161,12 +162,16 @@ ChatCompletion run_query(const std::string &model, const std::string &prompt, fl
 
     bool query_failed = false;
     ChatCompletion cc;
+    std::mutex mutex_print_stderr;
 
     try {
         cc = create_chat_completion(prompt, model, temperature, store_completion);
     } catch (std::runtime_error &e) {
         query_failed = true;
-        fmt::print(stderr, "{}\n", e.what());
+        {
+            std::lock_guard<std::mutex> lock(mutex_print_stderr);
+            fmt::print(stderr, "{}\n", e.what());
+        }
     }
 
     TIMER_ENABLED.store(false);
