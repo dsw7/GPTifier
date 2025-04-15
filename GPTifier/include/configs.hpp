@@ -16,6 +16,7 @@ struct Configs {
 
     Chat chat;
     Embeddings embeddings;
+    std::optional<std::string> model_short = std::nullopt;
 };
 
 extern Configs configs;
