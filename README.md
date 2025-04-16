@@ -56,7 +56,7 @@ installation methods.
 ### Step 1: Compile the binary
 Compile the binary by executing the `make` target:
 ```bash
-make compile
+make
 ```
 The binary will be installed into the directory specified by CMake's [install()
 function](https://cmake.org/cmake/help/latest/command/install.html#command:install). To clean up generated
