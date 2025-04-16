@@ -6,7 +6,7 @@
 ## Overview
 **GPTifier** is a command-line tool designed to interact seamlessly with OpenAI's API. I designed this program
 to "look and feel" similar to `git`. I wrote this program in C++ to enhance performance and responsiveness,
-resulting in a faster and more efficient user experience.
+resulting in a faster and more efficient user experience. This program is tested on Ubuntu/Debian and macOS.
 
 ## Table of Contents
 - [What can GPTifier do?](#what-can-gptifier-do)
@@ -45,29 +45,37 @@ Set an additional administrative key as an environment variable for running admi
 ```bash
 export OPENAI_ADMIN_KEY="<your-admin-key>"
 ```
-Install [CMake](https://cmake.org/) for building the code and [{fmt}](https://fmt.dev/latest/) for string
-formatting. If `{fmt}` is not found, the compiler will abort. Install these via:
-```bash
-apt install cmake libfmt-dev
+This program requires [CMake](https://cmake.org/), [{fmt}](https://fmt.dev/latest/) and
+[libcurl](https://curl.se/libcurl/). These can be installed as follows:
+
+#### Ubuntu/Debian
+```console
+apt install cmake libfmt-dev libcurl4-openssl-dev
 ```
-Alternatively, refer to the [{fmt} Get Started guide](https://fmt.dev/latest/get-started/) for other
-installation methods.
+#### macOS
+```console
+brew install cmake fmt
+# libcurl usually comes bundled with macOS
+```
+#### Other systems
+This program should work on other Unix-like systems (i.e. other Linux distributions) however I do not
+extensively test these.
 
 ### Step 1: Compile the binary
 Compile the binary by executing the `make` target:
-```bash
+```console
 make
 ```
 The binary will be installed into the directory specified by CMake's [install()
 function](https://cmake.org/cmake/help/latest/command/install.html#command:install). To clean up generated
 artifacts:
-```bash
+```console
 make clean
 ```
 
 ### Step 2: Run the setup script
 This project requires a specific "project directory" (`~/.gptifier`). Set it up by running:
-```bash
+```console
 ./setup
 ```
 
@@ -76,10 +84,15 @@ The setup script generates a configuration file at `~/.gptifier/gptifier.toml`. 
 configurations accordingly.
 
 Next, start the program:
-```bash
+```console
 gpt run
 ```
-The program will initiate an interactive session if the configuration file is set up correctly.
+The program will initiate an interactive session if the configuration file is set up correctly. You may get
+some variation of:
+```
+-bash: gpt: command not found
+```
+If so, try running `gpt` in a new terminal window.
 
 ## Usage
 
