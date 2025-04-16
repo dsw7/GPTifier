@@ -45,10 +45,10 @@ Set an additional administrative key as an environment variable for running admi
 ```bash
 export OPENAI_ADMIN_KEY="<your-admin-key>"
 ```
-Install [{fmt}](https://fmt.dev/latest/) for string formatting. If `{fmt}` is not found, the compiler will
-abort. Install it via:
+Install [CMake](https://cmake.org/) for building the code and [{fmt}](https://fmt.dev/latest/) for string
+formatting. If `{fmt}` is not found, the compiler will abort. Install these via:
 ```bash
-apt install libfmt-dev
+apt install cmake libfmt-dev
 ```
 Alternatively, refer to the [{fmt} Get Started guide](https://fmt.dev/latest/get-started/) for other
 installation methods.
