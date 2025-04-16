@@ -23,6 +23,7 @@ resulting in a faster and more efficient user experience.
 - [Administration](#administration)
   - [The `costs` command](#the-costs-command)
 - [Integrations](#integrations)
+- [Uninstall GPTifier](#uninstall-gptifier)
 - [License](#license)
 
 ## What can GPTifier do?
@@ -345,6 +346,26 @@ command G :call OpenGPTifierResults()
 With this command configured, you can use `:G` in `vim` to open the `~/.gptifier/completions.gpt` file in a
 separate vertical split. This setup allows for easy access and selective copying of saved OpenAI completions
 into your code or text files.
+
+## Uninstall GPTifier
+
+### Step 1: Remove binary
+First, verify that the `gpt` command in your `$PATH` is the GPTifier binary and not an alias for another
+application:
+```console
+gpt -h
+```
+If confirmed, proceed to remove the binary with the following command:
+```console
+rm $(which gpt)
+```
+
+### Step 2: Remove GPTifier directory
+Before deletion, check the `~/.gptifier` directory for any files you wish to retain, such as completions or
+configurations. Once reviewed, remove the directory:
+```console
+rm -r ~/.gptifier
+```
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
