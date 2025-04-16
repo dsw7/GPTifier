@@ -1,14 +1,15 @@
-.PHONY = help format compile clean lint test test-memory
-.DEFAULT_GOAL = help
+.PHONY = compile-prod help format compile compile-test clean lint test test-memory
 
 BUILD_DIR = build
 BUILD_DIR_PROD = $(BUILD_DIR)/prod
 BUILD_DIR_TEST = $(BUILD_DIR)/test
 
 define HELP_LIST_TARGETS
+To compile production binary:
+    $$ make
 To format code:
     $$ make format
-To compile binary:
+To format source + compile production binary:
     $$ make compile
 To remove build directory:
     $$ make clean
@@ -22,6 +23,10 @@ endef
 
 export HELP_LIST_TARGETS
 
+compile-prod:
+	@cmake -S GPTifier -B $(BUILD_DIR_PROD)
+	@make --jobs=12 --directory=$(BUILD_DIR_PROD) install
+
 help:
 	@echo "$$HELP_LIST_TARGETS"
 
@@ -30,9 +35,7 @@ format:
 		GPTifier/src/*.cpp GPTifier/src/*/*.cpp \
 		GPTifier/include/*.hpp GPTifier/include/*/*.hpp
 
-compile: format
-	@cmake -S GPTifier -B $(BUILD_DIR_PROD)
-	@make --jobs=12 --directory=$(BUILD_DIR_PROD) install
+compile: format compile-prod
 
 compile-test: format # Private target
 	@cmake -S GPTifier -B $(BUILD_DIR_TEST) -DENABLE_TESTING=ON
