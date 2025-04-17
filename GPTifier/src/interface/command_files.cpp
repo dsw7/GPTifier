@@ -16,7 +16,9 @@ void help_files()
 {
     help::HelpMessages help;
     help.add_description("Manage files uploaded to OpenAI.");
-    help.add_synopsis("files [-h | --help] (list | delete)");
+    help.add_synopsis("files [OPTIONS]");
+    help.add_synopsis("files list [OPTIONS]");
+    help.add_synopsis("files delete [OPTIONS] FILE-ID...");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_command("list", "List uploaded files");
     help.add_command("delete", "Delete an uploaded file");
@@ -27,7 +29,7 @@ void help_files_list()
 {
     help::HelpMessages help;
     help.add_description("List uploaded files.");
-    help.add_synopsis("files list [-h | --help] [-j | --json]");
+    help.add_synopsis("files list [OPTIONS]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.print();
@@ -37,7 +39,7 @@ void help_files_delete()
 {
     help::HelpMessages help;
     help.add_description("Delete an uploaded file.");
-    help.add_synopsis("files delete [-h | --help] <file-id...>");
+    help.add_synopsis("files delete [OPTIONS] FILE-ID...");
     help.add_option("-h", "--help", "Print help information and exit");
     help.print();
 }

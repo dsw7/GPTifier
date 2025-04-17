@@ -22,9 +22,7 @@ void help_edit()
 {
     help::HelpMessages help;
     help.add_description("Edit one or more files according to a prompt.");
-    help.add_synopsis("edit [-h | --help] [-d | --debug]\n  "
-                      "[-m <model> | --model <model>] [-o <filename> | --output <filename>]\n  "
-                      "[-p <filename> | --prompt <filename>] <input-file>");
+    help.add_synopsis("edit [OPTIONS] FILE");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-d", "--debug", "Print raw prompt and completion. Will not edit file");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");

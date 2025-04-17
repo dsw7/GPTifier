@@ -24,11 +24,7 @@ void help_run()
 {
     help::HelpMessages help;
     help.add_description("Create a chat completion.");
-    help.add_synopsis(
-        "run [-h | --help] [-m <model-name> | --model=<model-name>]\n  "
-        "[-u | --no-interactive-export] [-o <file> | --file=<file>]\n  "
-        "[-p <prompt> | --prompt=<prompt>] [-r <filename> | --read-from-file=<filename>]\n  "
-        "[-t <temp> | --temperature=<temperature>] [-s | --store-completion]");
+    help.add_synopsis("run [OPTIONS]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
     help.add_option("-u", "--no-interactive-export", "Disable [y/n] prompt that asks whether to export results");

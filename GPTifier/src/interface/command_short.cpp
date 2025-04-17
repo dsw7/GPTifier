@@ -16,8 +16,7 @@ void help_short()
 {
     help::HelpMessages help;
     help.add_description("Create a chat completion but without threading or verbosity.");
-    help.add_synopsis("short [-h | --help] [-j | --json] [-t <temp> | --temperature=<temp>]\n  "
-                      "[-s | --store-completion] PROMPT");
+    help.add_synopsis("short [OPTIONS] PROMPT");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
