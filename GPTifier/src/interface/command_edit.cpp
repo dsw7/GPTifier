@@ -21,7 +21,7 @@ namespace {
 void help_edit()
 {
     help::HelpMessages help;
-    help.add_description("Edit code according to rules.");
+    help.add_description("Edit code according to rules provided in a file.");
     help.add_synopsis("edit [OPTIONS] FILE");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-d", "--debug", "Print raw prompt and completion. Will not edit file");
@@ -260,7 +260,7 @@ void command_edit(int argc, char **argv)
     read_cli(argc, argv, params);
 
     if (not params.instructions_file) {
-        throw std::runtime_error("No prompt file provided. Cannot proceed");
+        throw std::runtime_error("No instructions file provided. Cannot proceed");
     }
 
     if (not params.input_file) {
