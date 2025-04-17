@@ -38,7 +38,7 @@ private:
     std::vector<Example> examples;
     std::vector<Option> options;
     std::vector<std::string> description;
-    std::string synopsis;
+    std::vector<std::string> synopsis;
 
 public:
     void add_command(const std::string &name, const std::string &description);

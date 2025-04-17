@@ -51,7 +51,7 @@ void HelpMessages::add_option(const std::string &opt_short, const std::string &o
 
 void HelpMessages::add_synopsis(const std::string &line)
 {
-    this->synopsis = line;
+    this->synopsis.push_back(line);
 }
 
 void HelpMessages::print_commands()
@@ -140,7 +140,12 @@ void HelpMessages::print_synopsis()
     }
 
     fmt::print(fg(white), "Synopsis:\n");
-    fmt::print("{}gpt {}\n\n", ws_2, this->synopsis);
+
+    for (const auto &it: this->synopsis) {
+        fmt::print("{}gpt {}\n", ws_2, it);
+    }
+
+    fmt::print("\n");
 }
 
 void HelpMessages::print()
