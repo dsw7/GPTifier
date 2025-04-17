@@ -301,24 +301,24 @@ you wish to delete.
 ### The `edit` command
 The `edit` command allows users to modify files according to instructions specified in a separate text file.
 For instance, if `foo.cpp` uses CamelCase formatting and needs to be converted to snake_case, you can outline
-the necessary changes in an instruction file, such as `prompt.txt`:
+the necessary changes in an instruction file, such as `instructions.txt`:
 ```plaintext
 Convert all code from CamelCase to snake_case.
 ```
 To display the results in the terminal, use the following command:
 ```console
-gpt edit foo.cpp -p prompt.txt
+gpt edit foo.cpp -i instructions.txt
 ```
 To save the updated code to a new file, such as `bar.cpp`, execute:
 ```console
-gpt edit foo.cpp -p prompt.txt -o bar.cpp
+gpt edit foo.cpp -i instructions.txt -o bar.cpp
 ```
 If you wish to overwrite the original file, simply run:
 ```console
-gpt edit foo.cpp -p prompt.txt -o foo.cpp
+gpt edit foo.cpp -i instructions.txt -o foo.cpp
 ```
 > [!NOTE]
-> The instructions in `prompt.txt` do not require prompt engineering. When processed, these instructions
+> The instructions in `instructions.txt` do not require prompt engineering. When processed, these instructions
 > are combined with additional context and output format specifications to create a complete prompt.
 
 ## Administration
