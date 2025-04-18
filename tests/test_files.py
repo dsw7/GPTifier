@@ -11,7 +11,7 @@ class TestFiles(TestCaseExtended):
                 self.assertIn("Manage files uploaded to OpenAI.", proc.stdout)
 
     def test_upload_then_delete(self) -> None:
-        jsonl_file = Path(__file__).resolve().parent / "dummy.jsonl"
+        jsonl_file = Path(__file__).resolve().parent / "test_files" / "dummy.jsonl"
 
         proc = self.assertSuccess("fine-tune", "upload-file", str(jsonl_file))
         last_line = proc.stdout.strip().rsplit("\n", maxsplit=1)[-1]

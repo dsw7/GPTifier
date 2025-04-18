@@ -107,9 +107,10 @@ class TestChatCompletion(TestCaseExtended):
                 self.assertIn("Create a chat completion.", proc.stdout)
 
     def test_read_from_file(self) -> None:
+        prompt = Path(__file__).resolve().parent / "test_run" / "prompt_basic.txt"
+
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
-            prompt = Path(__file__).resolve().parent / "prompt_basic.txt"
             self.assertSuccess("run", f"-r{prompt}", "-t0", f"-o{json_file}", "-u")
             completion = load_content(json_file)
             self.assertEqual(completion.completion, ">>>8<<<")

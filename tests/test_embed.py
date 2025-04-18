@@ -58,7 +58,7 @@ class TestEmbed(TestCaseExtended):
 class TestEmbedCosineSimilarityIdentical(TestCaseExtended):
 
     def setUp(self) -> None:
-        self.input_file = Path(__file__).resolve().parent / "prompt_basic.txt"
+        self.input_file = Path(__file__).resolve().parent / "test_embed" / "lorem.txt"
         self.output_file = Path(gettempdir()) / "result.gpt"
 
     def tearDown(self) -> None:
