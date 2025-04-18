@@ -24,6 +24,16 @@ void exit_on_failure()
     exit(EXIT_FAILURE);
 }
 
+void print_program_info()
+{
+    fmt::print("╔════════════════════════════════════════════════════════════════════════════════════╗\n");
+    fmt::print("║ ----------------------------------- GPTifier ------------------------------------- ║\n");
+    fmt::print("║ A command line OpenAI toolkit: Chat, get embeddings, fine-tune, assess costs, etc. ║\n");
+    fmt::print("║ See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.");
+    fmt::print("                         ║\n");
+    fmt::print("╚════════════════════════════════════════════════════════════════════════════════════╝\n\n");
+}
+
 void HelpMessages::add_command(const std::string &name, const std::string &description)
 {
     this->commands.push_back({ description, name });
@@ -37,11 +47,6 @@ void HelpMessages::add_description(const std::string &line)
 void HelpMessages::add_example(const std::string &description, const std::string &command)
 {
     this->examples.push_back({ command, description });
-}
-
-void HelpMessages::add_name_version()
-{
-    this->print_metadata = true;
 }
 
 void HelpMessages::add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description)
@@ -103,20 +108,6 @@ void HelpMessages::print_examples()
     fmt::print("\n");
 }
 
-void HelpMessages::print_name_version()
-{
-    if (not this->print_metadata) {
-        return;
-    }
-
-    const std::string name = std::string(PROJECT_NAME);
-    const std::string version = std::string(PROJECT_VERSION);
-
-    fmt::print(fg(white), "Name:\n");
-    fmt::print("{}", ws_2);
-    fmt::print(fmt::emphasis::underline, "{} v{}\n\n", name, version);
-}
-
 void HelpMessages::print_options()
 {
     if (this->options.empty()) {
@@ -150,7 +141,6 @@ void HelpMessages::print_synopsis()
 
 void HelpMessages::print()
 {
-    this->print_name_version();
     this->print_description();
     this->print_synopsis();
     this->print_options();

@@ -18,10 +18,9 @@
 
 void print_help_messages()
 {
+    help::print_program_info();
+
     help::HelpMessages help;
-    help.add_name_version();
-    help.add_description("A command line program for interactively querying OpenAI via the OpenAI API.");
-    help.add_description("See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.");
     help.add_synopsis("[-v | --version] [-h | --help] <command> [<args>]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-v", "--version", "Print version and exit");
