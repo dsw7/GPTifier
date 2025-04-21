@@ -24,6 +24,16 @@ void exit_on_failure()
     exit(EXIT_FAILURE);
 }
 
+void print_program_info()
+{
+    fmt::print("╔════════════════════════════════════════════════════════════════════════════════════╗\n");
+    fmt::print("║ ----------------------------------- GPTifier ------------------------------------- ║\n");
+    fmt::print("║ A command line OpenAI toolkit: Chat, get embeddings, fine-tune, assess costs, etc. ║\n");
+    fmt::print("║ See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.");
+    fmt::print("                         ║\n");
+    fmt::print("╚════════════════════════════════════════════════════════════════════════════════════╝\n\n");
+}
+
 void HelpMessages::add_command(const std::string &name, const std::string &description)
 {
     this->commands.push_back({ description, name });
@@ -39,11 +49,6 @@ void HelpMessages::add_example(const std::string &description, const std::string
     this->examples.push_back({ command, description });
 }
 
-void HelpMessages::add_name_version()
-{
-    this->print_metadata = true;
-}
-
 void HelpMessages::add_option(const std::string &opt_short, const std::string &opt_long, const std::string &description)
 {
     this->options.push_back({ description, opt_long, opt_short });
@@ -51,7 +56,7 @@ void HelpMessages::add_option(const std::string &opt_short, const std::string &o
 
 void HelpMessages::add_synopsis(const std::string &line)
 {
-    this->synopsis = line;
+    this->synopsis.push_back(line);
 }
 
 void HelpMessages::print_commands()
@@ -103,20 +108,6 @@ void HelpMessages::print_examples()
     fmt::print("\n");
 }
 
-void HelpMessages::print_name_version()
-{
-    if (not this->print_metadata) {
-        return;
-    }
-
-    const std::string name = std::string(PROJECT_NAME);
-    const std::string version = std::string(PROJECT_VERSION);
-
-    fmt::print(fg(white), "Name:\n");
-    fmt::print("{}", ws_2);
-    fmt::print(fmt::emphasis::underline, "{} v{}\n\n", name, version);
-}
-
 void HelpMessages::print_options()
 {
     if (this->options.empty()) {
@@ -140,12 +131,16 @@ void HelpMessages::print_synopsis()
     }
 
     fmt::print(fg(white), "Synopsis:\n");
-    fmt::print("{}gpt {}\n\n", ws_2, this->synopsis);
+
+    for (const auto &it: this->synopsis) {
+        fmt::print("{}gpt {}\n", ws_2, it);
+    }
+
+    fmt::print("\n");
 }
 
 void HelpMessages::print()
 {
-    this->print_name_version();
     this->print_description();
     this->print_synopsis();
     this->print_options();

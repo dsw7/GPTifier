@@ -1,16 +1,18 @@
 #include "interface/command_run.hpp"
 
+#include "configs.hpp"
 #include "datadir.hpp"
 #include "interface/help_messages.hpp"
-#include "interface/model_selector.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 
+#include <atomic>
 #include <chrono>
 #include <filesystem>
 #include <fmt/core.h>
 #include <getopt.h>
 #include <iostream>
+#include <mutex>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -22,11 +24,7 @@ void help_run()
 {
     help::HelpMessages help;
     help.add_description("Create a chat completion.");
-    help.add_synopsis(
-        "run [-h | --help] [-m <model-name> | --model=<model-name>]\n  "
-        "[-u | --no-interactive-export] [-o <file> | --file=<file>]\n  "
-        "[-p <prompt> | --prompt=<prompt>] [-r <filename> | --read-from-file=<filename>]\n  "
-        "[-t <temp> | --temperature=<temperature>] [-s | --store-completion]");
+    help.add_synopsis("run [OPTIONS]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
     help.add_option("-u", "--no-interactive-export", "Disable [y/n] prompt that asks whether to export results");
@@ -103,6 +101,20 @@ void read_cli(int argc, char **argv, Params &params)
     };
 }
 
+std::string get_model()
+{
+#ifdef TESTING_ENABLED
+    static std::string low_cost_model = "gpt-3.5-turbo";
+    return low_cost_model;
+#endif
+
+    if (configs.model_run) {
+        return configs.model_run.value();
+    }
+
+    throw std::runtime_error("Could not determine which model to use");
+}
+
 // Input ----------------------------------------------------------------------------------------------------
 
 std::string read_text_from_stdin()
@@ -116,14 +128,14 @@ std::string read_text_from_stdin()
 
 // Completion -----------------------------------------------------------------------------------------------
 
-bool TIMER_ENABLED = false;
+std::atomic<bool> TIMER_ENABLED(false);
 
 void time_api_call()
 {
     auto delay = std::chrono::milliseconds(50);
     int counter = 0;
 
-    while (TIMER_ENABLED) {
+    while (TIMER_ENABLED.load()) {
         switch (counter) {
             case 0:
                 std::cout << "·....\r" << std::flush;
@@ -155,20 +167,24 @@ void time_api_call()
 
 ChatCompletion run_query(const std::string &model, const std::string &prompt, float temperature, bool store_completion)
 {
-    TIMER_ENABLED = true;
+    TIMER_ENABLED.store(true);
     std::thread timer(time_api_call);
 
     bool query_failed = false;
     ChatCompletion cc;
+    std::mutex mutex_print_stderr;
 
     try {
         cc = create_chat_completion(prompt, model, temperature, store_completion);
     } catch (std::runtime_error &e) {
         query_failed = true;
-        fmt::print(stderr, "{}\n", e.what());
+        {
+            std::lock_guard<std::mutex> lock(mutex_print_stderr);
+            fmt::print(stderr, "{}\n", e.what());
+        }
     }
 
-    TIMER_ENABLED = false;
+    TIMER_ENABLED.store(false);
     timer.join();
 
     if (query_failed) {
@@ -296,12 +312,12 @@ void command_run(int argc, char **argv)
     read_cli(argc, argv, params);
 
     utils::separator();
-
     std::string model;
+
     if (params.model) {
         model = params.model.value();
     } else {
-        model = select_chat_model();
+        model = get_model();
     }
 
     static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";

@@ -20,10 +20,7 @@ void help_embed()
 {
     help::HelpMessages help;
     help.add_description("Get embedding representing a block of text.");
-    help.add_synopsis(
-        "embed [-h | --help] [-m <model> | --model=<model>]\n  "
-        "[-i <text> | --input=<text>] [-o <filename> | --output-file=<filename>]\n  "
-        "[-r <filename> | --read-from-file=<filename>]");
+    help.add_synopsis("embed [OPTIONS]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid embedding model");
     help.add_option("-i <text>", "--input=<text>", "Input text to embed");
@@ -132,8 +129,8 @@ void command_embed(int argc, char **argv)
 
     if (params.model) {
         model = params.model.value();
-    } else if (configs.embeddings.model) {
-        model = configs.embeddings.model.value();
+    } else if (configs.model_embed) {
+        model = configs.model_embed.value();
     } else {
         throw std::runtime_error("No model provided via configuration file or command line");
     }

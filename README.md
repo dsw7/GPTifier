@@ -1,118 +1,112 @@
 # GPTifier
-A C++ OpenAI CLI interface!
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dsw7/GPTifier/master/LICENSE)
 [![GitHub Releases](https://img.shields.io/github/release/dsw7/GPTifier.svg)](https://github.com/dsw7/GPTifier/releases)
 
+## Overview
+**GPTifier** is a command-line tool designed to interact seamlessly with OpenAI's API. I designed this program
+to "look and feel" similar to `git`. I wrote this program in C++ to enhance performance and responsiveness,
+resulting in a faster and more efficient user experience. This program is tested on Ubuntu/Debian and macOS.
+
 ## Table of Contents
-- [Motivation](#motivation)
-- [Setup](#setup)
-  - [Prerequisites](#prerequisites)
-  - [Get specific release](#get-specific-release)
-  - [Compile binary](#compile-binary)
-  - [Get `{fmt}`](#get-fmt)
-  - [Set up project files](#set-up-project-files)
-  - [Clean up](#clean-up)
+- [What can GPTifier do?](#what-can-gptifier-do)
+- [Installation](#installation)
 - [Usage](#usage)
   - [The `run` command](#the-run-command)
-    - [Basic example](#basic-example)
-    - [Exporting a result](#exporting-a-result)
-    - [Specifying a model](#specifying-a-model)
   - [The `short` command](#the-short-command)
   - [The `embed` command](#the-embed-command)
   - [The `models` command](#the-models-command)
   - [The `files` command](#the-files-command)
-    - [List files](#list-files)
-    - [Delete files](#delete-files)
   - [The `fine-tune` command](#the-fine-tune-command)
-    - [Fine tuning workflow](#fine-tuning-workflow)
   - [The `chats` command](#the-chats-command)
   - [The `edit` command](#the-edit-command)
-  - [Input selection](#input-selection)
 - [Administration](#administration)
   - [The `costs` command](#the-costs-command)
 - [Integrations](#integrations)
-  - [Coupling with `vim`](#coupling-with-vim)
-  - [GPTifier administration via OpenAI platform](#gptifier-administration-via-openai-platform)
-- [Use cases](#use-cases)
-  - [Using GPTifier to maximize token efficiency](#using-gptifier-to-maximize-token-efficiency)
+- [Uninstall GPTifier](#uninstall-gptifier)
+- [License](#license)
 
-## Motivation
-There are numerous ChatGPT command line programs currently available. Many of them are written in Python. I
-wanted something a bit quicker and a bit easier to install, so I wrote this program in C++.
+## What can GPTifier do?
+- **Run Queries**: Execute prompts and receive completions via the CLI, similar to querying ChatGPT.
+- **Retrieve Models**: List the latest OpenAI models and custom models.
+- **Edit Files**: Modify individual files with an approach akin to `sed`, but with enhanced intelligence.
+- **Create Embeddings**: Generate and export vector embeddings.
+- **Fine-Tuning Management**: Fully manage fine-tuning workflows directly from the command line.
+- **Additional Tasks**: Handle uploaded files, monitor usage, and perform various other tasks.
 
-## Setup
+## Installation
+
 ### Prerequisites
-Ensure that you have access to a valid OpenAI API key and ensure that this API key is set as the following
-environment variable:
+Ensure you possess a valid OpenAI API key. Set it as an environment variable:
+```bash
+export OPENAI_API_KEY="<your-api-key>"
 ```
-OPENAI_API_KEY="<your-api-key>"
+Set an additional administrative key as an environment variable for running administrative commands:
+```bash
+export OPENAI_ADMIN_KEY="<your-admin-key>"
 ```
-For running administrative commands, an additional administrative key must also be set:
-```
-OPENAI_ADMIN_KEY="<your-admin-key>"
-```
-### Get specific release
-Interested in a specific release? To download `1.0.0`, for example:
+This program requires [CMake](https://cmake.org/), [{fmt}](https://fmt.dev/latest/) and
+[libcurl](https://curl.se/libcurl/). These can be installed as follows:
+
+#### Ubuntu/Debian
 ```console
-wget https://github.com/dsw7/GPTifier/archive/refs/tags/v1.0.0.tar.gz
+apt install cmake libfmt-dev libcurl4-openssl-dev
 ```
-Which will yield:
-```
-v1.0.0.tar.gz
-```
-Then run:
+#### macOS
 ```console
-tar -xvf v1.0.0.tar.gz
+brew install cmake fmt
+# libcurl usually comes bundled with macOS
 ```
-Which will generate:
-```
-GPTifier-1.0.0
-```
-Change directories into `GPTifier-1.0.0` and proceed with the next steps.
-### Compile binary
-To set the product up, simply run the `make` target:
+#### Other systems
+This program should work on other Unix-like systems (i.e. other Linux distributions) however I do not
+extensively test these.
+
+### Step 1: Compile the binary
+Compile the binary by executing the `make` target:
 ```console
-make compile
+make
 ```
-The binary will be installed into whatever install directory is resolved by CMake's
-[install()](https://cmake.org/cmake/help/latest/command/install.html#command:install).
-### Get `{fmt}`
-This project uses [{fmt}](https://fmt.dev/latest/) for string formatting. The compiler will abort if `{fmt}`
-cannot be found anywhere. See [Get Started](https://fmt.dev/latest/get-started/) for instructions on
-installing `{fmt}`.
-### Set up project files
-This project makes reference to a "home directory" (`~/.gptifier`, specifically) that must be set up prior to
-running the program. To set up `~/.gptifier`, run:
-```console
-./setup
-```
-This script will dump a configuration file under `~/.gptifier`. Open the file:
-```console
-~/.gptifier/gptifier.toml
-```
-And apply the relevant configurations. Next, drop into the program:
-```console
-gpt run
-```
-The program should start an interactive session if the configuration file was properly set up.
-### Clean up
-The compilation process will generate many build artifacts. Clean up the build artifacts by running:
+The binary will be installed into the directory specified by CMake's [install()
+function](https://cmake.org/cmake/help/latest/command/install.html#command:install). To clean up generated
+artifacts:
 ```console
 make clean
 ```
 
-## Usage
-### The `run` command
-This command works with OpenAI's chat completion models, such as GPT-4 Turbo and GPT-4.
-#### Basic example
-Simply run `gpt run`! This will begin an interactive session. Type in a prompt:
+### Step 2: Run the setup script
+This project requires a specific "project directory" (`~/.gptifier`). Set it up by running:
 ```console
-$ gpt run
+./setup
+```
+
+### Step 3: Edit configurations
+The setup script generates a configuration file at `~/.gptifier/gptifier.toml`. Open this file and adjust the
+configurations accordingly.
+
+Next, start the program:
+```console
+gpt run
+```
+The program will initiate an interactive session if the configuration file is set up correctly. You may get
+some variation of:
+```
+-bash: gpt: command not found
+```
+If so, try running `gpt` in a new terminal window.
+
+## Usage
+
+### The `run` command
+The `run` command allows you to query OpenAI models like GPT-4. To start an interactive session, enter:
+```console
+gpt run
+```
+You'll see a prompt where you can type your query:
+```
 ------------------------------------------------------------------------------------------
 Input: What is 3 + 5?
 ```
-And hit <kbd>Enter</kbd>. The program will dispatch a request and return:
+The program processes the request and returns the answer:
 ```console
 ...
 Results: 3 + 5 equals 8.
@@ -120,32 +114,35 @@ Results: 3 + 5 equals 8.
 Export:
 > Write reply to file? [y/n]:
 ```
-#### Exporting a result
-In the above example, the user is prompted to export the completion a file. Entering <kbd>y</kbd> will print:
+You will be asked if you want to save the response to a file. If you choose <kbd>y</kbd>, the output will be
+saved:
 ```console
 ...
 > Writing reply to file /home/<your-username>/.gptifier/completions.gpt
 ------------------------------------------------------------------------------------------
 ```
-Subsequent requests will append to this file. In some cases, prompting interactively may be undesirable, such
-as when running automated unit tests. To disable the <kbd>y/n</kbd> prompt, run `gpt run` with the `-u` or
-`--no-interactive-export` flags.
+Any new responses will append to this file. To bypass the save-file prompt during operations like automated
+tests, use the `-u` or `--no-interactive-export` flags.
+
 #### Specifying a model
-A chat completion can be run against an available model by specifying the model name using the `-m` or
-`--model` option. For example, to create a chat completion via command line using the GPT-4 model, run:
+To specify a model for chat completion, use the `-m` or `--model` option. For example, to use GPT-4:
 ```console
 gpt run --model gpt-4 --prompt "What is 3 + 5?"
 ```
 
 > [!TIP]
-> A full list of models can be found by running the [models command](#the-models-command)
+> To see all available models, use the [models command](#the-models-command).
 
-> [!NOTE]
-> See [Input selection](#input-selection) for more information regarding how to pass
-> a prompt into this command
+#### Handling long, multiline prompts
+For multiline prompts, create a file named `Inputfile` in your working directory. GPTifier will automatically
+read from it. Alternatively, use the `-r` or `--read-from-file` option to specify a custom file.
+
+#### Storing prompt/completion pairs
+Use the `-s` or `--store-completion` flag to temporarily store prompt/completion pairs on OpenAI servers.
+Retrieve them later with the [chats command](#the-chats-command).
 
 ### The `short` command
-The `short` command is almost identical to the [the `run` command](#the-run-command), but this command returns
+The `short` command is almost identical to the [run command](#the-run-command), but this command returns
 a chat completion under the following conditions:
 
 1. Threading is disabled; that is, no timer will run in the background to time the round trip
@@ -164,35 +161,29 @@ Which will print out:
 > [!TIP]
 > Use this command if running GPTifier via something like `vim`'s `system()` function
 
-### The `embed` command
-This command converts some input text into a vector representation of the text. To use the command, run:
+### The `embed` Command
+The `embed` command converts input text into a vector representation. To embed text, execute the following:
 ```console
 gpt embed
-------------------------------------------------------------------------------------------
-Input: Convert me to a vector!
 ```
-And hit <kbd>Enter</kbd>. The program will dispatch a request and return:
+You will then be prompted with:
 ```
 ------------------------------------------------------------------------------------------
-Request: {
-  "input": "Convert me to a vector!",
-  "model": "text-embedding-ada-002"
-}
-...
+Input text to embed:
 ```
-The results will be exported to a JSON file: `~/.gptifier/embeddings.gpt`. In a nutshell, the `embeddings.gpt`
-file will contain a vector:
+Enter the text you wish to embed:
+```
+------------------------------------------------------------------------------------------
+Input text to embed: Convert me to a vector!
+```
+Press <kbd>Enter</kbd> to proceed. The program will generate the embedding, and the results will be saved to a
+JSON file located at `~/.gptifier/embeddings.gpt`.
 
-$$
-\begin{bmatrix}a\_1 & a\_2 & \dots & a_{1536}\end{bmatrix},
-$$
-
-Where 1536 is the dimension of the output vector corresponding to model `text-embedding-ada-002`. The cosine
-similarity of a set of such vectors can be used to evaluate the similarity between text.
-
-> [!NOTE]
-> See [Input selection](#input-selection) for more information regarding how to pass
-> embedding text into this command
+#### Embedding large text blocks
+For large blocks of text, you can read from a file:
+```console
+gpt embed -r my_text.txt -o my_embedding.json # and export embedding to a custom file!
+```
 
 ### The `models` command
 This command returns a list of currently available models. Simply run:
@@ -210,57 +201,72 @@ davinci-002                   system                        2023-08-21 16:11:41
 ...                           ...                           ...
 ```
 
+#### User models
+User models (say fine-tuned models) can be selectively listed by passing the `-u` or `--user` flag.
+
 ### The `files` command
-Use this command to manage files uploaded to OpenAI.
+This command is used to manage files uploaded to OpenAI.
+
 #### List files
-To list uploaded files, run:
+To list the uploaded files, use:
 ```console
 gpt files
 # or
 gpt files list
 ```
+
 #### Delete files
-To delete one or more uploaded files, run:
+To delete one or more uploaded files, use:
 ```console
 gpt files delete <file-id>
 ```
-The file ID corresponding to a file can be obtained by running [the `list` subcommand](#list-files).
+You can obtain the file ID by running the [list subcommand](#list-files).
 
 ### The `fine-tune` command
-The `fine-tune` command can be used for managing fine-tuning operations.
-#### Fine tuning workflow
-Start off by creating a dataset. See [Preparing your
-dataset](https://platform.openai.com/docs/guides/fine-tuning#preparing-your-dataset) for more information.
-Next, upload the dataset:
-```console
-gpt fine-tune upload-file jessica_training.jsonl # jessica_training.jsonl is the dataset
-```
-Which will print out:
-```
-Success!
-Uploaded file: jessica_training.jsonl
-With ID: file-6Vf...8t7
-```
-Next, create a fine-tuning job:
-```console
-gpt fine-tune create-job --file-id=file-6Vf...8t7 --model=gpt-4o-mini-2024-07-18
-```
-Then check the status of the job:
-```console
-gpt fine-tune list-jobs
-```
-If the training file is no longer needed, the file can be deleted from OpenAI servers:
-```console
-gpt files delete file-6Vf...8t7
-```
-And if the model is no longer needed, the model can be deleted using:
-```console
-gpt fine-tune delete-model <model-id>
-```
-The model ID can be found from the `User models` section listed by running:
-```console
-gpt models
-```
+The `fine-tune` command is used for managing fine-tuning operations.
+
+#### Fine-tuning workflow
+1. **Create a dataset:** Begin by creating a dataset. Refer to [Preparing your
+   dataset](https://platform.openai.com/docs/guides/fine-tuning#preparing-your-dataset) for detailed
+   instructions.
+
+2. **Upload the dataset:**
+    ```console
+    gpt fine-tune upload-file jessica_training.jsonl
+    ```
+   Here, `jessica_training.jsonl` is the name of your dataset file. Upon successful upload, you should see a
+   confirmation message similar to the following:
+    ```
+    Success!
+    Uploaded file: jessica_training.jsonl
+    With ID: file-6Vf...8t7
+    ```
+
+3. **Create a fine-tuning job:**
+    ```console
+    gpt fine-tune create-job --file-id=file-6Vf...8t7 --model=gpt-4o-mini-2024-07-18
+    ```
+
+4. **Check the status of the job:**
+    ```console
+    gpt fine-tune list-jobs
+    ```
+
+5. **Delete unneeded files:**
+   If you no longer need the training file, you can delete it from the OpenAI servers:
+    ```console
+    gpt files delete file-6Vf...8t7
+    ```
+
+6. **Delete unneeded models:**
+   If the fine-tuned model is no longer required, you can delete it using:
+    ```console
+    gpt fine-tune delete-model <model-id>
+    ```
+   To find the model ID, run:
+    ```console
+    gpt models -u
+    ```
 
 ### The `chats` command
 The `chats` family of subcommands can be used to manage stored chat completions (for example, chat completions
@@ -277,47 +283,43 @@ gpt chats delete <chat-completion-id>
 Where `<chat-completion-id>` is collected from `gpt chats` and corresponds to a chat completion that is to be
 deleted.
 
+### The `chats` command
+The `chats` family of subcommands is used to manage stored chat completions, such as those saved using the
+`--store-completion` flag with the `gpt run` command. To list stored chat completions, you can run:
+```console
+gpt chats
+# or
+gpt chats list
+```
+To delete a specific chat completion, use the following command:
+```console
+gpt chats delete <chat-completion-id>
+```
+Here, `<chat-completion-id>` is the identifier obtained from `gpt chats`, corresponding to the chat completion
+you wish to delete.
+
 ### The `edit` command
-Use this command to edit files according to instructions written into a text file. For example, suppose
-`foo.cpp` contains Camel case formatted code, and suppose there's a need to change the format to snake case.
-Instructions for applying this change can be written into a prompt file, say `prompt.txt`:
+The `edit` command allows users to modify files according to instructions specified in a separate text file.
+For instance, if `foo.cpp` uses CamelCase formatting and needs to be converted to snake_case, you can outline
+the necessary changes in an instruction file, such as `instructions.txt`:
 ```plaintext
-Convert all code from camel case to snake case.
+Convert all code from CamelCase to snake_case.
 ```
-The following command will print the results to `stdout`:
+To display the results in the terminal, use the following command:
 ```console
-gpt edit foo.cpp -p prompt.txt
+gpt edit foo.cpp -i instructions.txt
 ```
-To write the updated code to a new file, say `bar.cpp`:
+To save the updated code to a new file, such as `bar.cpp`, execute:
 ```console
-gpt edit foo.cpp -p prompt.txt -o bar.cpp
+gpt edit foo.cpp -i instructions.txt -o bar.cpp
 ```
-And to simply overwrite `foo.cpp`, run:
+If you wish to overwrite the original file, simply run:
 ```console
-gpt edit foo.cpp -p prompt.txt -o foo.cpp
+gpt edit foo.cpp -i instructions.txt -o foo.cpp
 ```
 > [!NOTE]
-> No prompt engineering is needed when writing `prompt.txt`. The instructions written to `prompt.txt` are
-> concatenated into a larger prompt complete with context, output format specifications, etc.
-
-### Input selection
-For certain commands, a hierarchy exists for choosing where input text comes from. The hierarchy roughly
-follows:
-
-1. **Check for raw input via command line option**:
-   - If raw input is provided through a command line option, use this input
-   - Example: `gpt run -p "What is 3 + 5?"` or `gpt embed -i "A foo that bars"`
-
-2. **Check for input file specified via command line**:
-   - If a file path is provided as a command line argument, read from this file
-   - Example: `gpt [run | embed] -r <filename>`
-
-3. **Check for a default input file in the current working directory**:
-   - If a file named `Inputfile` exists in the current directory, read from this file
-   - This is analogous to a `Makefile` or perhaps a `Dockerfile`
-
-4. **Read from stdin**:
-   - If none of the above conditions are met, read input from standard input (stdin)
+> The instructions in `instructions.txt` do not require prompt engineering. When processed, these instructions
+> are combined with additional context and output format specifications to create a complete prompt.
 
 ## Administration
 > [!NOTE]
@@ -332,110 +334,51 @@ gpt costs --days=5
 Will return the usage per day over the past 5 days and the overall usage over the 5 days.
 
 ## Integrations
-### Coupling with `vim`
-In the [Exporting a result](#exporting-a-result) section, it was stated that results can be voluntarily
-exported to `~/.gptifier/completions.gpt`. One may be interested in integrating this into a `vim` workflow.
-This can be achieved as follows. First, add the following function to `~/.vimrc`:
+
+### Integrating `vim` with `GPTifier`
+In the [run command](#the-run-command) section, we discussed how completions can be optionally exported to
+`~/.gptifier/completions.gpt`. If you wish to integrate access to these completions into your `vim` workflow,
+you can do so by first adding the function below to your `~/.vimrc` file:
 ```vim
 function OpenGPTifierResults()
-  let l:results_file = expand('~') . '/.gptifier/completions.gpt'
+ let l:results_file = expand('~') . '/.gptifier/completions.gpt'
 
-  if filereadable(l:results_file)
-    execute 'vs' . l:results_file
-  else
-    echoerr l:results_file . ' does not exist'
-  endif
+ if filereadable(l:results_file)
+   execute 'vs' . l:results_file
+ else
+   echoerr l:results_file . ' does not exist'
+ endif
 endfunction
 ```
-Then add a command to `~/.vimrc`:
+This function checks if the results file exists, and if so, opens it in a vertical split within `vim`. Define
+a custom command in your `~/.vimrc`:
 ```vim
 " Open GPTifier results file
 command G :call OpenGPTifierResults()
 ```
-The command `G` will open `~/.gptifier/completions.gpt` in a separate vertical split, thus allowing for cherry
-picking saved OpenAI completions into a source file, for example.
+With this command configured, you can use `:G` in `vim` to open the `~/.gptifier/completions.gpt` file in a
+separate vertical split. This setup allows for easy access and selective copying of saved OpenAI completions
+into your code or text files.
 
-### GPTifier administration via OpenAI platform
-GPTifier's access to OpenAI resources can be managed by setting up a GPTifier project under [OpenAI's user
-platform](https://platform.openai.com/). Some possibilities include setting usage and model limits. To
-integrate GPTifier with an OpenAI project, open GPTifier's configuration file:
+## Uninstall GPTifier
+
+### Step 1: Remove binary
+First, verify that the `gpt` command in your `$PATH` is the GPTifier binary and not an alias for another
+application:
 ```console
-vim +/project-id ~/.gptifier/gptifier.toml
+gpt -h
 ```
-And set `project-id` to the project ID associated with the newly created GPTifier project. The ID can be
-obtained from the [General settings](https://platform.openai.com/settings/organization/general) page
-(authentication is required).
-
-## Use cases
-### Using GPTifier to maximize token efficiency
-GPTifier can be used to study prompt quality in an attempt to optimize for token usage. For example, passing
-a very short prompt:
+If confirmed, proceed to remove the binary with the following command:
 ```console
-gpt run -p "Running a test"
+rm $(which gpt)
 ```
-Will return:
-```
-...
-Usage:
-Prompt tokens: 10
-Prompt size (words): 3
-Ratio: 3.3333333
 
-Completion tokens: 17
-Completion size (words): 14
-Ratio: 1.2142857
-```
-However, passing a slightly more descriptive prompt:
+### Step 2: Remove GPTifier directory
+Before deletion, check the `~/.gptifier` directory for any files you wish to retain, such as completions or
+configurations. Once reviewed, remove the directory:
 ```console
-gpt run -p "I am running a small test. Please ignore me!"
+rm -r ~/.gptifier
 ```
-Returns:
-```
-...
-Usage:
-Prompt tokens: 18
-Prompt size (words): 9
-Ratio: 2
 
-Completion tokens: 16
-Completion size (words): 13
-Ratio: 1.2307693
-```
-Notice that in this case, slightly more tokens are being used, but the token-to-word ratio approaches the
-"typical" 100 tokens / 75 words ratio cited by OpenAI. This output can also be used to modulate the completion
-token usage. For example, the prompt:
-```console
-gpt run -p "A foo that bars"
-```
-Will return:
-```
-Results: Sounds like a playful twist on terminology! In programming, ...
-...
-Prompt tokens: 11
-Prompt size (words): 4
-Ratio: 2.75
-
-Completion tokens: 87
-Completion size (words): 66
-Ratio: 1.3181819
-...
-```
-However, tweaking the prompt:
-```console
-gpt run -p "A foo that bars. Short answer please"
-```
-Will return:
-```
-Results: A playful expression often used to describe ...
-...
-Prompt tokens: 15
-Prompt size (words): 7
-Ratio: 2.142857
-
-Completion tokens: 34
-Completion size (words): 27
-Ratio: 1.2592592
-...
-```
-In this case, 4 extra prompt tokens were used corresponding to the request "Short answer please", however,
-this brought down the number of completion tokens from 87 to 34.
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

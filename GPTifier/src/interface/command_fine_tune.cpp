@@ -20,7 +20,11 @@ void help_fine_tune()
 {
     help::HelpMessages help;
     help.add_description("Manage fine tuning operations.");
-    help.add_synopsis("fine-tune [-h | --help] (upload-file | create-job | delete-model | list-jobs)");
+    help.add_synopsis("fine-tune [OPTIONS]");
+    help.add_synopsis("fine-tune upload-file [OPTIONS] FILE");
+    help.add_synopsis("fine-tune create-job [OPTIONS]");
+    help.add_synopsis("fine-tune delete-model [OPTIONS] MODEL");
+    help.add_synopsis("fine-tune list-jobs [OPTIONS]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_command("upload-file", "Upload a fine-tuning file");
     help.add_command("create-job", "Create a fine-tuning job");
@@ -33,7 +37,7 @@ void help_fine_tune_upload_file()
 {
     help::HelpMessages help;
     help.add_description("Upload a fine-tuning file.");
-    help.add_synopsis("fine-tune upload-file [-h | --help] <file>");
+    help.add_synopsis("fine-tune upload-file [OPTIONS] FILE");
     help.add_option("-h", "--help", "Print help information and exit");
     help.print();
 }
@@ -42,9 +46,7 @@ void help_fine_tune_create_job()
 {
     help::HelpMessages help;
     help.add_description("Create a fine-tuning job.");
-    help.add_synopsis(
-        "fine-tune create-job [-h | --help] "
-        "-f <file-id> | --file-id <file-id> -m <model> | --model <model>");
+    help.add_synopsis("fine-tune create-job [OPTIONS]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-f", "--file-id", "The ID of an uploaded file that contains the training data");
     help.add_option("-m", "--model", "The name of the model to fine-tune");
@@ -55,7 +57,7 @@ void help_fine_tune_delete_model()
 {
     help::HelpMessages help;
     help.add_description("Delete a fine-tuned model.");
-    help.add_synopsis("fine-tune delete-model [-h | --help] <model>");
+    help.add_synopsis("fine-tune delete-model [OPTIONS] MODEL");
     help.add_option("-h", "--help", "Print help information and exit");
     help.print();
 }
@@ -64,7 +66,7 @@ void help_fine_tune_list_jobs()
 {
     help::HelpMessages help;
     help.add_description("List fine-tuning jobs.");
-    help.add_synopsis("fine-tune list-jobs [-h | --help] [-j | --json] -l <limit> | --limit <limit>");
+    help.add_synopsis("fine-tune list-jobs [OPTIONS]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.add_option("-l", "--limit", "Number of fine-tuning jobs to show");

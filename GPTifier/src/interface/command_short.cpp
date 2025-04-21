@@ -1,7 +1,7 @@
 #include "interface/command_short.hpp"
 
+#include "configs.hpp"
 #include "interface/help_messages.hpp"
-#include "interface/model_selector.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 
@@ -16,8 +16,7 @@ void help_short()
 {
     help::HelpMessages help;
     help.add_description("Create a chat completion but without threading or verbosity.");
-    help.add_synopsis("short [-h | --help] [-j | --json] [-t <temp> | --temperature=<temp>]\n  "
-                      "[-s | --store-completion] PROMPT");
+    help.add_synopsis("short [OPTIONS] PROMPT");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
@@ -77,6 +76,20 @@ void read_cli(int argc, char **argv, Params &params)
     }
 }
 
+std::string get_model()
+{
+#ifdef TESTING_ENABLED
+    static std::string low_cost_model = "gpt-3.5-turbo";
+    return low_cost_model;
+#endif
+
+    if (configs.model_short) {
+        return configs.model_short.value();
+    }
+
+    throw std::runtime_error("Could not determine which model to use");
+}
+
 } // namespace
 
 void command_short(int argc, char **argv)
@@ -97,7 +110,7 @@ void command_short(int argc, char **argv)
         throw std::runtime_error("Temperature must be between 0 and 2");
     }
 
-    const std::string model = select_chat_model();
+    const std::string model = get_model();
     ChatCompletion cc = create_chat_completion(params.prompt.value(), model, temperature, params.store_completion);
 
     if (params.print_raw_json) {

@@ -1,7 +1,7 @@
 #include "interface/command_edit.hpp"
 
+#include "configs.hpp"
 #include "interface/help_messages.hpp"
-#include "interface/model_selector.hpp"
 #include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 
@@ -21,18 +21,16 @@ namespace {
 void help_edit()
 {
     help::HelpMessages help;
-    help.add_description("Edit one or more files according to a prompt.");
-    help.add_synopsis("edit [-h | --help] [-d | --debug]\n  "
-                      "[-m <model> | --model <model>] [-o <filename> | --output <filename>]\n  "
-                      "[-p <filename> | --prompt <filename>] <input-file>");
+    help.add_description("Edit code according to rules provided in a file.");
+    help.add_synopsis("edit [OPTIONS] FILE");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-d", "--debug", "Print raw prompt and completion. Will not edit file");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
     help.add_option("-o <filename>", "--output=<filename>", "Specify where to export edited code");
-    help.add_option("-p <filename>", "--prompt=<filename>", "Specify instructions to apply to input file");
-    help.add_example("Edit a file and print changes to stdout", "gpt edit foo.cpp -p prompt.txt");
-    help.add_example("Edit a file and write changes to new file", "gpt edit foo.cpp -p prompt.txt -o bar.cpp");
-    help.add_example("Overwrite an existing file with edits", "gpt edit foo.cpp -o foo.cpp -p prompt.txt");
+    help.add_option("-i <filename>", "--instructions=<filename>", "Specify instructions to apply to input file");
+    help.add_example("Edit a file and print changes to stdout", "gpt edit foo.cpp -i instructions.txt");
+    help.add_example("Edit a file and write changes to new file", "gpt edit foo.cpp -i instructions.txt -o bar.cpp");
+    help.add_example("Overwrite an existing file with edits", "gpt edit foo.cpp -o foo.cpp -i instructions.txt");
     help.print();
 }
 
@@ -52,12 +50,12 @@ void read_cli(int argc, char **argv, Params &params)
             { "debug", no_argument, 0, 'd' },
             { "model", required_argument, 0, 'm' },
             { "output", required_argument, 0, 'o' },
-            { "prompt", required_argument, 0, 'p' },
+            { "instructions", required_argument, 0, 'i' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int opt = getopt_long(argc, argv, "hdm:o:p:", long_options, &option_index);
+        int opt = getopt_long(argc, argv, "hdm:o:i:", long_options, &option_index);
 
         if (opt == -1) {
             break;
@@ -76,7 +74,7 @@ void read_cli(int argc, char **argv, Params &params)
             case 'o':
                 params.output_file = optarg;
                 break;
-            case 'p':
+            case 'i':
                 params.instructions_file = optarg;
                 break;
             default:
@@ -90,6 +88,20 @@ void read_cli(int argc, char **argv, Params &params)
             break;
         }
     }
+}
+
+std::string get_model()
+{
+#ifdef TESTING_ENABLED
+    static std::string low_cost_model = "gpt-3.5-turbo";
+    return low_cost_model;
+#endif
+
+    if (configs.model_edit) {
+        return configs.model_edit.value();
+    }
+
+    throw std::runtime_error("Could not determine which model to use");
 }
 
 std::string build_prompt(const std::string &instructions, const std::string &input_code)
@@ -201,15 +213,15 @@ void apply_transformation(const Params &params)
     fmt::print("Read instructions from: {}\n", params.instructions_file.value());
     std::cout << fmt::format("{} -> ", params.input_file.value()) << std::flush;
 
-    const std::string input_code = utils::read_from_file(params.input_file.value());
-    const std::string prompt = build_prompt(instructions, input_code);
-
     std::string model;
     if (params.model) {
         model = params.model.value();
     } else {
-        model = select_chat_model();
+        model = get_model();
     }
+
+    const std::string input_code = utils::read_from_file(params.input_file.value());
+    const std::string prompt = build_prompt(instructions, input_code);
 
     ChatCompletion cc;
     try {
@@ -248,7 +260,7 @@ void command_edit(int argc, char **argv)
     read_cli(argc, argv, params);
 
     if (not params.instructions_file) {
-        throw std::runtime_error("No prompt file provided. Cannot proceed");
+        throw std::runtime_error("No instructions file provided. Cannot proceed");
     }
 
     if (not params.input_file) {

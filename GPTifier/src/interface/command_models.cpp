@@ -16,7 +16,7 @@ void help_models()
 {
     help::HelpMessages help;
     help.add_description("List available OpenAI or user models.");
-    help.add_synopsis("models [-h | --help] [-j | --json] [-u | --user]");
+    help.add_synopsis("models [OPTIONS]");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
     help.add_option("-u", "--user", "Print user models if they exist");

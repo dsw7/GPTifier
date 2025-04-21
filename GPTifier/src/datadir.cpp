@@ -1,7 +1,6 @@
 #include "datadir.hpp"
 
 #include <fmt/core.h>
-#include <stdexcept>
 #include <stdlib.h>
 
 namespace {
@@ -11,14 +10,15 @@ std::filesystem::path get_proj_data_dir()
     const char *home_dir = std::getenv("HOME");
 
     if (not home_dir) {
-        throw std::runtime_error("Could not locate user home directory!");
+        fmt::print(stderr, "Could not locate user home directory!\n");
+        exit(EXIT_FAILURE);
     }
 
     const std::string data_dir = std::string(home_dir) + "/.gptifier";
 
     if (not std::filesystem::exists(data_dir)) {
-        const std::string errmsg = fmt::format("Could not locate '{}'", data_dir);
-        throw std::runtime_error(errmsg);
+        fmt::print(stderr, "Could not locate '{}'\n", data_dir);
+        exit(EXIT_FAILURE);
     }
 
     return std::filesystem::path(data_dir);

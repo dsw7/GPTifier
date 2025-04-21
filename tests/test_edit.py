@@ -13,19 +13,19 @@ class TestEdit(TestCaseExtended):
             with self.subTest(option=option):
                 proc = self.assertSuccess("edit", option)
                 self.assertIn(
-                    "Edit one or more files according to a prompt.", proc.stdout
+                    "Edit code according to rules provided in a file.", proc.stdout
                 )
 
-    def test_missing_prompt_file_option(self) -> None:
+    def test_missing_instructions_file_option(self) -> None:
         proc = self.assertFailure("edit")
-        self.assertIn("No prompt file provided. Cannot proceed", proc.stderr)
+        self.assertIn("No instructions file provided. Cannot proceed", proc.stderr)
 
     def test_missing_output_file_argument(self) -> None:
-        proc = self.assertFailure("edit", "-pprompt")
+        proc = self.assertFailure("edit", "-ifoobar")
         self.assertIn("No file to edit provided. Cannot proceed", proc.stderr)
 
-    def test_missing_prompt_file(self) -> None:
-        for option in ["-pfoobar.txt", "--prompt=foobar.txt"]:
+    def test_missing_instructions_file(self) -> None:
+        for option in ["-ifoobar.txt", "--instructions=foobar.txt"]:
             with self.subTest(option=option):
                 proc = self.assertFailure("edit", option, "test.cpp")
                 self.assertIn("Unable to open 'foobar.txt'", proc.stderr)
@@ -36,27 +36,27 @@ class TestEditFile(TestCaseExtended):
     def setUp(self) -> None:
         self.input_file = Path("/tmp/foo.py")
         self.output_file = Path("/tmp/bar.py")
-        self.prompt_file = Path("/tmp/prompt")
+        self.instructions_file = Path("/tmp/instructions.txt")
 
         copy(PathToData / "dummy.py", self.input_file)
-        copy(PathToData / "prompt.txt", self.prompt_file)
+        copy(PathToData / "instructions.txt", self.instructions_file)
 
     def tearDown(self) -> None:
         self.input_file.unlink()
-        self.prompt_file.unlink()
+        self.instructions_file.unlink()
 
         if self.output_file.exists():
             self.output_file.unlink()
 
     def test_missing_input_file_argument(self) -> None:
-        proc = self.assertFailure("edit", f"-p{self.prompt_file}", "test.cpp")
+        proc = self.assertFailure("edit", f"-i{self.instructions_file}", "test.cpp")
         self.assertIn("Unable to open 'test.cpp'", proc.stderr)
 
     def test_invalid_model(self) -> None:
         for option in ["-mabc", "--model=abc"]:
             with self.subTest(option=option):
                 proc = self.assertFailure(
-                    "edit", option, f"-p{self.prompt_file}", str(self.input_file)
+                    "edit", option, f"-i{self.instructions_file}", str(self.input_file)
                 )
                 self.assertIn(
                     "The model `abc` does not exist or you do not have access to it.",
@@ -65,14 +65,16 @@ class TestEditFile(TestCaseExtended):
 
     def test_debug_flag(self) -> None:
         proc = self.assertSuccess(
-            "edit", f"-p{self.prompt_file}", str(self.input_file), "--debug"
+            "edit", f"-i{self.instructions_file}", str(self.input_file), "--debug"
         )
         self.assertIn("The prompt was:", proc.stdout)
         self.assertIn("The completion was:", proc.stdout)
         self.assertFalse(self.output_file.exists())
 
     def test_write_to_stdout(self) -> None:
-        proc = self.assertSuccess("edit", f"-p{self.prompt_file}", str(self.input_file))
+        proc = self.assertSuccess(
+            "edit", f"-i{self.instructions_file}", str(self.input_file)
+        )
         self.assertIn("The updated code is:", proc.stdout)
         self.assertIn("A description of the changes:", proc.stdout)
 
@@ -80,7 +82,7 @@ class TestEditFile(TestCaseExtended):
         self.assertSuccess(
             "edit",
             str(self.input_file),
-            f"-p{self.prompt_file}",
+            f"-i{self.instructions_file}",
             f"-o{self.output_file}",
         )
 
@@ -92,7 +94,7 @@ class TestEditFile(TestCaseExtended):
         self.assertSuccess(
             "edit",
             str(self.input_file),
-            f"-p{self.prompt_file}",
+            f"-i{self.instructions_file}",
             f"-o{self.input_file}",
         )
 

@@ -23,7 +23,7 @@ class TestFineTuneUploadFile(TestCaseExtended):
         )
 
     def test_upload_invalid_file(self) -> None:
-        input_text_file = Path(__file__).resolve().parent / "prompt_basic.txt"
+        input_text_file = Path(__file__).resolve().parent / "__init__.py"
         proc = self.assertFailure("fine-tune", "upload-file", str(input_text_file))
         self.assertIn(
             "Invalid file format for Fine-Tuning API. Must be .jsonl", proc.stderr
