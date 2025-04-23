@@ -269,21 +269,6 @@ The `fine-tune` command is used for managing fine-tuning operations.
     ```
 
 ### The `chats` command
-The `chats` family of subcommands can be used to manage stored chat completions (for example, chat completions
-that were saved with the `--store-completion` flag when using `gpt run`). Run:
-```console
-gpt chats
-# or
-gpt chats list
-```
-To list stored completions. A chat completion can be deleted by running:
-```console
-gpt chats delete <chat-completion-id>
-```
-Where `<chat-completion-id>` is collected from `gpt chats` and corresponds to a chat completion that is to be
-deleted.
-
-### The `chats` command
 The `chats` family of subcommands is used to manage stored chat completions, such as those saved using the
 `--store-completion` flag with the `gpt run` command. To list stored chat completions, you can run:
 ```console
