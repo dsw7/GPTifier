@@ -21,13 +21,14 @@ namespace {
 void help_edit()
 {
     help::HelpMessages help;
-    help.add_description("Edit code according to rules provided in a file.");
+    help.add_description("Edit code according to rules provided by file or command line option.");
     help.add_synopsis("edit [OPTIONS] FILE");
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-d", "--debug", "Print raw prompt and completion. Will not edit file");
     help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
     help.add_option("-o <filename>", "--output=<filename>", "Specify where to export edited code");
-    help.add_option("-i <filename>", "--instructions=<filename>", "Specify instructions to apply to input file");
+    help.add_option("-i <filename>", "--instructions=<filename>", "Specify instructions to apply to input file via disk file");
+    help.add_option("-r <instructions>", "--rule=<instructions>", "Specify instructions to apply to input file via command line");
     help.add_example("Edit a file and print changes to stdout", "gpt edit foo.cpp -i instructions.txt");
     help.add_example("Edit a file and write changes to new file", "gpt edit foo.cpp -i instructions.txt -o bar.cpp");
     help.add_example("Overwrite an existing file with edits", "gpt edit foo.cpp -o foo.cpp -i instructions.txt");
@@ -40,6 +41,7 @@ struct Params {
     std::optional<std::string> instructions_file = std::nullopt;
     std::optional<std::string> model = std::nullopt;
     std::optional<std::string> output_file = std::nullopt;
+    std::optional<std::string> rule = std::nullopt;
 };
 
 void read_cli(int argc, char **argv, Params &params)
@@ -51,11 +53,12 @@ void read_cli(int argc, char **argv, Params &params)
             { "model", required_argument, 0, 'm' },
             { "output", required_argument, 0, 'o' },
             { "instructions", required_argument, 0, 'i' },
+            { "rule", required_argument, 0, 'r' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int opt = getopt_long(argc, argv, "hdm:o:i:", long_options, &option_index);
+        int opt = getopt_long(argc, argv, "hdm:o:i:r:", long_options, &option_index);
 
         if (opt == -1) {
             break;
@@ -76,6 +79,9 @@ void read_cli(int argc, char **argv, Params &params)
                 break;
             case 'i':
                 params.instructions_file = optarg;
+                break;
+            case 'r':
+                params.rule = optarg;
                 break;
             default:
                 help::exit_on_failure();
@@ -217,9 +223,16 @@ void write_to_file(const Output &output, const std::string &filename)
 
 void apply_transformation(const Params &params)
 {
-    const std::string instructions = utils::read_from_file(params.instructions_file.value());
+    std::string instructions;
 
-    fmt::print("Read instructions from: {}\n", params.instructions_file.value());
+    if (params.rule) {
+        instructions = params.rule.value();
+        fmt::print("Read instructions from CLI\n");
+    } else {
+        instructions = utils::read_from_file(params.instructions_file.value());
+        fmt::print("Read instructions from: {}\n", params.instructions_file.value());
+    }
+
     std::cout << fmt::format("{} -> ", params.input_file.value()) << std::flush;
 
     std::string model;
@@ -268,8 +281,8 @@ void command_edit(int argc, char **argv)
     Params params;
     read_cli(argc, argv, params);
 
-    if (not params.instructions_file) {
-        throw std::runtime_error("No instructions file provided. Cannot proceed");
+    if (not params.instructions_file and not params.rule) {
+        throw std::runtime_error("No instructions file or rule provided. Cannot proceed");
     }
 
     if (not params.input_file) {
