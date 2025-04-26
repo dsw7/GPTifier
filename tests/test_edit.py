@@ -74,10 +74,25 @@ class TestEditFile(TestCaseExtended):
         self.assertIn("The completion was:", proc.stdout)
         self.assertFalse(self.output_file.exists())
 
+    def test_debug_flag_rule(self) -> None:
+        instructions = self.instructions_file.read_text()
+        proc = self.assertSuccess(
+            "edit", f"-r{instructions}", str(self.input_file), "--debug"
+        )
+        self.assertIn("The prompt was:", proc.stdout)
+        self.assertIn("The completion was:", proc.stdout)
+        self.assertFalse(self.output_file.exists())
+
     def test_write_to_stdout(self) -> None:
         proc = self.assertSuccess(
             "edit", f"-i{self.instructions_file}", str(self.input_file)
         )
+        self.assertIn("The updated code is:", proc.stdout)
+        self.assertIn("A description of the changes:", proc.stdout)
+
+    def test_write_to_stdout_rule(self) -> None:
+        instructions = self.instructions_file.read_text()
+        proc = self.assertSuccess("edit", f"-r{instructions}", str(self.input_file))
         self.assertIn("The updated code is:", proc.stdout)
         self.assertIn("A description of the changes:", proc.stdout)
 
@@ -88,7 +103,18 @@ class TestEditFile(TestCaseExtended):
             f"-i{self.instructions_file}",
             f"-o{self.output_file}",
         )
+        process = subprocess.run(["python3", self.output_file], capture_output=True)
+        self.assertEqual(process.returncode, 0)
+        self.assertEqual(process.stdout.decode(), "6\n")
 
+    def test_write_to_file_rule(self) -> None:
+        instructions = self.instructions_file.read_text()
+        self.assertSuccess(
+            "edit",
+            str(self.input_file),
+            f"--rule={instructions}",
+            f"-o{self.output_file}",
+        )
         process = subprocess.run(["python3", self.output_file], capture_output=True)
         self.assertEqual(process.returncode, 0)
         self.assertEqual(process.stdout.decode(), "6\n")
@@ -100,7 +126,18 @@ class TestEditFile(TestCaseExtended):
             f"-i{self.instructions_file}",
             f"-o{self.input_file}",
         )
+        process = subprocess.run(["python3", self.input_file], capture_output=True)
+        self.assertEqual(process.returncode, 0)
+        self.assertEqual(process.stdout.decode(), "6\n")
 
+    def test_overwrite_file_rule(self) -> None:
+        instructions = self.instructions_file.read_text()
+        self.assertSuccess(
+            "edit",
+            str(self.input_file),
+            f"--rule={instructions}",
+            f"-o{self.input_file}",
+        )
         process = subprocess.run(["python3", self.input_file], capture_output=True)
         self.assertEqual(process.returncode, 0)
         self.assertEqual(process.stdout.decode(), "6\n")
