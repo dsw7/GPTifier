@@ -195,13 +195,22 @@ void get_output_from_completion(const std::string &completion, Output &output)
     output.description = json["description"];
 }
 
-void print_code_to_stdout(const Output &output)
+void write_to_stdout(const Output &output)
 {
     utils::separator();
     fmt::print("The updated code is:\n");
     fmt::print(fg(green), "```\n{}\n```\n", output.code);
 
     utils::separator();
+    fmt::print("A description of the changes:\n");
+    fmt::print(fg(green), "{}\n", output.description);
+}
+
+void write_to_file(const Output &output, const std::string &filename)
+{
+    utils::write_to_file(filename, output.code);
+    utils::separator();
+
     fmt::print("A description of the changes:\n");
     fmt::print(fg(green), "{}\n", output.description);
 }
@@ -246,9 +255,9 @@ void apply_transformation(const Params &params)
     get_output_from_completion(cc.completion, output);
 
     if (params.output_file) {
-        utils::write_to_file(params.output_file.value(), output.code);
+        write_to_file(output, params.output_file.value());
     } else {
-        print_code_to_stdout(output);
+        write_to_stdout(output);
     }
 }
 
