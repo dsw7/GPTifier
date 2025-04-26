@@ -13,12 +13,15 @@ class TestEdit(TestCaseExtended):
             with self.subTest(option=option):
                 proc = self.assertSuccess("edit", option)
                 self.assertIn(
-                    "Edit code according to rules provided in a file.", proc.stdout
+                    "Edit code according to rules provided by file or command line option.",
+                    proc.stdout,
                 )
 
     def test_missing_instructions_file_option(self) -> None:
         proc = self.assertFailure("edit")
-        self.assertIn("No instructions file provided. Cannot proceed", proc.stderr)
+        self.assertIn(
+            "No instructions file or rule provided. Cannot proceed", proc.stderr
+        )
 
     def test_missing_output_file_argument(self) -> None:
         proc = self.assertFailure("edit", "-ifoobar")
