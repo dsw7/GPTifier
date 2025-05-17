@@ -25,39 +25,65 @@ endif()
 # -----------------------------------------------------------------------------------------------------------
 # nlohmann/json.hpp
 
+option(USE_SYSTEM_NLOHMANN_JSON "Use system-provided nlohmann/json.hpp if available" OFF)
+
 message(STATUS "Checking for nlohmann/json.hpp")
 
-set(NLOHMANN_JSON_HPP "${CMAKE_SOURCE_DIR}/external/json.hpp")
-
-if(NOT EXISTS ${NLOHMANN_JSON_HPP})
-  message(STATUS "Downloading nlohmann/json.hpp")
-  file(
-    DOWNLOAD
-    "https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp"
-    ${NLOHMANN_JSON_HPP}
-    SHOW_PROGRESS
-  )
+if(USE_SYSTEM_NLOHMANN_JSON)
+  # i.e. specified by user as:
+  # `cmake -DUSE_SYSTEM_NLOHMANN_JSON=ON -DNLOHMANN_JSON_HPP=/path/to/json.hpp <args>`
+  set(NLOHMANN_JSON_HPP "" CACHE FILEPATH "Path to nlohmann/json.hpp")
+  if(EXISTS ${NLOHMANN_JSON_HPP})
+    message(STATUS "Copying ${NLOHMANN_JSON_HPP} -> ${CMAKE_SOURCE_DIR}/external")
+    file(COPY ${NLOHMANN_JSON_HPP} DESTINATION "${CMAKE_SOURCE_DIR}/external")
+  else()
+    message(FATAL_ERROR "The file '${NLOHMANN_JSON_HPP}' does not exist!")
+  endif()
 else()
-  message(STATUS "nlohmann/json.hpp already exists. Skipping download")
+  set(NLOHMANN_JSON_HPP_DL "${CMAKE_SOURCE_DIR}/external/json.hpp")
+  if(EXISTS ${NLOHMANN_JSON_HPP_DL})
+    message(STATUS "${NLOHMANN_JSON_HPP_DL} already exists. Skipping download")
+  else()
+    message(STATUS "Downloading nlohmann/json.hpp")
+    file(
+      DOWNLOAD
+      "https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp"
+      ${NLOHMANN_JSON_HPP_DL}
+      SHOW_PROGRESS
+    )
+  endif()
 endif()
 
 # -----------------------------------------------------------------------------------------------------------
 # toml++
 
+option(USE_SYSTEM_TOMLPLUSPLUS "Use system-provided toml++ if available" OFF)
+
 message(STATUS "Checking for toml++ header file")
 
-set(TOMLPLUSPLUS_HPP "${CMAKE_SOURCE_DIR}/external/toml.hpp")
-
-if(NOT EXISTS ${TOMLPLUSPLUS_HPP})
-  message(STATUS "Downloading toml.hpp")
-  file(
-    DOWNLOAD
-    "https://raw.githubusercontent.com/marzer/tomlplusplus/master/toml.hpp"
-    ${TOMLPLUSPLUS_HPP}
-    SHOW_PROGRESS
-  )
+if(USE_SYSTEM_TOMLPLUSPLUS)
+  # i.e. specified by user as:
+  # `cmake -DUSE_SYSTEM_TOMLPLUSPLUS=ON -DTOMLPLUSPLUS_HPP=/path/to/toml.hpp <args>`
+  set(TOMLPLUSPLUS_HPP "" CACHE FILEPATH "Path to toml.hpp")
+  if(EXISTS ${TOMLPLUSPLUS_HPP})
+    message(STATUS "Copying ${TOMLPLUSPLUS_HPP} -> ${CMAKE_SOURCE_DIR}/external")
+    file(COPY ${TOMLPLUSPLUS_HPP} DESTINATION "${CMAKE_SOURCE_DIR}/external")
+  else()
+    message(FATAL_ERROR "The file '${TOMLPLUSPLUS_HPP}' does not exist!")
+  endif()
 else()
-  message(STATUS "toml.hpp already exists. Skipping download")
+  set(TOMLPLUSPLUS_HPP_DL "${CMAKE_SOURCE_DIR}/external/toml.hpp")
+  if(EXISTS ${TOMLPLUSPLUS_HPP_DL})
+    message(STATUS "${TOMLPLUSPLUS_HPP_DL} already exists. Skipping download")
+  else()
+    message(STATUS "Downloading toml.hpp")
+    file(
+      DOWNLOAD
+      "https://raw.githubusercontent.com/marzer/tomlplusplus/master/toml.hpp"
+      ${TOMLPLUSPLUS_HPP_DL}
+      SHOW_PROGRESS
+    )
+  endif()
 endif()
 
 # -----------------------------------------------------------------------------------------------------------
