@@ -73,6 +73,23 @@ artifacts:
 make clean
 ```
 
+#### Using external libraries
+This project uses [toml++](https://marzer.github.io/tomlplusplus/) and
+[json](https://github.com/nlohmann/json). These header files will be downloaded from their respective
+repositories by default. To instead specify paths to external header files, the project can instead be
+compiled with definitions, for example:
+```console
+# i.e. use a custom toml.hpp under /tmp
+cmake -DUSE_SYSTEM_TOMLPLUSPLUS=ON -DTOMLPLUSPLUS_HPP=/tmp/toml.hpp -S GPTifier -B /tmp/build && make -j12
+-C /tmp/build install
+```
+And:
+```console
+# i.e. use a custom json.hpp under /tmp
+cmake -DUSE_SYSTEM_NLOHMANN_JSON=ON -DNLOHMANN_JSON_HPP=/tmp/json.hpp -S GPTifier -B /tmp/build && make -j12
+-C /tmp/build install
+```
+
 ### Step 2: Run the setup script
 This project requires a specific "project directory" (`~/.gptifier`). Set it up by running:
 ```console
