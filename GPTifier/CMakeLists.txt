@@ -25,20 +25,33 @@ endif()
 # -----------------------------------------------------------------------------------------------------------
 # nlohmann/json.hpp
 
+option(USE_SYSTEM_NLOHMANN_JSON "Use system-provided nlohmann/json.hpp if available" OFF)
+
 message(STATUS "Checking for nlohmann/json.hpp")
 
-set(NLOHMANN_JSON_HPP "${CMAKE_SOURCE_DIR}/external/json.hpp")
-
-if(NOT EXISTS ${NLOHMANN_JSON_HPP})
-  message(STATUS "Downloading nlohmann/json.hpp")
-  file(
-    DOWNLOAD
-    "https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp"
-    ${NLOHMANN_JSON_HPP}
-    SHOW_PROGRESS
-  )
+if(USE_SYSTEM_NLOHMANN_JSON)
+  # i.e. specified by user as:
+  # `cmake -DUSE_SYSTEM_NLOHMANN_JSON=ON -DNLOHMANN_JSON_HPP=/path/to/json.hpp <args>`
+  set(NLOHMANN_JSON_HPP "" CACHE FILEPATH "Path to nlohmann/json.hpp")
+  if(EXISTS ${NLOHMANN_JSON_HPP})
+    message(STATUS "Copying ${NLOHMANN_JSON_HPP} -> ${CMAKE_SOURCE_DIR}/external")
+    file(COPY ${NLOHMANN_JSON_HPP} DESTINATION "${CMAKE_SOURCE_DIR}/external")
+  else()
+    message(FATAL_ERROR "The file '${NLOHMANN_JSON_HPP}' does not exist!")
+  endif()
 else()
-  message(STATUS "nlohmann/json.hpp already exists. Skipping download")
+  set(NLOHMANN_JSON_HPP "${CMAKE_SOURCE_DIR}/external/json.hpp")
+  if(EXISTS ${NLOHMANN_JSON_HPP})
+    message(STATUS "${NLOHMANN_JSON_HPP} already exists. Skipping download")
+  else()
+    message(STATUS "Downloading nlohmann/json.hpp")
+    file(
+      DOWNLOAD
+      "https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp"
+      ${NLOHMANN_JSON_HPP}
+      SHOW_PROGRESS
+    )
+  endif()
 endif()
 
 # -----------------------------------------------------------------------------------------------------------
