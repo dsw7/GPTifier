@@ -80,14 +80,12 @@ repositories by default. To instead specify paths to external header files, the 
 compiled with definitions, for example:
 ```console
 # i.e. use a custom toml.hpp under /tmp
-cmake -DUSE_SYSTEM_TOMLPLUSPLUS=ON -DTOMLPLUSPLUS_HPP=/tmp/toml.hpp -S GPTifier -B /tmp/build && make -j12
--C /tmp/build install
+cmake -DUSE_SYSTEM_TOMLPLUSPLUS=ON -DTOMLPLUSPLUS_HPP=/tmp/toml.hpp -S GPTifier -B /tmp/build && make -j12 -C /tmp/build install
 ```
 And:
 ```console
 # i.e. use a custom json.hpp under /tmp
-cmake -DUSE_SYSTEM_NLOHMANN_JSON=ON -DNLOHMANN_JSON_HPP=/tmp/json.hpp -S GPTifier -B /tmp/build && make -j12
--C /tmp/build install
+cmake -DUSE_SYSTEM_NLOHMANN_JSON=ON -DNLOHMANN_JSON_HPP=/tmp/json.hpp -S GPTifier -B /tmp/build && make -j12 -C /tmp/build install
 ```
 
 ### Step 2: Run the setup script
