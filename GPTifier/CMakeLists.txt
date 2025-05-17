@@ -40,15 +40,15 @@ if(USE_SYSTEM_NLOHMANN_JSON)
     message(FATAL_ERROR "The file '${NLOHMANN_JSON_HPP}' does not exist!")
   endif()
 else()
-  set(NLOHMANN_JSON_HPP "${CMAKE_SOURCE_DIR}/external/json.hpp")
-  if(EXISTS ${NLOHMANN_JSON_HPP})
-    message(STATUS "${NLOHMANN_JSON_HPP} already exists. Skipping download")
+  set(NLOHMANN_JSON_HPP_DL "${CMAKE_SOURCE_DIR}/external/json.hpp")
+  if(EXISTS ${NLOHMANN_JSON_HPP_DL})
+    message(STATUS "${NLOHMANN_JSON_HPP_DL} already exists. Skipping download")
   else()
     message(STATUS "Downloading nlohmann/json.hpp")
     file(
       DOWNLOAD
       "https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp"
-      ${NLOHMANN_JSON_HPP}
+      ${NLOHMANN_JSON_HPP_DL}
       SHOW_PROGRESS
     )
   endif()
@@ -72,15 +72,15 @@ if(USE_SYSTEM_TOMLPLUSPLUS)
     message(FATAL_ERROR "The file '${TOMLPLUSPLUS_HPP}' does not exist!")
   endif()
 else()
-  set(TOMLPLUSPLUS_HPP "${CMAKE_SOURCE_DIR}/external/toml.hpp")
-  if(EXISTS ${TOMLPLUSPLUS_HPP})
-    message(STATUS "${TOMLPLUSPLUS_HPP} already exists. Skipping download")
+  set(TOMLPLUSPLUS_HPP_DL "${CMAKE_SOURCE_DIR}/external/toml.hpp")
+  if(EXISTS ${TOMLPLUSPLUS_HPP_DL})
+    message(STATUS "${TOMLPLUSPLUS_HPP_DL} already exists. Skipping download")
   else()
     message(STATUS "Downloading toml.hpp")
     file(
       DOWNLOAD
       "https://raw.githubusercontent.com/marzer/tomlplusplus/master/toml.hpp"
-      ${TOMLPLUSPLUS_HPP}
+      ${TOMLPLUSPLUS_HPP_DL}
       SHOW_PROGRESS
     )
   endif()
