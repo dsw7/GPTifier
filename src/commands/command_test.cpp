@@ -5,7 +5,9 @@
 #include <fmt/core.h>
 #include <stdexcept>
 
-void command_test(int argc, char **argv)
+namespace commands {
+
+void run_tests(int argc, char **argv)
 {
     if (argc < 3) {
         throw std::runtime_error("Usage: gpt test (<target>)");
@@ -21,3 +23,5 @@ void command_test(int argc, char **argv)
         throw std::runtime_error("Unknown test target: " + target);
     }
 }
+
+} // namespace commands

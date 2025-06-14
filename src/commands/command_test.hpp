@@ -1,3 +1,5 @@
 #pragma once
 
-void command_test(int argc, char **argv);
+namespace commands {
+void run_tests(int argc, char **argv);
+}

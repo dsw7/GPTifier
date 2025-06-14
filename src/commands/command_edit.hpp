@@ -1,3 +1,5 @@
 #pragma once
 
-void command_edit(int argc, char **argv);
+namespace commands {
+void edit_file(int argc, char **argv);
+}

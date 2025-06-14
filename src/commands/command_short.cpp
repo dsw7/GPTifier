@@ -92,7 +92,9 @@ std::string get_model()
 
 } // namespace
 
-void command_short(int argc, char **argv)
+namespace commands {
+
+void create_cli_friendly_chat_completion(int argc, char **argv)
 {
     Params params;
     read_cli(argc, argv, params);
@@ -120,3 +122,5 @@ void command_short(int argc, char **argv)
 
     fmt::print("{}\n", cc.completion);
 }
+
+} // namespace commands

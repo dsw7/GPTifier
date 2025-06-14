@@ -101,7 +101,9 @@ void print_models(std::vector<Model> &models)
 
 } // namespace
 
-void command_models(int argc, char **argv)
+namespace commands {
+
+void list_models(int argc, char **argv)
 {
     Params params;
     read_cli(argc, argv, params);
@@ -123,3 +125,5 @@ void command_models(int argc, char **argv)
 
     print_models(filtered_models);
 }
+
+} // namespace commands

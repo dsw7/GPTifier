@@ -95,7 +95,9 @@ void print_results(const Costs &costs, int days)
 
 } // namespace
 
-void command_costs(int argc, char **argv)
+namespace commands {
+
+void list_costs(int argc, char **argv)
 {
     Params params;
     read_cli(argc, argv, params);
@@ -121,3 +123,5 @@ void command_costs(int argc, char **argv)
 
     print_results(costs, days);
 }
+
+} // namespace commands

@@ -1,3 +1,5 @@
 #pragma once
 
-void command_embed(int argc, char **argv);
+namespace commands {
+void get_embedding(int argc, char **argv);
+}

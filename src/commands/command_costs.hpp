@@ -1,3 +1,5 @@
 #pragma once
 
-void command_costs(int argc, char **argv);
+namespace commands {
+void list_costs(int argc, char **argv);
+}

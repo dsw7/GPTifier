@@ -1,3 +1,5 @@
 #pragma once
 
-void command_models(int argc, char **argv);
+namespace commands {
+void list_models(int argc, char **argv);
+}

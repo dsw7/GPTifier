@@ -93,7 +93,7 @@ void print_files(const Files &files)
     utils::separator();
 }
 
-void command_files_list(int argc, char **argv)
+void list_files(int argc, char **argv)
 {
     bool print_raw_json = read_cli(argc, argv);
 
@@ -134,7 +134,7 @@ bool delete_files(const std::vector<std::string> &ids)
     return success;
 }
 
-void command_files_delete(int argc, char **argv)
+void delete_uploaded_files(int argc, char **argv)
 {
     if (argc < 4) {
         help_files_delete();
@@ -159,10 +159,12 @@ void command_files_delete(int argc, char **argv)
 
 } // namespace
 
-void command_files(int argc, char **argv)
+namespace commands {
+
+void manage_files(int argc, char **argv)
 {
     if (argc == 2) {
-        command_files_list(argc, argv);
+        list_files(argc, argv);
         return;
     }
 
@@ -174,11 +176,13 @@ void command_files(int argc, char **argv)
     }
 
     if (subcommand == "list") {
-        command_files_list(argc, argv);
+        list_files(argc, argv);
     } else if (subcommand == "delete") {
-        command_files_delete(argc, argv);
+        delete_uploaded_files(argc, argv);
     } else {
         help_files();
         exit(EXIT_FAILURE);
     }
 }
+
+} // namespace commands

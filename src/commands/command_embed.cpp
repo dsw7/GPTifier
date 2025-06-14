@@ -105,7 +105,9 @@ void export_embedding(const Embedding &em, const std::optional<std::string> &out
 
 } // namespace
 
-void command_embed(int argc, char **argv)
+namespace commands {
+
+void get_embedding(int argc, char **argv)
 {
     Params params;
     read_cli(argc, argv, params);
@@ -140,3 +142,5 @@ void command_embed(int argc, char **argv)
 
     utils::separator();
 }
+
+} // namespace commands

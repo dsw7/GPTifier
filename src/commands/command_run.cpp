@@ -306,7 +306,9 @@ void export_chat_completion_response(const ChatCompletion &completion)
 
 } // namespace
 
-void command_run(int argc, char **argv)
+namespace commands {
+
+void create_chat_completion(int argc, char **argv)
 {
     Params params;
     read_cli(argc, argv, params);
@@ -365,3 +367,5 @@ void command_run(int argc, char **argv)
         utils::separator();
     }
 }
+
+} // namespace commands

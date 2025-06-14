@@ -276,7 +276,9 @@ void apply_transformation(const Params &params)
 
 } // namespace
 
-void command_edit(int argc, char **argv)
+namespace commands {
+
+void edit_file(int argc, char **argv)
 {
     Params params;
     read_cli(argc, argv, params);
@@ -291,3 +293,5 @@ void command_edit(int argc, char **argv)
 
     apply_transformation(params);
 }
+
+} // namespace commands

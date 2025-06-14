@@ -1,3 +1,5 @@
 #pragma once
 
-void command_short(int argc, char **argv);
+namespace commands {
+void create_cli_friendly_chat_completion(int argc, char **argv);
+}

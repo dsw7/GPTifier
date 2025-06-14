@@ -96,7 +96,7 @@ void print_chat_completions(const ChatCompletions &ccs)
     utils::separator();
 }
 
-void command_chats_list(int argc, char **argv)
+void list_chat_completions(int argc, char **argv)
 {
     Params params;
     read_cli_list_cc(argc, argv, params);
@@ -143,7 +143,7 @@ bool delete_chats(const std::vector<std::string> &ids)
     return success;
 }
 
-void command_chats_delete(int argc, char **argv)
+void delete_chat_completions(int argc, char **argv)
 {
     if (argc < 4) {
         help_chats_delete();
@@ -168,10 +168,12 @@ void command_chats_delete(int argc, char **argv)
 
 } // namespace
 
-void command_chats(int argc, char **argv)
+namespace commands {
+
+void manage_chat_completions(int argc, char **argv)
 {
     if (argc == 2) {
-        command_chats_list(argc, argv);
+        list_chat_completions(argc, argv);
         return;
     }
 
@@ -183,11 +185,13 @@ void command_chats(int argc, char **argv)
     }
 
     if (subcommand == "list") {
-        command_chats_list(argc, argv);
+        list_chat_completions(argc, argv);
     } else if (subcommand == "delete") {
-        command_chats_delete(argc, argv);
+        delete_chat_completions(argc, argv);
     } else {
         help_chats();
         exit(EXIT_FAILURE);
     }
 }
+
+} // namespace commands

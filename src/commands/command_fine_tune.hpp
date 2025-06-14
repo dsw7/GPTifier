@@ -1,3 +1,5 @@
 #pragma once
 
-void command_fine_tune(int argc, char **argv);
+namespace commands {
+void manage_fine_tuning_jobs(int argc, char **argv);
+}

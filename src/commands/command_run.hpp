@@ -1,3 +1,5 @@
 #pragma once
 
-void command_run(int argc, char **argv);
+namespace commands {
+void create_chat_completion(int argc, char **argv);
+}
