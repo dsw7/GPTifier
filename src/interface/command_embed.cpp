@@ -1,13 +1,13 @@
-#include "interface/command_embed.hpp"
+#include "command_embed.hpp"
 
 #include "configs.hpp"
 #include "datadir.hpp"
-#include "interface/help_messages.hpp"
-#include "serialization/embeddings.hpp"
+#include "embeddings.hpp"
+#include "help_messages.hpp"
 #include "utils.hpp"
-#include <getopt.h>
 
 #include <fmt/core.h>
+#include <getopt.h>
 #include <iostream>
 #include <json.hpp>
 #include <optional>

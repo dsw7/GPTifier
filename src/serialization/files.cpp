@@ -1,7 +1,7 @@
-#include "serialization/files.hpp"
+#include "files.hpp"
 
-#include "networking/api_openai_user.hpp"
-#include "serialization/response_to_json.hpp"
+#include "api_openai_user.hpp"
+#include "response_to_json.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>

@@ -1,4 +1,4 @@
-#include "networking/api_openai_user.hpp"
+#include "api_openai_user.hpp"
 
 #include "configs.hpp"
 

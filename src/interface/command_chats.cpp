@@ -1,7 +1,7 @@
-#include "interface/command_chats.hpp"
+#include "command_chats.hpp"
 
-#include "interface/help_messages.hpp"
-#include "serialization/chat_completions.hpp"
+#include "chat_completions.hpp"
+#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
