@@ -4,6 +4,8 @@ BUILD_DIR = build
 BUILD_DIR_PROD = $(BUILD_DIR)/prod
 BUILD_DIR_TEST = $(BUILD_DIR)/test
 
+SRCS = $(shell find src -type f \( -name "*.cpp" -o -name "*.hpp" \) ! -path "src/external/*")
+
 define HELP_LIST_TARGETS
 To compile production binary:
     $$ make
@@ -24,28 +26,26 @@ endef
 export HELP_LIST_TARGETS
 
 compile-prod:
-	@cmake -S GPTifier -B $(BUILD_DIR_PROD)
+	@cmake -S src -B $(BUILD_DIR_PROD)
 	@make --jobs=12 --directory=$(BUILD_DIR_PROD) install
 
 help:
 	@echo "$$HELP_LIST_TARGETS"
 
 format:
-	@clang-format -i --verbose --style=file \
-		GPTifier/src/*.cpp GPTifier/src/*/*.cpp \
-		GPTifier/include/*.hpp GPTifier/include/*/*.hpp
+	@clang-format -i --verbose --style=file $(SRCS)
 
 compile: format compile-prod
 
 compile-test: format # Private target
-	@cmake -S GPTifier -B $(BUILD_DIR_TEST) -DENABLE_TESTING=ON
+	@cmake -S src -B $(BUILD_DIR_TEST) -DENABLE_TESTING=ON
 	@make --jobs=12 --directory=$(BUILD_DIR_TEST)
 
 clean:
 	@rm -rfv $(BUILD_DIR)
 
 lint:
-	@cppcheck GPTifier --enable=all
+	@cppcheck src --enable=all
 
 test: export PATH_BIN = $(CURDIR)/$(BUILD_DIR_TEST)/gpt
 test: compile-test
