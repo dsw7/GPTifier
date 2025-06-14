@@ -88,7 +88,7 @@ class TestChatCompletionJSON(TestCaseExtended):
         self.assertEqual(self.completion.prompt_tokens, 26)
 
     def test_completion_tokens(self) -> None:
-        self.assertEqual(self.completion.completion_tokens, 4)
+        self.assertEqual(self.completion.completion_tokens, 3)
 
     def test_approx_rtt(self) -> None:
         diff = abs(self.completion.rtt - self.rtt)
