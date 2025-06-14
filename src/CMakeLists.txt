@@ -101,7 +101,7 @@ include_directories(${CMAKE_SOURCE_DIR} external)
 
 add_subdirectory(networking)
 add_subdirectory(serialization)
-add_subdirectory(interface)
+add_subdirectory(commands)
 
 add_executable(
   gpt
@@ -111,8 +111,8 @@ add_executable(
   utils.cpp
 )
 
-target_include_directories(gpt PRIVATE interface networking serialization)
-target_link_libraries(gpt PRIVATE fmt::fmt _interface)
+target_include_directories(gpt PRIVATE commands networking serialization)
+target_link_libraries(gpt PRIVATE fmt::fmt _commands)
 
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local")
 install(TARGETS gpt DESTINATION bin)

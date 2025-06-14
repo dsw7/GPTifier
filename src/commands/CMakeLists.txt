@@ -1,5 +1,5 @@
 add_library(
-  _interface
+  _commands
   command_chats.cpp
   command_costs.cpp
   command_edit.cpp
@@ -9,9 +9,10 @@ add_library(
   command_models.cpp
   command_run.cpp
   command_short.cpp
+  command_test.cpp
   help_messages.cpp
 )
 
-target_include_directories(_interface PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(_commands PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(_interface PRIVATE _serialization pthread)
+target_link_libraries(_commands PRIVATE _serialization _networking pthread)

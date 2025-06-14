@@ -7,6 +7,7 @@
 #include "command_models.hpp"
 #include "command_run.hpp"
 #include "command_short.hpp"
+#include "command_test.hpp"
 #include "configs.hpp"
 #include "help_messages.hpp"
 
@@ -95,6 +96,8 @@ int main(int argc, char **argv)
             command_chats(argc, argv);
         } else if (command == "edit") {
             command_edit(argc, argv);
+        } else if (command == "test") {
+            command_test(argc, argv);
         } else {
             throw std::runtime_error("Received unknown command. Re-run with -h or --help");
         }
