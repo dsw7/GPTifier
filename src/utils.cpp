@@ -28,8 +28,7 @@ namespace utils {
 void separator()
 {
     static short columns = get_terminal_columns();
-    static std::string separator = std::string(columns, '-');
-    fmt::print("{}\n", separator);
+    fmt::print("{:─^{}}\n", "", columns);
 }
 
 std::string read_from_file(const std::string &filename)
