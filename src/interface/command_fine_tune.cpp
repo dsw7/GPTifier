@@ -1,6 +1,5 @@
 #include "command_fine_tune.hpp"
 
-#include "api_openai_user.hpp"
 #include "files.hpp"
 #include "fine_tuning.hpp"
 #include "help_messages.hpp"
