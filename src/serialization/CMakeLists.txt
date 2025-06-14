@@ -7,6 +7,7 @@ add_library(
   fine_tuning.cpp
   models.cpp
   response_to_json.cpp
+  testing.cpp
 ) 
 
 target_include_directories(_serialization PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

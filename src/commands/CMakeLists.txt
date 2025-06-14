@@ -15,4 +15,4 @@ add_library(
 
 target_include_directories(_commands PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(_commands PRIVATE _serialization _networking pthread)
+target_link_libraries(_commands PRIVATE _serialization pthread)
