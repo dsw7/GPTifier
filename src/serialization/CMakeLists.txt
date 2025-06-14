@@ -1,5 +1,5 @@
 add_library(
-  lib_serialization
+  _serialization
   chat_completions.cpp
   costs.cpp
   embeddings.cpp
@@ -9,6 +9,6 @@ add_library(
   response_to_json.cpp
 ) 
 
-target_include_directories(lib_serialization PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(_serialization PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(lib_serialization PRIVATE lib_networking)
+target_link_libraries(_serialization PRIVATE _networking)

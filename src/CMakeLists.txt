@@ -112,7 +112,7 @@ add_executable(
 )
 
 target_include_directories(gpt PRIVATE interface networking serialization)
-target_link_libraries(gpt PRIVATE fmt::fmt lib_interface)
+target_link_libraries(gpt PRIVATE fmt::fmt _interface)
 
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local")
 install(TARGETS gpt DESTINATION bin)
