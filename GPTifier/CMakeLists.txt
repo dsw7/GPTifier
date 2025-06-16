@@ -102,6 +102,7 @@ include_directories(
   "external"
   "include"
   src/serialization
+  src/networking
 )
 add_executable(
   "gpt"

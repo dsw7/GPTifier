@@ -1,6 +1,6 @@
 #include "embeddings.hpp"
 
-#include "networking/api_openai_user.hpp"
+#include "api_openai_user.hpp"
 #include "response_to_json.hpp"
 
 #include <fmt/core.h>

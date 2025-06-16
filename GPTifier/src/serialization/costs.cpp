@@ -1,6 +1,6 @@
 #include "costs.hpp"
 
-#include "networking/api_openai_admin.hpp"
+#include "api_openai_admin.hpp"
 #include "response_to_json.hpp"
 
 #include <fmt/core.h>

@@ -1,10 +1,10 @@
 #include "interface/command_fine_tune.hpp"
 
+#include "api_openai_user.hpp"
 #include "files.hpp"
 #include "fine_tuning.hpp"
 #include "interface/help_messages.hpp"
 #include "models.hpp"
-#include "networking/api_openai_user.hpp"
 #include "utils.hpp"
 
 #include <algorithm>

@@ -1,4 +1,4 @@
-#include "networking/curl_base.hpp"
+#include "curl_base.hpp"
 
 #include <stdexcept>
 
