@@ -33,7 +33,7 @@ help:
 format:
 	@clang-format -i --verbose --style=file \
 		GPTifier/src/*.cpp GPTifier/src/*/*.cpp \
-		GPTifier/include/*.hpp GPTifier/include/*/*.hpp
+		GPTifier/src/*.hpp GPTifier/src/*/*.hpp
 
 compile: format compile-prod
 
