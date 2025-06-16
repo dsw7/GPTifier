@@ -99,45 +99,41 @@ endif()
 # -----------------------------------------------------------------------------------------------------------
 
 include_directories(
-  "external"
-  "include"
-  src/serialization
+  external
+  src
+  src/interface
   src/networking
+  src/serialization
 )
 add_executable(
-  "gpt"
-  "src/configs.cpp"
-  "src/datadir.cpp"
-  "src/interface/command_chats.cpp"
-  "src/interface/command_costs.cpp"
-  "src/interface/command_edit.cpp"
-  "src/interface/command_embed.cpp"
-  "src/interface/command_files.cpp"
-  "src/interface/command_fine_tune.cpp"
-  "src/interface/command_models.cpp"
-  "src/interface/command_run.cpp"
-  "src/interface/command_short.cpp"
-  "src/interface/command_test.cpp"
-  "src/interface/help_messages.cpp"
-  "src/main.cpp"
-  "src/networking/api_openai_admin.cpp"
-  "src/networking/api_openai_user.cpp"
-  "src/networking/curl_base.cpp"
-  "src/serialization/chat_completions.cpp"
-  "src/serialization/costs.cpp"
-  "src/serialization/embeddings.cpp"
-  "src/serialization/files.cpp"
-  "src/serialization/fine_tuning.cpp"
-  "src/serialization/models.cpp"
-  "src/serialization/response_to_json.cpp"
-  "src/utils.cpp"
+  gpt
+  src/configs.cpp
+  src/datadir.cpp
+  src/interface/command_chats.cpp
+  src/interface/command_costs.cpp
+  src/interface/command_edit.cpp
+  src/interface/command_embed.cpp
+  src/interface/command_files.cpp
+  src/interface/command_fine_tune.cpp
+  src/interface/command_models.cpp
+  src/interface/command_run.cpp
+  src/interface/command_short.cpp
+  src/interface/command_test.cpp
+  src/interface/help_messages.cpp
+  src/main.cpp
+  src/networking/api_openai_admin.cpp
+  src/networking/api_openai_user.cpp
+  src/networking/curl_base.cpp
+  src/serialization/chat_completions.cpp
+  src/serialization/costs.cpp
+  src/serialization/embeddings.cpp
+  src/serialization/files.cpp
+  src/serialization/fine_tuning.cpp
+  src/serialization/models.cpp
+  src/serialization/response_to_json.cpp
+  src/utils.cpp
 )
-target_link_libraries(
-  "gpt"
-  "curl"
-  "pthread"
-  "fmt::fmt"
-)
+target_link_libraries(gpt curl pthread fmt::fmt)
 
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local")
-install(TARGETS "gpt" DESTINATION "bin")
+install(TARGETS gpt DESTINATION bin)
