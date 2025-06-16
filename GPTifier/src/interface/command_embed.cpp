@@ -1,9 +1,9 @@
-#include "interface/command_embed.hpp"
+#include "command_embed.hpp"
 
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "embeddings.hpp"
-#include "interface/help_messages.hpp"
+#include "help_messages.hpp"
 #include "utils.hpp"
 #include <getopt.h>
 

@@ -1,8 +1,8 @@
-#include "interface/command_edit.hpp"
+#include "command_edit.hpp"
 
 #include "chat_completions.hpp"
 #include "configs.hpp"
-#include "interface/help_messages.hpp"
+#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <cstring>

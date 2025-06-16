@@ -1,4 +1,4 @@
-#include "interface/help_messages.hpp"
+#include "help_messages.hpp"
 
 #include "utils.hpp"
 

@@ -1,8 +1,8 @@
-#include "interface/command_short.hpp"
+#include "command_short.hpp"
 
 #include "chat_completions.hpp"
 #include "configs.hpp"
-#include "interface/help_messages.hpp"
+#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>

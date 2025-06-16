@@ -1,4 +1,4 @@
-#include "interface/command_test.hpp"
+#include "command_test.hpp"
 
 #include "api_openai_user.hpp"
 #include "response_to_json.hpp"
