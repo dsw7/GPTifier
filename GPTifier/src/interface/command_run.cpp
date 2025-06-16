@@ -1,9 +1,9 @@
 #include "interface/command_run.hpp"
 
+#include "chat_completions.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "interface/help_messages.hpp"
-#include "serialization/chat_completions.hpp"
 #include "utils.hpp"
 
 #include <atomic>

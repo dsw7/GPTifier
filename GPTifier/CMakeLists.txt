@@ -101,6 +101,7 @@ endif()
 include_directories(
   "external"
   "include"
+  src/serialization
 )
 add_executable(
   "gpt"

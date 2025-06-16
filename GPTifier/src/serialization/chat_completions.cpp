@@ -1,7 +1,7 @@
-#include "serialization/chat_completions.hpp"
+#include "chat_completions.hpp"
 
 #include "networking/api_openai_user.hpp"
-#include "serialization/response_to_json.hpp"
+#include "response_to_json.hpp"
 
 #include <fmt/core.h>
 

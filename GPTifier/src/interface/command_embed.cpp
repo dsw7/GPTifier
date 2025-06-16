@@ -2,8 +2,8 @@
 
 #include "configs.hpp"
 #include "datadir.hpp"
+#include "embeddings.hpp"
 #include "interface/help_messages.hpp"
-#include "serialization/embeddings.hpp"
 #include "utils.hpp"
 #include <getopt.h>
 

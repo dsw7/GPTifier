@@ -1,7 +1,7 @@
-#include "serialization/fine_tuning.hpp"
+#include "fine_tuning.hpp"
 
 #include "networking/api_openai_user.hpp"
-#include "serialization/response_to_json.hpp"
+#include "response_to_json.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>

@@ -1,7 +1,7 @@
 #include "interface/command_costs.hpp"
 
+#include "costs.hpp"
 #include "interface/help_messages.hpp"
-#include "serialization/costs.hpp"
 #include "utils.hpp"
 
 #include <algorithm>
