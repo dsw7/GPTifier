@@ -1,4 +1,4 @@
-#include "networking/api_openai_admin.hpp"
+#include "api_openai_admin.hpp"
 
 #include "configs.hpp"
 
@@ -31,6 +31,8 @@ namespace endpoints {
 const std::string URL_ORGANIZATION = "https://api.openai.com/v1/organization";
 
 } // namespace endpoints
+
+namespace networking {
 
 void OpenAIAdmin::reset_handle()
 {
@@ -79,3 +81,5 @@ std::string OpenAIAdmin::get_users(int limit)
     this->run_easy_perform();
     return response;
 }
+
+} // namespace networking

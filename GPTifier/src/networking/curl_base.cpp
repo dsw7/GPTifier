@@ -1,4 +1,4 @@
-#include "networking/curl_base.hpp"
+#include "curl_base.hpp"
 
 #include <stdexcept>
 
@@ -11,6 +11,8 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
 }
 
 } // namespace
+
+namespace networking {
 
 CurlBase::CurlBase()
 {
@@ -79,3 +81,5 @@ void CurlBase::run_easy_perform()
         throw std::runtime_error(curl_easy_strerror(code));
     }
 }
+
+} // namespace networking

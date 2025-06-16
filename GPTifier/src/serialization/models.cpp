@@ -1,12 +1,14 @@
-#include "serialization/models.hpp"
+#include "models.hpp"
 
-#include "networking/api_openai_user.hpp"
-#include "serialization/response_to_json.hpp"
+#include "api_openai_user.hpp"
+#include "response_to_json.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
+
+namespace serialization {
 
 namespace {
 
@@ -47,7 +49,7 @@ Models unpack_response(const std::string &response)
 
 Models get_models()
 {
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string response = api.get_models();
 
     Models models = unpack_response(response);
@@ -57,7 +59,7 @@ Models get_models()
 
 bool delete_model(const std::string &model_id)
 {
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string response = api.delete_model(model_id);
     const nlohmann::json json = response_to_json(response);
 
@@ -67,3 +69,5 @@ bool delete_model(const std::string &model_id)
 
     return json["deleted"];
 }
+
+} // namespace serialization

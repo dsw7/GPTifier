@@ -1,11 +1,13 @@
-#include "serialization/files.hpp"
+#include "files.hpp"
 
-#include "networking/api_openai_user.hpp"
-#include "serialization/response_to_json.hpp"
+#include "api_openai_user.hpp"
+#include "response_to_json.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
+
+namespace serialization {
 
 namespace {
 
@@ -42,7 +44,7 @@ Files unpack_response(const std::string &response)
 
 Files get_files()
 {
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string response = api.get_uploaded_files();
 
     Files files = unpack_response(response);
@@ -52,7 +54,7 @@ Files get_files()
 
 bool delete_file(const std::string &file_id)
 {
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string response = api.delete_file(file_id);
 
     const nlohmann::json json = response_to_json(response);
@@ -66,7 +68,7 @@ bool delete_file(const std::string &file_id)
 
 std::string upload_file(const std::string &filename)
 {
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string purpose = "fine-tune";
     const std::string response = api.upload_file(filename, purpose);
 
@@ -78,3 +80,5 @@ std::string upload_file(const std::string &filename)
 
     return json["id"];
 }
+
+} // namespace serialization

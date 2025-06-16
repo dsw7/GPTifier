@@ -1,11 +1,13 @@
-#include "serialization/costs.hpp"
+#include "costs.hpp"
 
-#include "networking/api_openai_admin.hpp"
-#include "serialization/response_to_json.hpp"
+#include "api_openai_admin.hpp"
+#include "response_to_json.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
+
+namespace serialization {
 
 namespace {
 
@@ -50,10 +52,12 @@ Costs unpack_response(const std::string &response)
 
 Costs get_costs(std::time_t start_time, int limit)
 {
-    OpenAIAdmin api;
+    networking::OpenAIAdmin api;
     const std::string response = api.get_costs(start_time, limit);
 
     Costs costs = unpack_response(response);
     costs.raw_response = response;
     return costs;
 }
+
+} // namespace serialization
