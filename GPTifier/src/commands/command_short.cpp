@@ -92,6 +92,8 @@ std::string get_model()
 
 } // namespace
 
+namespace commands {
+
 void command_short(int argc, char **argv)
 {
     Params params;
@@ -120,3 +122,5 @@ void command_short(int argc, char **argv)
 
     fmt::print("{}\n", cc.completion);
 }
+
+} // namespace commands

@@ -50,6 +50,8 @@ void test_create_chat_completion_api()
 
 } // namespace
 
+namespace commands {
+
 void command_test(int argc, char **argv)
 {
     if (argc < 3) {
@@ -66,3 +68,5 @@ void command_test(int argc, char **argv)
         throw std::runtime_error("Unknown test target: " + target);
     }
 }
+
+} // namespace commands

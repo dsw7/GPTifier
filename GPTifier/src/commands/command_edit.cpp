@@ -276,6 +276,8 @@ void apply_transformation(const Params &params)
 
 } // namespace
 
+namespace commands {
+
 void command_edit(int argc, char **argv)
 {
     Params params;
@@ -291,3 +293,5 @@ void command_edit(int argc, char **argv)
 
     apply_transformation(params);
 }
+
+} // namespace commands

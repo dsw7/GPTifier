@@ -79,25 +79,25 @@ int main(int argc, char **argv)
 
     try {
         if (command == "run") {
-            command_run(argc, argv);
+            commands::command_run(argc, argv);
         } else if (command == "short") {
-            command_short(argc, argv);
+            commands::command_short(argc, argv);
         } else if (command == "models") {
-            command_models(argc, argv);
+            commands::command_models(argc, argv);
         } else if (command == "embed") {
-            command_embed(argc, argv);
+            commands::command_embed(argc, argv);
         } else if (command == "files") {
-            command_files(argc, argv);
+            commands::command_files(argc, argv);
         } else if (command == "fine-tune") {
-            command_fine_tune(argc, argv);
+            commands::command_fine_tune(argc, argv);
         } else if (command == "costs") {
-            command_costs(argc, argv);
+            commands::command_costs(argc, argv);
         } else if (command == "chats") {
-            command_chats(argc, argv);
+            commands::command_chats(argc, argv);
         } else if (command == "edit") {
-            command_edit(argc, argv);
+            commands::command_edit(argc, argv);
         } else if (command == "test") {
-            command_test(argc, argv);
+            commands::command_test(argc, argv);
         } else {
             throw std::runtime_error("Received unknown command. Re-run with -h or --help");
         }

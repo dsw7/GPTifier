@@ -263,6 +263,8 @@ void list_ft_jobs(int argc, char **argv)
 
 } // namespace
 
+namespace commands {
+
 void command_fine_tune(int argc, char **argv)
 {
     if (argc < 3) {
@@ -290,3 +292,5 @@ void command_fine_tune(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 }
+
+} // namespace commands

@@ -95,6 +95,8 @@ void print_results(const Costs &costs, int days)
 
 } // namespace
 
+namespace commands {
+
 void command_costs(int argc, char **argv)
 {
     Params params;
@@ -121,3 +123,5 @@ void command_costs(int argc, char **argv)
 
     print_results(costs, days);
 }
+
+} // namespace commands

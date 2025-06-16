@@ -159,6 +159,8 @@ void command_files_delete(int argc, char **argv)
 
 } // namespace
 
+namespace commands {
+
 void command_files(int argc, char **argv)
 {
     if (argc == 2) {
@@ -182,3 +184,5 @@ void command_files(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 }
+
+} // namespace commands

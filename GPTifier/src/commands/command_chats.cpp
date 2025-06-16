@@ -168,6 +168,8 @@ void command_chats_delete(int argc, char **argv)
 
 } // namespace
 
+namespace commands {
+
 void command_chats(int argc, char **argv)
 {
     if (argc == 2) {
@@ -191,3 +193,5 @@ void command_chats(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 }
+
+} // namespace commands
