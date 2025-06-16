@@ -50,7 +50,7 @@ FineTuningJobs unpack_response(const std::string &response)
 
 FineTuningJobs get_fine_tuning_jobs(const std::string &limit)
 {
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string response = api.get_fine_tuning_jobs(limit);
 
     FineTuningJobs fine_tuning_jobs = unpack_response(response);
@@ -62,7 +62,7 @@ std::string create_fine_tuning_job(const std::string &model, const std::string &
 {
     const nlohmann::json data = { { "model", model }, { "training_file", training_file } };
 
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string response = api.create_fine_tuning_job(data.dump());
 
     const nlohmann::json json = response_to_json(response);

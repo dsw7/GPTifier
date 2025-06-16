@@ -32,7 +32,7 @@ Embedding create_embedding(const std::string &model, const std::string &input)
 {
     const nlohmann::json data = { { "model", model }, { "input", input } };
 
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string response = api.create_embedding(data.dump());
     Embedding embedding = unpack_response(response);
 

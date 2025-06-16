@@ -131,6 +131,7 @@ add_executable(
   src/serialization/fine_tuning.cpp
   src/serialization/models.cpp
   src/serialization/response_to_json.cpp
+  src/serialization/testing.cpp
   src/utils.cpp
 )
 target_link_libraries(gpt curl pthread fmt::fmt)

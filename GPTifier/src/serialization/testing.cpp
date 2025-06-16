@@ -25,7 +25,7 @@ std::string test_curl_handle_is_reusable()
         { "messages", nlohmann::json::array({ messages }) }
     };
 
-    OpenAIUser api;
+    networking::OpenAIUser api;
 
     const std::string dump = data.dump();
     const std::string response_1 = api.create_chat_completion(dump);

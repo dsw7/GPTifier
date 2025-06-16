@@ -47,7 +47,7 @@ Models unpack_response(const std::string &response)
 
 Models get_models()
 {
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string response = api.get_models();
 
     Models models = unpack_response(response);
@@ -57,7 +57,7 @@ Models get_models()
 
 bool delete_model(const std::string &model_id)
 {
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string response = api.delete_model(model_id);
     const nlohmann::json json = response_to_json(response);
 

@@ -28,7 +28,7 @@ void unpack_chat_completions(const nlohmann::json &json, ChatCompletions &ccs)
 
 ChatCompletions get_chat_completions(int limit)
 {
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string response = api.get_chat_completions(limit);
     const nlohmann::json json = response_to_json(response);
 
@@ -60,7 +60,7 @@ ChatCompletion create_chat_completion(const std::string &prompt, const std::stri
         data["metadata"] = { { "prompt", prompt } };
     }
 
-    OpenAIUser api;
+    networking::OpenAIUser api;
 
     auto start = std::chrono::high_resolution_clock::now();
     const std::string response = api.create_chat_completion(data.dump());
@@ -90,7 +90,7 @@ ChatCompletion create_chat_completion(const std::string &prompt, const std::stri
 
 bool delete_chat_completion(const std::string &chat_completion_id)
 {
-    OpenAIUser api;
+    networking::OpenAIUser api;
     const std::string response = api.delete_chat_completion(chat_completion_id);
     const nlohmann::json json = response_to_json(response);
 
