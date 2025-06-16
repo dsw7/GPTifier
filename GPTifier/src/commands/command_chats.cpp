@@ -82,7 +82,7 @@ void read_cli_list_cc(int argc, char **argv, Params &params)
     };
 }
 
-void print_chat_completions(const ChatCompletions &ccs)
+void print_chat_completions(const serialization::ChatCompletions &ccs)
 {
     utils::separator();
     fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
@@ -106,7 +106,7 @@ void command_chats_list(int argc, char **argv)
         throw std::runtime_error("Limit must be greater than 0");
     }
 
-    ChatCompletions ccs = get_chat_completions(limit);
+    serialization::ChatCompletions ccs = serialization::get_chat_completions(limit);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", ccs.raw_response);
@@ -126,7 +126,7 @@ bool delete_chats(const std::vector<std::string> &ids)
         bool deleted = false;
 
         try {
-            deleted = delete_chat_completion(it);
+            deleted = serialization::delete_chat_completion(it);
         } catch (const std::runtime_error &e) {
             fmt::print(stderr, "Failed to delete chat completion with ID: {}. The error was: \"{}\"\n", it, e.what());
             success = false;

@@ -76,7 +76,7 @@ std::time_t get_current_time_minus_days(int days)
     return now - offset;
 }
 
-void print_results(const Costs &costs, int days)
+void print_results(const serialization::Costs &costs, int days)
 {
     utils::separator();
     fmt::print("Overall usage (in USD) over {} days: {}\n", days, costs.total_cost);
@@ -110,14 +110,14 @@ void command_costs(int argc, char **argv)
     std::time_t start_time = get_current_time_minus_days(days);
 
     int limit = 180;
-    Costs costs = get_costs(start_time, limit);
+    serialization::Costs costs = serialization::get_costs(start_time, limit);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", costs.raw_response);
         return;
     }
 
-    std::sort(costs.buckets.begin(), costs.buckets.end(), [](const CostsBucket &left, const CostsBucket &right) {
+    std::sort(costs.buckets.begin(), costs.buckets.end(), [](const serialization::CostsBucket &left, const serialization::CostsBucket &right) {
         return left.start_time < right.start_time;
     });
 

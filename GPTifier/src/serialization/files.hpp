@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+namespace serialization {
+
 struct File {
     int created_at;
     std::string filename;
@@ -18,3 +20,5 @@ struct Files {
 Files get_files();
 bool delete_file(const std::string &file_id);
 std::string upload_file(const std::string &filename);
+
+} // namespace serialization

@@ -113,7 +113,7 @@ void command_short(int argc, char **argv)
     }
 
     const std::string model = get_model();
-    ChatCompletion cc = create_chat_completion(params.prompt.value(), model, temperature, params.store_completion);
+    serialization::ChatCompletion cc = serialization::create_chat_completion(params.prompt.value(), model, temperature, params.store_completion);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", cc.raw_response);

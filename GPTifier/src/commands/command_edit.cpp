@@ -245,9 +245,9 @@ void apply_transformation(const Params &params)
     const std::string input_code = utils::read_from_file(params.input_file.value());
     const std::string prompt = build_prompt(instructions, input_code);
 
-    ChatCompletion cc;
+    serialization::ChatCompletion cc;
     try {
-        cc = create_chat_completion(prompt, model, 1.00, false);
+        cc = serialization::create_chat_completion(prompt, model, 1.00, false);
     } catch (std::runtime_error &e) {
         fmt::print("?\n");
         throw std::runtime_error(e.what());

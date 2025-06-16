@@ -8,6 +8,8 @@
 #include <json.hpp>
 #include <stdexcept>
 
+namespace serialization {
+
 namespace {
 
 bool is_owned_by_openai(const std::string &owned_by)
@@ -67,3 +69,5 @@ bool delete_model(const std::string &model_id)
 
     return json["deleted"];
 }
+
+} // namespace serialization

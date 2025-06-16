@@ -7,6 +7,8 @@
 #include <json.hpp>
 #include <stdexcept>
 
+namespace serialization {
+
 namespace {
 
 void unpack_costs(const nlohmann::json &json, Costs &costs)
@@ -57,3 +59,5 @@ Costs get_costs(std::time_t start_time, int limit)
     costs.raw_response = response;
     return costs;
 }
+
+} // namespace serialization

@@ -7,6 +7,8 @@
 #include <json.hpp>
 #include <stdexcept>
 
+namespace serialization {
+
 namespace {
 
 void unpack_files(const nlohmann::json &json, Files &files)
@@ -78,3 +80,5 @@ std::string upload_file(const std::string &filename)
 
     return json["id"];
 }
+
+} // namespace serialization

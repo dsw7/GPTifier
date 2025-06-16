@@ -5,9 +5,9 @@
 #include "embeddings.hpp"
 #include "help_messages.hpp"
 #include "utils.hpp"
-#include <getopt.h>
 
 #include <fmt/core.h>
+#include <getopt.h>
 #include <iostream>
 #include <json.hpp>
 #include <optional>
@@ -84,7 +84,7 @@ std::string read_text_from_stdin()
     return text;
 }
 
-void export_embedding(const Embedding &em, const std::optional<std::string> &output_file)
+void export_embedding(const serialization::Embedding &em, const std::optional<std::string> &output_file)
 {
     std::string filename;
 
@@ -137,7 +137,7 @@ void command_embed(int argc, char **argv)
         throw std::runtime_error("No model provided via configuration file or command line");
     }
 
-    const Embedding em = create_embedding(model, text_to_embed);
+    const serialization::Embedding em = serialization::create_embedding(model, text_to_embed);
     export_embedding(em, params.output_file);
 
     utils::separator();

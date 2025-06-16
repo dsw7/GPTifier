@@ -6,6 +6,8 @@
 #include <iostream>
 #include <json.hpp>
 
+namespace serialization {
+
 void test_catch_memory_leak()
 {
     int *val = new int(5);
@@ -44,3 +46,5 @@ std::string test_curl_handle_is_reusable()
 
     return results.dump(4);
 }
+
+} // namespace serialization

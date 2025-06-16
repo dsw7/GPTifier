@@ -7,6 +7,8 @@
 #include <json.hpp>
 #include <stdexcept>
 
+namespace serialization {
+
 namespace {
 
 Embedding unpack_response(const std::string &response)
@@ -39,3 +41,5 @@ Embedding create_embedding(const std::string &model, const std::string &input)
     embedding.input = input;
     return embedding;
 }
+
+} // namespace serialization

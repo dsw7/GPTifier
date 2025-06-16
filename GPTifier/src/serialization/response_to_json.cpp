@@ -3,6 +3,8 @@
 #include <fmt/core.h>
 #include <stdexcept>
 
+namespace serialization {
+
 nlohmann::json response_to_json(const std::string &response)
 {
     nlohmann::json json;
@@ -21,3 +23,5 @@ nlohmann::json response_to_json(const std::string &response)
 
     return json;
 }
+
+} // namespace serialization

@@ -16,9 +16,9 @@ void command_test(int argc, char **argv)
     const std::string target = argv[2];
 
     if (target == "leak") {
-        test_catch_memory_leak();
+        serialization::test_catch_memory_leak();
     } else if (target == "ccc") {
-        fmt::print("{}\n", test_curl_handle_is_reusable());
+        fmt::print("{}\n", serialization::test_curl_handle_is_reusable());
     } else {
         throw std::runtime_error("Unknown test target: " + target);
     }

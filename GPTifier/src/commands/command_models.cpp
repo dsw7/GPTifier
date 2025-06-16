@@ -61,7 +61,7 @@ void read_cli(int argc, char **argv, Params &params)
     }
 }
 
-void get_openai_models(const std::vector<Model> &left, std::vector<Model> &right)
+void get_openai_models(const std::vector<serialization::Model> &left, std::vector<serialization::Model> &right)
 {
     for (const auto &it: left) {
         if (it.owned_by_openai) {
@@ -70,7 +70,7 @@ void get_openai_models(const std::vector<Model> &left, std::vector<Model> &right
     }
 }
 
-void get_user_models(const std::vector<Model> &left, std::vector<Model> &right)
+void get_user_models(const std::vector<serialization::Model> &left, std::vector<serialization::Model> &right)
 {
     for (const auto &it: left) {
         if (not it.owned_by_openai) {
@@ -79,9 +79,9 @@ void get_user_models(const std::vector<Model> &left, std::vector<Model> &right)
     }
 }
 
-void print_models(std::vector<Model> &models)
+void print_models(std::vector<serialization::Model> &models)
 {
-    std::sort(models.begin(), models.end(), [](const Model &left, const Model &right) {
+    std::sort(models.begin(), models.end(), [](const serialization::Model &left, const serialization::Model &right) {
         return left.created_at < right.created_at;
     });
 
@@ -108,14 +108,14 @@ void command_models(int argc, char **argv)
     Params params;
     read_cli(argc, argv, params);
 
-    Models models = get_models();
+    serialization::Models models = serialization::get_models();
 
     if (params.print_raw_json) {
         fmt::print("{}\n", models.raw_response);
         return;
     }
 
-    std::vector<Model> filtered_models;
+    std::vector<serialization::Model> filtered_models;
 
     if (params.print_user_models) {
         get_user_models(models.models, filtered_models);

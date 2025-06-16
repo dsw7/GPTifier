@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+namespace serialization {
+
 struct FineTuningJob {
     int created_at;
     std::string estimated_finish = "-";
@@ -17,3 +19,5 @@ struct FineTuningJobs {
 
 FineTuningJobs get_fine_tuning_jobs(const std::string &limit);
 std::string create_fine_tuning_job(const std::string &model, const std::string &training_file);
+
+} // namespace serialization

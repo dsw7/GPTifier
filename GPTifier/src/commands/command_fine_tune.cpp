@@ -89,7 +89,7 @@ void upload_ft_file(int argc, char **argv)
         return;
     }
 
-    const std::string id = upload_file(opt_or_filename);
+    const std::string id = serialization::upload_file(opt_or_filename);
     fmt::print("Success!\nUploaded file: {}\nWith ID: {}\n", opt_or_filename, id);
 }
 
@@ -154,7 +154,7 @@ void create_ft_job(int argc, char **argv)
 
     utils::separator();
 
-    const std::string id = create_fine_tuning_job(params.model.value(), params.training_file.value());
+    const std::string id = serialization::create_fine_tuning_job(params.model.value(), params.training_file.value());
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 
@@ -174,7 +174,7 @@ void delete_ft_model(int argc, char **argv)
         return;
     }
 
-    if (delete_model(opt_or_model_id)) {
+    if (serialization::delete_model(opt_or_model_id)) {
         fmt::print("Success!\nDeleted model with ID: {}\n", opt_or_model_id);
     } else {
         fmt::print("Warning!\nDid not delete model with ID: {}\n", opt_or_model_id);
@@ -221,7 +221,7 @@ void read_cli_list_ft_jobs(int argc, char **argv, ParamsGetFineTuningJobs &param
     };
 }
 
-void print_ft_jobs(const FineTuningJobs &ft_jobs)
+void print_ft_jobs(const serialization::FineTuningJobs &ft_jobs)
 {
     utils::separator();
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
@@ -242,7 +242,7 @@ void list_ft_jobs(int argc, char **argv)
 
     std::string limit = params.limit.value_or("20");
 
-    FineTuningJobs ft_jobs = get_fine_tuning_jobs(limit);
+    serialization::FineTuningJobs ft_jobs = serialization::get_fine_tuning_jobs(limit);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", ft_jobs.raw_response);
@@ -254,7 +254,7 @@ void list_ft_jobs(int argc, char **argv)
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
     }
 
-    std::sort(ft_jobs.jobs.begin(), ft_jobs.jobs.end(), [](const FineTuningJob &left, const FineTuningJob &right) {
+    std::sort(ft_jobs.jobs.begin(), ft_jobs.jobs.end(), [](const serialization::FineTuningJob &left, const serialization::FineTuningJob &right) {
         return left.created_at < right.created_at;
     });
 

@@ -79,7 +79,7 @@ bool read_cli(int argc, char **argv)
     return print_raw_json;
 }
 
-void print_files(const Files &files)
+void print_files(const serialization::Files &files)
 {
     utils::separator();
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
@@ -97,7 +97,7 @@ void command_files_list(int argc, char **argv)
 {
     bool print_raw_json = read_cli(argc, argv);
 
-    Files files = get_files();
+    serialization::Files files = serialization::get_files();
 
     if (print_raw_json) {
         fmt::print("{}\n", files.raw_response);
@@ -117,7 +117,7 @@ bool delete_files(const std::vector<std::string> &ids)
         bool deleted = false;
 
         try {
-            deleted = delete_file(it);
+            deleted = serialization::delete_file(it);
         } catch (const std::runtime_error &e) {
             fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", it, e.what());
             success = false;

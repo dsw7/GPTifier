@@ -5,6 +5,8 @@
 
 #include <fmt/core.h>
 
+namespace serialization {
+
 namespace {
 
 void unpack_chat_completions(const nlohmann::json &json, ChatCompletions &ccs)
@@ -100,3 +102,5 @@ bool delete_chat_completion(const std::string &chat_completion_id)
 
     return json["deleted"];
 }
+
+} // namespace serialization

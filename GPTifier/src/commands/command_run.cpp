@@ -165,17 +165,17 @@ void time_api_call()
     std::cout << std::string(16, ' ') << '\r' << std::flush;
 }
 
-ChatCompletion run_query(const std::string &model, const std::string &prompt, float temperature, bool store_completion)
+serialization::ChatCompletion run_query(const std::string &model, const std::string &prompt, float temperature, bool store_completion)
 {
     TIMER_ENABLED.store(true);
     std::thread timer(time_api_call);
 
     bool query_failed = false;
-    ChatCompletion cc;
+    serialization::ChatCompletion cc;
     std::mutex mutex_print_stderr;
 
     try {
-        cc = create_chat_completion(prompt, model, temperature, store_completion);
+        cc = serialization::create_chat_completion(prompt, model, temperature, store_completion);
     } catch (std::runtime_error &e) {
         query_failed = true;
         {
@@ -196,7 +196,7 @@ ChatCompletion run_query(const std::string &model, const std::string &prompt, fl
 
 // Output ---------------------------------------------------------------------------------------------------
 
-void dump_chat_completion_response(const ChatCompletion &cc, const std::string &json_dump_file)
+void dump_chat_completion_response(const serialization::ChatCompletion &cc, const std::string &json_dump_file)
 {
     nlohmann::json json;
     json["completion"] = cc.completion;
@@ -239,7 +239,7 @@ void print_ratio(int num_tokens, int num_words)
     }
 }
 
-void print_usage_statistics(const ChatCompletion &completion)
+void print_usage_statistics(const serialization::ChatCompletion &completion)
 {
     int wc_prompt = utils::get_word_count(completion.prompt);
     int wc_completion = utils::get_word_count(completion.completion);
@@ -263,7 +263,7 @@ void print_usage_statistics(const ChatCompletion &completion)
     print_ratio(completion.completion_tokens, wc_completion);
 }
 
-void write_message_to_file(const ChatCompletion &completion)
+void write_message_to_file(const serialization::ChatCompletion &completion)
 {
     const std::string created = utils::datetime_from_unix_timestamp(completion.created);
 
@@ -280,7 +280,7 @@ void write_message_to_file(const ChatCompletion &completion)
     utils::append_to_file(path_completions_file, text);
 }
 
-void export_chat_completion_response(const ChatCompletion &completion)
+void export_chat_completion_response(const serialization::ChatCompletion &completion)
 {
     fmt::print(fg(white), "Export:\n");
     char choice = 'n';
@@ -349,7 +349,7 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("Temperature must be between 0 and 2");
     }
 
-    const ChatCompletion cc = run_query(model, prompt, temperature, params.store_completion);
+    const serialization::ChatCompletion cc = run_query(model, prompt, temperature, params.store_completion);
 
     if (params.json_dump_file) {
         dump_chat_completion_response(cc, params.json_dump_file.value());

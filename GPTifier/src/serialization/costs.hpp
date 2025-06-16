@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+namespace serialization {
+
 struct CostsBucket {
     float cost = 0.00;
     std::string org_id;
@@ -18,3 +20,5 @@ struct Costs {
 };
 
 Costs get_costs(std::time_t start_time, int limit);
+
+} // namespace serialization

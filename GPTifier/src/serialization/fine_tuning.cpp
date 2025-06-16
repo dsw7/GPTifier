@@ -8,6 +8,8 @@
 #include <json.hpp>
 #include <stdexcept>
 
+namespace serialization {
+
 namespace {
 
 void unpack_fine_tuning_jobs(const nlohmann::json &json, FineTuningJobs &fine_tuning_jobs)
@@ -73,3 +75,5 @@ std::string create_fine_tuning_job(const std::string &model, const std::string &
 
     return json["id"];
 }
+
+} // namespace serialization
