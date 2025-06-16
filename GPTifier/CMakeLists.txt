@@ -101,25 +101,25 @@ endif()
 include_directories(
   external
   src
-  src/interface
+  src/commands
   src/networking
   src/serialization
 )
 add_executable(
   gpt
+  src/commands/command_chats.cpp
+  src/commands/command_costs.cpp
+  src/commands/command_edit.cpp
+  src/commands/command_embed.cpp
+  src/commands/command_files.cpp
+  src/commands/command_fine_tune.cpp
+  src/commands/command_models.cpp
+  src/commands/command_run.cpp
+  src/commands/command_short.cpp
+  src/commands/command_test.cpp
+  src/commands/help_messages.cpp
   src/configs.cpp
   src/datadir.cpp
-  src/interface/command_chats.cpp
-  src/interface/command_costs.cpp
-  src/interface/command_edit.cpp
-  src/interface/command_embed.cpp
-  src/interface/command_files.cpp
-  src/interface/command_fine_tune.cpp
-  src/interface/command_models.cpp
-  src/interface/command_run.cpp
-  src/interface/command_short.cpp
-  src/interface/command_test.cpp
-  src/interface/help_messages.cpp
   src/main.cpp
   src/networking/api_openai_admin.cpp
   src/networking/api_openai_user.cpp
