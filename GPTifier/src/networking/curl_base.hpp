@@ -3,6 +3,8 @@
 #include <curl/curl.h>
 #include <string>
 
+namespace networking {
+
 class CurlBase {
 public:
     CurlBase();
@@ -26,3 +28,5 @@ protected:
     void set_content_type_transmit_json();
     void run_easy_perform();
 };
+
+} // namespace networking

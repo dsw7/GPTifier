@@ -12,6 +12,8 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
 
 } // namespace
 
+namespace networking {
+
 CurlBase::CurlBase()
 {
     if (curl_global_init(CURL_GLOBAL_DEFAULT) != 0) {
@@ -79,3 +81,5 @@ void CurlBase::run_easy_perform()
         throw std::runtime_error(curl_easy_strerror(code));
     }
 }
+
+} // namespace networking

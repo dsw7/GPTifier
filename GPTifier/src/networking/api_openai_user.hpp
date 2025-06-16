@@ -4,6 +4,8 @@
 
 #include <string>
 
+namespace networking {
+
 class OpenAIUser: public CurlBase {
 public:
     std::string get_uploaded_files(bool sort_asc = true);
@@ -21,3 +23,5 @@ public:
 private:
     void reset_handle();
 };
+
+} // namespace networking

@@ -36,6 +36,8 @@ const std::string URL_MODELS = "https://api.openai.com/v1/models";
 
 } // namespace endpoints
 
+namespace networking {
+
 void OpenAIUser::reset_handle()
 {
     this->reset_easy_handle();
@@ -263,3 +265,5 @@ std::string OpenAIUser::get_fine_tuning_jobs(const std::string &limit)
     this->run_easy_perform();
     return response;
 }
+
+} // namespace networking
