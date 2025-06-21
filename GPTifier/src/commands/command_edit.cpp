@@ -35,7 +35,7 @@ void help_edit()
     help.print();
 }
 
-struct Params {
+struct Parameters {
     bool debug = false;
     std::optional<std::string> input_file = std::nullopt;
     std::optional<std::string> instructions_file = std::nullopt;
@@ -44,8 +44,10 @@ struct Params {
     std::optional<std::string> rule = std::nullopt;
 };
 
-void read_cli(int argc, char **argv, Params &params)
+Parameters read_cli(int argc, char **argv)
 {
+    Parameters params;
+
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -94,6 +96,8 @@ void read_cli(int argc, char **argv, Params &params)
             break;
         }
     }
+
+    return params;
 }
 
 std::string get_model()
@@ -101,13 +105,12 @@ std::string get_model()
 #ifdef TESTING_ENABLED
     static std::string low_cost_model = "gpt-3.5-turbo";
     return low_cost_model;
-#endif
-
+#else
     if (configs.model_edit) {
         return configs.model_edit.value();
     }
-
     throw std::runtime_error("Could not determine which model to use");
+#endif
 }
 
 std::string build_prompt(const std::string &instructions, const std::string &input_code)
@@ -136,7 +139,7 @@ void print_debug(const std::string &prompt, const std::string &completion)
     fmt::print(fg(green), "{}\n", completion);
 }
 
-void get_stringified_json_from_completion(const std::string &completion, std::string &raw_json)
+std::string get_stringified_json_from_completion(const std::string &completion)
 {
     /*
      * Some models return a JSON completion without triple backticks:
@@ -150,14 +153,15 @@ void get_stringified_json_from_completion(const std::string &completion, std::st
      * }
      * ```
      */
+
     if (completion[0] == '{' and completion.back() == '}') {
-        raw_json = completion;
-        return;
+        return completion;
     }
 
     bool append_enabled = false;
     std::string line;
     std::stringstream ss(completion);
+    std::string raw_json;
 
     while (std::getline(ss, line)) {
         if (line == "```json") {
@@ -174,6 +178,8 @@ void get_stringified_json_from_completion(const std::string &completion, std::st
     if (append_enabled) {
         throw std::runtime_error("Closing triple backticks not found. Raw JSON might be malformed");
     }
+
+    return raw_json;
 }
 
 struct Output {
@@ -181,10 +187,9 @@ struct Output {
     std::string description;
 };
 
-void get_output_from_completion(const std::string &completion, Output &output)
+Output get_output_from_completion(const std::string &completion)
 {
-    std::string raw_json;
-    get_stringified_json_from_completion(completion, raw_json);
+    const std::string raw_json = get_stringified_json_from_completion(completion);
 
     if (raw_json.empty()) {
         throw std::runtime_error("JSON with code and description is empty. Cannot proceed");
@@ -197,8 +202,10 @@ void get_output_from_completion(const std::string &completion, Output &output)
         throw std::runtime_error(fmt::format("Failed to parse JSON: {}", e.what()));
     }
 
+    Output output;
     output.code = json["code"];
     output.description = json["description"];
+    return output;
 }
 
 void write_to_stdout(const Output &output)
@@ -221,7 +228,7 @@ void write_to_file(const Output &output, const std::string &filename)
     fmt::print(fg(green), "{}\n", output.description);
 }
 
-void apply_transformation(const Params &params)
+void apply_transformation(const Parameters &params)
 {
     std::string instructions;
 
@@ -264,8 +271,7 @@ void apply_transformation(const Params &params)
         return;
     }
 
-    Output output;
-    get_output_from_completion(cc.completion, output);
+    const Output output = get_output_from_completion(cc.completion);
 
     if (params.output_file) {
         write_to_file(output, params.output_file.value());
@@ -280,8 +286,7 @@ namespace commands {
 
 void command_edit(int argc, char **argv)
 {
-    Params params;
-    read_cli(argc, argv, params);
+    const Parameters params = read_cli(argc, argv);
 
     if (not params.instructions_file and not params.rule) {
         throw std::runtime_error("No instructions file or rule provided. Cannot proceed");
