@@ -23,13 +23,15 @@ void help_costs()
     help.print();
 }
 
-struct Params {
+struct Parameters {
     bool print_raw_json = false;
     std::string days = "30";
 };
 
-void read_cli(int argc, char **argv, Params &params)
+Parameters read_cli(int argc, char **argv)
 {
+    Parameters params;
+
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -59,6 +61,8 @@ void read_cli(int argc, char **argv, Params &params)
                 help::exit_on_failure();
         }
     };
+
+    return params;
 }
 
 std::time_t get_current_time_minus_days(int days)
@@ -76,7 +80,7 @@ std::time_t get_current_time_minus_days(int days)
     return now - offset;
 }
 
-void print_results(const serialization::Costs &costs, int days)
+void print_costs(const serialization::Costs &costs, int days)
 {
     utils::separator();
     fmt::print("Overall usage (in USD) over {} days: {}\n", days, costs.total_cost);
@@ -84,10 +88,10 @@ void print_results(const serialization::Costs &costs, int days)
     fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
     utils::separator();
 
-    for (const auto &it: costs.buckets) {
-        const std::string dt_start = utils::datetime_from_unix_timestamp(it.start_time);
-        const std::string dt_end = utils::datetime_from_unix_timestamp(it.end_time);
-        fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, it.cost, it.org_id);
+    for (const auto &bucket: costs.buckets) {
+        const std::string dt_start = utils::datetime_from_unix_timestamp(bucket.start_time);
+        const std::string dt_end = utils::datetime_from_unix_timestamp(bucket.end_time);
+        fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, bucket.cost, bucket.org_id);
     }
 
     utils::separator();
@@ -99,29 +103,27 @@ namespace commands {
 
 void command_costs(int argc, char **argv)
 {
-    Params params;
-    read_cli(argc, argv, params);
+    const Parameters params = read_cli(argc, argv);
+    const int days = utils::string_to_int(params.days);
 
-    int days = utils::string_to_int(params.days);
     if (days < 1) {
         throw std::runtime_error("Days must be greater than 0");
     }
 
-    std::time_t start_time = get_current_time_minus_days(days);
+    const std::time_t start_time = get_current_time_minus_days(days);
+    const int limit = 180;
 
-    int limit = 180;
+    fmt::print("Awaiting response from API...\n");
     serialization::Costs costs = serialization::get_costs(start_time, limit);
+    fmt::print("Complete!\n");
 
     if (params.print_raw_json) {
         fmt::print("{}\n", costs.raw_response);
         return;
     }
 
-    std::sort(costs.buckets.begin(), costs.buckets.end(), [](const serialization::CostsBucket &left, const serialization::CostsBucket &right) {
-        return left.start_time < right.start_time;
-    });
-
-    print_results(costs, days);
+    std::sort(costs.buckets.begin(), costs.buckets.end());
+    print_costs(costs, days);
 }
 
 } // namespace commands
