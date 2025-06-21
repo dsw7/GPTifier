@@ -38,7 +38,7 @@ void help_run()
     help.print();
 }
 
-struct Params {
+struct Parameters {
     bool enable_export = true;
     bool store_completion = false;
     std::optional<std::string> json_dump_file = std::nullopt;
@@ -48,8 +48,10 @@ struct Params {
     std::string temperature = "1.00";
 };
 
-void read_cli(int argc, char **argv, Params &params)
+Parameters read_cli(int argc, char **argv)
 {
+    Parameters params;
+
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -99,6 +101,8 @@ void read_cli(int argc, char **argv, Params &params)
                 help::exit_on_failure();
         }
     };
+
+    return params;
 }
 
 std::string get_model()
@@ -106,13 +110,12 @@ std::string get_model()
 #ifdef TESTING_ENABLED
     static std::string low_cost_model = "gpt-3.5-turbo";
     return low_cost_model;
-#endif
-
+#else
     if (configs.model_run) {
         return configs.model_run.value();
     }
-
     throw std::runtime_error("Could not determine which model to use");
+#endif
 }
 
 // Input ----------------------------------------------------------------------------------------------------
@@ -120,8 +123,8 @@ std::string get_model()
 std::string read_text_from_stdin()
 {
     fmt::print(fg(white), "Input: ");
-    std::string text;
 
+    std::string text;
     std::getline(std::cin, text);
     return text;
 }
@@ -165,7 +168,7 @@ void time_api_call()
     std::cout << std::string(16, ' ') << '\r' << std::flush;
 }
 
-serialization::ChatCompletion run_query(const std::string &model, const std::string &prompt, float temperature, bool store_completion)
+serialization::ChatCompletion run_query(const std::string &model, const std::string &prompt, const float temperature, const bool store_completion)
 {
     TIMER_ENABLED.store(true);
     std::thread timer(time_api_call);
@@ -198,15 +201,16 @@ serialization::ChatCompletion run_query(const std::string &model, const std::str
 
 void dump_chat_completion_response(const serialization::ChatCompletion &cc, const std::string &json_dump_file)
 {
-    nlohmann::json json;
-    json["completion"] = cc.completion;
-    json["completion_tokens"] = cc.completion_tokens;
-    json["created"] = cc.created;
-    json["id"] = cc.id;
-    json["model"] = cc.model;
-    json["prompt"] = cc.prompt;
-    json["prompt_tokens"] = cc.prompt_tokens;
-    json["rtt"] = cc.rtt.count();
+    const nlohmann::json json = {
+        { "completion", cc.completion },
+        { "completion_tokens", cc.completion_tokens },
+        { "created", cc.created },
+        { "id", cc.id },
+        { "model", cc.model },
+        { "prompt", cc.prompt },
+        { "prompt_tokens", cc.prompt_tokens },
+        { "rtt", cc.rtt.count() },
+    };
 
     fmt::print("Dumping results to '{}'\n", json_dump_file);
     utils::write_to_file(json_dump_file, json.dump(2));
@@ -241,8 +245,8 @@ void print_ratio(int num_tokens, int num_words)
 
 void print_usage_statistics(const serialization::ChatCompletion &completion)
 {
-    int wc_prompt = utils::get_word_count(completion.prompt);
-    int wc_completion = utils::get_word_count(completion.completion);
+    const int wc_prompt = utils::get_word_count(completion.prompt);
+    const int wc_completion = utils::get_word_count(completion.completion);
 
     fmt::print(fg(white), "Usage:\n");
     fmt::print("Model: {}\n", completion.model);
@@ -310,19 +314,17 @@ namespace commands {
 
 void command_run(int argc, char **argv)
 {
-    Params params;
-    read_cli(argc, argv, params);
-
+    const Parameters params = read_cli(argc, argv);
     utils::separator();
-    std::string model;
 
+    std::string model;
     if (params.model) {
         model = params.model.value();
     } else {
         model = get_model();
     }
 
-    static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
+    const std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
     std::string prompt;
 
     if (params.prompt) {
@@ -344,7 +346,7 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("No input text provided anywhere. Cannot proceed");
     }
 
-    float temperature = utils::string_to_float(params.temperature);
+    const float temperature = utils::string_to_float(params.temperature);
     if (temperature < 0 || temperature > 2) {
         throw std::runtime_error("Temperature must be between 0 and 2");
     }
