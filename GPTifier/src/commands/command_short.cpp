@@ -25,15 +25,17 @@ void help_short()
     help.print();
 }
 
-struct Params {
+struct Parameters {
     bool print_raw_json = false;
     bool store_completion = false;
     std::optional<std::string> prompt = std::nullopt;
     std::optional<std::string> temperature = std::nullopt;
 };
 
-void read_cli(int argc, char **argv, Params &params)
+Parameters read_cli(int argc, char **argv)
 {
+    Parameters params;
+
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -74,6 +76,8 @@ void read_cli(int argc, char **argv, Params &params)
             break;
         }
     }
+
+    return params;
 }
 
 std::string get_model()
@@ -81,13 +85,12 @@ std::string get_model()
 #ifdef TESTING_ENABLED
     static std::string low_cost_model = "gpt-3.5-turbo";
     return low_cost_model;
-#endif
-
+#else
     if (configs.model_short) {
         return configs.model_short.value();
     }
-
     throw std::runtime_error("Could not determine which model to use");
+#endif
 }
 
 } // namespace
@@ -96,8 +99,7 @@ namespace commands {
 
 void command_short(int argc, char **argv)
 {
-    Params params;
-    read_cli(argc, argv, params);
+    const Parameters params = read_cli(argc, argv);
 
     if (not params.prompt) {
         throw std::runtime_error("Prompt is empty");
@@ -113,7 +115,8 @@ void command_short(int argc, char **argv)
     }
 
     const std::string model = get_model();
-    serialization::ChatCompletion cc = serialization::create_chat_completion(params.prompt.value(), model, temperature, params.store_completion);
+    const serialization::ChatCompletion cc = serialization::create_chat_completion(
+        params.prompt.value(), model, temperature, params.store_completion);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", cc.raw_response);
