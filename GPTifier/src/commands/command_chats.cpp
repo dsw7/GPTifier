@@ -44,14 +44,24 @@ void help_chats_delete()
 
 // List chats -----------------------------------------------------------------------------------------------
 
-struct Parameters {
+void loop_over_chat_completions(const serialization::ChatCompletions &ccs)
+{
+    utils::separator();
+    fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
+    utils::separator();
+
+    for (const auto &cc: ccs.completions) {
+        const std::string dt_created_at = utils::datetime_from_unix_timestamp(cc.created);
+        fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created_at, cc.id, cc.prompt, cc.completion);
+    }
+
+    utils::separator();
+}
+
+void list_chat_completions(int argc, char **argv)
+{
     bool print_raw_json = false;
     std::string limit = "20";
-};
-
-Parameters read_cli_list_cc(int argc, char **argv)
-{
-    Parameters params;
 
     while (true) {
         static struct option long_options[] = {
@@ -73,45 +83,25 @@ Parameters read_cli_list_cc(int argc, char **argv)
                 help_chats_list();
                 exit(EXIT_SUCCESS);
             case 'j':
-                params.print_raw_json = true;
+                print_raw_json = true;
                 break;
             case 'l':
-                params.limit = optarg;
+                limit = optarg;
                 break;
             default:
                 help::exit_on_failure();
         }
     };
 
-    return params;
-}
+    const int limit_i = utils::string_to_int(limit);
 
-void loop_over_chat_completions(const serialization::ChatCompletions &ccs)
-{
-    utils::separator();
-    fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
-    utils::separator();
-
-    for (const auto &cc: ccs.completions) {
-        const std::string dt_created_at = utils::datetime_from_unix_timestamp(cc.created);
-        fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created_at, cc.id, cc.prompt, cc.completion);
-    }
-
-    utils::separator();
-}
-
-void list_chat_completions(int argc, char **argv)
-{
-    const Parameters params = read_cli_list_cc(argc, argv);
-    const int limit = utils::string_to_int(params.limit);
-
-    if (limit < 1) {
+    if (limit_i < 1) {
         throw std::runtime_error("Limit must be greater than 0");
     }
 
-    serialization::ChatCompletions ccs = serialization::get_chat_completions(limit);
+    const serialization::ChatCompletions ccs = serialization::get_chat_completions(limit_i);
 
-    if (params.print_raw_json) {
+    if (print_raw_json) {
         fmt::print("{}\n", ccs.raw_response);
         return;
     }
