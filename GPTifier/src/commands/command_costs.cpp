@@ -113,14 +113,17 @@ void command_costs(int argc, char **argv)
     const std::time_t start_time = get_current_time_minus_days(days);
     const int limit = 180;
 
-    fmt::print("Awaiting response from API...\n");
+    if (not params.print_raw_json) {
+        fmt::print("Awaiting response from API...\n");
+    }
+
     serialization::Costs costs = serialization::get_costs(start_time, limit);
-    fmt::print("Complete!\n");
 
     if (params.print_raw_json) {
         fmt::print("{}\n", costs.raw_response);
         return;
     }
+    fmt::print("Complete!\n");
 
     std::sort(costs.buckets.begin(), costs.buckets.end());
     print_costs(costs, days);
