@@ -13,7 +13,7 @@ struct Model {
 
     bool operator<(const Model &other) const
     {
-        return created_at < other.created_at;
+        return this->created_at < other.created_at;
     }
 };
 

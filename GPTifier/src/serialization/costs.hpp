@@ -14,7 +14,7 @@ struct CostsBucket {
 
     bool operator<(const CostsBucket &other) const
     {
-        return start_time < other.start_time;
+        return this->start_time < other.start_time;
     }
 };
 

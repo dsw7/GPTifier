@@ -10,6 +10,11 @@ struct FineTuningJob {
     std::string estimated_finish = "-";
     std::string finished_at = "-";
     std::string id;
+
+    bool operator<(const FineTuningJob &other) const
+    {
+        return this->created_at < other.created_at;
+    }
 };
 
 struct FineTuningJobs {
