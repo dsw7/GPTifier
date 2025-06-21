@@ -44,13 +44,15 @@ void help_chats_delete()
 
 // List chats -----------------------------------------------------------------------------------------------
 
-struct Params {
+struct Parameters {
     bool print_raw_json = false;
     std::string limit = "20";
 };
 
-void read_cli_list_cc(int argc, char **argv, Params &params)
+Parameters read_cli_list_cc(int argc, char **argv)
 {
+    Parameters params;
+
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -80,28 +82,29 @@ void read_cli_list_cc(int argc, char **argv, Params &params)
                 help::exit_on_failure();
         }
     };
+
+    return params;
 }
 
-void print_chat_completions(const serialization::ChatCompletions &ccs)
+void loop_over_chat_completions(const serialization::ChatCompletions &ccs)
 {
     utils::separator();
     fmt::print("{:<25}{:<40}{:<35}{}\n", "Created at", "Chat completion ID", "Prompt", "Completion");
     utils::separator();
 
-    for (const auto &it: ccs.completions) {
-        const std::string dt_created_at = utils::datetime_from_unix_timestamp(it.created);
-        fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created_at, it.id, it.prompt, it.completion);
+    for (const auto &cc: ccs.completions) {
+        const std::string dt_created_at = utils::datetime_from_unix_timestamp(cc.created);
+        fmt::print("{:<25}{:<40}{:<35}{}\n", dt_created_at, cc.id, cc.prompt, cc.completion);
     }
 
     utils::separator();
 }
 
-void command_chats_list(int argc, char **argv)
+void list_chat_completions(int argc, char **argv)
 {
-    Params params;
-    read_cli_list_cc(argc, argv, params);
+    const Parameters params = read_cli_list_cc(argc, argv);
+    const int limit = utils::string_to_int(params.limit);
 
-    int limit = utils::string_to_int(params.limit);
     if (limit < 1) {
         throw std::runtime_error("Limit must be greater than 0");
     }
@@ -113,39 +116,39 @@ void command_chats_list(int argc, char **argv)
         return;
     }
 
-    print_chat_completions(ccs);
+    loop_over_chat_completions(ccs);
 }
 
 // Delete chat completion -----------------------------------------------------------------------------------
 
-bool delete_chats(const std::vector<std::string> &ids)
+bool loop_over_ids(const std::vector<std::string> &ids)
 {
     bool success = true;
 
-    for (auto it: ids) {
+    for (const auto &id: ids) {
         bool deleted = false;
 
         try {
-            deleted = serialization::delete_chat_completion(it);
+            deleted = serialization::delete_chat_completion(id);
         } catch (const std::runtime_error &e) {
-            fmt::print(stderr, "Failed to delete chat completion with ID: {}. The error was: \"{}\"\n", it, e.what());
+            fmt::print(stderr, "Failed to delete chat completion with ID: {}. The error was: \"{}\"\n", id, e.what());
             success = false;
             continue;
         }
 
         if (deleted) {
-            fmt::print("Success! Deleted chat completion with ID: {}\n", it);
+            fmt::print("Success! Deleted chat completion with ID: {}\n", id);
         } else {
-            fmt::print("Warning! Did not delete chat completion with ID: {}\n", it);
+            fmt::print("Warning! Did not delete chat completion with ID: {}\n", id);
         }
     }
 
     return success;
 }
 
-void command_chats_delete(int argc, char **argv)
+void delete_chat_completions(int argc, char **argv)
 {
-    if (argc < 4) {
+    if (argc == 3) {
         help_chats_delete();
         return;
     }
@@ -161,7 +164,7 @@ void command_chats_delete(int argc, char **argv)
         return;
     }
 
-    if (not delete_chats(args_or_ids)) {
+    if (not loop_over_ids(args_or_ids)) {
         throw std::runtime_error("One or more failures occurred when deleting chats");
     }
 }
@@ -173,7 +176,7 @@ namespace commands {
 void command_chats(int argc, char **argv)
 {
     if (argc == 2) {
-        command_chats_list(argc, argv);
+        list_chat_completions(argc, argv);
         return;
     }
 
@@ -185,9 +188,9 @@ void command_chats(int argc, char **argv)
     }
 
     if (subcommand == "list") {
-        command_chats_list(argc, argv);
+        list_chat_completions(argc, argv);
     } else if (subcommand == "delete") {
-        command_chats_delete(argc, argv);
+        delete_chat_completions(argc, argv);
     } else {
         help_chats();
         exit(EXIT_FAILURE);
