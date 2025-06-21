@@ -75,9 +75,9 @@ void help_fine_tune_list_jobs()
 
 // Upload fine tuning file ----------------------------------------------------------------------------------
 
-void upload_ft_file(int argc, char **argv)
+void upload_fine_tuning_file(int argc, char **argv)
 {
-    if (argc < 4) {
+    if (argc == 3) {
         help_fine_tune_upload_file();
         return;
     }
@@ -95,13 +95,11 @@ void upload_ft_file(int argc, char **argv)
 
 // Create fine tuning job -----------------------------------------------------------------------------------
 
-struct ParamsCreateFineTuningJob {
+void create_fine_tuning_job(int argc, char **argv)
+{
     std::optional<std::string> model = std::nullopt;
     std::optional<std::string> training_file = std::nullopt;
-};
 
-void read_cli_create_ft_job(int argc, char **argv, ParamsCreateFineTuningJob &params)
-{
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -122,47 +120,41 @@ void read_cli_create_ft_job(int argc, char **argv, ParamsCreateFineTuningJob &pa
                 help_fine_tune_create_job();
                 exit(EXIT_SUCCESS);
             case 'f':
-                params.training_file = optarg;
+                training_file = optarg;
                 break;
             case 'm':
-                params.model = optarg;
+                model = optarg;
                 break;
             default:
                 help::exit_on_failure();
         }
     };
-}
-
-void create_ft_job(int argc, char **argv)
-{
-    ParamsCreateFineTuningJob params;
-    read_cli_create_ft_job(argc, argv, params);
 
     utils::separator();
 
-    if (params.training_file) {
-        fmt::print("Training using file with ID: {}\n", params.training_file.value());
+    if (training_file) {
+        fmt::print("Training using file with ID: {}\n", training_file.value());
     } else {
         throw std::runtime_error("No training file ID provided");
     }
 
-    if (params.model) {
-        fmt::print("Training model: {}\n", params.model.value());
+    if (model) {
+        fmt::print("Training model: {}\n", model.value());
     } else {
         throw std::runtime_error("No model provided");
     }
 
     utils::separator();
 
-    const std::string id = serialization::create_fine_tuning_job(params.model.value(), params.training_file.value());
+    const std::string id = serialization::create_fine_tuning_job(model.value(), training_file.value());
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 
 // Delete fine tuned model-----------------------------------------------------------------------------------
 
-void delete_ft_model(int argc, char **argv)
+void delete_fine_tuned_model(int argc, char **argv)
 {
-    if (argc < 4) {
+    if (argc == 3) {
         help_fine_tune_delete_model();
         return;
     }
@@ -183,13 +175,25 @@ void delete_ft_model(int argc, char **argv)
 
 // Print fine tuning jobs -----------------------------------------------------------------------------------
 
-struct ParamsGetFineTuningJobs {
+void print_fine_tuning_jobs(const serialization::FineTuningJobs &jobs)
+{
+    utils::separator();
+    fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
+    utils::separator();
+
+    for (const auto &job: jobs.jobs) {
+        const std::string dt_created_at = utils::datetime_from_unix_timestamp(job.created_at);
+        fmt::print("{:<40}{:<30}{:<30}{}\n", job.id, dt_created_at, job.estimated_finish, job.finished_at);
+    }
+
+    utils::separator();
+}
+
+void list_fine_tuning_jobs(int argc, char **argv)
+{
     bool print_raw_json = false;
     std::optional<std::string> limit = std::nullopt;
-};
 
-void read_cli_list_ft_jobs(int argc, char **argv, ParamsGetFineTuningJobs &params)
-{
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -210,55 +214,30 @@ void read_cli_list_ft_jobs(int argc, char **argv, ParamsGetFineTuningJobs &param
                 help_fine_tune_list_jobs();
                 exit(EXIT_SUCCESS);
             case 'j':
-                params.print_raw_json = true;
+                print_raw_json = true;
                 break;
             case 'l':
-                params.limit = optarg;
+                limit = optarg;
                 break;
             default:
                 help::exit_on_failure();
         }
     };
-}
 
-void print_ft_jobs(const serialization::FineTuningJobs &ft_jobs)
-{
-    utils::separator();
-    fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
-    utils::separator();
+    serialization::FineTuningJobs jobs = serialization::get_fine_tuning_jobs(limit.value_or("20"));
 
-    for (const auto &it: ft_jobs.jobs) {
-        const std::string dt_created_at = utils::datetime_from_unix_timestamp(it.created_at);
-        fmt::print("{:<40}{:<30}{:<30}{}\n", it.id, dt_created_at, it.estimated_finish, it.finished_at);
-    }
-
-    utils::separator();
-}
-
-void list_ft_jobs(int argc, char **argv)
-{
-    ParamsGetFineTuningJobs params;
-    read_cli_list_ft_jobs(argc, argv, params);
-
-    std::string limit = params.limit.value_or("20");
-
-    serialization::FineTuningJobs ft_jobs = serialization::get_fine_tuning_jobs(limit);
-
-    if (params.print_raw_json) {
-        fmt::print("{}\n", ft_jobs.raw_response);
+    if (print_raw_json) {
+        fmt::print("{}\n", jobs.raw_response);
         return;
     }
 
-    if (not params.limit) {
+    if (not limit) {
         utils::separator();
         fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
     }
 
-    std::sort(ft_jobs.jobs.begin(), ft_jobs.jobs.end(), [](const serialization::FineTuningJob &left, const serialization::FineTuningJob &right) {
-        return left.created_at < right.created_at;
-    });
-
-    print_ft_jobs(ft_jobs);
+    std::sort(jobs.jobs.begin(), jobs.jobs.end());
+    print_fine_tuning_jobs(jobs);
 }
 
 } // namespace
@@ -267,12 +246,12 @@ namespace commands {
 
 void command_fine_tune(int argc, char **argv)
 {
-    if (argc < 3) {
+    if (argc == 2) {
         help_fine_tune();
         exit(EXIT_FAILURE);
     }
 
-    std::string subcommand = argv[2];
+    const std::string subcommand = argv[2];
 
     if (subcommand == "-h" or subcommand == "--help") {
         help_fine_tune();
@@ -280,13 +259,13 @@ void command_fine_tune(int argc, char **argv)
     }
 
     if (subcommand == "upload-file") {
-        upload_ft_file(argc, argv);
+        upload_fine_tuning_file(argc, argv);
     } else if (subcommand == "create-job") {
-        create_ft_job(argc, argv);
+        create_fine_tuning_job(argc, argv);
     } else if (subcommand == "delete-model") {
-        delete_ft_model(argc, argv);
+        delete_fine_tuned_model(argc, argv);
     } else if (subcommand == "list-jobs") {
-        list_ft_jobs(argc, argv);
+        list_fine_tuning_jobs(argc, argv);
     } else {
         help_fine_tune();
         exit(EXIT_FAILURE);
