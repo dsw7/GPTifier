@@ -29,15 +29,17 @@ void help_embed()
     help.print();
 }
 
-struct Params {
+struct Parameters {
     std::optional<std::string> input = std::nullopt;
     std::optional<std::string> input_file = std::nullopt;
     std::optional<std::string> model = std::nullopt;
     std::optional<std::string> output_file = std::nullopt;
 };
 
-void read_cli(int argc, char **argv, Params &params)
+Parameters read_cli(int argc, char **argv)
 {
+    Parameters params;
+
     while (true) {
         static struct option long_options[] = { { "help", no_argument, 0, 'h' },
             { "model", required_argument, 0, 'm' },
@@ -73,6 +75,8 @@ void read_cli(int argc, char **argv, Params &params)
                 help::exit_on_failure();
         }
     }
+
+    return params;
 }
 
 std::string read_text_from_stdin()
@@ -94,10 +98,11 @@ void export_embedding(const serialization::Embedding &em, const std::optional<st
         filename = datadir::GPT_EMBEDDINGS.string();
     }
 
-    nlohmann::json json;
-    json["embedding"] = em.embedding;
-    json["input"] = em.input;
-    json["model"] = em.model;
+    const nlohmann::json json = {
+        { "embedding", em.embedding },
+        { "input", em.input },
+        { "model", em.model },
+    };
 
     fmt::print("Dumping JSON to '{}'\n", filename);
     utils::write_to_file(filename, json.dump(2));
@@ -109,9 +114,7 @@ namespace commands {
 
 void command_embed(int argc, char **argv)
 {
-    Params params;
-    read_cli(argc, argv, params);
-
+    const Parameters params = read_cli(argc, argv);
     std::string text_to_embed;
 
     if (params.input) {
@@ -139,8 +142,6 @@ void command_embed(int argc, char **argv)
 
     const serialization::Embedding em = serialization::create_embedding(model, text_to_embed);
     export_embedding(em, params.output_file);
-
-    utils::separator();
 }
 
 } // namespace commands
