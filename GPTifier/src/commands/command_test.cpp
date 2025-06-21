@@ -9,7 +9,7 @@ namespace commands {
 
 void command_test(int argc, char **argv)
 {
-    if (argc < 3) {
+    if (argc == 2) {
         throw std::runtime_error("Usage: gpt test (<target>)");
     }
 
