@@ -46,7 +46,21 @@ void help_files_delete()
 
 // List files -----------------------------------------------------------------------------------------------
 
-bool read_cli(int argc, char **argv)
+void print_files(const serialization::Files &files)
+{
+    utils::separator();
+    fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
+    utils::separator();
+
+    for (const auto &file: files.files) {
+        const std::string dt_created_at = utils::datetime_from_unix_timestamp(file.created_at);
+        fmt::print("{:<30}{:<30}{:<30}{}\n", file.id, file.filename, dt_created_at, file.purpose);
+    }
+
+    utils::separator();
+}
+
+void list_files(int argc, char **argv)
 {
     bool print_raw_json = false;
 
@@ -76,28 +90,7 @@ bool read_cli(int argc, char **argv)
         }
     }
 
-    return print_raw_json;
-}
-
-void print_files(const serialization::Files &files)
-{
-    utils::separator();
-    fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
-    utils::separator();
-
-    for (const auto &it: files.files) {
-        const std::string dt_created_at = utils::datetime_from_unix_timestamp(it.created_at);
-        fmt::print("{:<30}{:<30}{:<30}{}\n", it.id, it.filename, dt_created_at, it.purpose);
-    }
-
-    utils::separator();
-}
-
-void command_files_list(int argc, char **argv)
-{
-    bool print_raw_json = read_cli(argc, argv);
-
-    serialization::Files files = serialization::get_files();
+    const serialization::Files files = serialization::get_files();
 
     if (print_raw_json) {
         fmt::print("{}\n", files.raw_response);
@@ -109,34 +102,34 @@ void command_files_list(int argc, char **argv)
 
 // Delete files ---------------------------------------------------------------------------------------------
 
-bool delete_files(const std::vector<std::string> &ids)
+bool loop_over_ids(const std::vector<std::string> &ids)
 {
     bool success = true;
 
-    for (auto it: ids) {
+    for (const auto &id: ids) {
         bool deleted = false;
 
         try {
-            deleted = serialization::delete_file(it);
+            deleted = serialization::delete_file(id);
         } catch (const std::runtime_error &e) {
-            fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", it, e.what());
+            fmt::print(stderr, "Failed to delete file with ID: {}. The error was: \"{}\"\n", id, e.what());
             success = false;
             continue;
         }
 
         if (deleted) {
-            fmt::print("Success! Deleted file with ID: {}\n", it);
+            fmt::print("Success! Deleted file with ID: {}\n", id);
         } else {
-            fmt::print("Warning! Did not delete file with ID: {}\n", it);
+            fmt::print("Warning! Did not delete file with ID: {}\n", id);
         }
     }
 
     return success;
 }
 
-void command_files_delete(int argc, char **argv)
+void delete_files(int argc, char **argv)
 {
-    if (argc < 4) {
+    if (argc == 3) {
         help_files_delete();
         return;
     }
@@ -152,7 +145,7 @@ void command_files_delete(int argc, char **argv)
         return;
     }
 
-    if (not delete_files(args_or_ids)) {
+    if (not loop_over_ids(args_or_ids)) {
         throw std::runtime_error("One or more failures occurred when deleting files");
     }
 }
@@ -164,11 +157,11 @@ namespace commands {
 void command_files(int argc, char **argv)
 {
     if (argc == 2) {
-        command_files_list(argc, argv);
+        list_files(argc, argv);
         return;
     }
 
-    std::string subcommand = argv[2];
+    const std::string subcommand = argv[2];
 
     if (subcommand == "-h" or subcommand == "--help") {
         help_files();
@@ -176,9 +169,9 @@ void command_files(int argc, char **argv)
     }
 
     if (subcommand == "list") {
-        command_files_list(argc, argv);
+        list_files(argc, argv);
     } else if (subcommand == "delete") {
-        command_files_delete(argc, argv);
+        delete_files(argc, argv);
     } else {
         help_files();
         exit(EXIT_FAILURE);
