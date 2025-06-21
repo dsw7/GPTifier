@@ -23,13 +23,15 @@ void help_models()
     help.print();
 }
 
-struct Params {
+struct Parameters {
     bool print_raw_json = false;
     bool print_user_models = false;
 };
 
-void read_cli(int argc, char **argv, Params &params)
+Parameters read_cli(int argc, char **argv)
 {
+    Parameters params;
+
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
@@ -59,41 +61,47 @@ void read_cli(int argc, char **argv, Params &params)
                 help::exit_on_failure();
         }
     }
+
+    return params;
 }
 
-void get_openai_models(const std::vector<serialization::Model> &left, std::vector<serialization::Model> &right)
+auto get_openai_models(const std::vector<serialization::Model> &all_models)
 {
-    for (const auto &it: left) {
-        if (it.owned_by_openai) {
-            right.push_back(it);
+    std::vector<serialization::Model> openai_models;
+
+    for (const auto &model: all_models) {
+        if (model.owned_by_openai) {
+            openai_models.push_back(model);
         }
     }
+
+    return openai_models;
 }
 
-void get_user_models(const std::vector<serialization::Model> &left, std::vector<serialization::Model> &right)
+auto get_user_models(const std::vector<serialization::Model> &all_models)
 {
-    for (const auto &it: left) {
-        if (not it.owned_by_openai) {
-            right.push_back(it);
+    std::vector<serialization::Model> user_models;
+
+    for (const auto &model: all_models) {
+        if (not model.owned_by_openai) {
+            user_models.push_back(model);
         }
     }
+
+    return user_models;
 }
 
-void print_models(std::vector<serialization::Model> &models)
+void print_models(const std::vector<serialization::Model> &models)
 {
-    std::sort(models.begin(), models.end(), [](const serialization::Model &left, const serialization::Model &right) {
-        return left.created_at < right.created_at;
-    });
-
     fmt::print("> Number of models: {}\n", models.size());
     utils::separator();
 
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
     utils::separator();
 
-    for (const auto &it: models) {
-        const std::string dt_created_at = utils::datetime_from_unix_timestamp(it.created_at);
-        fmt::print("{:<25}{:<35}{}\n", dt_created_at, it.owner, it.id);
+    for (const auto &model: models) {
+        const std::string dt_created_at = utils::datetime_from_unix_timestamp(model.created_at);
+        fmt::print("{:<25}{:<35}{}\n", dt_created_at, model.owner, model.id);
     }
 
     utils::separator();
@@ -105,22 +113,22 @@ namespace commands {
 
 void command_models(int argc, char **argv)
 {
-    Params params;
-    read_cli(argc, argv, params);
+    const Parameters params = read_cli(argc, argv);
 
-    serialization::Models models = serialization::get_models();
+    serialization::Models all_models = serialization::get_models();
+    std::sort(all_models.models.begin(), all_models.models.end());
 
     if (params.print_raw_json) {
-        fmt::print("{}\n", models.raw_response);
+        fmt::print("{}\n", all_models.raw_response);
         return;
     }
 
     std::vector<serialization::Model> filtered_models;
 
     if (params.print_user_models) {
-        get_user_models(models.models, filtered_models);
+        filtered_models = get_user_models(all_models.models);
     } else {
-        get_openai_models(models.models, filtered_models);
+        filtered_models = get_openai_models(all_models.models);
     }
 
     print_models(filtered_models);

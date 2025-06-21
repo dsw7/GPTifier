@@ -10,6 +10,11 @@ struct Model {
     int created_at;
     std::string id;
     std::string owner;
+
+    bool operator<(const Model &other) const
+    {
+        return created_at < other.created_at;
+    }
 };
 
 struct Models {
