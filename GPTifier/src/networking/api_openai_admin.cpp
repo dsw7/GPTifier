@@ -1,6 +1,5 @@
 #include "api_openai_admin.hpp"
 
-#include "configs.hpp"
 #include "curl_.hpp"
 
 #include <cstdlib>
@@ -8,6 +7,8 @@
 #include <stdexcept>
 
 namespace {
+
+const std::string URL_ORGANIZATION = "https://api.openai.com/v1/organization";
 
 std::string get_admin_api_key()
 {
@@ -27,24 +28,9 @@ std::string get_admin_api_key()
 
 } // namespace
 
-namespace endpoints {
-
-const std::string URL_ORGANIZATION = "https://api.openai.com/v1/organization";
-
-} // namespace endpoints
-
 namespace networking {
 
-void OpenAIAdmin::reset_handle()
-{
-    this->reset_easy_handle();
-    this->reset_headers_list();
-
-    this->set_writefunction();
-    this->set_auth_token(get_admin_api_key());
-}
-
-std::string OpenAIAdmin::get_costs(const std::time_t &start_time, int limit)
+std::string get_costs(const std::time_t &start_time, int limit)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -54,7 +40,7 @@ std::string OpenAIAdmin::get_costs(const std::time_t &start_time, int limit)
     headers = curl_slist_append(headers, "Content-Type: application/json");
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
 
-    const std::string endpoint = fmt::format("{}/{}?start_time={}&limit={}", endpoints::URL_ORGANIZATION, "costs", start_time, limit);
+    const std::string endpoint = fmt::format("{}/{}?start_time={}&limit={}", URL_ORGANIZATION, "costs", start_time, limit);
     curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
 
     curl_easy_setopt(handle, CURLOPT_HTTPGET, 1L);
