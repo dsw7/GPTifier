@@ -293,21 +293,26 @@ std::string create_fine_tuning_job(const std::string &post_fields)
     return response;
 }
 
-std::string OpenAIUser::get_fine_tuning_jobs(const std::string &limit)
+std::string get_fine_tuning_jobs(const std::string &limit)
 {
-    this->reset_handle();
+    Curl curl;
+    CURL *handle = curl.get_handle();
 
-    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+    curl_slist *headers = curl.get_headers();
+    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
 
     const std::string endpoint = fmt::format("{}/{}?limit={}", URL_FINE_TUNING, "jobs", limit);
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
-
-    curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
+    curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(handle, CURLOPT_HTTPGET, 1L);
 
     std::string response;
-    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
-    this->run_easy_perform();
+    const CURLcode code = curl_easy_perform(handle);
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
     return response;
 }
 

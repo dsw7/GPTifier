@@ -52,9 +52,7 @@ FineTuningJobs unpack_response(const std::string &response)
 
 FineTuningJobs get_fine_tuning_jobs(const std::string &limit)
 {
-    networking::OpenAIUser api;
-    const std::string response = api.get_fine_tuning_jobs(limit);
-
+    const std::string response = networking::get_fine_tuning_jobs(limit);
     FineTuningJobs fine_tuning_jobs = unpack_response(response);
     fine_tuning_jobs.raw_response = response;
     return fine_tuning_jobs;
