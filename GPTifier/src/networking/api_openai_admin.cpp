@@ -70,23 +70,4 @@ std::string OpenAIAdmin::get_costs(const std::time_t &start_time, int limit)
     return response;
 }
 
-std::string OpenAIAdmin::get_users(int limit)
-{
-    this->reset_handle();
-
-    this->set_content_type_transmit_json();
-    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
-
-    const std::string endpoint = fmt::format("{}/{}?limit={}", endpoints::URL_ORGANIZATION, "users", limit);
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
-
-    curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
-
-    std::string response;
-    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
-
-    this->run_easy_perform();
-    return response;
-}
-
 } // namespace networking
