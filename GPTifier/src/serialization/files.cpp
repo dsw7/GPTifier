@@ -44,9 +44,7 @@ Files unpack_response(const std::string &response)
 
 Files get_files()
 {
-    networking::OpenAIUser api;
-    const std::string response = api.get_uploaded_files();
-
+    const std::string response = networking::get_uploaded_files();
     Files files = unpack_response(response);
     files.raw_response = response;
     return files;

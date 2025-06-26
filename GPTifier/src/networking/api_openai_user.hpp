@@ -7,10 +7,10 @@
 namespace networking {
 
 std::string get_models();
+std::string get_uploaded_files(bool sort_asc = true);
 
 class OpenAIUser: public CurlBase {
 public:
-    std::string get_uploaded_files(bool sort_asc = true);
     std::string create_chat_completion(const std::string &post_fields);
     std::string get_chat_completions(int limit);
     std::string delete_chat_completion(const std::string &chat_completion_id);
