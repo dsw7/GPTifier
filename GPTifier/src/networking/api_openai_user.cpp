@@ -138,21 +138,26 @@ std::string get_chat_completions(int limit)
     return response;
 }
 
-std::string OpenAIUser::delete_chat_completion(const std::string &chat_completion_id)
+std::string delete_chat_completion(const std::string &chat_completion_id)
 {
-    this->reset_handle();
+    Curl curl;
+    CURL *handle = curl.get_handle();
 
-    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+    curl_slist *headers = curl.get_headers();
+    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
 
     const std::string endpoint = fmt::format("{}/{}", URL_CHAT_COMPLETIONS, chat_completion_id);
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
-
-    curl_easy_setopt(this->handle, CURLOPT_CUSTOMREQUEST, "DELETE");
+    curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(handle, CURLOPT_CUSTOMREQUEST, "DELETE");
 
     std::string response;
-    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
-    this->run_easy_perform();
+    const CURLcode code = curl_easy_perform(handle);
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
     return response;
 }
 

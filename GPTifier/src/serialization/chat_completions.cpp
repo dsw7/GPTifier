@@ -89,8 +89,7 @@ ChatCompletion create_chat_completion(const std::string &prompt, const std::stri
 
 bool delete_chat_completion(const std::string &chat_completion_id)
 {
-    networking::OpenAIUser api;
-    const std::string response = api.delete_chat_completion(chat_completion_id);
+    const std::string response = networking::delete_chat_completion(chat_completion_id);
     const nlohmann::json json = response_to_json(response);
 
     if (not json.contains("deleted")) {
