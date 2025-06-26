@@ -39,4 +39,14 @@ Curl::~Curl()
     curl_global_cleanup();
 }
 
+CURL *Curl::get_handle()
+{
+    return this->curl_;
+}
+
+curl_slist *Curl::get_headers()
+{
+    return this->headers_;
+}
+
 } // namespace networking

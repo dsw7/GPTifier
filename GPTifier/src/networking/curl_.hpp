@@ -9,6 +9,9 @@ public:
     Curl();
     ~Curl();
 
+    CURL *get_handle();
+    curl_slist *get_headers();
+
     // We want to prevent any copies from being made otherwise we'll attempt
     // to delete a shallow copy of the headers list multiple times (i.e. because the destructor will
     // be called for each copy)
