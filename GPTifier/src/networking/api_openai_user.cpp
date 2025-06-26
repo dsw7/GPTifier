@@ -65,31 +65,6 @@ std::string get_models()
     return response;
 }
 
-std::string get_uploaded_files(bool sort_asc)
-{
-    Curl curl;
-    CURL *handle = curl.get_handle();
-
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
-
-    const std::string order = sort_asc ? "asc" : "desc";
-    const std::string endpoint = fmt::format("{}?order={}", URL_FILES, order);
-    curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
-
-    curl_easy_setopt(handle, CURLOPT_HTTPGET, 1L);
-
-    std::string response;
-    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
-
-    const CURLcode code = curl_easy_perform(handle);
-    if (code != CURLE_OK) {
-        throw std::runtime_error(curl_easy_strerror(code));
-    }
-    return response;
-}
-
 std::string create_chat_completion(const std::string &post_fields)
 {
     Curl curl;
@@ -216,6 +191,31 @@ std::string upload_file(const std::string &filename, const std::string &purpose)
     const CURLcode code = curl_easy_perform(handle);
     curl_mime_free(form);
 
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
+    return response;
+}
+
+std::string get_uploaded_files(bool sort_asc)
+{
+    Curl curl;
+    CURL *handle = curl.get_handle();
+
+    curl_slist *headers = curl.get_headers();
+    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+
+    const std::string order = sort_asc ? "asc" : "desc";
+    const std::string endpoint = fmt::format("{}?order={}", URL_FILES, order);
+    curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
+
+    curl_easy_setopt(handle, CURLOPT_HTTPGET, 1L);
+
+    std::string response;
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
+
+    const CURLcode code = curl_easy_perform(handle);
     if (code != CURLE_OK) {
         throw std::runtime_error(curl_easy_strerror(code));
     }
