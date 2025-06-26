@@ -30,8 +30,7 @@ void unpack_chat_completions(const nlohmann::json &json, ChatCompletions &ccs)
 
 ChatCompletions get_chat_completions(int limit)
 {
-    networking::OpenAIUser api;
-    const std::string response = api.get_chat_completions(limit);
+    const std::string response = networking::get_chat_completions(limit);
     const nlohmann::json json = response_to_json(response);
 
     ChatCompletions chat_completions;
