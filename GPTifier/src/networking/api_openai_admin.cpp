@@ -35,10 +35,9 @@ std::string get_costs(const std::time_t &start_time, int limit)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_admin_api_key()).c_str());
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_admin_api_key());
+    curl.append_header("Content-Type: application/json");
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string endpoint = fmt::format("{}/{}?start_time={}&limit={}", URL_ORGANIZATION, "costs", start_time, limit);
     curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());

@@ -39,9 +39,8 @@ std::string get_models()
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     curl_easy_setopt(handle, CURLOPT_URL, URL_MODELS.c_str());
     curl_easy_setopt(handle, CURLOPT_HTTPGET, 1L);
@@ -61,9 +60,8 @@ std::string delete_model(const std::string &model_id)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string endpoint = fmt::format("{}/{}", URL_MODELS, model_id);
     curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
@@ -84,10 +82,9 @@ std::string create_chat_completion(const std::string &post_fields)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Content-Type: application/json");
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     curl_easy_setopt(handle, CURLOPT_URL, URL_CHAT_COMPLETIONS.c_str());
     curl_easy_setopt(handle, CURLOPT_POST, 1L);
@@ -108,9 +105,8 @@ std::string get_chat_completions(int limit)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string endpoint = fmt::format("{}?limit={}", URL_CHAT_COMPLETIONS, limit);
     curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
@@ -132,9 +128,8 @@ std::string delete_chat_completion(const std::string &chat_completion_id)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string endpoint = fmt::format("{}/{}", URL_CHAT_COMPLETIONS, chat_completion_id);
     curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
@@ -155,10 +150,9 @@ std::string create_embedding(const std::string &post_fields)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Content-Type: application/json");
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     curl_easy_setopt(handle, CURLOPT_URL, URL_EMBEDDINGS.c_str());
     curl_easy_setopt(handle, CURLOPT_POST, 1L);
@@ -179,10 +173,9 @@ std::string upload_file(const std::string &filename, const std::string &purpose)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    headers = curl_slist_append(headers, "Content-Type: multipart/form-data");
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Content-Type: multipart/form-data");
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     curl_easy_setopt(handle, CURLOPT_URL, URL_FILES.c_str());
 
@@ -216,9 +209,8 @@ std::string get_uploaded_files(bool sort_asc)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string order = sort_asc ? "asc" : "desc";
     const std::string endpoint = fmt::format("{}?order={}", URL_FILES, order);
@@ -241,9 +233,8 @@ std::string delete_file(const std::string &file_id)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string endpoint = fmt::format("{}/{}", URL_FILES, file_id);
     curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
@@ -264,10 +255,9 @@ std::string create_fine_tuning_job(const std::string &post_fields)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    headers = curl_slist_append(headers, "Content-Type: application/json");
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Content-Type: application/json");
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string endpoint = fmt::format("{}/{}", URL_FINE_TUNING, "jobs");
     curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
@@ -289,9 +279,8 @@ std::string get_fine_tuning_jobs(const std::string &limit)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl_slist *headers = curl.get_headers();
-    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
-    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string endpoint = fmt::format("{}/{}?limit={}", URL_FINE_TUNING, "jobs", limit);
     curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
