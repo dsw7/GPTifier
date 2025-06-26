@@ -63,10 +63,7 @@ FineTuningJobs get_fine_tuning_jobs(const std::string &limit)
 std::string create_fine_tuning_job(const std::string &model, const std::string &training_file)
 {
     const nlohmann::json data = { { "model", model }, { "training_file", training_file } };
-
-    networking::OpenAIUser api;
-    const std::string response = api.create_fine_tuning_job(data.dump());
-
+    const std::string response = networking::create_fine_tuning_job(data.dump());
     const nlohmann::json json = response_to_json(response);
 
     if (not json.contains("id")) {
