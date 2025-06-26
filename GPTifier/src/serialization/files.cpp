@@ -66,9 +66,8 @@ bool delete_file(const std::string &file_id)
 
 std::string upload_file(const std::string &filename)
 {
-    networking::OpenAIUser api;
     const std::string purpose = "fine-tune";
-    const std::string response = api.upload_file(filename, purpose);
+    const std::string response = networking::upload_file(filename, purpose);
 
     const nlohmann::json json = response_to_json(response);
 

@@ -185,16 +185,19 @@ std::string create_embedding(const std::string &post_fields)
     return response;
 }
 
-std::string OpenAIUser::upload_file(const std::string &filename, const std::string &purpose)
+std::string upload_file(const std::string &filename, const std::string &purpose)
 {
-    this->reset_handle();
+    Curl curl;
+    CURL *handle = curl.get_handle();
 
-    this->set_content_type_submit_form();
-    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+    curl_slist *headers = curl.get_headers();
+    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
+    headers = curl_slist_append(headers, "Content-Type: multipart/form-data");
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
 
-    curl_easy_setopt(this->handle, CURLOPT_URL, URL_FILES.c_str());
+    curl_easy_setopt(handle, CURLOPT_URL, URL_FILES.c_str());
 
-    curl_mime *form = curl_mime_init(this->handle);
+    curl_mime *form = curl_mime_init(handle);
     curl_mimepart *field = NULL;
 
     field = curl_mime_addpart(form);
@@ -205,18 +208,17 @@ std::string OpenAIUser::upload_file(const std::string &filename, const std::stri
     curl_mime_name(field, "file");
     curl_mime_filedata(field, filename.c_str());
 
-    curl_easy_setopt(this->handle, CURLOPT_MIMEPOST, form);
+    curl_easy_setopt(handle, CURLOPT_MIMEPOST, form);
 
     std::string response;
-    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
-    const CURLcode code = curl_easy_perform(this->handle);
+    const CURLcode code = curl_easy_perform(handle);
     curl_mime_free(form);
 
     if (code != CURLE_OK) {
         throw std::runtime_error(curl_easy_strerror(code));
     }
-
     return response;
 }
 
