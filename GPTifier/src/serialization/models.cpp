@@ -57,8 +57,7 @@ Models get_models()
 
 bool delete_model(const std::string &model_id)
 {
-    networking::OpenAIUser api;
-    const std::string response = api.delete_model(model_id);
+    const std::string response = networking::delete_model(model_id);
     const nlohmann::json json = response_to_json(response);
 
     if (not json.contains("deleted")) {

@@ -65,6 +65,29 @@ std::string get_models()
     return response;
 }
 
+std::string delete_model(const std::string &model_id)
+{
+    Curl curl;
+    CURL *handle = curl.get_handle();
+
+    curl_slist *headers = curl.get_headers();
+    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
+
+    const std::string endpoint = fmt::format("{}/{}", URL_MODELS, model_id);
+    curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(handle, CURLOPT_CUSTOMREQUEST, "DELETE");
+
+    std::string response;
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
+
+    const CURLcode code = curl_easy_perform(handle);
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
+    return response;
+}
+
 std::string create_chat_completion(const std::string &post_fields)
 {
     Curl curl;
@@ -257,24 +280,6 @@ std::string OpenAIUser::create_fine_tuning_job(const std::string &post_fields)
 
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
     curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
-
-    std::string response;
-    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
-
-    this->run_easy_perform();
-    return response;
-}
-
-std::string OpenAIUser::delete_model(const std::string &model_id)
-{
-    this->reset_handle();
-
-    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
-
-    const std::string endpoint = fmt::format("{}/{}", URL_MODELS, model_id);
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
-
-    curl_easy_setopt(this->handle, CURLOPT_CUSTOMREQUEST, "DELETE");
 
     std::string response;
     curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);

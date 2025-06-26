@@ -7,6 +7,7 @@
 namespace networking {
 
 std::string get_models();
+std::string delete_model(const std::string &model_id);
 std::string create_chat_completion(const std::string &post_fields);
 std::string get_chat_completions(int limit);
 std::string delete_chat_completion(const std::string &chat_completion_id);
@@ -18,7 +19,6 @@ std::string delete_file(const std::string &file_id);
 class OpenAIUser: public CurlBase {
 public:
     std::string create_fine_tuning_job(const std::string &post_fields);
-    std::string delete_model(const std::string &model_id);
     std::string get_fine_tuning_jobs(const std::string &limit);
 
 private:
