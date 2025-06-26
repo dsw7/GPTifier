@@ -31,8 +31,11 @@ Curl::Curl()
 
 Curl::~Curl()
 {
-    if (this->curl_) {
+    if (this->headers_) {
         curl_slist_free_all(this->headers_);
+    }
+
+    if (this->curl_) {
         curl_easy_cleanup(this->curl_);
     }
 
@@ -47,6 +50,11 @@ CURL *Curl::get_handle()
 curl_slist *Curl::get_headers()
 {
     return this->headers_;
+}
+
+void Curl::append_header(const std::string &header)
+{
+    this->headers_ = curl_slist_append(this->headers_, header.c_str());
 }
 
 } // namespace networking
