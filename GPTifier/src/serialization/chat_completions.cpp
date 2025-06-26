@@ -62,10 +62,8 @@ ChatCompletion create_chat_completion(const std::string &prompt, const std::stri
         data["metadata"] = { { "prompt", prompt } };
     }
 
-    networking::OpenAIUser api;
-
     auto start = std::chrono::high_resolution_clock::now();
-    const std::string response = api.create_chat_completion(data.dump());
+    const std::string response = networking::create_chat_completion(data.dump());
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> rtt = end - start;
 
