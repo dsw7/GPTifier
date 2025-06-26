@@ -1,12 +1,16 @@
 #include "api_openai_user.hpp"
 
-#include "configs.hpp"
-
 #include <cstdlib>
 #include <fmt/core.h>
 #include <stdexcept>
 
 namespace {
+
+const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
+const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
+const std::string URL_FILES = "https://api.openai.com/v1/files";
+const std::string URL_FINE_TUNING = "https://api.openai.com/v1/fine_tuning";
+const std::string URL_MODELS = "https://api.openai.com/v1/models";
 
 std::string get_user_api_key()
 {
@@ -26,16 +30,6 @@ std::string get_user_api_key()
 
 } // namespace
 
-namespace endpoints {
-
-const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
-const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
-const std::string URL_FILES = "https://api.openai.com/v1/files";
-const std::string URL_FINE_TUNING = "https://api.openai.com/v1/fine_tuning";
-const std::string URL_MODELS = "https://api.openai.com/v1/models";
-
-} // namespace endpoints
-
 namespace networking {
 
 void OpenAIUser::reset_handle()
@@ -53,7 +47,7 @@ std::string OpenAIUser::get_models()
 
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_MODELS.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_URL, URL_MODELS.c_str());
 
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
 
@@ -71,7 +65,7 @@ std::string OpenAIUser::get_uploaded_files(bool sort_asc)
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
     const std::string order = sort_asc ? "asc" : "desc";
-    const std::string endpoint = fmt::format("{}?order={}", endpoints::URL_FILES, order);
+    const std::string endpoint = fmt::format("{}?order={}", URL_FILES, order);
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
 
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
@@ -90,7 +84,7 @@ std::string OpenAIUser::create_chat_completion(const std::string &post_fields)
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_CHAT_COMPLETIONS.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_URL, URL_CHAT_COMPLETIONS.c_str());
 
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
     curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
@@ -108,7 +102,7 @@ std::string OpenAIUser::get_chat_completions(int limit)
 
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
-    const std::string endpoint = fmt::format("{}?limit={}", endpoints::URL_CHAT_COMPLETIONS, limit);
+    const std::string endpoint = fmt::format("{}?limit={}", URL_CHAT_COMPLETIONS, limit);
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
 
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
@@ -126,7 +120,7 @@ std::string OpenAIUser::delete_chat_completion(const std::string &chat_completio
 
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
-    const std::string endpoint = fmt::format("{}/{}", endpoints::URL_CHAT_COMPLETIONS, chat_completion_id);
+    const std::string endpoint = fmt::format("{}/{}", URL_CHAT_COMPLETIONS, chat_completion_id);
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
 
     curl_easy_setopt(this->handle, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -145,7 +139,7 @@ std::string OpenAIUser::create_embedding(const std::string &post_fields)
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_EMBEDDINGS.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_URL, URL_EMBEDDINGS.c_str());
 
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
     curl_easy_setopt(this->handle, CURLOPT_POSTFIELDS, post_fields.c_str());
@@ -164,7 +158,7 @@ std::string OpenAIUser::upload_file(const std::string &filename, const std::stri
     this->set_content_type_submit_form();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoints::URL_FILES.c_str());
+    curl_easy_setopt(this->handle, CURLOPT_URL, URL_FILES.c_str());
 
     curl_mime *form = curl_mime_init(this->handle);
     curl_mimepart *field = NULL;
@@ -198,7 +192,7 @@ std::string OpenAIUser::delete_file(const std::string &file_id)
 
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
-    const std::string endpoint = fmt::format("{}/{}", endpoints::URL_FILES, file_id);
+    const std::string endpoint = fmt::format("{}/{}", URL_FILES, file_id);
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
 
     curl_easy_setopt(this->handle, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -217,7 +211,7 @@ std::string OpenAIUser::create_fine_tuning_job(const std::string &post_fields)
     this->set_content_type_transmit_json();
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
-    const std::string endpoint = fmt::format("{}/{}", endpoints::URL_FINE_TUNING, "jobs");
+    const std::string endpoint = fmt::format("{}/{}", URL_FINE_TUNING, "jobs");
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
 
     curl_easy_setopt(this->handle, CURLOPT_POST, 1L);
@@ -236,7 +230,7 @@ std::string OpenAIUser::delete_model(const std::string &model_id)
 
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
-    const std::string endpoint = fmt::format("{}/{}", endpoints::URL_MODELS, model_id);
+    const std::string endpoint = fmt::format("{}/{}", URL_MODELS, model_id);
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
 
     curl_easy_setopt(this->handle, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -254,7 +248,7 @@ std::string OpenAIUser::get_fine_tuning_jobs(const std::string &limit)
 
     curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
 
-    const std::string endpoint = fmt::format("{}/{}?limit={}", endpoints::URL_FINE_TUNING, "jobs", limit);
+    const std::string endpoint = fmt::format("{}/{}?limit={}", URL_FINE_TUNING, "jobs", limit);
     curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
 
     curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
