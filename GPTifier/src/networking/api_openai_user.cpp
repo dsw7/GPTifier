@@ -1,6 +1,6 @@
 #include "api_openai_user.hpp"
 
-#include "curl_.hpp"
+#include "curl_base.hpp"
 
 #include <cstdlib>
 #include <fmt/core.h>
@@ -33,15 +33,6 @@ std::string get_user_api_key()
 } // namespace
 
 namespace networking {
-
-void OpenAIUser::reset_handle()
-{
-    this->reset_easy_handle();
-    this->reset_headers_list();
-
-    this->set_writefunction();
-    this->set_auth_token(get_user_api_key());
-}
 
 std::string get_models()
 {

@@ -1,6 +1,6 @@
 #include "api_openai_admin.hpp"
 
-#include "curl_.hpp"
+#include "curl_base.hpp"
 
 #include <cstdlib>
 #include <fmt/core.h>
