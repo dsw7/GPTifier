@@ -1,5 +1,7 @@
 #include "api_openai_user.hpp"
 
+#include "curl_.hpp"
+
 #include <cstdlib>
 #include <fmt/core.h>
 #include <stdexcept>
@@ -41,20 +43,26 @@ void OpenAIUser::reset_handle()
     this->set_auth_token(get_user_api_key());
 }
 
-std::string OpenAIUser::get_models()
+std::string get_models()
 {
-    this->reset_handle();
+    Curl curl;
+    CURL *handle = curl.get_handle();
 
-    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+    curl_slist *headers = curl.get_headers();
+    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
 
-    curl_easy_setopt(this->handle, CURLOPT_URL, URL_MODELS.c_str());
-
-    curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
+    curl_easy_setopt(handle, CURLOPT_URL, URL_MODELS.c_str());
+    curl_easy_setopt(handle, CURLOPT_HTTPGET, 1L);
 
     std::string response;
-    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
-    this->run_easy_perform();
+    const CURLcode code = curl_easy_perform(handle);
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
+
     return response;
 }
 

@@ -49,9 +49,7 @@ Models unpack_response(const std::string &response)
 
 Models get_models()
 {
-    networking::OpenAIUser api;
-    const std::string response = api.get_models();
-
+    const std::string response = networking::get_models();
     Models models = unpack_response(response);
     models.raw_response = response;
     return models;
