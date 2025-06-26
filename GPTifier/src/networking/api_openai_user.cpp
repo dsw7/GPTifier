@@ -222,21 +222,26 @@ std::string upload_file(const std::string &filename, const std::string &purpose)
     return response;
 }
 
-std::string OpenAIUser::delete_file(const std::string &file_id)
+std::string delete_file(const std::string &file_id)
 {
-    this->reset_handle();
+    Curl curl;
+    CURL *handle = curl.get_handle();
 
-    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+    curl_slist *headers = curl.get_headers();
+    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_user_api_key()).c_str());
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
 
     const std::string endpoint = fmt::format("{}/{}", URL_FILES, file_id);
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
-
-    curl_easy_setopt(this->handle, CURLOPT_CUSTOMREQUEST, "DELETE");
+    curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(handle, CURLOPT_CUSTOMREQUEST, "DELETE");
 
     std::string response;
-    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
-    this->run_easy_perform();
+    const CURLcode code = curl_easy_perform(handle);
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
     return response;
 }
 

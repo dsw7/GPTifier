@@ -52,9 +52,7 @@ Files get_files()
 
 bool delete_file(const std::string &file_id)
 {
-    networking::OpenAIUser api;
-    const std::string response = api.delete_file(file_id);
-
+    const std::string response = networking::delete_file(file_id);
     const nlohmann::json json = response_to_json(response);
 
     if (not json.contains("deleted")) {
@@ -68,7 +66,6 @@ std::string upload_file(const std::string &filename)
 {
     const std::string purpose = "fine-tune";
     const std::string response = networking::upload_file(filename, purpose);
-
     const nlohmann::json json = response_to_json(response);
 
     if (not json.contains("id")) {
