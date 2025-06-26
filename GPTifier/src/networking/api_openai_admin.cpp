@@ -1,6 +1,7 @@
 #include "api_openai_admin.hpp"
 
 #include "configs.hpp"
+#include "curl_.hpp"
 
 #include <cstdlib>
 #include <fmt/core.h>
@@ -45,21 +46,27 @@ void OpenAIAdmin::reset_handle()
 
 std::string OpenAIAdmin::get_costs(const std::time_t &start_time, int limit)
 {
-    this->reset_handle();
+    Curl curl;
+    CURL *handle = curl.get_handle();
 
-    this->set_content_type_transmit_json();
-    curl_easy_setopt(this->handle, CURLOPT_HTTPHEADER, this->headers);
+    curl_slist *headers = curl.get_headers();
+    headers = curl_slist_append(headers, ("Authorization: Bearer " + get_admin_api_key()).c_str());
+    headers = curl_slist_append(headers, "Content-Type: application/json");
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
 
-    const std::string endpoint = fmt::format(
-        "{}/{}?start_time={}&limit={}", endpoints::URL_ORGANIZATION, "costs", start_time, limit);
-    curl_easy_setopt(this->handle, CURLOPT_URL, endpoint.c_str());
+    const std::string endpoint = fmt::format("{}/{}?start_time={}&limit={}", endpoints::URL_ORGANIZATION, "costs", start_time, limit);
+    curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
 
-    curl_easy_setopt(this->handle, CURLOPT_HTTPGET, 1L);
+    curl_easy_setopt(handle, CURLOPT_HTTPGET, 1L);
 
     std::string response;
-    curl_easy_setopt(this->handle, CURLOPT_WRITEDATA, &response);
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
-    this->run_easy_perform();
+    const CURLcode code = curl_easy_perform(handle);
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
+
     return response;
 }
 
