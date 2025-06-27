@@ -27,12 +27,10 @@ std::string test_curl_handle_is_reusable()
         { "messages", nlohmann::json::array({ messages }) }
     };
 
-    networking::OpenAIUser api;
-
     const std::string dump = data.dump();
-    const std::string response_1 = api.create_chat_completion(dump);
-    const std::string response_2 = api.create_chat_completion(dump);
-    const std::string response_3 = api.create_chat_completion(dump);
+    const std::string response_1 = networking::create_chat_completion(dump);
+    const std::string response_2 = networking::create_chat_completion(dump);
+    const std::string response_3 = networking::create_chat_completion(dump);
 
     const nlohmann::json json_1 = response_to_json(response_1);
     const nlohmann::json json_2 = response_to_json(response_2);

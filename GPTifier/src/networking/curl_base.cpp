@@ -14,72 +14,47 @@ size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
 
 namespace networking {
 
-CurlBase::CurlBase()
+Curl::Curl()
 {
     if (curl_global_init(CURL_GLOBAL_DEFAULT) != 0) {
         throw std::runtime_error("Something went wrong when initializing libcurl");
     }
 
-    this->handle = curl_easy_init();
+    this->curl_ = curl_easy_init();
 
-    if (this->handle == NULL) {
+    if (this->curl_ == nullptr) {
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
+
+    curl_easy_setopt(this->curl_, CURLOPT_WRITEFUNCTION, write_callback);
 }
 
-CurlBase::~CurlBase()
+Curl::~Curl()
 {
-    if (this->handle) {
-        curl_slist_free_all(this->headers);
-        curl_easy_cleanup(this->handle);
+    if (this->headers_) {
+        curl_slist_free_all(this->headers_);
+    }
+
+    if (this->curl_) {
+        curl_easy_cleanup(this->curl_);
     }
 
     curl_global_cleanup();
 }
 
-void CurlBase::reset_easy_handle()
+CURL *Curl::get_handle()
 {
-    if (this->handle) {
-        curl_easy_reset(this->handle);
-    }
+    return this->curl_;
 }
 
-void CurlBase::reset_headers_list()
+curl_slist *Curl::get_headers()
 {
-    curl_slist_free_all(this->headers);
-    this->headers = NULL;
+    return this->headers_;
 }
 
-void CurlBase::set_writefunction()
+void Curl::append_header(const std::string &header)
 {
-    curl_easy_setopt(this->handle, CURLOPT_WRITEFUNCTION, write_callback);
-}
-
-void CurlBase::set_auth_token(const std::string &token)
-{
-    const std::string header = "Authorization: Bearer " + token;
-    this->headers = curl_slist_append(this->headers, header.c_str());
-}
-
-void CurlBase::set_content_type_submit_form()
-{
-    const std::string header = "Content-Type: multipart/form-data";
-    this->headers = curl_slist_append(this->headers, header.c_str());
-}
-
-void CurlBase::set_content_type_transmit_json()
-{
-    const std::string header = "Content-Type: application/json";
-    this->headers = curl_slist_append(this->headers, header.c_str());
-}
-
-void CurlBase::run_easy_perform()
-{
-    const CURLcode code = curl_easy_perform(this->handle);
-
-    if (code != CURLE_OK) {
-        throw std::runtime_error(curl_easy_strerror(code));
-    }
+    this->headers_ = curl_slist_append(this->headers_, header.c_str());
 }
 
 } // namespace networking

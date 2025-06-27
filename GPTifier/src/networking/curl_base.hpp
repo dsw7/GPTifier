@@ -5,28 +5,24 @@
 
 namespace networking {
 
-class CurlBase {
+class Curl {
 public:
-    CurlBase();
-    ~CurlBase();
+    Curl();
+    ~Curl();
+
+    CURL *get_handle();
+    curl_slist *get_headers();
+    void append_header(const std::string &header);
 
     // We want to prevent any copies from being made otherwise we'll attempt
     // to delete a shallow copy of the headers list multiple times (i.e. because the destructor will
     // be called for each copy)
-    CurlBase(const CurlBase &) = delete;
-    CurlBase &operator=(const CurlBase &) = delete;
+    Curl(const Curl &) = delete;
+    Curl &operator=(const Curl &) = delete;
 
-protected:
-    CURL *handle = NULL;
-    struct curl_slist *headers = NULL;
-
-    void reset_easy_handle();
-    void reset_headers_list();
-    void set_auth_token(const std::string &token);
-    void set_writefunction();
-    void set_content_type_submit_form();
-    void set_content_type_transmit_json();
-    void run_easy_perform();
+private:
+    CURL *curl_ = nullptr;
+    curl_slist *headers_ = nullptr;
 };
 
 } // namespace networking

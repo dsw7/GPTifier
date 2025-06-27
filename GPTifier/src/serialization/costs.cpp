@@ -52,9 +52,7 @@ Costs unpack_response(const std::string &response)
 
 Costs get_costs(std::time_t start_time, int limit)
 {
-    networking::OpenAIAdmin api;
-    const std::string response = api.get_costs(start_time, limit);
-
+    const std::string response = networking::get_costs(start_time, limit);
     Costs costs = unpack_response(response);
     costs.raw_response = response;
     return costs;
