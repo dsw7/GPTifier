@@ -3,9 +3,7 @@
 #include "api_openai_admin.hpp"
 #include "response_to_json.hpp"
 
-#include <fmt/core.h>
 #include <json.hpp>
-#include <stdexcept>
 
 namespace serialization {
 
@@ -19,7 +17,7 @@ void unpack_costs(const nlohmann::json &json, Costs &costs)
         }
 
         const nlohmann::json cost_obj = entry["results"][0];
-        float cost = cost_obj["amount"]["value"];
+        const float cost = cost_obj["amount"]["value"];
         costs.total_cost += cost;
 
         CostsBucket bucket;

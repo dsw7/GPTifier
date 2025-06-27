@@ -1,7 +1,5 @@
 #include "response_to_json.hpp"
 
-#include <stdexcept>
-
 namespace serialization {
 
 nlohmann::json response_to_json(const std::string &response)

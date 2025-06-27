@@ -3,7 +3,7 @@
 #include "api_openai_user.hpp"
 #include "response_to_json.hpp"
 
-#include <fmt/core.h>
+#include <stdexcept>
 
 namespace serialization {
 
@@ -59,10 +59,10 @@ ChatCompletion create_chat_completion(const std::string &prompt, const std::stri
         data["metadata"] = { { "prompt", prompt } };
     }
 
-    auto start = std::chrono::high_resolution_clock::now();
+    const auto start = std::chrono::high_resolution_clock::now();
     const std::string response = networking::create_chat_completion(data.dump());
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> rtt = end - start;
+    const auto end = std::chrono::high_resolution_clock::now();
+    const std::chrono::duration<float> rtt = end - start;
 
     ChatCompletion cc = unpack_response<ChatCompletion>(response, unpack_chat_completion);
     cc.prompt = prompt;

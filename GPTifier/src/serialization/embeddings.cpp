@@ -3,9 +3,7 @@
 #include "api_openai_user.hpp"
 #include "response_to_json.hpp"
 
-#include <fmt/core.h>
 #include <json.hpp>
-#include <stdexcept>
 
 namespace serialization {
 

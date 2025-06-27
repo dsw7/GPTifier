@@ -2,9 +2,7 @@
 
 #include "api_openai_user.hpp"
 #include "response_to_json.hpp"
-#include "utils.hpp"
 
-#include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
 

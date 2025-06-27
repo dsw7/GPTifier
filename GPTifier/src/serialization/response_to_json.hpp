@@ -2,6 +2,7 @@
 
 #include <fmt/core.h>
 #include <json.hpp>
+#include <stdexcept>
 #include <string>
 
 namespace serialization {

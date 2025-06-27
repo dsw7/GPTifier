@@ -3,7 +3,6 @@
 #include "api_openai_user.hpp"
 #include "response_to_json.hpp"
 
-#include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
 
@@ -19,7 +18,6 @@ void unpack_files(const nlohmann::json &json, Files &files)
         file.filename = entry["filename"];
         file.id = entry["id"];
         file.purpose = entry["purpose"];
-
         files.files.push_back(file);
     }
 }
