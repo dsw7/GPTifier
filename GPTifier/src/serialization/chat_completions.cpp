@@ -9,6 +9,15 @@ namespace serialization {
 
 namespace {
 
+void unpack_chat_completion(const nlohmann::json &json, ChatCompletion &cc)
+{
+    cc.completion = json["choices"][0]["message"]["content"];
+    cc.completion_tokens = json["usage"]["completion_tokens"];
+    cc.created = json["created"];
+    cc.model = json["model"];
+    cc.prompt_tokens = json["usage"]["prompt_tokens"];
+}
+
 void unpack_chat_completions(const nlohmann::json &json, ChatCompletions &ccs)
 {
     for (const auto &entry: json["data"]) {
@@ -31,19 +40,8 @@ void unpack_chat_completions(const nlohmann::json &json, ChatCompletions &ccs)
 ChatCompletions get_chat_completions(int limit)
 {
     const std::string response = networking::get_chat_completions(limit);
-    const nlohmann::json json = response_to_json(response);
-
-    ChatCompletions chat_completions;
+    ChatCompletions chat_completions = unpack_response<ChatCompletions>(response, unpack_chat_completions);
     chat_completions.raw_response = response;
-
-    try {
-        unpack_chat_completions(json, chat_completions);
-    } catch (nlohmann::json::out_of_range &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    } catch (nlohmann::json::type_error &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    }
-
     return chat_completions;
 }
 
@@ -66,24 +64,10 @@ ChatCompletion create_chat_completion(const std::string &prompt, const std::stri
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<float> rtt = end - start;
 
-    const nlohmann::json json = response_to_json(response);
-    ChatCompletion cc;
-
-    try {
-        cc.completion = json["choices"][0]["message"]["content"];
-        cc.completion_tokens = json["usage"]["completion_tokens"];
-        cc.created = json["created"];
-        cc.model = json["model"];
-        cc.prompt = prompt;
-        cc.prompt_tokens = json["usage"]["prompt_tokens"];
-        cc.raw_response = response;
-        cc.rtt = rtt;
-    } catch (nlohmann::json::out_of_range &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    } catch (nlohmann::json::type_error &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    }
-
+    ChatCompletion cc = unpack_response<ChatCompletion>(response, unpack_chat_completion);
+    cc.prompt = prompt;
+    cc.raw_response = response;
+    cc.rtt = rtt;
     return cc;
 }
 
