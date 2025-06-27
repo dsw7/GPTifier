@@ -1,6 +1,5 @@
 #include "response_to_json.hpp"
 
-#include <fmt/core.h>
 #include <stdexcept>
 
 namespace serialization {
