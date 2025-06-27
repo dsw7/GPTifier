@@ -32,28 +32,12 @@ void unpack_costs(const nlohmann::json &json, Costs &costs)
     }
 }
 
-Costs unpack_response(const std::string &response)
-{
-    const nlohmann::json json = response_to_json(response);
-    Costs costs;
-
-    try {
-        unpack_costs(json, costs);
-    } catch (nlohmann::json::out_of_range &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    } catch (nlohmann::json::type_error &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    }
-
-    return costs;
-}
-
 } // namespace
 
 Costs get_costs(std::time_t start_time, int limit)
 {
     const std::string response = networking::get_costs(start_time, limit);
-    Costs costs = unpack_response(response);
+    Costs costs = unpack_response<Costs>(response, unpack_costs);
     costs.raw_response = response;
     return costs;
 }

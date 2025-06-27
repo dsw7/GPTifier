@@ -11,21 +11,10 @@ namespace serialization {
 
 namespace {
 
-Embedding unpack_response(const std::string &response)
+void unpack_embedding(const nlohmann::json &json, Embedding &embedding)
 {
-    Embedding embedding;
-    const nlohmann::json json = response_to_json(response);
-
-    try {
-        embedding.embedding = json["data"][0]["embedding"].template get<std::vector<float>>();
-        embedding.model = json["model"];
-    } catch (nlohmann::json::out_of_range &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    } catch (nlohmann::json::type_error &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    }
-
-    return embedding;
+    embedding.embedding = json["data"][0]["embedding"].template get<std::vector<float>>();
+    embedding.model = json["model"];
 }
 
 } // namespace
@@ -34,7 +23,7 @@ Embedding create_embedding(const std::string &model, const std::string &input)
 {
     const nlohmann::json data = { { "model", model }, { "input", input } };
     const std::string response = networking::create_embedding(data.dump());
-    Embedding embedding = unpack_response(response);
+    Embedding embedding = unpack_response<Embedding>(response, unpack_embedding);
     embedding.input = input;
     return embedding;
 }

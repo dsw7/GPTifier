@@ -24,28 +24,12 @@ void unpack_files(const nlohmann::json &json, Files &files)
     }
 }
 
-Files unpack_response(const std::string &response)
-{
-    const nlohmann::json json = response_to_json(response);
-    Files files;
-
-    try {
-        unpack_files(json, files);
-    } catch (nlohmann::json::out_of_range &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    } catch (nlohmann::json::type_error &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    }
-
-    return files;
-}
-
 } // namespace
 
 Files get_files()
 {
     const std::string response = networking::get_uploaded_files();
-    Files files = unpack_response(response);
+    Files files = unpack_response<Files>(response, unpack_files);
     files.raw_response = response;
     return files;
 }

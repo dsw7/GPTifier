@@ -32,28 +32,12 @@ void unpack_fine_tuning_jobs(const nlohmann::json &json, FineTuningJobs &fine_tu
     }
 }
 
-FineTuningJobs unpack_response(const std::string &response)
-{
-    const nlohmann::json json = response_to_json(response);
-    FineTuningJobs fine_tuning_jobs;
-
-    try {
-        unpack_fine_tuning_jobs(json, fine_tuning_jobs);
-    } catch (nlohmann::json::out_of_range &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    } catch (nlohmann::json::type_error &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    }
-
-    return fine_tuning_jobs;
-}
-
 } // namespace
 
 FineTuningJobs get_fine_tuning_jobs(const std::string &limit)
 {
     const std::string response = networking::get_fine_tuning_jobs(limit);
-    FineTuningJobs fine_tuning_jobs = unpack_response(response);
+    FineTuningJobs fine_tuning_jobs = unpack_response<FineTuningJobs>(response, unpack_fine_tuning_jobs);
     fine_tuning_jobs.raw_response = response;
     return fine_tuning_jobs;
 }
