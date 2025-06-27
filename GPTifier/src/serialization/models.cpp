@@ -2,9 +2,7 @@
 
 #include "api_openai_user.hpp"
 #include "response_to_json.hpp"
-#include "utils.hpp"
 
-#include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
 
@@ -29,28 +27,12 @@ void unpack_models(const nlohmann::json &json, Models &models)
     }
 }
 
-Models unpack_response(const std::string &response)
-{
-    const nlohmann::json json = response_to_json(response);
-    Models models;
-
-    try {
-        unpack_models(json, models);
-    } catch (nlohmann::json::out_of_range &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    } catch (nlohmann::json::type_error &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
-    }
-
-    return models;
-}
-
 } // namespace
 
 Models get_models()
 {
     const std::string response = networking::get_models();
-    Models models = unpack_response(response);
+    Models models = unpack_response<Models>(response, unpack_models);
     models.raw_response = response;
     return models;
 }
