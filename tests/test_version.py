@@ -4,6 +4,13 @@ from .extended_testcase import TestCaseExtended
 
 class TestVersion(TestCaseExtended):
 
+    def test_correct_version(self) -> None:
+        # I.e. ensure CMakeLists.txt project VERSION is updated
+        proc = self.assertSuccess("-v")
+        stdout = proc.load_stdout_to_json()
+        self.assertIn("version", stdout)
+        self.assertEqual(stdout["version"], "1.5.0")
+
     def test_version_version(self) -> None:
         for option in ["-v", "--version"]:
             with self.subTest(option=option):
