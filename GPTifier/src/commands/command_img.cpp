@@ -96,11 +96,6 @@ namespace commands {
 
 void command_img(int argc, char **argv)
 {
-    if (argc == 2) {
-        help_img();
-        exit(EXIT_FAILURE);
-    }
-
     const Parameters params = read_cli(argc, argv);
 
     if (not params.prompt_file) {
