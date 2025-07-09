@@ -4,6 +4,7 @@
 #include "command_embed.hpp"
 #include "command_files.hpp"
 #include "command_fine_tune.hpp"
+#include "command_img.hpp"
 #include "command_models.hpp"
 #include "command_run.hpp"
 #include "command_short.hpp"
@@ -32,6 +33,7 @@ void print_help_messages()
     help.add_command("fine-tune", "Manage fine tuning operations");
     help.add_command("costs", "Get OpenAI usage details");
     help.add_command("edit", "Edit one or more files according to a prompt");
+    help.add_command("img", "Generate an image from a prompt");
     help.print();
 }
 
@@ -98,6 +100,8 @@ int main(int argc, char **argv)
             commands::command_edit(argc, argv);
         } else if (command == "test") {
             commands::command_test(argc, argv);
+        } else if (command == "img") {
+            commands::command_img(argc, argv);
         } else {
             throw std::runtime_error("Received unknown command. Re-run with -h or --help");
         }
