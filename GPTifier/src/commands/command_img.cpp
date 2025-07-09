@@ -3,6 +3,7 @@
 #include "help_messages.hpp"
 #include "utils.hpp"
 
+#include <ctime>
 #include <fmt/core.h>
 #include <getopt.h>
 #include <optional>
@@ -79,6 +80,16 @@ Parameters read_cli(int argc, char **argv)
     return params;
 }
 
+std::string get_default_output_filename()
+{
+    const std::time_t timestamp = std::time(nullptr);
+    const std::tm *datetime = std::gmtime(&timestamp);
+    char buffer[80];
+
+    std::strftime(buffer, sizeof(buffer), "%Y%m%d_%H%M%S", datetime);
+    return fmt::format("{}.png", buffer);
+}
+
 } // namespace
 
 namespace commands {
@@ -97,6 +108,16 @@ void command_img(int argc, char **argv)
     }
 
     const std::string prompt = utils::read_from_file(params.prompt_file.value());
+
+    std::string output_file;
+
+    if (not params.output_file) {
+        output_file = params.output_file.value();
+    } else {
+        output_file = get_default_output_filename();
+    }
+
+    fmt::print("Exported image to {}\n", output_file);
 }
 
 } // namespace commands
