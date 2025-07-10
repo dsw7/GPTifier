@@ -12,6 +12,7 @@ const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/complet
 const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
 const std::string URL_FILES = "https://api.openai.com/v1/files";
 const std::string URL_FINE_TUNING = "https://api.openai.com/v1/fine_tuning";
+const std::string URL_IMAGES = "https://api.openai.com/v1/images";
 const std::string URL_MODELS = "https://api.openai.com/v1/models";
 
 std::string get_user_api_key()
@@ -285,6 +286,30 @@ std::string get_fine_tuning_jobs(const std::string &limit)
     const std::string endpoint = fmt::format("{}/{}?limit={}", URL_FINE_TUNING, "jobs", limit);
     curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
     curl_easy_setopt(handle, CURLOPT_HTTPGET, 1L);
+
+    std::string response;
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
+
+    const CURLcode code = curl_easy_perform(handle);
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
+    return response;
+}
+
+std::string create_image(const std::string &post_fields)
+{
+    Curl curl;
+    CURL *handle = curl.get_handle();
+
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Content-Type: application/json");
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
+
+    const std::string endpoint = fmt::format("{}/{}", URL_IMAGES, "generations");
+    curl_easy_setopt(handle, CURLOPT_URL, endpoint.c_str());
+    curl_easy_setopt(handle, CURLOPT_POST, 1L);
+    curl_easy_setopt(handle, CURLOPT_POSTFIELDS, post_fields.c_str());
 
     std::string response;
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);

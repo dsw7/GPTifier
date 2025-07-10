@@ -113,6 +113,7 @@ add_executable(
   src/commands/command_embed.cpp
   src/commands/command_files.cpp
   src/commands/command_fine_tune.cpp
+  src/commands/command_img.cpp
   src/commands/command_models.cpp
   src/commands/command_run.cpp
   src/commands/command_short.cpp
@@ -129,6 +130,7 @@ add_executable(
   src/serialization/embeddings.cpp
   src/serialization/files.cpp
   src/serialization/fine_tuning.cpp
+  src/serialization/images.cpp
   src/serialization/models.cpp
   src/serialization/response_to_json.cpp
   src/serialization/testing.cpp

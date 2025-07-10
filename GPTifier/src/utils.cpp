@@ -76,6 +76,19 @@ void append_to_file(const std::string &filename, const std::string &text)
     file.close();
 }
 
+void write_to_png(const std::string &filename, const std::string &binary_data)
+{
+    std::ofstream file(filename, std::ios::binary);
+
+    if (not file.is_open()) {
+        const std::string errmsg = fmt::format("Unable to open '{}'", filename);
+        throw std::runtime_error(errmsg);
+    }
+
+    file << binary_data;
+    file.close();
+}
+
 float string_to_float(const std::string &str)
 {
     float f = 0.00;
