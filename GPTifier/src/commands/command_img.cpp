@@ -7,6 +7,7 @@
 #include <ctime>
 #include <fmt/core.h>
 #include <getopt.h>
+#include <json.hpp>
 #include <optional>
 #include <stdexcept>
 
@@ -130,13 +131,21 @@ void command_img(int argc, char **argv)
     utils::write_to_png(filename_png, b64_decoded);
     fmt::print("Exported image to {}\n", filename_png);
 
-    const std::string filename_json = fmt::format("{}.json", name);
+    nlohmann::json metadata = {
+        { "filename", filename_png },
+        { "model", params.model },
+        { "prompt", prompt },
+        { "quality", params.quality },
+        { "style", params.style },
+    };
 
     if (image.revised_prompt) {
-        utils::separator();
-        fmt::print("Revised prompt: {}\n", image.revised_prompt.value());
-        utils::separator();
+        metadata["revised_prompt"] = image.revised_prompt.value();
     }
+
+    const std::string filename_json = fmt::format("{}.json", name);
+    utils::write_to_file(filename_json, metadata.dump(4));
+    fmt::print("Exported metadata to {}\n", filename_json);
 }
 
 } // namespace commands
