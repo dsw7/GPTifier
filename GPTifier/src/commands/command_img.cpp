@@ -140,10 +140,6 @@ void command_img(int argc, char **argv)
 
     const std::string b64_decoded = base64_decode(image.b64_json);
     utils::write_to_png(output_file, b64_decoded);
-
-    fmt::print("Input text tokens: {}\n", image.input_tokens_text);
-    fmt::print("Input image tokens: {}\n", image.input_tokens_image);
-    fmt::print("Output tokens: {}\n", image.output_tokens);
     fmt::print("Exported image to {}\n", output_file);
 }
 

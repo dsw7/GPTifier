@@ -6,9 +6,6 @@
 namespace serialization {
 
 struct Image {
-    int input_tokens_image = 0;
-    int input_tokens_text = 0;
-    int output_tokens = 0;
     std::string b64_json;
     std::time_t created = 0;
 };
