@@ -20,7 +20,6 @@ void help_img()
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-q", "--hd", "Request high definition image (default is standard)");
     help.add_option("-v", "--vivid", "Request hyper-realistic / dramatic image (default is natural)");
-    help.add_option("-o <filename>", "--output=<filename>", "Specify where to export image (defaults to timestamp returned from OpenAI API)");
     help.print();
 }
 
@@ -29,7 +28,6 @@ struct Parameters {
     std::string quality = "standard";
     std::string style = "natural";
     std::optional<std::string> prompt_file;
-    std::optional<std::string> output_file;
 };
 
 Parameters read_cli(int argc, char **argv)
@@ -41,12 +39,11 @@ Parameters read_cli(int argc, char **argv)
             { "help", no_argument, 0, 'h' },
             { "hd", no_argument, 0, 'q' },
             { "vivid", no_argument, 0, 'v' },
-            { "output", required_argument, 0, 'o' },
             { 0, 0, 0, 0 },
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hqvo:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hqv", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -61,9 +58,6 @@ Parameters read_cli(int argc, char **argv)
                 break;
             case 'v':
                 params.style = "vivid";
-                break;
-            case 'o':
-                params.output_file = optarg;
                 break;
             default:
                 help::exit_on_failure();
@@ -86,7 +80,7 @@ std::string filename_from_created(const std::time_t &timestamp)
     char buffer[80];
 
     std::strftime(buffer, sizeof(buffer), "%Y%m%d_%H%M%S", datetime);
-    return fmt::format("{}.png", buffer);
+    return buffer;
 }
 
 std::string base64_decode(const std::string &str_encoded)
@@ -129,18 +123,20 @@ void command_img(int argc, char **argv)
 
     const std::string prompt = utils::read_from_file(params.prompt_file.value());
     const serialization::Image image = serialization::create_image(params.model, prompt, params.quality, params.style);
-
-    std::string output_file;
-
-    if (params.output_file) {
-        output_file = params.output_file.value();
-    } else {
-        output_file = filename_from_created(image.created);
-    }
+    const std::string name = filename_from_created(image.created);
 
     const std::string b64_decoded = base64_decode(image.b64_json);
-    utils::write_to_png(output_file, b64_decoded);
-    fmt::print("Exported image to {}\n", output_file);
+    const std::string filename_png = fmt::format("{}.png", name);
+    utils::write_to_png(filename_png, b64_decoded);
+    fmt::print("Exported image to {}\n", filename_png);
+
+    const std::string filename_json = fmt::format("{}.json", name);
+
+    if (image.revised_prompt) {
+        utils::separator();
+        fmt::print("Revised prompt: {}\n", image.revised_prompt.value());
+        utils::separator();
+    }
 }
 
 } // namespace commands
