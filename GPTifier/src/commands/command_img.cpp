@@ -129,7 +129,6 @@ void command_img(int argc, char **argv)
 
     const std::string prompt = utils::read_from_file(params.prompt_file.value());
     const serialization::Image image = serialization::create_image(params.model, prompt, params.quality, params.style);
-    const std::string b64_decoded = base64_decode(image.b64_json);
 
     std::string output_file;
 
@@ -138,6 +137,9 @@ void command_img(int argc, char **argv)
     } else {
         output_file = filename_from_created(image.created);
     }
+
+    const std::string b64_decoded = base64_decode(image.b64_json);
+    utils::write_to_png(output_file, b64_decoded);
 
     fmt::print("Input text tokens: {}\n", image.input_tokens_text);
     fmt::print("Input image tokens: {}\n", image.input_tokens_image);
