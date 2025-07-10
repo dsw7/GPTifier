@@ -1,6 +1,7 @@
 #include "command_img.hpp"
 
 #include "help_messages.hpp"
+#include "images.hpp"
 #include "utils.hpp"
 
 #include <ctime>
@@ -19,14 +20,13 @@ void help_img()
     help.add_option("-h", "--help", "Print help information and exit");
     help.add_option("-q", "--hd", "Request high definition image (default is standard)");
     help.add_option("-v", "--vivid", "Request hyper-realistic / dramatic image (default is natural)");
-    help.add_option("-o <filename>", "--output=<filename>", "Specify where to export image");
+    help.add_option("-o <filename>", "--output=<filename>", "Specify where to export image (defaults to timestamp returned from OpenAI API)");
     help.print();
 }
 
 struct Parameters {
     std::string model = "dall-e-3";
     std::string quality = "standard";
-    std::string size = "1024x1024";
     std::string style = "natural";
     std::optional<std::string> prompt_file;
     std::optional<std::string> output_file;
@@ -80,9 +80,8 @@ Parameters read_cli(int argc, char **argv)
     return params;
 }
 
-std::string get_default_output_filename()
+std::string filename_from_created(const std::time_t &timestamp)
 {
-    const std::time_t timestamp = std::time(nullptr);
     const std::tm *datetime = std::gmtime(&timestamp);
     char buffer[80];
 
@@ -103,15 +102,19 @@ void command_img(int argc, char **argv)
     }
 
     const std::string prompt = utils::read_from_file(params.prompt_file.value());
+    const serialization::Image image = serialization::create_image(params.model, prompt, params.quality, params.style);
 
     std::string output_file;
 
-    if (not params.output_file) {
+    if (params.output_file) {
         output_file = params.output_file.value();
     } else {
-        output_file = get_default_output_filename();
+        output_file = filename_from_created(image.created);
     }
 
+    fmt::print("Input text tokens: {}\n", image.input_tokens_text);
+    fmt::print("Input image tokens: {}\n", image.input_tokens_image);
+    fmt::print("Output tokens: {}\n", image.output_tokens);
     fmt::print("Exported image to {}\n", output_file);
 }
 
