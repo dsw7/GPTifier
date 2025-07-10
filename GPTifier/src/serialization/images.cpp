@@ -13,6 +13,10 @@ void unpack_image(const nlohmann::json &json, Image &image)
 {
     image.b64_json = json["data"][0]["b64_json"];
     image.created = json["created"];
+
+    if (json["data"][0].contains("revised_prompt")) {
+        image.revised_prompt = json["data"][0]["revised_prompt"];
+    }
 }
 
 } // namespace

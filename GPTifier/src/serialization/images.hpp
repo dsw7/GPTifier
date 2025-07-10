@@ -1,11 +1,13 @@
 #pragma once
 
 #include <ctime>
+#include <optional>
 #include <string>
 
 namespace serialization {
 
 struct Image {
+    std::optional<std::string> revised_prompt;
     std::string b64_json;
     std::time_t created = 0;
 };
