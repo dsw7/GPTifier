@@ -15,6 +15,7 @@ void separator();
 std::string read_from_file(const std::string &filename);
 void write_to_file(const std::string &filename, const std::string &text);
 void append_to_file(const std::string &filename, const std::string &text);
+void write_to_png(const std::string &filename, const std::string &binary_data);
 float string_to_float(const std::string &str);
 int string_to_int(const std::string &str);
 int get_word_count(const std::string &str);
