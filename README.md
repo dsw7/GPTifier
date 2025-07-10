@@ -20,6 +20,7 @@ resulting in a faster and more efficient user experience. This program is tested
   - [The `fine-tune` command](#the-fine-tune-command)
   - [The `chats` command](#the-chats-command)
   - [The `edit` command](#the-edit-command)
+  - [The `img` command](#the-img-command)
 - [Administration](#administration)
   - [The `costs` command](#the-costs-command)
 - [Integrations](#integrations)
@@ -32,6 +33,7 @@ resulting in a faster and more efficient user experience. This program is tested
 - **Edit Files**: Modify individual files with an approach akin to `sed`, but with enhanced intelligence.
 - **Create Embeddings**: Generate and export vector embeddings.
 - **Fine-Tuning Management**: Fully manage fine-tuning workflows directly from the command line.
+- **Generate Images**: Generate images from the command line.
 - **Additional Tasks**: Handle uploaded files, monitor usage, and perform various other tasks.
 
 ## Installation
@@ -320,6 +322,14 @@ gpt edit foo.cpp -i instructions.txt -o foo.cpp
 > [!NOTE]
 > The instructions in `instructions.txt` do not require prompt engineering. When processed, these instructions
 > are combined with additional context and output format specifications to create a complete prompt.
+
+### The `img` command
+The `img` command allows users to generate PNG images according to instructions provided in a text file. At
+present time, this command only supports the use of `dall-e-3` for image generation. To generate an image,
+run:
+```console
+gpt img /tmp/prompt.txt  # prompt.txt contains a description of the image
+```
 
 ## Administration
 > [!NOTE]
