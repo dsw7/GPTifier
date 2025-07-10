@@ -89,6 +89,32 @@ std::string filename_from_created(const std::time_t &timestamp)
     return fmt::format("{}.png", buffer);
 }
 
+std::string base64_decode(const std::string &str_encoded)
+{
+    std::vector<int> T(256, -1);
+    for (int i = 0; i < 64; i++) {
+        T["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = i;
+    }
+
+    int val = 0;
+    int valb = -8;
+    std::string str_decoded;
+
+    for (unsigned char c: str_encoded) {
+        if (T[c] == -1) {
+            break; // i.e. non-base64 character is found
+        }
+        val = (val << 6) + T[c];
+        valb += 6;
+        if (valb >= 0) {
+            str_decoded.push_back(char((val >> valb) & 0xFF));
+            valb -= 8;
+        }
+    }
+
+    return str_decoded;
+}
+
 } // namespace
 
 namespace commands {
@@ -103,6 +129,7 @@ void command_img(int argc, char **argv)
 
     const std::string prompt = utils::read_from_file(params.prompt_file.value());
     const serialization::Image image = serialization::create_image(params.model, prompt, params.quality, params.style);
+    const std::string b64_decoded = base64_decode(image.b64_json);
 
     std::string output_file;
 
