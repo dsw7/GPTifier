@@ -19,7 +19,7 @@ Usage:
   gpt chats [OPTION]
   gpt chats list [OPTION]...
   gpt chats delete [OPTION]
-  gpt chats delete [CHAT-COMPLETION-ID]
+  gpt chats delete CHAT-CMPL-ID...
 
 Options:
   -h, --help  Print help information and exit
@@ -54,7 +54,7 @@ void help_chats_delete()
 
 Usage:
   gpt chats delete [OPTION]
-  gpt chats delete [CHAT-COMPLETION-ID]
+  gpt chats delete CHAT-CMPL-ID...
 
 Options:
   -h, --help  Print help information and exit
