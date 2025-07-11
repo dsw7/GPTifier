@@ -7,14 +7,14 @@ class TestFineTune(TestCaseExtended):
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("fine-tune", option)
-                self.assertIn("Manage fine tuning operations.", proc.stdout)
+                self.assertIn("Manage all fine-tuning operations", proc.stdout)
 
 
 class TestFineTuneUploadFile(TestCaseExtended):
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             proc = self.assertSuccess("fine-tune", "upload-file", option)
-            self.assertIn("Upload a fine-tuning file.", proc.stdout)
+            self.assertIn("Upload a fine-tuning file", proc.stdout)
 
     def test_upload_missing_file(self) -> None:
         proc = self.assertFailure("fine-tune", "upload-file", "foobar")
@@ -34,7 +34,7 @@ class TestFineTuneCreateJob(TestCaseExtended):
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             proc = self.assertSuccess("fine-tune", "create-job", option)
-            self.assertIn("Create a fine-tuning job.", proc.stdout)
+            self.assertIn("Create a fine-tuning job", proc.stdout)
 
     def test_create_job_invalid_params(self) -> None:
         proc = self.assertFailure(
@@ -47,7 +47,7 @@ class TestFineTuneDeleteModel(TestCaseExtended):
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             proc = self.assertSuccess("fine-tune", "delete-model", option)
-            self.assertIn("Delete a fine-tuned model.", proc.stdout)
+            self.assertIn("Delete a fine-tuned model", proc.stdout)
 
     def test_delete_model_missing_model(self) -> None:
         proc = self.assertFailure("fine-tune", "delete-model", "foobar")
@@ -58,7 +58,7 @@ class TestFineTuneListJobs(TestCaseExtended):
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             proc = self.assertSuccess("fine-tune", "list-jobs", option)
-            self.assertIn("List fine-tuning jobs.", proc.stdout)
+            self.assertIn("List fine-tuning jobs", proc.stdout)
 
     def test_list_jobs_raw_json(self) -> None:
         for option in ["-j", "--json"]:

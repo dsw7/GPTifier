@@ -8,7 +8,7 @@ class TestFiles(TestCaseExtended):
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("files", option)
-                self.assertIn("Manage files uploaded to OpenAI.", proc.stdout)
+                self.assertIn("Manage files uploaded to OpenAI", proc.stdout)
 
     def test_upload_then_delete(self) -> None:
         jsonl_file = Path(__file__).resolve().parent / "test_files" / "dummy.jsonl"
@@ -26,7 +26,9 @@ class TestFilesList(TestCaseExtended):
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("files", "list", option)
-                self.assertIn("List uploaded files.", proc.stdout)
+                self.assertIn(
+                    "Get list of files uploaded to OpenAI servers", proc.stdout
+                )
 
     pattern = r"File ID\s+Filename\s+Creation time\s+Purpose"
 
@@ -51,7 +53,7 @@ class TestFilesDelete(TestCaseExtended):
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("files", "delete", option)
-                self.assertIn("Delete an uploaded file.", proc.stdout)
+                self.assertIn("Delete one or more uploaded files", proc.stdout)
 
     def test_files_delete(self) -> None:
         proc = self.assertFailure("files", "delete", "foobar")

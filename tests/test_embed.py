@@ -39,9 +39,7 @@ class TestEmbed(TestCaseExtended):
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("embed", option)
-                self.assertIn(
-                    "Get embedding representing a block of text.", proc.stdout
-                )
+                self.assertIn("Get embedding representing a block of text", proc.stdout)
 
     def test_missing_input_file(self) -> None:
         proc = self.assertFailure("embed", "--read-from-file=/tmp/yU8nnkRs.txt")

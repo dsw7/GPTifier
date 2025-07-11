@@ -104,7 +104,7 @@ class TestChatCompletion(TestCaseExtended):
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("run", option)
-                self.assertIn("Create a chat completion.", proc.stdout)
+                self.assertIn("Create a chat completion", proc.stdout)
 
     def test_read_from_file(self) -> None:
         prompt = Path(__file__).resolve().parent / "test_run" / "prompt_basic.txt"
