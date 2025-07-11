@@ -18,59 +18,97 @@ namespace {
 
 void help_fine_tune()
 {
-    help::HelpMessages help;
-    help.add_description("Manage fine tuning operations.");
-    help.add_synopsis("fine-tune [OPTIONS]");
-    help.add_synopsis("fine-tune upload-file [OPTIONS] FILE");
-    help.add_synopsis("fine-tune create-job [OPTIONS]");
-    help.add_synopsis("fine-tune delete-model [OPTIONS] MODEL");
-    help.add_synopsis("fine-tune list-jobs [OPTIONS]");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_command("upload-file", "Upload a fine-tuning file");
-    help.add_command("create-job", "Create a fine-tuning job");
-    help.add_command("delete-model", "Delete a fine-tuned model");
-    help.add_command("list-jobs", "List fine-tuning jobs");
-    help.print();
+    const std::string messages = R"(Manage fine tuning operations
+
+Usage:
+  gpt fine-tune [OPTION]
+  gpt fine-tune upload-file [OPTION]
+  gpt fine-tune upload-file FILE
+  gpt fine-tune create-job [OPTION]...
+  gpt fine-tune delete-model [OPTION]
+  gpt fine-tune delete-model MODEL-ID
+  gpt fine-tune list-jobs [OPTION]...
+
+Options:
+  -h, --help  Print help information and exit
+
+Commands:
+  upload-file   Upload a fine-tuning file
+  create-job    Create a fine-tuning job
+  delete-model  Delete a fine-tuned model
+  list-jobs     List fine-tuning jobs
+)";
+
+    fmt::print("{}", messages);
 }
 
 void help_fine_tune_upload_file()
 {
-    help::HelpMessages help;
-    help.add_description("Upload a fine-tuning file.");
-    help.add_synopsis("fine-tune upload-file [OPTIONS] FILE");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.print();
+    const std::string messages = R"(Upload a fine-tuning file. The file must be in JSONL
+(JSON Lines) format.
+
+Usage:
+  gpt fine-tune upload-file [OPTION]
+  gpt fine-tune upload-file FILE
+
+Options:
+  -h, --help  Print help information and exit
+)";
+
+    fmt::print("{}", messages);
 }
 
 void help_fine_tune_create_job()
 {
-    help::HelpMessages help;
-    help.add_description("Create a fine-tuning job.");
-    help.add_synopsis("fine-tune create-job [OPTIONS]");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-f", "--file-id", "The ID of an uploaded file that contains the training data");
-    help.add_option("-m", "--model", "The name of the model to fine-tune");
-    help.print();
+    const std::string messages = R"(Create a fine-tuning job. This command assumes that
+a fine-tuning file has already been uploaded to OpenAI servers.
+
+Usage:
+  gpt fine-tune create-job [OPTION]...
+
+Options:
+  -h, --help             Print help information and exit
+  -f, --file-id=FILE-ID  The ID of an uploaded file that contains the training data
+  -m, --model=MODEL      The name of the model to fine-tune
+
+* The file ID can be obtained by running the 'gpt files list' command
+)";
+
+    fmt::print("{}", messages);
 }
 
 void help_fine_tune_delete_model()
 {
-    help::HelpMessages help;
-    help.add_description("Delete a fine-tuned model.");
-    help.add_synopsis("fine-tune delete-model [OPTIONS] MODEL");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.print();
+    const std::string messages = R"(Delete a fine-tuned model
+
+Usage:
+  gpt fine-tune delete-model [OPTION]
+  gpt fine-tune delete-model MODEL-ID
+
+Options:
+  -h, --help  Print help information and exit
+
+* The model ID can be obtained by running the 'gpt models --user' command
+)";
+
+    fmt::print("{}", messages);
 }
 
 void help_fine_tune_list_jobs()
 {
-    help::HelpMessages help;
-    help.add_description("List fine-tuning jobs.");
-    help.add_synopsis("fine-tune list-jobs [OPTIONS]");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
-    help.add_option("-l", "--limit", "Number of fine-tuning jobs to show");
-    help.print();
+    const std::string messages = R"(List fine-tuning jobs. This command can also
+be used to track the progress of a fine-tuning job.
+
+Usage:
+  gpt fine-tune list-jobs [OPTION]...
+
+Options:
+  -h, --help         Print help information and exit
+  -j, --json         Print raw JSON response from OpenAI
+  -l, --limit=LIMIT  Show LIMIT number of fine-tuning jobs
+)";
+
+    fmt::print("{}", messages);
 }
 
 // Upload fine tuning file ----------------------------------------------------------------------------------
