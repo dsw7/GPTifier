@@ -6,7 +6,6 @@
 namespace help {
 
 void exit_on_failure();
-void print_program_info();
 
 struct Option {
     std::string description;

@@ -24,16 +24,6 @@ void exit_on_failure()
     exit(EXIT_FAILURE);
 }
 
-void print_program_info()
-{
-    fmt::print("╔════════════════════════════════════════════════════════════════════════════════════╗\n");
-    fmt::print("║ ----------------------------------- GPTifier ------------------------------------- ║\n");
-    fmt::print("║ A command line OpenAI toolkit: Chat, get embeddings, fine-tune, assess costs, etc. ║\n");
-    fmt::print("║ See \033[4mhttps://github.com/dsw7/GPTifier\033[0m for more information.");
-    fmt::print("                         ║\n");
-    fmt::print("╚════════════════════════════════════════════════════════════════════════════════════╝\n\n");
-}
-
 void HelpMessages::add_command(const std::string &name, const std::string &description)
 {
     this->commands.push_back({ description, name });
