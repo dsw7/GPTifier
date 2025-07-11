@@ -14,13 +14,18 @@ namespace {
 
 void help_costs()
 {
-    help::HelpMessages help;
-    help.add_description("Get OpenAI usage details.");
-    help.add_synopsis("costs [OPTIONS]");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
-    help.add_option("-d", "--days", "Select number of days to go back");
-    help.print();
+    const std::string messages = R"(Get OpenAI usage details
+
+Usage:
+  gpt costs [OPTION]...
+
+Options:
+  -h, --help      Print help information and exit
+  -j, --json      Print raw JSON response from OpenAI
+  -d, --days=DAYS Select number of days to go back
+)";
+
+    fmt::print("{}", messages);
 }
 
 struct Parameters {
