@@ -22,20 +22,35 @@ namespace {
 
 void help_run()
 {
-    help::HelpMessages help;
-    help.add_description("Create a chat completion.");
-    help.add_synopsis("run [OPTIONS]");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
-    help.add_option("-u", "--no-interactive-export", "Disable [y/n] prompt that asks whether to export results");
-    help.add_option("-o <file>", "--file=<file>", "Export results to a JSON file");
-    help.add_option("-p <prompt>", "--prompt=<prompt>", "Provide prompt via command line");
-    help.add_option("-r <filename>", "--read-from-file=<filename>", "Read prompt from a custom file");
-    help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
-    help.add_option("-s", "--store-completion", "Store results of completion on OpenAI servers");
-    help.add_example("Run an interactive session", "gpt run");
-    help.add_example("Run a query non-interactively and export results", "gpt run --prompt=\"What is 3 + 5\" --file=\"/tmp/results.json\"");
-    help.print();
+    const std::string messages = R"(Create a chat completion according to a prompt. A prompt
+can be provided as follows:
+
+  1. Via a file named 'Inputfile' in the current working directory
+  2. Via a file with a custom name (see -r option)
+  3. Via command line (see -p option)
+  4. Interactively via stdin
+
+Usage:
+  gpt run [OPTION]...
+
+Options:
+  -h, --help                     Print help information and exit
+  -m, --model=MODEL              Specify a valid chat model
+  -u, --no-interactive-export    Disable [y/n] prompt that asks whether to export results
+  -o, --file=FILE                Export results to a JSON file named FILE
+  -p, --prompt=PROMPT            Provide prompt via command line
+  -r, --read-from-file=FILENAME  Read prompt from a custom file named FILENAME
+  -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2
+  -s, --store-completion         Store results of completion on OpenAI servers
+
+Examples:
+  Run an interaction session:
+    $ gpt run
+  Run a query non-interactively and export results
+    $ gpt run --prompt="What is 3 + 5?" --file="/tmp/results.json"
+)";
+
+    fmt::print("{}", messages);
 }
 
 struct Parameters {
