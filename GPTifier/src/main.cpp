@@ -21,7 +21,7 @@ void print_help_messages()
     const std::string messages = R"(-- Copyright (C) 2023-2025 by David Weber
 -- Site: https://github.com/dsw7/GPTifier
 
-A command line OpenAI toolkit
+A command line OpenAI toolkit.
 
 Usage:
   gpt [OPTION]
@@ -39,13 +39,14 @@ Commands:
   files          Manage files uploaded to OpenAI
   fine-tune      Manage fine tuning operations
   costs          Get OpenAI usage details
-  edit           Edit one or more files according to a prompt
+  edit           Edit one or more files according to a prompt [DEPRECATED]
   img            Generate an image from a prompt
 
-Try 'gpt <subcommand> [-h | --help]' for subcommand specific help.
+* Try 'gpt <subcommand> [-h | --help]' for subcommand specific help.
+* The 'edit' subcommand has been moved. See https://github.com/dsw7/FuncGraft for more information.
 )";
 
-    fmt::print("-- GPTifier | v{}\n{}\n", PROJECT_VERSION, messages);
+    fmt::print("-- GPTifier | v{}\n{}", PROJECT_VERSION, messages);
 }
 
 void print_build_information()
@@ -108,7 +109,7 @@ int main(int argc, char **argv)
         } else if (command == "chats") {
             commands::command_chats(argc, argv);
         } else if (command == "edit") {
-            commands::command_edit(argc, argv);
+            commands::command_edit();
         } else if (command == "test") {
             commands::command_test(argc, argv);
         } else if (command == "img") {

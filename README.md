@@ -30,7 +30,6 @@ resulting in a faster and more efficient user experience. This program is tested
 ## What can GPTifier do?
 - **Run Queries**: Execute prompts and receive completions via the CLI, similar to querying ChatGPT.
 - **Retrieve Models**: List the latest OpenAI models and custom models.
-- **Edit Files**: Modify individual files with an approach akin to `sed`, but with enhanced intelligence.
 - **Create Embeddings**: Generate and export vector embeddings.
 - **Fine-Tuning Management**: Fully manage fine-tuning workflows directly from the command line.
 - **Generate Images**: Generate images from the command line.
@@ -301,27 +300,9 @@ Here, `<chat-completion-id>` is the identifier obtained from `gpt chats`, corres
 you wish to delete.
 
 ### The `edit` command
-The `edit` command allows users to modify files according to instructions specified in a separate text file.
-For instance, if `foo.cpp` uses CamelCase formatting and needs to be converted to snake_case, you can outline
-the necessary changes in an instruction file, such as `instructions.txt`:
-```plaintext
-Convert all code from CamelCase to snake_case.
-```
-To display the results in the terminal, use the following command:
-```console
-gpt edit foo.cpp -i instructions.txt
-```
-To save the updated code to a new file, such as `bar.cpp`, execute:
-```console
-gpt edit foo.cpp -i instructions.txt -o bar.cpp
-```
-If you wish to overwrite the original file, simply run:
-```console
-gpt edit foo.cpp -i instructions.txt -o foo.cpp
-```
 > [!NOTE]
-> The instructions in `instructions.txt` do not require prompt engineering. When processed, these instructions
-> are combined with additional context and output format specifications to create a complete prompt.
+> This command has been deprecated in favor of a standalone solution.
+> See [FuncGraft](https://github.com/dsw7/FuncGraft) for more information.
 
 ### The `img` command
 The `img` command allows users to generate PNG images according to instructions provided in a text file. At
