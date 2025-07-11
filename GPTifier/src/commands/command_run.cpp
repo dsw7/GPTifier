@@ -21,8 +21,8 @@ namespace {
 
 void help_run()
 {
-    const std::string messages = R"(Create a chat completion according to a prompt. A prompt
-can be provided as follows:
+    const std::string messages = R"(Create a chat completion according to a prompt. A prompt can be provided
+as follows:
 
   1. Via a file named 'Inputfile' in the current working directory
   2. Via a file with a custom name (see -r option)

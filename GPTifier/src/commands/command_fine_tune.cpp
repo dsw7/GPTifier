@@ -17,7 +17,7 @@ namespace {
 
 void help_fine_tune()
 {
-    const std::string messages = R"(Manage fine tuning operations
+    const std::string messages = R"(Manage all fine-tuning operations.
 
 Usage:
   gpt fine-tune [OPTION]
@@ -43,8 +43,7 @@ Commands:
 
 void help_fine_tune_upload_file()
 {
-    const std::string messages = R"(Upload a fine-tuning file. The file must be in JSONL
-(JSON Lines) format.
+    const std::string messages = R"(Upload a fine-tuning file. The file must be in JSONL format.
 
 Usage:
   gpt fine-tune upload-file [OPTION]
@@ -59,8 +58,8 @@ Options:
 
 void help_fine_tune_create_job()
 {
-    const std::string messages = R"(Create a fine-tuning job. This command assumes that
-a fine-tuning file has already been uploaded to OpenAI servers.
+    const std::string messages = R"(Create a fine-tuning job. Note that this command assumes that a fine-tuning file
+has already been uploaded to OpenAI servers.
 
 Usage:
   gpt fine-tune create-job [OPTION]...
@@ -78,7 +77,7 @@ Options:
 
 void help_fine_tune_delete_model()
 {
-    const std::string messages = R"(Delete a fine-tuned model
+    const std::string messages = R"(Delete a fine-tuned model.
 
 Usage:
   gpt fine-tune delete-model [OPTION]
@@ -95,8 +94,8 @@ Options:
 
 void help_fine_tune_list_jobs()
 {
-    const std::string messages = R"(List fine-tuning jobs. This command can also
-be used to track the progress of a fine-tuning job.
+    const std::string messages = R"(List fine-tuning jobs. This command can also be used to track the progress
+of a fine-tuning job.
 
 Usage:
   gpt fine-tune list-jobs [OPTION]...

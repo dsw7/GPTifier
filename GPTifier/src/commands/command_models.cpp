@@ -13,7 +13,7 @@ namespace {
 
 void help_models()
 {
-    const std::string messages = R"(List available OpenAI or user models
+    const std::string messages = R"(List available OpenAI or user models.
 
 Usage:
   gpt models [OPTION]...

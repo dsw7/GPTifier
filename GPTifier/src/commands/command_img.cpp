@@ -14,8 +14,8 @@ namespace {
 
 void help_img()
 {
-    const std::string messages = R"(Generate an image from a prompt. Command
-currently defaults to using the DALL-E 3 model for image generation
+    const std::string messages = R"(Generate an image from a prompt. Command currently defaults to using the
+DALL-E 3 model for image generation.
 
 Usage:
   gpt img [OPTION]

@@ -17,7 +17,7 @@ namespace {
 
 void help_embed()
 {
-    const std::string messages = R"(Get embedding representing a block of text
+    const std::string messages = R"(Get embedding representing a block of text.
 
 Usage:
   gpt embed [OPTION]...

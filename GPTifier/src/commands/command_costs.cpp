@@ -13,15 +13,16 @@ namespace {
 
 void help_costs()
 {
-    const std::string messages = R"(Get OpenAI usage details
+    const std::string messages = R"(Get OpenAI usage details. This is an administrative command and this command
+will require that a valid OPENAI_ADMIN_KEY environment variable is set.
 
 Usage:
   gpt costs [OPTION]...
 
 Options:
-  -h, --help      Print help information and exit
-  -j, --json      Print raw JSON response from OpenAI
-  -d, --days=DAYS Select number of days to go back
+  -h, --help       Print help information and exit
+  -j, --json       Print raw JSON response from OpenAI
+  -d, --days=DAYS  Select number of days to go back
 )";
 
     fmt::print("{}", messages);

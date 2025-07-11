@@ -13,8 +13,8 @@ namespace {
 
 void help_short()
 {
-    const std::string messages = R"(Create a chat completion but without threading or verbosity. Command
-is useful for unit testing, vim integration, etc.
+    const std::string messages = R"(Create a chat completion but without threading or verbosity. Command is
+useful for unit testing, vim integration, etc.
 
 Usage:
   gpt short [OPTION]

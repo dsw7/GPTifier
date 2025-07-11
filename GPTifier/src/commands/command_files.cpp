@@ -13,7 +13,7 @@ namespace {
 
 void help_files()
 {
-    const std::string messages = R"(Manage files uploaded to OpenAI
+    const std::string messages = R"(Manage files uploaded to OpenAI servers.
 
 Usage:
   gpt files [OPTION]
@@ -34,7 +34,7 @@ Commands:
 
 void help_files_list()
 {
-    const std::string messages = R"(Get list of files uploaded to OpenAI servers
+    const std::string messages = R"(Get list of files uploaded to OpenAI servers.
 
 Usage:
   gpt files list [OPTION]...
@@ -49,7 +49,7 @@ Options:
 
 void help_files_delete()
 {
-    const std::string messages = R"(Delete one or more uploaded files
+    const std::string messages = R"(Delete one or more uploaded files.
 
 Usage:
   gpt files delete [OPTION]
@@ -57,6 +57,8 @@ Usage:
 
 Options:
   -h, --help  Print help information and exit
+
+* Use "gpt files list" to get the IDs corresponding to files to be deleted
 )";
 
     fmt::print("{}", messages);

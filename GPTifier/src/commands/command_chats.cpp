@@ -12,7 +12,7 @@ namespace {
 
 void help_chats()
 {
-    const std::string messages = R"(Manage chat completions uploaded to OpenAI
+    const std::string messages = R"(Manage chat completions uploaded to OpenAI.
 
 Usage:
   gpt chats [OPTION]
@@ -33,7 +33,7 @@ Commands:
 
 void help_chats_list()
 {
-    const std::string messages = R"(List uploaded chat completions
+    const std::string messages = R"(List uploaded chat completions.
 
 Usage:
   gpt chats list [OPTION]...
@@ -49,7 +49,7 @@ Options:
 
 void help_chats_delete()
 {
-    const std::string messages = R"(Delete one or more uploaded chat completions
+    const std::string messages = R"(Delete one or more uploaded chat completions.
 
 Usage:
   gpt chats delete [OPTION]
