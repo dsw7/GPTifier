@@ -1,6 +1,5 @@
 #include "command_models.hpp"
 
-#include "help_messages.hpp"
 #include "models.hpp"
 #include "utils.hpp"
 
@@ -63,7 +62,7 @@ Parameters read_cli(int argc, char **argv)
                 params.print_user_models = true;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     }
 

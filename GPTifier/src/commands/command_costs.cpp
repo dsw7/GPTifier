@@ -1,7 +1,6 @@
 #include "command_costs.hpp"
 
 #include "costs.hpp"
-#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <algorithm>
@@ -63,7 +62,7 @@ Parameters read_cli(int argc, char **argv)
                 params.days = optarg;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     };
 

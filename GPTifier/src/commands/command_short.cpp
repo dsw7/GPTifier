@@ -2,7 +2,6 @@
 
 #include "chat_completions.hpp"
 #include "configs.hpp"
-#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -76,7 +75,7 @@ Parameters read_cli(int argc, char **argv)
                 params.temperature = optarg;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     }
 

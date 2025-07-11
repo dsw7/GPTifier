@@ -3,7 +3,6 @@
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "embeddings.hpp"
-#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -77,7 +76,7 @@ Parameters read_cli(int argc, char **argv)
                 params.input_file = optarg;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     }
 

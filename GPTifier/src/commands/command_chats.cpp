@@ -1,7 +1,6 @@
 #include "command_chats.hpp"
 
 #include "chat_completions.hpp"
-#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -110,7 +109,7 @@ void list_chat_completions(int argc, char **argv)
                 limit = optarg;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     };
 

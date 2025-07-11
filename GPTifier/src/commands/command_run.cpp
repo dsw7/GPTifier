@@ -3,7 +3,6 @@
 #include "chat_completions.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
-#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <atomic>
@@ -113,7 +112,7 @@ Parameters read_cli(int argc, char **argv)
                 params.model = optarg;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     };
 

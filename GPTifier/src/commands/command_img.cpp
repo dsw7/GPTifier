@@ -1,6 +1,5 @@
 #include "command_img.hpp"
 
-#include "help_messages.hpp"
 #include "images.hpp"
 #include "utils.hpp"
 
@@ -68,7 +67,7 @@ Parameters read_cli(int argc, char **argv)
                 params.style = "vivid";
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     };
 

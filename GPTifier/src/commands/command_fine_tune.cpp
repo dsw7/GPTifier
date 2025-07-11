@@ -3,7 +3,6 @@
 #include "api_openai_user.hpp"
 #include "files.hpp"
 #include "fine_tuning.hpp"
-#include "help_messages.hpp"
 #include "models.hpp"
 #include "utils.hpp"
 
@@ -164,7 +163,7 @@ void create_fine_tuning_job(int argc, char **argv)
                 model = optarg;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     };
 
@@ -258,7 +257,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
                 limit = optarg;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     };
 

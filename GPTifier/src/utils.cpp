@@ -32,6 +32,12 @@ void separator()
     fmt::print("{}\n", separator);
 }
 
+void exit_on_failure()
+{
+    fmt::print(stderr, "Try running with -h or --help for more information\n");
+    exit(EXIT_FAILURE);
+}
+
 std::string read_from_file(const std::string &filename)
 {
     std::ifstream file(filename);

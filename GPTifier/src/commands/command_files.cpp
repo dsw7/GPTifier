@@ -1,7 +1,6 @@
 #include "command_files.hpp"
 
 #include "files.hpp"
-#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -105,7 +104,7 @@ void list_files(int argc, char **argv)
                 print_raw_json = true;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     }
 
