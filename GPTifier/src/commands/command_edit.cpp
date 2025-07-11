@@ -20,19 +20,7 @@ namespace {
 
 void help_edit()
 {
-    help::HelpMessages help;
-    help.add_description("Edit code according to rules provided by file or command line option.");
-    help.add_synopsis("edit [OPTIONS] FILE");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-d", "--debug", "Print raw prompt and completion. Will not edit file");
-    help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid chat model");
-    help.add_option("-o <filename>", "--output=<filename>", "Specify where to export edited code");
-    help.add_option("-i <filename>", "--instructions=<filename>", "Specify instructions to apply to input file via disk file");
-    help.add_option("-r <instructions>", "--rule=<instructions>", "Specify instructions to apply to input file via command line");
-    help.add_example("Edit a file and print changes to stdout", "gpt edit foo.cpp -i instructions.txt");
-    help.add_example("Edit a file and write changes to new file", "gpt edit foo.cpp -i instructions.txt -o bar.cpp");
-    help.add_example("Overwrite an existing file with edits", "gpt edit foo.cpp -o foo.cpp -i instructions.txt");
-    help.print();
+    fmt::print("Edit code according to rules provided by file or command line option.\n");
 }
 
 struct Parameters {
