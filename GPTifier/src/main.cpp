@@ -10,7 +10,6 @@
 #include "command_short.hpp"
 #include "command_test.hpp"
 #include "configs.hpp"
-#include "help_messages.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -19,22 +18,34 @@
 
 void print_help_messages()
 {
-    help::print_program_info();
+    const std::string messages = R"(-- Copyright (C) 2023-2025 by David Weber
+-- Site: https://github.com/dsw7/GPTifier
 
-    help::HelpMessages help;
-    help.add_synopsis("[-v | --version] [-h | --help] <command> [<args>]");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-v", "--version", "Print version and exit");
-    help.add_command("run", "Run a query against an appropriate model");
-    help.add_command("short", "Run a query against an appropriate model but with no threading and limited verbosity");
-    help.add_command("models", "List available OpenAI models");
-    help.add_command("embed", "Get embedding representing a block of text");
-    help.add_command("files", "Manage files uploaded to OpenAI");
-    help.add_command("fine-tune", "Manage fine tuning operations");
-    help.add_command("costs", "Get OpenAI usage details");
-    help.add_command("edit", "Edit one or more files according to a prompt");
-    help.add_command("img", "Generate an image from a prompt");
-    help.print();
+A command line OpenAI toolkit
+
+Usage:
+  gpt [OPTION]
+  gpt [COMMAND] [OPTION]...
+
+Options:
+  -h, --help     Print help information and exit
+  -v, --version  Print version and exit
+
+Commands:
+  run            Run a query against an appropriate model
+  short          Run a query against an appropriate model but with no threading and limited verbosity
+  models         List available OpenAI models
+  embed          Get embedding representing a block of text
+  files          Manage files uploaded to OpenAI
+  fine-tune      Manage fine tuning operations
+  costs          Get OpenAI usage details
+  edit           Edit one or more files according to a prompt
+  img            Generate an image from a prompt
+
+Try 'gpt <subcommand> [-h | --help]' for subcommand specific help.
+)";
+
+    fmt::print("-- GPTifier | v{}\n{}\n", PROJECT_VERSION, messages);
 }
 
 void print_build_information()

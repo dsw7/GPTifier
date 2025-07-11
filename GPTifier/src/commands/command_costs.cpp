@@ -1,7 +1,6 @@
 #include "command_costs.hpp"
 
 #include "costs.hpp"
-#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <algorithm>
@@ -14,13 +13,19 @@ namespace {
 
 void help_costs()
 {
-    help::HelpMessages help;
-    help.add_description("Get OpenAI usage details.");
-    help.add_synopsis("costs [OPTIONS]");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
-    help.add_option("-d", "--days", "Select number of days to go back");
-    help.print();
+    const std::string messages = R"(Get OpenAI usage details. This is an administrative command and this command
+will require that a valid OPENAI_ADMIN_KEY environment variable is set.
+
+Usage:
+  gpt costs [OPTION]...
+
+Options:
+  -h, --help       Print help information and exit
+  -j, --json       Print raw JSON response from OpenAI
+  -d, --days=DAYS  Select number of days to go back
+)";
+
+    fmt::print("{}", messages);
 }
 
 struct Parameters {
@@ -58,7 +63,7 @@ Parameters read_cli(int argc, char **argv)
                 params.days = optarg;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     };
 

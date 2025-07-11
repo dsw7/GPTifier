@@ -118,7 +118,6 @@ add_executable(
   src/commands/command_run.cpp
   src/commands/command_short.cpp
   src/commands/command_test.cpp
-  src/commands/help_messages.cpp
   src/configs.cpp
   src/datadir.cpp
   src/main.cpp

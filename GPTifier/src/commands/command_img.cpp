@@ -1,6 +1,5 @@
 #include "command_img.hpp"
 
-#include "help_messages.hpp"
 #include "images.hpp"
 #include "utils.hpp"
 
@@ -15,13 +14,20 @@ namespace {
 
 void help_img()
 {
-    help::HelpMessages help;
-    help.add_description("Generate an image from a prompt");
-    help.add_synopsis("img [OPTIONS] PROMPT-FILE");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-q", "--hd", "Request high definition image (default is standard)");
-    help.add_option("-v", "--vivid", "Request hyper-realistic / dramatic image (default is natural)");
-    help.print();
+    const std::string messages = R"(Generate an image from a prompt. Command currently defaults to using the
+DALL-E 3 model for image generation.
+
+Usage:
+  gpt img [OPTION]
+  gpt img [OPTION]... PROMPT-FILE
+
+Options:
+  -h, --help   Print help information and exit
+  -q, --hd     Request high definition image (default is standard definition for cost savings)
+  -v, --vivid  Request hyper-realistic / dramatic image (default is natural)
+)";
+
+    fmt::print("{}", messages);
 }
 
 struct Parameters {
@@ -61,7 +67,7 @@ Parameters read_cli(int argc, char **argv)
                 params.style = "vivid";
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     };
 

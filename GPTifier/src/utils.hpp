@@ -12,6 +12,7 @@ constexpr fmt::terminal_color yellow = fmt::terminal_color::bright_yellow;
 
 namespace utils {
 void separator();
+void exit_on_failure();
 std::string read_from_file(const std::string &filename);
 void write_to_file(const std::string &filename, const std::string &text);
 void append_to_file(const std::string &filename, const std::string &text);

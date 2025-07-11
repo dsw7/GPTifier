@@ -1,7 +1,6 @@
 #include "command_files.hpp"
 
 #include "files.hpp"
-#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -14,34 +13,55 @@ namespace {
 
 void help_files()
 {
-    help::HelpMessages help;
-    help.add_description("Manage files uploaded to OpenAI.");
-    help.add_synopsis("files [OPTIONS]");
-    help.add_synopsis("files list [OPTIONS]");
-    help.add_synopsis("files delete [OPTIONS] FILE-ID...");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_command("list", "List uploaded files");
-    help.add_command("delete", "Delete an uploaded file");
-    help.print();
+    const std::string messages = R"(Manage files uploaded to OpenAI servers.
+
+Usage:
+  gpt files [OPTION]
+  gpt files list [OPTION]...
+  gpt files delete [OPTION]
+  gpt files delete FILE-ID...
+
+Options:
+  -h, --help  Print help information and exit
+
+Commands:
+  list        Get list of files uploaded to OpenAI servers
+  delete      Delete one or more uploaded files
+)";
+
+    fmt::print("{}", messages);
 }
 
 void help_files_list()
 {
-    help::HelpMessages help;
-    help.add_description("List uploaded files.");
-    help.add_synopsis("files list [OPTIONS]");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
-    help.print();
+    const std::string messages = R"(Get list of files uploaded to OpenAI servers.
+
+Usage:
+  gpt files list [OPTION]...
+
+Options:
+  -h, --help  Print help information and exit
+  -j, --json  Print raw JSON response from OpenAI
+)";
+
+    fmt::print("{}", messages);
 }
 
 void help_files_delete()
 {
-    help::HelpMessages help;
-    help.add_description("Delete an uploaded file.");
-    help.add_synopsis("files delete [OPTIONS] FILE-ID...");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.print();
+    const std::string messages = R"(Delete one or more uploaded files.
+
+Usage:
+  gpt files delete [OPTION]
+  gpt files delete FILE-ID...
+
+Options:
+  -h, --help  Print help information and exit
+
+* Use "gpt files list" to get the IDs corresponding to files to be deleted
+)";
+
+    fmt::print("{}", messages);
 }
 
 // List files -----------------------------------------------------------------------------------------------
@@ -86,7 +106,7 @@ void list_files(int argc, char **argv)
                 print_raw_json = true;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     }
 

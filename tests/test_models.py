@@ -7,7 +7,7 @@ class TestModels(TestCaseExtended):
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("models", option)
-                self.assertIn("List available OpenAI or user models.", proc.stdout)
+                self.assertIn("List available OpenAI or user models", proc.stdout)
 
     pattern = r"Creation time\s+Owner\s+Model ID"
 

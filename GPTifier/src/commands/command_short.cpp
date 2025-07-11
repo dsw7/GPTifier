@@ -2,7 +2,6 @@
 
 #include "chat_completions.hpp"
 #include "configs.hpp"
-#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -14,15 +13,25 @@ namespace {
 
 void help_short()
 {
-    help::HelpMessages help;
-    help.add_description("Create a chat completion but without threading or verbosity.");
-    help.add_synopsis("short [OPTIONS] PROMPT");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
-    help.add_option("-t <temp>", "--temperature=<temperature>", "Provide a sampling temperature between 0 and 2");
-    help.add_option("-s", "--store-completion", "Store results of completion on OpenAI servers");
-    help.add_example("Create a chat completion", "gpt short \"What is 2 + 2?\"");
-    help.print();
+    const std::string messages = R"(Create a chat completion but without threading or verbosity. Command is
+useful for unit testing, vim integration, etc.
+
+Usage:
+  gpt short [OPTION]
+  gpt short [OPTION]... PROMPT
+
+Options:
+  -h, --help                     Print help information and exit
+  -j, --json                     Print raw JSON response from OpenAI
+  -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2
+  -s, --store-completion         Store results of completion on OpenAI servers
+
+Examples:
+  Create a chat completion:
+    $ gpt short "What is 2 + 2?"
+)";
+
+    fmt::print("{}", messages);
 }
 
 struct Parameters {
@@ -66,7 +75,7 @@ Parameters read_cli(int argc, char **argv)
                 params.temperature = optarg;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     }
 

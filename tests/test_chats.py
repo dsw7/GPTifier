@@ -7,9 +7,7 @@ class TestChats(TestCaseExtended):
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("chats", option)
-                self.assertIn(
-                    "Manage chat completions uploaded to OpenAI.", proc.stdout
-                )
+                self.assertIn("Manage chat completions uploaded to OpenAI", proc.stdout)
 
     def test_no_subcommand(self) -> None:
         self.assertSuccess("chats")
@@ -20,7 +18,7 @@ class TestChatsList(TestCaseExtended):
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("chats", "list", option)
-                self.assertIn("List uploaded chat completions.", proc.stdout)
+                self.assertIn("List uploaded chat completions", proc.stdout)
 
     def test_invalid_limit(self) -> None:
         for option in ["-l-1", "--limit=-1"]:
@@ -38,7 +36,9 @@ class TestChatsDelete(TestCaseExtended):
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("chats", "delete", option)
-                self.assertIn("Delete an uploaded chat completion.", proc.stdout)
+                self.assertIn(
+                    "Delete one or more uploaded chat completions", proc.stdout
+                )
 
     def test_delete_missing_id(self) -> None:
         proc = self.assertFailure("chats", "delete", "abc")

@@ -3,7 +3,6 @@
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "embeddings.hpp"
-#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -18,15 +17,20 @@ namespace {
 
 void help_embed()
 {
-    help::HelpMessages help;
-    help.add_description("Get embedding representing a block of text.");
-    help.add_synopsis("embed [OPTIONS]");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-m <model-name>", "--model=<model-name>", "Specify a valid embedding model");
-    help.add_option("-i <text>", "--input=<text>", "Input text to embed");
-    help.add_option("-r <filename>", "--read-from-file=<filename>", "Read input text to embed from a file");
-    help.add_option("-o <filename>", "--output-file=<filename>", "Export embedding to <filename>");
-    help.print();
+    const std::string messages = R"(Get embedding representing a block of text.
+
+Usage:
+  gpt embed [OPTION]...
+
+Options:
+  -h, --help                     Print help information and exit
+  -m, --model=MODEL              Specify a valid embedding model
+  -i, --input=TEXT               Input text to embed
+  -r, --read-from-file=FILENAME  Read input text to embed from a file
+  -o, --output-file=FILENAME     Export embedding to FILENAME
+)";
+
+    fmt::print("{}", messages);
 }
 
 struct Parameters {
@@ -72,7 +76,7 @@ Parameters read_cli(int argc, char **argv)
                 params.input_file = optarg;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     }
 

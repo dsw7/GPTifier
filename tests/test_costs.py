@@ -12,11 +12,16 @@ class TestCosts(TestCaseExtended):
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("costs", option)
-                self.assertIn("Get OpenAI usage details.", proc.stdout)
+                self.assertIn("Get OpenAI usage details", proc.stdout)
 
     def test_costs(self) -> None:
         proc = self.assertSuccess("costs", "--days=4")
         self.assertIn("Overall usage", proc.stdout)
+
+    def test_costs_count(self) -> None:
+        proc = self.assertSuccess("costs", "--json", "--days=3")
+        json = proc.load_stdout_to_json()
+        self.assertEqual(len(json["data"]), 3)
 
     def test_costs_raw_json(self) -> None:
         for option in ["-j", "--json"]:

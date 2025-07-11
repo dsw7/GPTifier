@@ -1,7 +1,6 @@
 #include "command_chats.hpp"
 
 #include "chat_completions.hpp"
-#include "help_messages.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -13,33 +12,54 @@ namespace {
 
 void help_chats()
 {
-    help::HelpMessages help;
-    help.add_description("Manage chat completions uploaded to OpenAI.");
-    help.add_synopsis("chats [-h | --help] (list | delete)");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_command("list", "List uploaded chat completions");
-    help.add_command("delete", "Delete an uploaded chat completion");
-    help.print();
+    const std::string messages = R"(Manage chat completions uploaded to OpenAI.
+
+Usage:
+  gpt chats [OPTION]
+  gpt chats list [OPTION]...
+  gpt chats delete [OPTION]
+  gpt chats delete CHAT-CMPL-ID...
+
+Options:
+  -h, --help  Print help information and exit
+
+Commands:
+  list        List uploaded chat completions
+  delete      Delete one or more uploaded chat completions
+)";
+
+    fmt::print("{}", messages);
 }
 
 void help_chats_list()
 {
-    help::HelpMessages help;
-    help.add_description("List uploaded chat completions.");
-    help.add_synopsis("chats list [-h | --help] [-j | --json] -l <limit> | --limit <limit>");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.add_option("-j", "--json", "Print raw JSON response from OpenAI");
-    help.add_option("-l", "--limit", "Number of chat completions to show");
-    help.print();
+    const std::string messages = R"(List uploaded chat completions.
+
+Usage:
+  gpt chats list [OPTION]...
+
+Options:
+  -h, --help         Print help information and exit
+  -j, --json         Print raw JSON response from OpenAI
+  -l, --limit=LIMIT  Show LIMIT number of chat completions
+)";
+
+    fmt::print("{}", messages);
 }
 
 void help_chats_delete()
 {
-    help::HelpMessages help;
-    help.add_description("Delete an uploaded chat completion.");
-    help.add_synopsis("chats delete [-h | --help] <chat-completion-id...>");
-    help.add_option("-h", "--help", "Print help information and exit");
-    help.print();
+    const std::string messages = R"(Delete one or more uploaded chat completions.
+
+Usage:
+  gpt chats delete [OPTION]
+  gpt chats delete CHAT-CMPL-ID...
+
+Options:
+  -h, --help  Print help information and exit
+)";
+
+    fmt::print("{}", messages);
 }
 
 // List chats -----------------------------------------------------------------------------------------------
@@ -89,7 +109,7 @@ void list_chat_completions(int argc, char **argv)
                 limit = optarg;
                 break;
             default:
-                help::exit_on_failure();
+                utils::exit_on_failure();
         }
     };
 
