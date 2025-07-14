@@ -3,13 +3,12 @@ project(GPTifier VERSION 1.5.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 string(TIMESTAMP BUILD_DATE)
 message(STATUS "Will add the following timestamp to binary: ${BUILD_DATE}")
-
-add_compile_definitions(PROJECT_NAME="${PROJECT_NAME}")
-add_compile_definitions(PROJECT_VERSION="${PROJECT_VERSION}")
 add_compile_definitions(BUILD_DATE="${BUILD_DATE}")
+add_compile_definitions(PROJECT_VERSION="${PROJECT_VERSION}")
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 
