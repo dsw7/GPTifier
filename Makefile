@@ -1,4 +1,4 @@
-.PHONY = compile-prod format compile compile-test clean lint test test-memory
+.PHONY = compile-prod format compile tidy compile-test clean lint test test-memory
 
 BUILD_DIR = build
 BUILD_DIR_PROD = $(BUILD_DIR)/prod
@@ -14,6 +14,12 @@ format:
 		GPTifier/src/*.hpp GPTifier/src/*/*.hpp
 
 compile: format compile-prod
+
+tidy:
+	@cmake -S GPTifier -B $(BUILD_DIR_PROD)
+	@clang-tidy -p $(BUILD_DIR_PROD) \
+		GPTifier/src/*.cpp GPTifier/src/*/*.cpp \
+		GPTifier/src/*.hpp GPTifier/src/*/*.hpp
 
 compile-test: format # Private target
 	@cmake -S GPTifier -B $(BUILD_DIR_TEST) -DENABLE_TESTING=ON
