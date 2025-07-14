@@ -1,34 +1,12 @@
-.PHONY = compile-prod help format compile compile-test clean lint test test-memory
+.PHONY = compile-prod format compile compile-test clean lint test test-memory
 
 BUILD_DIR = build
 BUILD_DIR_PROD = $(BUILD_DIR)/prod
 BUILD_DIR_TEST = $(BUILD_DIR)/test
 
-define HELP_LIST_TARGETS
-To compile production binary:
-    $$ make
-To format code:
-    $$ make format
-To format source + compile production binary:
-    $$ make compile
-To remove build directory:
-    $$ make clean
-To run cppcheck linter:
-    $$ make lint
-To run unit tests:
-    $$ make test
-To run Valgrind unit tests:
-    $$ make test-memory
-endef
-
-export HELP_LIST_TARGETS
-
 compile-prod:
 	@cmake -S GPTifier -B $(BUILD_DIR_PROD)
 	@make --jobs=12 --directory=$(BUILD_DIR_PROD) install
-
-help:
-	@echo "$$HELP_LIST_TARGETS"
 
 format:
 	@clang-format -i --verbose --style=file \
