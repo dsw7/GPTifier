@@ -11,6 +11,10 @@ class TestFineTune(TestCaseExtended):
 
 
 class TestFineTuneUploadFile(TestCaseExtended):
+    def test_no_args_or_opts(self) -> None:
+        proc = self.assertFailure("fine-tune", "upload-file")
+        self.assertIn("Upload a fine-tuning file", proc.stdout)
+
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             proc = self.assertSuccess("fine-tune", "upload-file", option)
@@ -21,6 +25,10 @@ class TestFineTuneUploadFile(TestCaseExtended):
         self.assertIn(
             "Failed to open/read local data from file/application", proc.stderr
         )
+
+    def test_upload_empty_filename(self) -> None:
+        proc = self.assertFailure("fine-tune", "upload-file", "")
+        self.assertIn("Filename is empty", proc.stderr)
 
     def test_upload_invalid_file(self) -> None:
         input_text_file = Path(__file__).resolve().parent / "__init__.py"
@@ -58,6 +66,10 @@ class TestFineTuneCreateJob(TestCaseExtended):
 
 
 class TestFineTuneDeleteModel(TestCaseExtended):
+    def test_no_args_or_opts(self) -> None:
+        proc = self.assertFailure("fine-tune", "delete-model")
+        self.assertIn("Delete a fine-tuned model", proc.stdout)
+
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             proc = self.assertSuccess("fine-tune", "delete-model", option)
@@ -66,6 +78,10 @@ class TestFineTuneDeleteModel(TestCaseExtended):
     def test_delete_model_missing_model(self) -> None:
         proc = self.assertFailure("fine-tune", "delete-model", "foobar")
         self.assertIn("The model 'foobar' does not exist", proc.stderr)
+
+    def test_delete_model_empty_model_id_arg(self) -> None:
+        proc = self.assertFailure("fine-tune", "delete-model", "")
+        self.assertIn("Model ID argument is empty", proc.stderr)
 
 
 class TestFineTuneListJobs(TestCaseExtended):

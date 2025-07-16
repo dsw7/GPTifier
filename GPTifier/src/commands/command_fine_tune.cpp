@@ -106,7 +106,7 @@ void upload_fine_tuning_file(int argc, char **argv)
 {
     if (argc == 3) {
         help_fine_tune_upload_file();
-        return;
+        exit(EXIT_FAILURE);
     }
 
     const std::string opt_or_filename = argv[3];
@@ -114,6 +114,10 @@ void upload_fine_tuning_file(int argc, char **argv)
     if (opt_or_filename == "-h" or opt_or_filename == "--help") {
         help_fine_tune_upload_file();
         return;
+    }
+
+    if (opt_or_filename.empty()) {
+        throw std::runtime_error("Filename is empty");
     }
 
     const std::string id = serialization::upload_file(opt_or_filename);
@@ -166,7 +170,7 @@ void delete_fine_tuned_model(int argc, char **argv)
 {
     if (argc == 3) {
         help_fine_tune_delete_model();
-        return;
+        exit(EXIT_FAILURE);
     }
 
     const std::string opt_or_model_id = argv[3];
@@ -174,6 +178,10 @@ void delete_fine_tuned_model(int argc, char **argv)
     if (opt_or_model_id == "-h" or opt_or_model_id == "--help") {
         help_fine_tune_delete_model();
         return;
+    }
+
+    if (opt_or_model_id.empty()) {
+        throw std::runtime_error("Model ID argument is empty");
     }
 
     if (serialization::delete_model(opt_or_model_id)) {
