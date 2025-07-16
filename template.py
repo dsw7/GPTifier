@@ -73,16 +73,59 @@ def embed():
     pass
 
 
-@main.command(help="Manage files uploaded to OpenAI")
+# -----------------------------------------------------------------------------------------------------------
+# Files
+@main.group(help="Manage files uploaded to OpenAI")
 def files():
     pass
 
 
-@main.command(help="Manage fine tuning operations")
+@files.command(help="Get list of files uploaded to OpenAI servers")
+@click.option("-j", "--json", is_flag=True, help="Print raw JSON response from OpenAI")
+def list():
+    pass
+
+
+@files.command(help="Delete one or more uploaded files")
+@click.argument("file-id", nargs=-1)
+def delete(file_id):
+    pass
+
+
+# -----------------------------------------------------------------------------------------------------------
+# Fine tuning
+@main.group(help="Manage fine tuning operations")
 def fine_tune():
     pass
 
 
+@fine_tune.command(help="Upload a fine-tuning file")
+@click.argument("file")
+def upload_file():
+    pass
+
+
+@fine_tune.command(help="Create a fine-tuning job")
+@click.argument("file-id")
+@click.argument("model")
+def create_job(file_id, model):
+    pass
+
+
+@fine_tune.command(help="Delete a fine-tuned model")
+@click.argument("model-id")
+def delete_model(model_id):
+    pass
+
+
+@fine_tune.command(help="List fine-tuning jobs")
+@click.option("-j", "--json", is_flag=True, help="Print raw JSON response from OpenAI")
+@click.option("-l", "--limit", help="Show LIMIT number of fine-tuning jobs")
+def list_jobs():
+    pass
+
+
+# -----------------------------------------------------------------------------------------------------------
 @main.command(help="Get OpenAI usage details")
 @click.option("-j", "--json", is_flag=True, help="Print raw JSON response from OpenAI")
 @click.option("-d", "--days", help="Select number of days to go back")
