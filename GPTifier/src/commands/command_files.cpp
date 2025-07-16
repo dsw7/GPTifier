@@ -16,10 +16,7 @@ void help_files()
     const std::string messages = R"(Manage files uploaded to OpenAI servers.
 
 Usage:
-  gpt files [OPTION]
-  gpt files list [OPTION]...
-  gpt files delete [OPTION]
-  gpt files delete FILE-ID...
+  gpt files [OPTIONS] COMMAND [ARGS]...
 
 Options:
   -h, --help  Print help information and exit
@@ -29,7 +26,7 @@ Commands:
   delete      Delete one or more uploaded files
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 void help_files_list()
@@ -37,14 +34,14 @@ void help_files_list()
     const std::string messages = R"(Get list of files uploaded to OpenAI servers.
 
 Usage:
-  gpt files list [OPTION]...
+  gpt files list [OPTIONS]
 
 Options:
   -h, --help  Print help information and exit
   -j, --json  Print raw JSON response from OpenAI
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 void help_files_delete()
@@ -52,16 +49,15 @@ void help_files_delete()
     const std::string messages = R"(Delete one or more uploaded files.
 
 Usage:
-  gpt files delete [OPTION]
-  gpt files delete FILE-ID...
+  gpt files delete [OPTIONS] FILE-ID...
 
 Options:
   -h, --help  Print help information and exit
 
-* Use "gpt files list" to get the IDs corresponding to files to be deleted
+Use "gpt files list" to get the IDs corresponding to files to be deleted
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 // List files -----------------------------------------------------------------------------------------------

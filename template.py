@@ -88,7 +88,7 @@ def list():
 
 
 @files.command(help="Delete one or more uploaded files")
-@click.argument("file-id", nargs=-1)
+@click.argument("file-id", nargs=-1, required=True)
 def delete(file_id):
     pass
 
