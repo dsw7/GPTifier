@@ -16,7 +16,7 @@ void help_models()
     const std::string messages = R"(List available OpenAI or user models.
 
 Usage:
-  gpt models [OPTION]...
+  gpt models [OPTIONS]
 
 Options:
   -h, --help  Print help information and exit
@@ -24,7 +24,7 @@ Options:
   -u, --user  List user models if they exist. Command defaults to listing OpenAI owned models
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 struct Parameters {

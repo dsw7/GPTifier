@@ -20,13 +20,7 @@ void help_fine_tune()
     const std::string messages = R"(Manage all fine-tuning operations.
 
 Usage:
-  gpt fine-tune [OPTION]
-  gpt fine-tune upload-file [OPTION]
-  gpt fine-tune upload-file FILE
-  gpt fine-tune create-job [OPTION]...
-  gpt fine-tune delete-model [OPTION]
-  gpt fine-tune delete-model MODEL-ID
-  gpt fine-tune list-jobs [OPTION]...
+  gpt fine-tune [OPTIONS] COMMAND [ARGS]...
 
 Options:
   -h, --help  Print help information and exit
@@ -38,7 +32,7 @@ Commands:
   list-jobs     List fine-tuning jobs
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 void help_fine_tune_upload_file()
@@ -46,14 +40,13 @@ void help_fine_tune_upload_file()
     const std::string messages = R"(Upload a fine-tuning file. The file must be in JSONL format.
 
 Usage:
-  gpt fine-tune upload-file [OPTION]
-  gpt fine-tune upload-file FILE
+  gpt fine-tune upload-file [OPTIONS] FILE
 
 Options:
   -h, --help  Print help information and exit
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 void help_fine_tune_create_job()
@@ -69,10 +62,10 @@ Options:
   -f, --file-id=FILE-ID  The ID of an uploaded file that contains the training data
   -m, --model=MODEL      The name of the model to fine-tune
 
-* The file ID can be obtained by running the 'gpt files list' command
+The file ID can be obtained by running the 'gpt files list' command
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 void help_fine_tune_delete_model()
@@ -80,16 +73,15 @@ void help_fine_tune_delete_model()
     const std::string messages = R"(Delete a fine-tuned model.
 
 Usage:
-  gpt fine-tune delete-model [OPTION]
-  gpt fine-tune delete-model MODEL-ID
+  gpt fine-tune delete-model [OPTIONS] MODEL-ID
 
 Options:
   -h, --help  Print help information and exit
 
-* The model ID can be obtained by running the 'gpt models --user' command
+The model ID can be obtained by running the 'gpt models --user' command
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 void help_fine_tune_list_jobs()
@@ -98,7 +90,7 @@ void help_fine_tune_list_jobs()
 of a fine-tuning job.
 
 Usage:
-  gpt fine-tune list-jobs [OPTION]...
+  gpt fine-tune list-jobs [OPTIONS]
 
 Options:
   -h, --help         Print help information and exit
@@ -106,7 +98,7 @@ Options:
   -l, --limit=LIMIT  Show LIMIT number of fine-tuning jobs
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 // Upload fine tuning file ----------------------------------------------------------------------------------

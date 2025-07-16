@@ -24,8 +24,7 @@ void print_help_messages()
 A command line OpenAI toolkit.
 
 Usage:
-  gpt [OPTION]
-  gpt [COMMAND] [OPTION]...
+  gpt [OPTIONS] COMMAND [ARGS]...
 
 Options:
   -h, --help     Print help information and exit
@@ -42,8 +41,8 @@ Commands:
   edit           Edit one or more files according to a prompt [DEPRECATED]
   img            Generate an image from a prompt
 
-* Try 'gpt <subcommand> [-h | --help]' for subcommand specific help.
-* The 'edit' subcommand has been moved. See https://github.com/dsw7/FuncGraft for more information.
+Try 'gpt <subcommand> [-h | --help]' for subcommand specific help.
+The 'edit' subcommand has been moved. See https://github.com/dsw7/FuncGraft for more information.
 )";
 
     fmt::print("-- GPTifier | v{}\n{}", PROJECT_VERSION, messages);
