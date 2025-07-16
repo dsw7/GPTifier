@@ -124,56 +124,39 @@ void upload_fine_tuning_file(int argc, char **argv)
 
 void create_fine_tuning_job(int argc, char **argv)
 {
-    std::optional<std::string> model = std::nullopt;
-    std::optional<std::string> training_file = std::nullopt;
+    if (argc < 4) {
+        help_fine_tune_create_job();
+        return;
+    } else if (argc == 4) {
+        const std::string opt = argv[3];
 
-    while (true) {
-        static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' },
-            { "file-id", required_argument, 0, 'f' },
-            { "model", required_argument, 0, 'm' },
-            { 0, 0, 0, 0 },
-        };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "hf:m:", long_options, &option_index);
-
-        if (c == -1) {
-            break;
+        if (opt == "-h" or opt == "--help") {
+            help_fine_tune_create_job();
+            exit(EXIT_SUCCESS);
+        } else {
+            fmt::print(stderr, "Unknown option: '{}'\n", opt);
+            exit(EXIT_FAILURE);
         }
+    }
 
-        switch (c) {
-            case 'h':
-                help_fine_tune_create_job();
-                exit(EXIT_SUCCESS);
-            case 'f':
-                training_file = optarg;
-                break;
-            case 'm':
-                model = optarg;
-                break;
-            default:
-                utils::exit_on_failure();
-        }
-    };
+    const std::string training_file_id = argv[3];
+    const std::string model = argv[4];
 
     utils::separator();
 
-    if (training_file) {
-        fmt::print("Training using file with ID: {}\n", training_file.value());
-    } else {
-        throw std::runtime_error("No training file ID provided");
+    if (training_file_id.empty()) {
+        throw std::runtime_error("Training file ID argument is empty");
     }
 
-    if (model) {
-        fmt::print("Training model: {}\n", model.value());
-    } else {
-        throw std::runtime_error("No model provided");
+    if (model.empty()) {
+        throw std::runtime_error("Model argument is empty");
     }
 
+    fmt::print("Training using file with ID: {}\n", training_file_id);
+    fmt::print("Training model: {}\n", model);
     utils::separator();
 
-    const std::string id = serialization::create_fine_tuning_job(model.value(), training_file.value());
+    const std::string id = serialization::create_fine_tuning_job(model, training_file_id);
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 
