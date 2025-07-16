@@ -126,7 +126,7 @@ void create_fine_tuning_job(int argc, char **argv)
 {
     if (argc < 4) {
         help_fine_tune_create_job();
-        return;
+        exit(EXIT_FAILURE);
     } else if (argc == 4) {
         const std::string opt = argv[3];
 
