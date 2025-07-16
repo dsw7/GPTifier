@@ -18,8 +18,7 @@ void help_img()
 DALL-E 3 model for image generation.
 
 Usage:
-  gpt img [OPTION]
-  gpt img [OPTION]... PROMPT-FILE
+  gpt img [OPTIONS] PROMPT-FILE
 
 Options:
   -h, --help   Print help information and exit
@@ -27,7 +26,7 @@ Options:
   -v, --vivid  Request hyper-realistic / dramatic image (default is natural)
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 struct Parameters {

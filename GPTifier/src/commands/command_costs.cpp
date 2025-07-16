@@ -17,7 +17,7 @@ void help_costs()
 will require that a valid OPENAI_ADMIN_KEY environment variable is set.
 
 Usage:
-  gpt costs [OPTION]...
+  gpt costs [OPTIONS]
 
 Options:
   -h, --help       Print help information and exit
@@ -25,7 +25,7 @@ Options:
   -d, --days=DAYS  Select number of days to go back
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 struct Parameters {

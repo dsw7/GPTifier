@@ -48,7 +48,8 @@ def run():
     is_flag=True,
     help="Store results of completion on OpenAI servers",
 )
-def short():
+@click.argument("prompt", required=True)
+def short(prompt):
     pass
 
 
@@ -151,7 +152,8 @@ def edit():
     is_flag=True,
     help="Request hyper-realistic / dramatic image (default is natural)",
 )
-def img():
+@click.argument("prompt-file")
+def img(prompt_file):
     pass
 
 

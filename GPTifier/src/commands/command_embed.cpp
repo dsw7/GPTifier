@@ -17,10 +17,12 @@ namespace {
 
 void help_embed()
 {
-    const std::string messages = R"(Get embedding representing a block of text.
+    const std::string messages = R"(Get embedding representing a block of text. By default, the subcommand
+will read text interactively. Long blocks of text can be read into the
+program via file (see --read-from-file).
 
 Usage:
-  gpt embed [OPTION]...
+  gpt embed [OPTIONS]
 
 Options:
   -h, --help                     Print help information and exit
@@ -30,7 +32,7 @@ Options:
   -o, --output-file=FILENAME     Export embedding to FILENAME
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 struct Parameters {

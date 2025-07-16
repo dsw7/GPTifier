@@ -30,7 +30,7 @@ as follows:
   4. Interactively via stdin
 
 Usage:
-  gpt run [OPTION]...
+  gpt run [OPTIONS]
 
 Options:
   -h, --help                     Print help information and exit
@@ -43,13 +43,13 @@ Options:
   -s, --store-completion         Store results of completion on OpenAI servers
 
 Examples:
-  Run an interaction session:
+  > Run an interaction session:
     $ gpt run
-  Run a query non-interactively and export results
+  > Run a query non-interactively and export results
     $ gpt run --prompt="What is 3 + 5?" --file="/tmp/results.json"
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 struct Parameters {

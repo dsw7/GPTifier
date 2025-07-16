@@ -17,8 +17,7 @@ void help_short()
 useful for unit testing, vim integration, etc.
 
 Usage:
-  gpt short [OPTION]
-  gpt short [OPTION]... PROMPT
+  gpt short [OPTIONS] PROMPT
 
 Options:
   -h, --help                     Print help information and exit
@@ -27,11 +26,11 @@ Options:
   -s, --store-completion         Store results of completion on OpenAI servers
 
 Examples:
-  Create a chat completion:
+  > Create a chat completion:
     $ gpt short "What is 2 + 2?"
 )";
 
-    fmt::print("{}", messages);
+    fmt::print("{}\n", messages);
 }
 
 struct Parameters {
