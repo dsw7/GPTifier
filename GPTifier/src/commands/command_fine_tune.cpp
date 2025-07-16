@@ -51,16 +51,15 @@ Options:
 
 void help_fine_tune_create_job()
 {
-    const std::string messages = R"(Create a fine-tuning job. Note that this command assumes that a fine-tuning file
+    const std::string messages = R"(Create a fine-tuning job. Command will fine-tune a model named
+MODEL. Note that this command assumes that a fine-tuning file
 has already been uploaded to OpenAI servers.
 
 Usage:
-  gpt fine-tune create-job [OPTION]...
+  gpt fine-tune create-job [OPTIONS] FILE-ID MODEL
 
 Options:
-  -h, --help             Print help information and exit
-  -f, --file-id=FILE-ID  The ID of an uploaded file that contains the training data
-  -m, --model=MODEL      The name of the model to fine-tune
+  -h, --help  Print help information and exit
 
 The file ID can be obtained by running the 'gpt files list' command
 )";
