@@ -11,6 +11,10 @@ class TestFineTune(TestCaseExtended):
 
 
 class TestFineTuneUploadFile(TestCaseExtended):
+    def test_no_args_or_opts(self) -> None:
+        proc = self.assertFailure("fine-tune", "upload-file")
+        self.assertIn("Upload a fine-tuning file", proc.stdout)
+
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             proc = self.assertSuccess("fine-tune", "upload-file", option)
@@ -22,6 +26,10 @@ class TestFineTuneUploadFile(TestCaseExtended):
             "Failed to open/read local data from file/application", proc.stderr
         )
 
+    def test_upload_empty_filename(self) -> None:
+        proc = self.assertFailure("fine-tune", "upload-file", "")
+        self.assertIn("Filename is empty", proc.stderr)
+
     def test_upload_invalid_file(self) -> None:
         input_text_file = Path(__file__).resolve().parent / "__init__.py"
         proc = self.assertFailure("fine-tune", "upload-file", str(input_text_file))
@@ -31,19 +39,37 @@ class TestFineTuneUploadFile(TestCaseExtended):
 
 
 class TestFineTuneCreateJob(TestCaseExtended):
+    def test_no_args_or_opts(self) -> None:
+        proc = self.assertFailure("fine-tune", "create-job")
+        self.assertIn("Create a fine-tuning job", proc.stdout)
+
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             proc = self.assertSuccess("fine-tune", "create-job", option)
             self.assertIn("Create a fine-tuning job", proc.stdout)
 
-    def test_create_job_invalid_params(self) -> None:
-        proc = self.assertFailure(
-            "fine-tune", "create-job", "--model=foobar", "--file-id=foobar"
-        )
+    def test_create_job_invalid_option(self) -> None:
+        proc = self.assertFailure("fine-tune", "create-job", "foobar")
+        self.assertIn("Unknown option: 'foobar'", proc.stderr)
+
+    def test_create_job_invalid_training_file(self) -> None:
+        proc = self.assertFailure("fine-tune", "create-job", "foobar", "gpt-3.5-turbo")
         self.assertIn("invalid training_file: foobar", proc.stderr)
+
+    def test_create_job_empty_training_file(self) -> None:
+        proc = self.assertFailure("fine-tune", "create-job", "", "gpt-3.5-turbo")
+        self.assertIn("Training file ID argument is empty", proc.stderr)
+
+    def test_create_job_empty_model(self) -> None:
+        proc = self.assertFailure("fine-tune", "create-job", "foobar", "")
+        self.assertIn("Model argument is empty", proc.stderr)
 
 
 class TestFineTuneDeleteModel(TestCaseExtended):
+    def test_no_args_or_opts(self) -> None:
+        proc = self.assertFailure("fine-tune", "delete-model")
+        self.assertIn("Delete a fine-tuned model", proc.stdout)
+
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             proc = self.assertSuccess("fine-tune", "delete-model", option)
@@ -52,6 +78,10 @@ class TestFineTuneDeleteModel(TestCaseExtended):
     def test_delete_model_missing_model(self) -> None:
         proc = self.assertFailure("fine-tune", "delete-model", "foobar")
         self.assertIn("The model 'foobar' does not exist", proc.stderr)
+
+    def test_delete_model_empty_model_id_arg(self) -> None:
+        proc = self.assertFailure("fine-tune", "delete-model", "")
+        self.assertIn("Model ID argument is empty", proc.stderr)
 
 
 class TestFineTuneListJobs(TestCaseExtended):

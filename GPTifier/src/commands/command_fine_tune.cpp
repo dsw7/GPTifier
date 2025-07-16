@@ -51,16 +51,15 @@ Options:
 
 void help_fine_tune_create_job()
 {
-    const std::string messages = R"(Create a fine-tuning job. Note that this command assumes that a fine-tuning file
+    const std::string messages = R"(Create a fine-tuning job. Command will fine-tune a model named
+MODEL. Note that this command assumes that a fine-tuning file
 has already been uploaded to OpenAI servers.
 
 Usage:
-  gpt fine-tune create-job [OPTION]...
+  gpt fine-tune create-job [OPTIONS] FILE-ID MODEL
 
 Options:
-  -h, --help             Print help information and exit
-  -f, --file-id=FILE-ID  The ID of an uploaded file that contains the training data
-  -m, --model=MODEL      The name of the model to fine-tune
+  -h, --help  Print help information and exit
 
 The file ID can be obtained by running the 'gpt files list' command
 )";
@@ -107,7 +106,7 @@ void upload_fine_tuning_file(int argc, char **argv)
 {
     if (argc == 3) {
         help_fine_tune_upload_file();
-        return;
+        exit(EXIT_FAILURE);
     }
 
     const std::string opt_or_filename = argv[3];
@@ -115,6 +114,10 @@ void upload_fine_tuning_file(int argc, char **argv)
     if (opt_or_filename == "-h" or opt_or_filename == "--help") {
         help_fine_tune_upload_file();
         return;
+    }
+
+    if (opt_or_filename.empty()) {
+        throw std::runtime_error("Filename is empty");
     }
 
     const std::string id = serialization::upload_file(opt_or_filename);
@@ -125,56 +128,39 @@ void upload_fine_tuning_file(int argc, char **argv)
 
 void create_fine_tuning_job(int argc, char **argv)
 {
-    std::optional<std::string> model = std::nullopt;
-    std::optional<std::string> training_file = std::nullopt;
+    if (argc < 4) {
+        help_fine_tune_create_job();
+        exit(EXIT_FAILURE);
+    } else if (argc == 4) {
+        const std::string opt = argv[3];
 
-    while (true) {
-        static struct option long_options[] = {
-            { "help", no_argument, 0, 'h' },
-            { "file-id", required_argument, 0, 'f' },
-            { "model", required_argument, 0, 'm' },
-            { 0, 0, 0, 0 },
-        };
-
-        int option_index = 0;
-        int c = getopt_long(argc, argv, "hf:m:", long_options, &option_index);
-
-        if (c == -1) {
-            break;
+        if (opt == "-h" or opt == "--help") {
+            help_fine_tune_create_job();
+            exit(EXIT_SUCCESS);
+        } else {
+            fmt::print(stderr, "Unknown option: '{}'\n", opt);
+            exit(EXIT_FAILURE);
         }
+    }
 
-        switch (c) {
-            case 'h':
-                help_fine_tune_create_job();
-                exit(EXIT_SUCCESS);
-            case 'f':
-                training_file = optarg;
-                break;
-            case 'm':
-                model = optarg;
-                break;
-            default:
-                utils::exit_on_failure();
-        }
-    };
+    const std::string training_file_id = argv[3];
+    const std::string model = argv[4];
 
     utils::separator();
 
-    if (training_file) {
-        fmt::print("Training using file with ID: {}\n", training_file.value());
-    } else {
-        throw std::runtime_error("No training file ID provided");
+    if (training_file_id.empty()) {
+        throw std::runtime_error("Training file ID argument is empty");
     }
 
-    if (model) {
-        fmt::print("Training model: {}\n", model.value());
-    } else {
-        throw std::runtime_error("No model provided");
+    if (model.empty()) {
+        throw std::runtime_error("Model argument is empty");
     }
 
+    fmt::print("Training using file with ID: {}\n", training_file_id);
+    fmt::print("Training model: {}\n", model);
     utils::separator();
 
-    const std::string id = serialization::create_fine_tuning_job(model.value(), training_file.value());
+    const std::string id = serialization::create_fine_tuning_job(model, training_file_id);
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
 }
 
@@ -184,7 +170,7 @@ void delete_fine_tuned_model(int argc, char **argv)
 {
     if (argc == 3) {
         help_fine_tune_delete_model();
-        return;
+        exit(EXIT_FAILURE);
     }
 
     const std::string opt_or_model_id = argv[3];
@@ -192,6 +178,10 @@ void delete_fine_tuned_model(int argc, char **argv)
     if (opt_or_model_id == "-h" or opt_or_model_id == "--help") {
         help_fine_tune_delete_model();
         return;
+    }
+
+    if (opt_or_model_id.empty()) {
+        throw std::runtime_error("Model ID argument is empty");
     }
 
     if (serialization::delete_model(opt_or_model_id)) {
