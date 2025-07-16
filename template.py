@@ -101,20 +101,20 @@ def fine_tune():
 
 
 @fine_tune.command(help="Upload a fine-tuning file")
-@click.argument("file")
+@click.argument("file", required=True)
 def upload_file():
     pass
 
 
 @fine_tune.command(help="Create a fine-tuning job")
-@click.argument("file-id")
-@click.argument("model")
+@click.argument("file-id", required=True)
+@click.argument("model", required=True)
 def create_job(file_id, model):
     pass
 
 
 @fine_tune.command(help="Delete a fine-tuned model")
-@click.argument("model-id")
+@click.argument("model-id", required=True)
 def delete_model(model_id):
     pass
 
@@ -152,7 +152,7 @@ def edit():
     is_flag=True,
     help="Request hyper-realistic / dramatic image (default is natural)",
 )
-@click.argument("prompt-file")
+@click.argument("prompt-file", required=True)
 def img(prompt_file):
     pass
 
