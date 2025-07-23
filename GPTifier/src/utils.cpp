@@ -40,6 +40,10 @@ void exit_on_failure()
 
 std::string read_from_file(const std::string &filename)
 {
+    if (filename.empty()) {
+        throw std::runtime_error("Could not read from file. Filename is empty");
+    }
+
     std::ifstream file(filename);
 
     if (not file.is_open()) {
@@ -58,6 +62,10 @@ std::string read_from_file(const std::string &filename)
 
 void write_to_file(const std::string &filename, const std::string &text)
 {
+    if (filename.empty()) {
+        throw std::runtime_error("Could not write to file. Filename is empty");
+    }
+
     std::ofstream file(filename);
 
     if (not file.is_open()) {
@@ -71,6 +79,10 @@ void write_to_file(const std::string &filename, const std::string &text)
 
 void append_to_file(const std::string &filename, const std::string &text)
 {
+    if (filename.empty()) {
+        throw std::runtime_error("Could not append to file. Filename is empty");
+    }
+
     std::ofstream file(filename, std::ios::app);
 
     if (not file.is_open()) {
@@ -84,6 +96,10 @@ void append_to_file(const std::string &filename, const std::string &text)
 
 void write_to_png(const std::string &filename, const std::string &binary_data)
 {
+    if (filename.empty()) {
+        throw std::runtime_error("Could not create PNG. Filename is empty");
+    }
+
     std::ofstream file(filename, std::ios::binary);
 
     if (not file.is_open()) {
