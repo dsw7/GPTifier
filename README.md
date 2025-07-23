@@ -137,8 +137,7 @@ saved:
 > Writing reply to file /home/<your-username>/.gptifier/completions.gpt
 ------------------------------------------------------------------------------------------
 ```
-Any new responses will append to this file. To bypass the save-file prompt during operations like automated
-tests, use the `-u` or `--no-interactive-export` flags.
+Any new responses will append to this file.
 
 #### Specifying a model
 To specify a model for chat completion, use the `-m` or `--model` option. For example, to use GPT-4:
