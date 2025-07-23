@@ -104,6 +104,10 @@ void export_embedding(const serialization::Embedding &em, const std::optional<st
         filename = datadir::GPT_EMBEDDINGS.string();
     }
 
+    if (filename.empty()) {
+        throw std::runtime_error("Output file string is empty");
+    }
+
     const nlohmann::json json = {
         { "embedding", em.embedding },
         { "input", em.input },
@@ -126,8 +130,14 @@ void command_embed(int argc, char **argv)
     if (params.input) {
         text_to_embed = params.input.value();
     } else if (params.input_file) {
-        fmt::print("Reading text from file: '{}'\n", params.input_file.value());
-        text_to_embed = utils::read_from_file(params.input_file.value());
+        const std::string input_file = params.input_file.value();
+
+        if (input_file.empty()) {
+            throw std::runtime_error("Input file string is empty");
+        }
+
+        fmt::print("Reading text from file: '{}'\n", input_file);
+        text_to_embed = utils::read_from_file(input_file);
     } else {
         text_to_embed = read_text_from_stdin();
     }
@@ -144,6 +154,10 @@ void command_embed(int argc, char **argv)
         model = configs.model_embed.value();
     } else {
         throw std::runtime_error("No model provided via configuration file or command line");
+    }
+
+    if (model.empty()) {
+        throw std::runtime_error("Model is empty");
     }
 
     const serialization::Embedding em = serialization::create_embedding(model, text_to_embed);

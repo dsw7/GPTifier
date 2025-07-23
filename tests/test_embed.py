@@ -52,6 +52,24 @@ class TestEmbed(TestCaseExtended):
             proc.stderr,
         )
 
+    def test_empty_input(self) -> None:
+        proc = self.assertFailure("embed", "--input=")
+        self.assertIn("No input text provided anywhere", proc.stderr)
+
+    def test_empty_model(self) -> None:
+        proc = self.assertFailure("embed", "--input=foobar", "--model=")
+        self.assertIn("Model is empty", proc.stderr)
+
+    def test_empty_output_file(self) -> None:
+        proc = self.assertFailure("embed", "--input=foobar", "--output-file=")
+        self.assertIn("Output file string is empty", proc.stderr)
+
+    def test_empty_input_file(self) -> None:
+        proc = self.assertFailure(
+            "embed", "--read-from-file=", "--output-file=/tmp/results.txt"
+        )
+        self.assertIn("Input file string is empty", proc.stderr)
+
 
 class TestEmbedCosineSimilarityIdentical(TestCaseExtended):
 
