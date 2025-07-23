@@ -116,6 +116,22 @@ Parameters read_cli(int argc, char **argv)
         }
     };
 
+    if (params.json_dump_file) {
+        if (params.json_dump_file.value().empty()) {
+            throw std::runtime_error("No filename provided");
+        }
+    }
+
+    if (params.prompt_file) {
+        if (params.prompt_file.value().empty()) {
+            throw std::runtime_error("Empty prompt filename");
+        }
+    }
+
+    if (params.temperature.empty()) {
+        throw std::runtime_error("Empty temperature");
+    }
+
     return params;
 }
 
@@ -215,6 +231,7 @@ serialization::ChatCompletion run_query(const std::string &model, const std::str
 
 void dump_chat_completion_response(const serialization::ChatCompletion &cc, const std::string &json_dump_file)
 {
+
     const nlohmann::json json = {
         { "completion", cc.completion },
         { "completion_tokens", cc.completion_tokens },
@@ -336,6 +353,10 @@ void command_run(int argc, char **argv)
         model = params.model.value();
     } else {
         model = get_model();
+    }
+
+    if (model.empty()) {
+        throw std::runtime_error("Model is empty");
     }
 
     const std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";

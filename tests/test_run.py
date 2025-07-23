@@ -121,17 +121,33 @@ class TestChatCompletion(TestCaseExtended):
         proc = self.assertFailure("run", f"-p'{prompt}'", "-tfoobar", "-u")
         self.assertIn("Failed to convert 'foobar' to float", proc.stderr)
 
+    def test_empty_temp(self) -> None:
+        proc = self.assertFailure("run", "-p'A foo that bars?'", "--temperature=", "-u")
+        self.assertIn("Empty temperature", proc.stderr)
+
     def test_missing_prompt_file(self) -> None:
         proc = self.assertFailure("run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u")
         self.assertIn("Unable to open '/tmp/yU8nnkRs.txt'", proc.stderr)
 
-    def test_invalid_dump_location(self) -> None:
+    def test_empty_prompt(self) -> None:
+        proc = self.assertFailure("run", "--prompt=", "-u")
+        self.assertIn("No input text provided anywhere. Cannot proceed", proc.stderr)
+
+    def test_empty_prompt_file(self) -> None:
+        proc = self.assertFailure("run", "--read-from-file=", "-u")
+        self.assertIn("Empty prompt filename", proc.stderr)
+
+    def test_invalid_output_file_location(self) -> None:
         prompt = get_prompt_completion_pair().prompt
 
         proc = self.assertFailure(
             "run", f"--prompt='{prompt}'", "--file=/tmp/a/b/c", "-u"
         )
         self.assertIn("Unable to open '/tmp/a/b/c'", proc.stderr)
+
+    def test_empty_output_file(self) -> None:
+        proc = self.assertFailure("run", "--prompt='What is 7 + 2?'", "--file=", "-u")
+        self.assertIn("No filename provided", proc.stderr)
 
     def test_invalid_model(self) -> None:
         prompt = get_prompt_completion_pair().prompt
@@ -141,6 +157,10 @@ class TestChatCompletion(TestCaseExtended):
             "The model `foobar` does not exist or you do not have access to it.",
             proc.stderr,
         )
+
+    def test_empty_model(self) -> None:
+        proc = self.assertFailure("run", "-p'foobar'", "--model=", "-u")
+        self.assertIn("Model is empty", proc.stderr)
 
     def test_out_of_range_temp(self) -> None:
         prompt = get_prompt_completion_pair().prompt
