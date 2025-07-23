@@ -113,6 +113,10 @@ void command_short(int argc, char **argv)
         throw std::runtime_error("Prompt is empty");
     }
 
+    if (params.prompt.value().empty()) {
+        throw std::runtime_error("Prompt is empty");
+    }
+
     float temperature = 1.00;
     if (params.temperature) {
         temperature = utils::string_to_float(params.temperature.value());
