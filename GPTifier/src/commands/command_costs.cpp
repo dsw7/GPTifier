@@ -115,13 +115,17 @@ void command_costs(int argc, char **argv)
         throw std::runtime_error("Days must be greater than 0");
     }
 
+    if (days > 60) {
+        throw std::runtime_error("Days cannot be greater than 60");
+    }
+
     const std::time_t start_time = get_current_time_minus_days(days);
-    const int limit = 180;
 
     if (not params.print_raw_json) {
         fmt::print("Awaiting response from API...\n");
     }
 
+    const int limit = 180;
     serialization::Costs costs = serialization::get_costs(start_time, limit);
 
     if (params.print_raw_json) {
