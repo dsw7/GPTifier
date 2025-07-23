@@ -12,3 +12,7 @@ class TestImg(TestCaseExtended):
     def test_missing_prompt_file(self) -> None:
         proc = self.assertFailure("img")
         self.assertIn("No prompt file provided. Cannot proceed", proc.stderr)
+
+    def test_empty_prompt_file(self) -> None:
+        proc = self.assertFailure("img", "")
+        self.assertIn("Could not read from file. Filename is empty", proc.stderr)
