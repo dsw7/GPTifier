@@ -62,13 +62,13 @@ class TestEmbed(TestCaseExtended):
 
     def test_empty_output_file(self) -> None:
         proc = self.assertFailure("embed", "--input=foobar", "--output-file=")
-        self.assertIn("Output file string is empty", proc.stderr)
+        self.assertIn("Could not write to file. Filename is empty", proc.stderr)
 
     def test_empty_input_file(self) -> None:
         proc = self.assertFailure(
             "embed", "--read-from-file=", "--output-file=/tmp/results.txt"
         )
-        self.assertIn("Input file string is empty", proc.stderr)
+        self.assertIn("Could not read from file. Filename is empty", proc.stderr)
 
 
 class TestEmbedCosineSimilarityIdentical(TestCaseExtended):
