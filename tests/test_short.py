@@ -25,6 +25,10 @@ class TestShort(TestCaseExtended):
                 results = proc.load_stdout_to_json()
                 self.assertIn(">>>4<<<", results["choices"][0]["message"]["content"])
 
+    def test_empty_temp(self) -> None:
+        proc = self.assertFailure("short", "--temperature=", self.prompt)
+        self.assertIn("Empty temperature", proc.stderr)
+
     def test_invalid_temp_stof(self) -> None:
         proc = self.assertFailure("short", "-tfoobar", self.prompt)
         self.assertIn("Failed to convert 'foobar' to float", proc.stderr)
