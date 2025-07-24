@@ -20,6 +20,12 @@ class TestChatsList(TestCaseExtended):
                 proc = self.assertSuccess("chats", "list", option)
                 self.assertIn("List uploaded chat completions", proc.stdout)
 
+    def test_list_chats(self) -> None:
+        self.assertSuccess("chats", "list")
+
+    def test_list_chats_valid_limit(self) -> None:
+        self.assertSuccess("chats", "list", "-l5")
+
     def test_invalid_limit(self) -> None:
         for option in ["-l-1", "--limit=-1"]:
             with self.subTest(option=option):
@@ -29,6 +35,10 @@ class TestChatsList(TestCaseExtended):
     def test_invalid_limit_2(self) -> None:
         proc = self.assertFailure("chats", "list", "--limit=abc")
         self.assertIn("Failed to convert 'abc' to int", proc.stderr)
+
+    def test_empty_limit(self) -> None:
+        proc = self.assertFailure("chats", "list", "--limit=")
+        self.assertIn("Limit is empty", proc.stderr)
 
 
 class TestChatsDelete(TestCaseExtended):
@@ -40,11 +50,27 @@ class TestChatsDelete(TestCaseExtended):
                     "Delete one or more uploaded chat completions", proc.stdout
                 )
 
+    def test_delete_no_id(self) -> None:
+        proc = self.assertFailure("chats", "delete")
+        self.assertIn(
+            "One or more chat completion IDs need to be provided", proc.stderr
+        )
+
     def test_delete_missing_id(self) -> None:
         proc = self.assertFailure("chats", "delete", "abc")
         self.assertIn(
             'Failed to delete chat completion with ID: abc. The error was: "Completion abc not found"',
             proc.stderr,
+        )
+
+    def test_delete_empty_id(self) -> None:
+        proc = self.assertSuccess("chats", "delete", "")
+        self.assertIn("Cannot delete chat completion. ID is empty", proc.stderr)
+
+    def test_delete_empty_ids(self) -> None:
+        proc = self.assertSuccess("chats", "delete", "", "", "")
+        self.assertEqual(
+            3 * "Cannot delete chat completion. ID is empty\n", proc.stderr
         )
 
 

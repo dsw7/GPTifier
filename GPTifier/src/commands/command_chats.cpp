@@ -109,6 +109,10 @@ void list_chat_completions(int argc, char **argv)
         }
     };
 
+    if (limit.empty()) {
+        throw std::runtime_error("Limit is empty");
+    }
+
     const int limit_i = utils::string_to_int(limit);
 
     if (limit_i < 1) {
@@ -132,6 +136,11 @@ bool loop_over_ids(const std::vector<std::string> &ids)
     bool success = true;
 
     for (const auto &id: ids) {
+        if (id.empty()) {
+            fmt::print(stderr, "Cannot delete chat completion. ID is empty\n");
+            continue;
+        }
+
         bool deleted = false;
 
         try {
@@ -155,8 +164,7 @@ bool loop_over_ids(const std::vector<std::string> &ids)
 void delete_chat_completions(int argc, char **argv)
 {
     if (argc == 3) {
-        help_chats_delete();
-        return;
+        throw std::runtime_error("One or more chat completion IDs need to be provided");
     }
 
     std::vector<std::string> args_or_ids;
