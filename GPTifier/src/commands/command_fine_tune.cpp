@@ -105,8 +105,7 @@ Options:
 void upload_fine_tuning_file(int argc, char **argv)
 {
     if (argc == 3) {
-        help_fine_tune_upload_file();
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("A fine tuning file needs to be provided");
     }
 
     const std::string opt_or_filename = argv[3];

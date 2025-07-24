@@ -13,7 +13,7 @@ class TestFineTune(TestCaseExtended):
 class TestFineTuneUploadFile(TestCaseExtended):
     def test_no_args_or_opts(self) -> None:
         proc = self.assertFailure("fine-tune", "upload-file")
-        self.assertIn("Upload a fine-tuning file", proc.stdout)
+        self.assertIn("A fine tuning file needs to be provided", proc.stderr)
 
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
