@@ -128,8 +128,7 @@ void upload_fine_tuning_file(int argc, char **argv)
 void create_fine_tuning_job(int argc, char **argv)
 {
     if (argc < 4) {
-        help_fine_tune_create_job();
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("A fine tuning file ID and model needs to be provided");
     } else if (argc == 4) {
         const std::string opt = argv[3];
 
@@ -168,8 +167,7 @@ void create_fine_tuning_job(int argc, char **argv)
 void delete_fine_tuned_model(int argc, char **argv)
 {
     if (argc == 3) {
-        help_fine_tune_delete_model();
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("A model ID needs to be provided");
     }
 
     const std::string opt_or_model_id = argv[3];
