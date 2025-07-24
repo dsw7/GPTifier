@@ -63,6 +63,10 @@ class TestFilesDelete(TestCaseExtended):
             proc.stderr,
         )
 
+    def test_files_delete_no_ids(self) -> None:
+        proc = self.assertFailure("files", "delete")
+        self.assertIn("One or more file IDs need to be provided", proc.stderr)
+
     def test_files_delete_multiple(self) -> None:
         proc = self.assertFailure("files", "delete", "spam", "ham", "eggs")
         self.assertIn(

@@ -146,8 +146,7 @@ bool loop_over_ids(const std::vector<std::string> &ids)
 void delete_files(int argc, char **argv)
 {
     if (argc == 3) {
-        help_files_delete();
-        return;
+        throw std::runtime_error("One or more file IDs need to be provided");
     }
 
     std::vector<std::string> args_or_ids;
