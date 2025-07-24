@@ -275,7 +275,7 @@ std::string create_fine_tuning_job(const std::string &post_fields)
     return response;
 }
 
-std::string get_fine_tuning_jobs(const std::string &limit)
+std::string get_fine_tuning_jobs(const int limit)
 {
     Curl curl;
     CURL *handle = curl.get_handle();

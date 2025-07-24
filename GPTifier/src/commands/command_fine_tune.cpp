@@ -207,7 +207,7 @@ void print_fine_tuning_jobs(const serialization::FineTuningJobs &jobs)
 void list_fine_tuning_jobs(int argc, char **argv)
 {
     bool print_raw_json = false;
-    std::optional<std::string> limit = std::nullopt;
+    std::optional<std::string> limit;
 
     while (true) {
         static struct option long_options[] = {
@@ -239,7 +239,13 @@ void list_fine_tuning_jobs(int argc, char **argv)
         }
     };
 
-    serialization::FineTuningJobs jobs = serialization::get_fine_tuning_jobs(limit.value_or("20"));
+    const int limit_i = utils::string_to_int(limit.value_or("20"));
+
+    if (limit_i < 1) {
+        throw std::runtime_error("Limit must be greater than or equal to 1");
+    }
+
+    serialization::FineTuningJobs jobs = serialization::get_fine_tuning_jobs(limit_i);
 
     if (print_raw_json) {
         fmt::print("{}\n", jobs.raw_response);

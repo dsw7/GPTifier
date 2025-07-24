@@ -103,3 +103,11 @@ class TestFineTuneListJobs(TestCaseExtended):
             with self.subTest(option=option):
                 proc = self.assertSuccess("fine-tune", "list-jobs", option)
                 self.assertNotIn("No limit passed with --limit flag.", proc.stdout)
+
+    def test_list_jobs_stoi(self) -> None:
+        proc = self.assertFailure("fine-tune", "list-jobs", "--limit=abc")
+        self.assertIn("Failed to convert 'abc' to int", proc.stderr)
+
+    def test_list_jobs_invalid_limit(self) -> None:
+        proc = self.assertFailure("fine-tune", "list-jobs", "--limit=-5")
+        self.assertIn("Limit must be greater than or equal to 1", proc.stderr)
