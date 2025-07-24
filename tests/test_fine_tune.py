@@ -111,3 +111,7 @@ class TestFineTuneListJobs(TestCaseExtended):
     def test_list_jobs_invalid_limit(self) -> None:
         proc = self.assertFailure("fine-tune", "list-jobs", "--limit=-5")
         self.assertIn("Limit must be greater than or equal to 1", proc.stderr)
+
+    def test_list_jobs_empty_limit(self) -> None:
+        proc = self.assertFailure("fine-tune", "list-jobs", "--limit=")
+        self.assertIn("Limit is empty", proc.stderr)

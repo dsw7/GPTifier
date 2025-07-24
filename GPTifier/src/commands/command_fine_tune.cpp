@@ -239,6 +239,12 @@ void list_fine_tuning_jobs(int argc, char **argv)
         }
     };
 
+    if (limit) {
+        if (limit.value().empty()) {
+            throw std::runtime_error("Limit is empty");
+        }
+    }
+
     const int limit_i = utils::string_to_int(limit.value_or("20"));
 
     if (limit_i < 1) {

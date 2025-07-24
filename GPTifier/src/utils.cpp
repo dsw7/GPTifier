@@ -113,11 +113,15 @@ void write_to_png(const std::string &filename, const std::string &binary_data)
 
 float string_to_float(const std::string &str)
 {
+    if (str.empty()) {
+        throw std::runtime_error("Cannot convert string to float. Input string is empty");
+    }
+
     float f = 0.00;
 
     try {
         f = std::stof(str);
-    } catch (std::invalid_argument &e) {
+    } catch (const std::invalid_argument &e) {
         const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), str);
         throw std::runtime_error(errmsg);
     }
@@ -127,11 +131,15 @@ float string_to_float(const std::string &str)
 
 int string_to_int(const std::string &str)
 {
+    if (str.empty()) {
+        throw std::runtime_error("Cannot convert string to int. Input string is empty");
+    }
+
     int i = 0;
 
     try {
         i = std::stoi(str);
-    } catch (std::invalid_argument &e) {
+    } catch (const std::invalid_argument &e) {
         const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to int", e.what(), str);
         throw std::runtime_error(errmsg);
     }
