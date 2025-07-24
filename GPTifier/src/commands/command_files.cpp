@@ -123,6 +123,11 @@ bool loop_over_ids(const std::vector<std::string> &ids)
     bool success = true;
 
     for (const auto &id: ids) {
+        if (id.empty()) {
+            fmt::print(stderr, "Cannot delete file. ID is empty\n");
+            continue;
+        }
+
         bool deleted = false;
 
         try {

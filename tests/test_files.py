@@ -67,6 +67,14 @@ class TestFilesDelete(TestCaseExtended):
         proc = self.assertFailure("files", "delete")
         self.assertIn("One or more file IDs need to be provided", proc.stderr)
 
+    def test_files_delete_one_empty_id(self) -> None:
+        proc = self.assertSuccess("files", "delete", "")
+        self.assertIn("Cannot delete file. ID is empty", proc.stderr)
+
+    def test_files_delete_multiple_empty_ids(self) -> None:
+        proc = self.assertSuccess("files", "delete", "", "", "")
+        self.assertEqual(3 * "Cannot delete file. ID is empty\n", proc.stderr)
+
     def test_files_delete_multiple(self) -> None:
         proc = self.assertFailure("files", "delete", "spam", "ham", "eggs")
         self.assertIn(
