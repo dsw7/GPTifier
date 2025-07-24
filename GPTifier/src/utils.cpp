@@ -40,6 +40,10 @@ void exit_on_failure()
 
 std::string read_from_file(const std::string &filename)
 {
+    if (filename.empty()) {
+        throw std::runtime_error("Could not read from file. Filename is empty");
+    }
+
     std::ifstream file(filename);
 
     if (not file.is_open()) {
@@ -58,6 +62,10 @@ std::string read_from_file(const std::string &filename)
 
 void write_to_file(const std::string &filename, const std::string &text)
 {
+    if (filename.empty()) {
+        throw std::runtime_error("Could not write to file. Filename is empty");
+    }
+
     std::ofstream file(filename);
 
     if (not file.is_open()) {
@@ -71,6 +79,10 @@ void write_to_file(const std::string &filename, const std::string &text)
 
 void append_to_file(const std::string &filename, const std::string &text)
 {
+    if (filename.empty()) {
+        throw std::runtime_error("Could not append to file. Filename is empty");
+    }
+
     std::ofstream file(filename, std::ios::app);
 
     if (not file.is_open()) {
@@ -84,6 +96,10 @@ void append_to_file(const std::string &filename, const std::string &text)
 
 void write_to_png(const std::string &filename, const std::string &binary_data)
 {
+    if (filename.empty()) {
+        throw std::runtime_error("Could not create PNG. Filename is empty");
+    }
+
     std::ofstream file(filename, std::ios::binary);
 
     if (not file.is_open()) {
@@ -97,11 +113,15 @@ void write_to_png(const std::string &filename, const std::string &binary_data)
 
 float string_to_float(const std::string &str)
 {
+    if (str.empty()) {
+        throw std::runtime_error("Cannot convert string to float. Input string is empty");
+    }
+
     float f = 0.00;
 
     try {
         f = std::stof(str);
-    } catch (std::invalid_argument &e) {
+    } catch (const std::invalid_argument &e) {
         const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to float", e.what(), str);
         throw std::runtime_error(errmsg);
     }
@@ -111,11 +131,15 @@ float string_to_float(const std::string &str)
 
 int string_to_int(const std::string &str)
 {
+    if (str.empty()) {
+        throw std::runtime_error("Cannot convert string to int. Input string is empty");
+    }
+
     int i = 0;
 
     try {
         i = std::stoi(str);
-    } catch (std::invalid_argument &e) {
+    } catch (const std::invalid_argument &e) {
         const std::string errmsg = fmt::format("{}\nFailed to convert '{}' to int", e.what(), str);
         throw std::runtime_error(errmsg);
     }

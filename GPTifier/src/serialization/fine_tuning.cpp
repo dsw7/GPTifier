@@ -33,7 +33,7 @@ void unpack_fine_tuning_jobs(const nlohmann::json &json, FineTuningJobs &fine_tu
 
 } // namespace
 
-FineTuningJobs get_fine_tuning_jobs(const std::string &limit)
+FineTuningJobs get_fine_tuning_jobs(const int limit)
 {
     const std::string response = networking::get_fine_tuning_jobs(limit);
     FineTuningJobs fine_tuning_jobs = unpack_response<FineTuningJobs>(response, unpack_fine_tuning_jobs);

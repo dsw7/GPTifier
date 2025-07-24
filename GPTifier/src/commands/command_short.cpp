@@ -85,6 +85,12 @@ Parameters read_cli(int argc, char **argv)
         }
     }
 
+    if (params.temperature) {
+        if (params.temperature.value().empty()) {
+            throw std::runtime_error("Empty temperature");
+        }
+    }
+
     return params;
 }
 
@@ -110,6 +116,10 @@ void command_short(int argc, char **argv)
     const Parameters params = read_cli(argc, argv);
 
     if (not params.prompt) {
+        throw std::runtime_error("Prompt is empty");
+    }
+
+    if (params.prompt.value().empty()) {
         throw std::runtime_error("Prompt is empty");
     }
 

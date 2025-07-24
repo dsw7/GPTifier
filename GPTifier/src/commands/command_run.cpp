@@ -35,7 +35,6 @@ Usage:
 Options:
   -h, --help                     Print help information and exit
   -m, --model=MODEL              Specify a valid chat model
-  -u, --no-interactive-export    Disable [y/n] prompt that asks whether to export results
   -o, --file=FILE                Export results to a JSON file named FILE
   -p, --prompt=PROMPT            Provide prompt via command line
   -r, --read-from-file=FILENAME  Read prompt from a custom file named FILENAME
@@ -53,7 +52,6 @@ Examples:
 }
 
 struct Parameters {
-    bool enable_export = true;
     bool store_completion = false;
     std::optional<std::string> json_dump_file = std::nullopt;
     std::optional<std::string> model = std::nullopt;
@@ -69,7 +67,6 @@ Parameters read_cli(int argc, char **argv)
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
-            { "no-interactive-export", no_argument, 0, 'u' },
             { "store-completion", no_argument, 0, 's' },
             { "file", required_argument, 0, 'o' },
             { "model", required_argument, 0, 'm' },
@@ -90,9 +87,6 @@ Parameters read_cli(int argc, char **argv)
             case 'h':
                 help_run();
                 exit(EXIT_SUCCESS);
-            case 'u':
-                params.enable_export = false;
-                break;
             case 's':
                 params.store_completion = true;
                 break;
@@ -115,6 +109,22 @@ Parameters read_cli(int argc, char **argv)
                 utils::exit_on_failure();
         }
     };
+
+    if (params.json_dump_file) {
+        if (params.json_dump_file.value().empty()) {
+            throw std::runtime_error("No filename provided");
+        }
+    }
+
+    if (params.prompt_file) {
+        if (params.prompt_file.value().empty()) {
+            throw std::runtime_error("Empty prompt filename");
+        }
+    }
+
+    if (params.temperature.empty()) {
+        throw std::runtime_error("Empty temperature");
+    }
 
     return params;
 }
@@ -215,6 +225,7 @@ serialization::ChatCompletion run_query(const std::string &model, const std::str
 
 void dump_chat_completion_response(const serialization::ChatCompletion &cc, const std::string &json_dump_file)
 {
+
     const nlohmann::json json = {
         { "completion", cc.completion },
         { "completion_tokens", cc.completion_tokens },
@@ -298,6 +309,9 @@ void write_message_to_file(const serialization::ChatCompletion &completion)
     utils::append_to_file(path_completions_file, text);
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+
 void export_chat_completion_response(const serialization::ChatCompletion &completion)
 {
     fmt::print(fg(white), "Export:\n");
@@ -322,6 +336,8 @@ void export_chat_completion_response(const serialization::ChatCompletion &comple
     write_message_to_file(completion);
 }
 
+#pragma GCC diagnostic pop
+
 } // namespace
 
 namespace commands {
@@ -336,6 +352,10 @@ void command_run(int argc, char **argv)
         model = params.model.value();
     } else {
         model = get_model();
+    }
+
+    if (model.empty()) {
+        throw std::runtime_error("Model is empty");
     }
 
     const std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
@@ -378,10 +398,10 @@ void command_run(int argc, char **argv)
     print_chat_completion_response(cc.completion);
     utils::separator();
 
-    if (params.enable_export) {
-        export_chat_completion_response(cc);
-        utils::separator();
-    }
+#ifndef TESTING_ENABLED
+    export_chat_completion_response(cc);
+    utils::separator();
+#endif
 }
 
 } // namespace commands

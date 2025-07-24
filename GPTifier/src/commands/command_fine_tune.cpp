@@ -105,8 +105,7 @@ Options:
 void upload_fine_tuning_file(int argc, char **argv)
 {
     if (argc == 3) {
-        help_fine_tune_upload_file();
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("A fine tuning file needs to be provided");
     }
 
     const std::string opt_or_filename = argv[3];
@@ -129,8 +128,7 @@ void upload_fine_tuning_file(int argc, char **argv)
 void create_fine_tuning_job(int argc, char **argv)
 {
     if (argc < 4) {
-        help_fine_tune_create_job();
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("A fine tuning file ID and model needs to be provided");
     } else if (argc == 4) {
         const std::string opt = argv[3];
 
@@ -169,8 +167,7 @@ void create_fine_tuning_job(int argc, char **argv)
 void delete_fine_tuned_model(int argc, char **argv)
 {
     if (argc == 3) {
-        help_fine_tune_delete_model();
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("A model ID needs to be provided");
     }
 
     const std::string opt_or_model_id = argv[3];
@@ -210,7 +207,7 @@ void print_fine_tuning_jobs(const serialization::FineTuningJobs &jobs)
 void list_fine_tuning_jobs(int argc, char **argv)
 {
     bool print_raw_json = false;
-    std::optional<std::string> limit = std::nullopt;
+    std::optional<std::string> limit;
 
     while (true) {
         static struct option long_options[] = {
@@ -242,7 +239,19 @@ void list_fine_tuning_jobs(int argc, char **argv)
         }
     };
 
-    serialization::FineTuningJobs jobs = serialization::get_fine_tuning_jobs(limit.value_or("20"));
+    if (limit) {
+        if (limit.value().empty()) {
+            throw std::runtime_error("Limit is empty");
+        }
+    }
+
+    const int limit_i = utils::string_to_int(limit.value_or("20"));
+
+    if (limit_i < 1) {
+        throw std::runtime_error("Limit must be greater than or equal to 1");
+    }
+
+    serialization::FineTuningJobs jobs = serialization::get_fine_tuning_jobs(limit_i);
 
     if (print_raw_json) {
         fmt::print("{}\n", jobs.raw_response);

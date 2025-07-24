@@ -15,10 +15,7 @@ void help_chats()
     const std::string messages = R"(Manage chat completions uploaded to OpenAI.
 
 Usage:
-  gpt chats [OPTION]
-  gpt chats list [OPTION]...
-  gpt chats delete [OPTION]
-  gpt chats delete CHAT-CMPL-ID...
+  gpt chats [OPTIONS] COMMAND [ARGS]...
 
 Options:
   -h, --help  Print help information and exit
@@ -36,7 +33,7 @@ void help_chats_list()
     const std::string messages = R"(List uploaded chat completions.
 
 Usage:
-  gpt chats list [OPTION]...
+  gpt chats list [OPTIONS]
 
 Options:
   -h, --help         Print help information and exit
@@ -52,8 +49,7 @@ void help_chats_delete()
     const std::string messages = R"(Delete one or more uploaded chat completions.
 
 Usage:
-  gpt chats delete [OPTION]
-  gpt chats delete CHAT-CMPL-ID...
+  gpt chats delete [OPTIONS] CHAT-CMPL-ID...
 
 Options:
   -h, --help  Print help information and exit
@@ -113,6 +109,10 @@ void list_chat_completions(int argc, char **argv)
         }
     };
 
+    if (limit.empty()) {
+        throw std::runtime_error("Limit is empty");
+    }
+
     const int limit_i = utils::string_to_int(limit);
 
     if (limit_i < 1) {
@@ -136,6 +136,11 @@ bool loop_over_ids(const std::vector<std::string> &ids)
     bool success = true;
 
     for (const auto &id: ids) {
+        if (id.empty()) {
+            fmt::print(stderr, "Cannot delete chat completion. ID is empty\n");
+            continue;
+        }
+
         bool deleted = false;
 
         try {
@@ -159,8 +164,7 @@ bool loop_over_ids(const std::vector<std::string> &ids)
 void delete_chat_completions(int argc, char **argv)
 {
     if (argc == 3) {
-        help_chats_delete();
-        return;
+        throw std::runtime_error("One or more chat completion IDs need to be provided");
     }
 
     std::vector<std::string> args_or_ids;

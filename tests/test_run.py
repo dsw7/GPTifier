@@ -60,7 +60,7 @@ class TestChatCompletionReadFromInputfile(TestCaseExtended):
 
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
-            self.assertSuccess("run", "-t0", f"-o{json_file}", "-u")
+            self.assertSuccess("run", "-t0", f"-o{json_file}")
             completion = load_content(json_file)
             self.assertEqual(completion.completion, pair.completion)
 
@@ -72,9 +72,7 @@ class TestChatCompletionJSON(TestCaseExtended):
         with NamedTemporaryFile(dir=gettempdir()) as f:
             t_start = time()
             # Yes... a hack :)
-            self.assertSuccess(
-                "run", f"-p{self.pair.prompt}", "-t0", f"-o{f.name}", "-u"
-            )
+            self.assertSuccess("run", f"-p{self.pair.prompt}", "-t0", f"-o{f.name}")
             self.rtt = time() - t_start
             self.completion = load_content(f.name)
 
@@ -111,41 +109,59 @@ class TestChatCompletion(TestCaseExtended):
 
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
-            self.assertSuccess("run", f"-r{prompt}", "-t0", f"-o{json_file}", "-u")
+            self.assertSuccess("run", f"-r{prompt}", "-t0", f"-o{json_file}")
             completion = load_content(json_file)
             self.assertEqual(completion.completion, ">>>8<<<")
 
     def test_invalid_temp(self) -> None:
         prompt = get_prompt_completion_pair().prompt
 
-        proc = self.assertFailure("run", f"-p'{prompt}'", "-tfoobar", "-u")
+        proc = self.assertFailure("run", f"-p'{prompt}'", "-tfoobar")
         self.assertIn("Failed to convert 'foobar' to float", proc.stderr)
 
+    def test_empty_temp(self) -> None:
+        proc = self.assertFailure("run", "-p'A foo that bars?'", "--temperature=")
+        self.assertIn("Empty temperature", proc.stderr)
+
     def test_missing_prompt_file(self) -> None:
-        proc = self.assertFailure("run", "--read-from-file=/tmp/yU8nnkRs.txt", "-u")
+        proc = self.assertFailure("run", "--read-from-file=/tmp/yU8nnkRs.txt")
         self.assertIn("Unable to open '/tmp/yU8nnkRs.txt'", proc.stderr)
 
-    def test_invalid_dump_location(self) -> None:
+    def test_empty_prompt(self) -> None:
+        proc = self.assertFailure("run", "--prompt=")
+        self.assertIn("No input text provided anywhere. Cannot proceed", proc.stderr)
+
+    def test_empty_prompt_file(self) -> None:
+        proc = self.assertFailure("run", "--read-from-file=")
+        self.assertIn("Empty prompt filename", proc.stderr)
+
+    def test_invalid_output_file_location(self) -> None:
         prompt = get_prompt_completion_pair().prompt
 
-        proc = self.assertFailure(
-            "run", f"--prompt='{prompt}'", "--file=/tmp/a/b/c", "-u"
-        )
+        proc = self.assertFailure("run", f"--prompt='{prompt}'", "--file=/tmp/a/b/c")
         self.assertIn("Unable to open '/tmp/a/b/c'", proc.stderr)
+
+    def test_empty_output_file(self) -> None:
+        proc = self.assertFailure("run", "--prompt='What is 7 + 2?'", "--file=")
+        self.assertIn("No filename provided", proc.stderr)
 
     def test_invalid_model(self) -> None:
         prompt = get_prompt_completion_pair().prompt
 
-        proc = self.assertFailure("run", f"-p'{prompt}'", "-mfoobar", "-u")
+        proc = self.assertFailure("run", f"-p'{prompt}'", "-mfoobar")
         self.assertIn(
             "The model `foobar` does not exist or you do not have access to it.",
             proc.stderr,
         )
+
+    def test_empty_model(self) -> None:
+        proc = self.assertFailure("run", "-p'foobar'", "--model=")
+        self.assertIn("Model is empty", proc.stderr)
 
     def test_out_of_range_temp(self) -> None:
         prompt = get_prompt_completion_pair().prompt
 
         for temp in [-2.5, 2.5]:
             with self.subTest(temp=temp):
-                proc = self.assertFailure("run", f"-p'{prompt}'", f"-t{temp}", "-u")
+                proc = self.assertFailure("run", f"-p'{prompt}'", f"-t{temp}")
                 self.assertIn("Temperature must be between 0 and 2", proc.stderr)

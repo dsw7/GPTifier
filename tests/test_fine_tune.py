@@ -13,7 +13,7 @@ class TestFineTune(TestCaseExtended):
 class TestFineTuneUploadFile(TestCaseExtended):
     def test_no_args_or_opts(self) -> None:
         proc = self.assertFailure("fine-tune", "upload-file")
-        self.assertIn("Upload a fine-tuning file", proc.stdout)
+        self.assertIn("A fine tuning file needs to be provided", proc.stderr)
 
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
@@ -41,7 +41,9 @@ class TestFineTuneUploadFile(TestCaseExtended):
 class TestFineTuneCreateJob(TestCaseExtended):
     def test_no_args_or_opts(self) -> None:
         proc = self.assertFailure("fine-tune", "create-job")
-        self.assertIn("Create a fine-tuning job", proc.stdout)
+        self.assertIn(
+            "A fine tuning file ID and model needs to be provided", proc.stderr
+        )
 
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
@@ -68,7 +70,7 @@ class TestFineTuneCreateJob(TestCaseExtended):
 class TestFineTuneDeleteModel(TestCaseExtended):
     def test_no_args_or_opts(self) -> None:
         proc = self.assertFailure("fine-tune", "delete-model")
-        self.assertIn("Delete a fine-tuned model", proc.stdout)
+        self.assertIn("A model ID needs to be provided", proc.stderr)
 
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
@@ -101,3 +103,15 @@ class TestFineTuneListJobs(TestCaseExtended):
             with self.subTest(option=option):
                 proc = self.assertSuccess("fine-tune", "list-jobs", option)
                 self.assertNotIn("No limit passed with --limit flag.", proc.stdout)
+
+    def test_list_jobs_stoi(self) -> None:
+        proc = self.assertFailure("fine-tune", "list-jobs", "--limit=abc")
+        self.assertIn("Failed to convert 'abc' to int", proc.stderr)
+
+    def test_list_jobs_invalid_limit(self) -> None:
+        proc = self.assertFailure("fine-tune", "list-jobs", "--limit=-5")
+        self.assertIn("Limit must be greater than or equal to 1", proc.stderr)
+
+    def test_list_jobs_empty_limit(self) -> None:
+        proc = self.assertFailure("fine-tune", "list-jobs", "--limit=")
+        self.assertIn("Limit is empty", proc.stderr)
