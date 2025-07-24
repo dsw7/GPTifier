@@ -29,6 +29,10 @@ class TestCosts(TestCaseExtended):
                 proc = self.assertSuccess("costs", option, "--days=3")
                 proc.load_stdout_to_json()
 
+    def test_costs_invalid_days_empty(self) -> None:
+        proc = self.assertFailure("costs", "--days=")
+        self.assertIn("Days argument is empty", proc.stderr)
+
     def test_costs_invalid_days_low(self) -> None:
         proc = self.assertFailure("costs", "--days=-1")
         self.assertIn("Days must be greater than 0", proc.stderr)

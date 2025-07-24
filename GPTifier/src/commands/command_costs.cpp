@@ -67,6 +67,10 @@ Parameters read_cli(int argc, char **argv)
         }
     };
 
+    if (params.days.empty()) {
+        throw std::runtime_error("Days argument is empty");
+    }
+
     return params;
 }
 
