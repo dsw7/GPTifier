@@ -15,10 +15,7 @@ void help_chats()
     const std::string messages = R"(Manage chat completions uploaded to OpenAI.
 
 Usage:
-  gpt chats [OPTION]
-  gpt chats list [OPTION]...
-  gpt chats delete [OPTION]
-  gpt chats delete CHAT-CMPL-ID...
+  gpt chats [OPTIONS] COMMAND [ARGS]...
 
 Options:
   -h, --help  Print help information and exit
@@ -36,7 +33,7 @@ void help_chats_list()
     const std::string messages = R"(List uploaded chat completions.
 
 Usage:
-  gpt chats list [OPTION]...
+  gpt chats list [OPTIONS]
 
 Options:
   -h, --help         Print help information and exit
@@ -52,8 +49,7 @@ void help_chats_delete()
     const std::string messages = R"(Delete one or more uploaded chat completions.
 
 Usage:
-  gpt chats delete [OPTION]
-  gpt chats delete CHAT-CMPL-ID...
+  gpt chats delete [OPTIONS] CHAT-CMPL-ID...
 
 Options:
   -h, --help  Print help information and exit
