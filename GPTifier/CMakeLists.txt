@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 project(GPTifier VERSION 1.5.0)
 
 # Keep all options up top
+option(ENABLE_COVERAGE "Enable coverage reporting" OFF)
 option(ENABLE_TESTING "Set the TESTING_ENABLED macro" OFF)
 option(USE_SYSTEM_NLOHMANN_JSON "Use system-provided nlohmann/json.hpp if available" OFF)
 option(USE_SYSTEM_TOMLPLUSPLUS "Use system-provided toml++ if available" OFF)
@@ -9,11 +10,17 @@ option(USE_SYSTEM_TOMLPLUSPLUS "Use system-provided toml++ if available" OFF)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE RelWithDebInfo)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local/bin")
 
 string(TIMESTAMP BUILD_DATE)
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 add_compile_definitions(BUILD_DATE="${BUILD_DATE}" PROJECT_VERSION="${PROJECT_VERSION}")
+
+if(ENABLE_COVERAGE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+endif()
 
 if(ENABLE_TESTING)
   add_compile_definitions(TESTING_ENABLED)
@@ -126,6 +133,4 @@ endif()
 # -----------------------------------------------------------------------------------------------------------
 add_executable(gpt ${SRC_FILES})
 target_link_libraries(gpt curl pthread fmt::fmt)
-
-set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local")
-install(TARGETS gpt DESTINATION bin)
+install(TARGETS gpt DESTINATION ${CMAKE_INSTALL_PREFIX})
