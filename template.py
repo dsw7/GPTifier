@@ -25,12 +25,6 @@ def main(version):
 @click.option(
     "-t", "--temperature", help="Provide a sampling temperature between 0 and 2"
 )
-@click.option(
-    "-s",
-    "--store-completion",
-    is_flag=True,
-    help="Store results of completion on OpenAI servers",
-)
 def run():
     pass
 
@@ -41,12 +35,6 @@ def run():
 @click.option("-j", "--json", is_flag=True, help="Print raw JSON response from OpenAI")
 @click.option(
     "-t", "--temperature", help="Provide a sampling temperature between 0 and 2"
-)
-@click.option(
-    "-s",
-    "--store-completion",
-    is_flag=True,
-    help="Store results of completion on OpenAI servers",
 )
 @click.argument("prompt", required=True)
 def short(prompt):
