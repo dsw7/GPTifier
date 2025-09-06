@@ -27,6 +27,5 @@ struct ChatCompletions {
 
 ChatCompletions get_chat_completions(int limit);
 ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp, bool store_completion);
-bool delete_chat_completion(const std::string &chat_completion_id);
 
 } // namespace serialization
