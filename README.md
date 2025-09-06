@@ -9,7 +9,6 @@ to "look and feel" similar to `git`. I wrote this program in C++ to enhance perf
 resulting in a faster and more efficient user experience. This program is tested on Ubuntu/Debian and macOS.
 
 ## Table of Contents
-- [What can GPTifier do?](#what-can-gptifier-do)
 - [Installation](#installation)
 - [Usage](#usage)
   - [The `run` command](#the-run-command)
@@ -26,14 +25,6 @@ resulting in a faster and more efficient user experience. This program is tested
 - [Integrations](#integrations)
 - [Uninstall GPTifier](#uninstall-gptifier)
 - [License](#license)
-
-## What can GPTifier do?
-- **Run Queries**: Execute prompts and receive completions via the CLI, similar to querying ChatGPT.
-- **Retrieve Models**: List the latest OpenAI models and custom models.
-- **Create Embeddings**: Generate and export vector embeddings.
-- **Fine-Tuning Management**: Fully manage fine-tuning workflows directly from the command line.
-- **Generate Images**: Generate images from the command line.
-- **Additional Tasks**: Handle uploaded files, monitor usage, and perform various other tasks.
 
 ## Installation
 
@@ -151,10 +142,6 @@ gpt run --model gpt-4 --prompt "What is 3 + 5?"
 #### Handling long, multiline prompts
 For multiline prompts, create a file named `Inputfile` in your working directory. GPTifier will automatically
 read from it. Alternatively, use the `-r` or `--read-from-file` option to specify a custom file.
-
-#### Storing prompt/completion pairs
-Use the `-s` or `--store-completion` flag to temporarily store prompt/completion pairs on OpenAI servers.
-Retrieve them later with the [chats command](#the-chats-command).
 
 ### The `short` command
 The `short` command is almost identical to the [run command](#the-run-command), but this command returns
@@ -284,19 +271,8 @@ The `fine-tune` command is used for managing fine-tuning operations.
     ```
 
 ### The `chats` command
-The `chats` family of subcommands is used to manage stored chat completions, such as those saved using the
-`--store-completion` flag with the `gpt run` command. To list stored chat completions, you can run:
-```console
-gpt chats
-# or
-gpt chats list
-```
-To delete a specific chat completion, use the following command:
-```console
-gpt chats delete <chat-completion-id>
-```
-Here, `<chat-completion-id>` is the identifier obtained from `gpt chats`, corresponding to the chat completion
-you wish to delete.
+> [!NOTE]
+> This command has been deprecated.
 
 ### The `edit` command
 > [!NOTE]

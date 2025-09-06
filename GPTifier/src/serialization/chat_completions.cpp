@@ -20,19 +20,14 @@ void unpack_chat_completion(const nlohmann::json &json, ChatCompletion &cc)
 
 } // namespace
 
-ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp, bool store_completion)
+ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp)
 {
     const nlohmann::json messages = { { "role", "user" }, { "content", prompt } };
     nlohmann::json data = {
         { "model", model },
         { "temperature", temp },
         { "messages", nlohmann::json::array({ messages }) },
-        { "store", store_completion }
     };
-
-    if (store_completion) {
-        data["metadata"] = { { "prompt", prompt } };
-    }
 
     const auto start = std::chrono::high_resolution_clock::now();
     const std::string response = networking::create_chat_completion(data.dump());
