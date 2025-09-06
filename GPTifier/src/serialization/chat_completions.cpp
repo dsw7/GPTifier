@@ -18,32 +18,7 @@ void unpack_chat_completion(const nlohmann::json &json, ChatCompletion &cc)
     cc.prompt_tokens = json["usage"]["prompt_tokens"];
 }
 
-void unpack_chat_completions(const nlohmann::json &json, ChatCompletions &ccs)
-{
-    for (const auto &entry: json["data"]) {
-        ChatCompletion cc;
-
-        if (entry["metadata"].contains("prompt")) {
-            cc.prompt = entry["metadata"]["prompt"];
-        }
-
-        cc.completion = entry["choices"][0]["message"]["content"];
-        cc.created = entry["created"];
-        cc.id = entry["id"];
-
-        ccs.completions.push_back(cc);
-    }
-}
-
 } // namespace
-
-ChatCompletions get_chat_completions(int limit)
-{
-    const std::string response = networking::get_chat_completions(limit);
-    ChatCompletions chat_completions = unpack_response<ChatCompletions>(response, unpack_chat_completions);
-    chat_completions.raw_response = response;
-    return chat_completions;
-}
 
 ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp, bool store_completion)
 {
