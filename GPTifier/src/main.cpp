@@ -107,7 +107,7 @@ int main(int argc, char **argv)
         } else if (command == "costs") {
             commands::command_costs(argc, argv);
         } else if (command == "chats") {
-            commands::command_chats(argc, argv);
+            commands::command_chats();
         } else if (command == "edit") {
             commands::command_edit();
         } else if (command == "test") {
