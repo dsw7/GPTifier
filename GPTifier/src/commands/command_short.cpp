@@ -23,7 +23,6 @@ Options:
   -h, --help                     Print help information and exit
   -j, --json                     Print raw JSON response from OpenAI
   -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2
-  -s, --store-completion         Store results of completion on OpenAI servers
 
 Examples:
   > Create a chat completion:
@@ -35,7 +34,6 @@ Examples:
 
 struct Parameters {
     bool print_raw_json = false;
-    bool store_completion = false;
     std::optional<std::string> prompt = std::nullopt;
     std::optional<std::string> temperature = std::nullopt;
 };
@@ -48,13 +46,12 @@ Parameters read_cli(int argc, char **argv)
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
             { "json", no_argument, 0, 'j' },
-            { "store-completion", no_argument, 0, 's' },
             { "temperature", required_argument, 0, 't' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hjst:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hjt:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -66,9 +63,6 @@ Parameters read_cli(int argc, char **argv)
                 exit(EXIT_SUCCESS);
             case 'j':
                 params.print_raw_json = true;
-                break;
-            case 's':
-                params.store_completion = true;
                 break;
             case 't':
                 params.temperature = optarg;
@@ -134,7 +128,7 @@ void command_short(int argc, char **argv)
 
     const std::string model = get_model();
     const serialization::ChatCompletion cc = serialization::create_chat_completion(
-        params.prompt.value(), model, temperature, params.store_completion);
+        params.prompt.value(), model, temperature);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", cc.raw_response);
