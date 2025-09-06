@@ -25,6 +25,6 @@ struct ChatCompletions {
     std::vector<ChatCompletion> completions;
 };
 
-ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp, bool store_completion);
+ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp);
 
 } // namespace serialization
