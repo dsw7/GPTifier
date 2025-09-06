@@ -9,7 +9,6 @@ to "look and feel" similar to `git`. I wrote this program in C++ to enhance perf
 resulting in a faster and more efficient user experience. This program is tested on Ubuntu/Debian and macOS.
 
 ## Table of Contents
-- [What can GPTifier do?](#what-can-gptifier-do)
 - [Installation](#installation)
 - [Usage](#usage)
   - [The `run` command](#the-run-command)
@@ -26,14 +25,6 @@ resulting in a faster and more efficient user experience. This program is tested
 - [Integrations](#integrations)
 - [Uninstall GPTifier](#uninstall-gptifier)
 - [License](#license)
-
-## What can GPTifier do?
-- **Run Queries**: Execute prompts and receive completions via the CLI, similar to querying ChatGPT.
-- **Retrieve Models**: List the latest OpenAI models and custom models.
-- **Create Embeddings**: Generate and export vector embeddings.
-- **Fine-Tuning Management**: Fully manage fine-tuning workflows directly from the command line.
-- **Generate Images**: Generate images from the command line.
-- **Additional Tasks**: Handle uploaded files, monitor usage, and perform various other tasks.
 
 ## Installation
 
