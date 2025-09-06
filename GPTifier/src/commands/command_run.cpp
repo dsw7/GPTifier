@@ -39,7 +39,6 @@ Options:
   -p, --prompt=PROMPT            Provide prompt via command line
   -r, --read-from-file=FILENAME  Read prompt from a custom file named FILENAME
   -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2
-  -s, --store-completion         Store results of completion on OpenAI servers
 
 Examples:
   > Run an interaction session:
@@ -52,7 +51,6 @@ Examples:
 }
 
 struct Parameters {
-    bool store_completion = false;
     std::optional<std::string> json_dump_file = std::nullopt;
     std::optional<std::string> model = std::nullopt;
     std::optional<std::string> prompt = std::nullopt;
@@ -67,7 +65,6 @@ Parameters read_cli(int argc, char **argv)
     while (true) {
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
-            { "store-completion", no_argument, 0, 's' },
             { "file", required_argument, 0, 'o' },
             { "model", required_argument, 0, 'm' },
             { "prompt", required_argument, 0, 'p' },
@@ -77,7 +74,7 @@ Parameters read_cli(int argc, char **argv)
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "huso:m:p:r:t:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "huo:m:p:r:t:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -87,9 +84,6 @@ Parameters read_cli(int argc, char **argv)
             case 'h':
                 help_run();
                 exit(EXIT_SUCCESS);
-            case 's':
-                params.store_completion = true;
-                break;
             case 'o':
                 params.json_dump_file = optarg;
                 break;
@@ -192,7 +186,7 @@ void time_api_call()
     std::cout << std::string(16, ' ') << '\r' << std::flush;
 }
 
-serialization::ChatCompletion run_query(const std::string &model, const std::string &prompt, const float temperature, const bool store_completion)
+serialization::ChatCompletion run_query(const std::string &model, const std::string &prompt, const float temperature)
 {
     TIMER_ENABLED.store(true);
     std::thread timer(time_api_call);
@@ -202,7 +196,7 @@ serialization::ChatCompletion run_query(const std::string &model, const std::str
     std::mutex mutex_print_stderr;
 
     try {
-        cc = serialization::create_chat_completion(prompt, model, temperature, store_completion);
+        cc = serialization::create_chat_completion(prompt, model, temperature);
     } catch (std::runtime_error &e) {
         query_failed = true;
         {
@@ -385,7 +379,7 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("Temperature must be between 0 and 2");
     }
 
-    const serialization::ChatCompletion cc = run_query(model, prompt, temperature, params.store_completion);
+    const serialization::ChatCompletion cc = run_query(model, prompt, temperature);
 
     if (params.json_dump_file) {
         dump_chat_completion_response(cc, params.json_dump_file.value());
