@@ -6,7 +6,7 @@ namespace commands {
 
 void command_chats()
 {
-    throw std::runtime_error("This command has been deprecated."); 
+    throw std::runtime_error("This command has been deprecated.");
 }
 
 } // namespace commands
