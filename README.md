@@ -152,10 +152,6 @@ gpt run --model gpt-4 --prompt "What is 3 + 5?"
 For multiline prompts, create a file named `Inputfile` in your working directory. GPTifier will automatically
 read from it. Alternatively, use the `-r` or `--read-from-file` option to specify a custom file.
 
-#### Storing prompt/completion pairs
-Use the `-s` or `--store-completion` flag to temporarily store prompt/completion pairs on OpenAI servers.
-Retrieve them later with the [chats command](#the-chats-command).
-
 ### The `short` command
 The `short` command is almost identical to the [run command](#the-run-command), but this command returns
 a chat completion under the following conditions:
@@ -284,19 +280,8 @@ The `fine-tune` command is used for managing fine-tuning operations.
     ```
 
 ### The `chats` command
-The `chats` family of subcommands is used to manage stored chat completions, such as those saved using the
-`--store-completion` flag with the `gpt run` command. To list stored chat completions, you can run:
-```console
-gpt chats
-# or
-gpt chats list
-```
-To delete a specific chat completion, use the following command:
-```console
-gpt chats delete <chat-completion-id>
-```
-Here, `<chat-completion-id>` is the identifier obtained from `gpt chats`, corresponding to the chat completion
-you wish to delete.
+> [!NOTE]
+> This command has been deprecated.
 
 ### The `edit` command
 > [!NOTE]
