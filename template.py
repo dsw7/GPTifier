@@ -127,26 +127,6 @@ def list_jobs():
 
 
 # -----------------------------------------------------------------------------------------------------------
-# Chat completions
-@main.group(help="Manage chat completions uploaded to OpenAI")
-def chats():
-    pass
-
-
-@chats.command("list", help="List uploaded chat completions")
-@click.option("-j", "--json", is_flag=True, help="Print raw JSON response from OpenAI")
-@click.option("-l", "--limit", help="Show LIMIT number of chat completions")
-def list_chats():
-    pass
-
-
-@chats.command("delete", help="Delete one or more uploaded chat completions")
-@click.argument("chat-cmpl-id", nargs=-1, required=True)
-def delete_chats(chat_cmpl_id):
-    pass
-
-
-# -----------------------------------------------------------------------------------------------------------
 @main.command(help="Get OpenAI usage details")
 @click.option("-j", "--json", is_flag=True, help="Print raw JSON response from OpenAI")
 @click.option("-d", "--days", help="Select number of days to go back")

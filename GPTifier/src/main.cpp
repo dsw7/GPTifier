@@ -38,7 +38,7 @@ Commands:
   files          Manage files uploaded to OpenAI
   fine-tune      Manage fine tuning operations
   costs          Get OpenAI usage details
-  chats          Manage chat completions uploaded to OpenAI
+  chats          Manage chat completions uploaded to OpenAI [DEPRECATED]
   edit           Edit one or more files according to a prompt [DEPRECATED]
   img            Generate an image from a prompt
 
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
         } else if (command == "costs") {
             commands::command_costs(argc, argv);
         } else if (command == "chats") {
-            commands::command_chats(argc, argv);
+            commands::command_chats();
         } else if (command == "edit") {
             commands::command_edit();
         } else if (command == "test") {

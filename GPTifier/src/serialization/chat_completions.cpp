@@ -18,32 +18,7 @@ void unpack_chat_completion(const nlohmann::json &json, ChatCompletion &cc)
     cc.prompt_tokens = json["usage"]["prompt_tokens"];
 }
 
-void unpack_chat_completions(const nlohmann::json &json, ChatCompletions &ccs)
-{
-    for (const auto &entry: json["data"]) {
-        ChatCompletion cc;
-
-        if (entry["metadata"].contains("prompt")) {
-            cc.prompt = entry["metadata"]["prompt"];
-        }
-
-        cc.completion = entry["choices"][0]["message"]["content"];
-        cc.created = entry["created"];
-        cc.id = entry["id"];
-
-        ccs.completions.push_back(cc);
-    }
-}
-
 } // namespace
-
-ChatCompletions get_chat_completions(int limit)
-{
-    const std::string response = networking::get_chat_completions(limit);
-    ChatCompletions chat_completions = unpack_response<ChatCompletions>(response, unpack_chat_completions);
-    chat_completions.raw_response = response;
-    return chat_completions;
-}
 
 ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp, bool store_completion)
 {
@@ -69,18 +44,6 @@ ChatCompletion create_chat_completion(const std::string &prompt, const std::stri
     cc.raw_response = response;
     cc.rtt = rtt;
     return cc;
-}
-
-bool delete_chat_completion(const std::string &chat_completion_id)
-{
-    const std::string response = networking::delete_chat_completion(chat_completion_id);
-    const nlohmann::json json = response_to_json(response);
-
-    if (not json.contains("deleted")) {
-        throw std::runtime_error("Malformed response. Missing 'deleted' key");
-    }
-
-    return json["deleted"];
 }
 
 } // namespace serialization
