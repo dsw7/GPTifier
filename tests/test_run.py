@@ -113,6 +113,12 @@ class TestChatCompletion(TestCaseExtended):
             completion = load_content(json_file)
             self.assertEqual(completion.completion, ">>>8<<<")
 
+    def test_write_to_stdout(self) -> None:
+        prompt = get_prompt_completion_pair().prompt
+
+        proc = self.assertSuccess("run", f"-p'{prompt}'")
+        self.assertIn(">>>2<<<", proc.stdout)
+
     def test_invalid_temp(self) -> None:
         prompt = get_prompt_completion_pair().prompt
 
