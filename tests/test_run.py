@@ -55,14 +55,15 @@ class TestChatCompletionReadFromInputfile(TestCaseExtended):
         self.filename.unlink()
 
     def test_read_from_inputfile(self) -> None:
-        pair = get_prompt_completion_pair(3)
-        self.filename.write_text(pair.prompt)
+        prompt = "What is 1 + 3? Format the result as follows: >>>{result}<<<"
+        completion = ">>>4<<<"
+        self.filename.write_text(prompt)
 
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
             self.assertSuccess("run", "-t0", f"-o{json_file}")
-            completion = load_content(json_file)
-            self.assertEqual(completion.completion, pair.completion)
+            content = load_content(json_file)
+            self.assertEqual(content.completion, completion)
 
 
 class TestChatCompletionJSON(TestCaseExtended):
