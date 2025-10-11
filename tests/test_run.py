@@ -98,6 +98,8 @@ class TestChatCompletionJSON(TestCaseExtended):
 
 
 class TestChatCompletion(TestCaseExtended):
+    prompt = "What is 1 + 1? Format the result as follows: >>>{result}<<<"
+
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
@@ -114,15 +116,11 @@ class TestChatCompletion(TestCaseExtended):
             self.assertEqual(completion.completion, ">>>8<<<")
 
     def test_write_to_stdout(self) -> None:
-        prompt = get_prompt_completion_pair().prompt
-
-        proc = self.assertSuccess("run", f"-p'{prompt}'")
+        proc = self.assertSuccess("run", f"-p'{self.prompt}'")
         self.assertIn(">>>2<<<", proc.stdout)
 
     def test_invalid_temp(self) -> None:
-        prompt = get_prompt_completion_pair().prompt
-
-        proc = self.assertFailure("run", f"-p'{prompt}'", "-tfoobar")
+        proc = self.assertFailure("run", f"-p'{self.prompt}'", "-tfoobar")
         self.assertIn("Failed to convert 'foobar' to float", proc.stderr)
 
     def test_empty_temp(self) -> None:
@@ -142,9 +140,9 @@ class TestChatCompletion(TestCaseExtended):
         self.assertIn("Empty prompt filename", proc.stderr)
 
     def test_invalid_output_file_location(self) -> None:
-        prompt = get_prompt_completion_pair().prompt
-
-        proc = self.assertFailure("run", f"--prompt='{prompt}'", "--file=/tmp/a/b/c")
+        proc = self.assertFailure(
+            "run", f"--prompt='{self.prompt}'", "--file=/tmp/a/b/c"
+        )
         self.assertIn("Unable to open '/tmp/a/b/c'", proc.stderr)
 
     def test_empty_output_file(self) -> None:
@@ -152,9 +150,7 @@ class TestChatCompletion(TestCaseExtended):
         self.assertIn("No filename provided", proc.stderr)
 
     def test_invalid_model(self) -> None:
-        prompt = get_prompt_completion_pair().prompt
-
-        proc = self.assertFailure("run", f"-p'{prompt}'", "-mfoobar")
+        proc = self.assertFailure("run", f"-p'{self.prompt}'", "-mfoobar")
         self.assertIn(
             "The model `foobar` does not exist or you do not have access to it.",
             proc.stderr,
@@ -165,9 +161,7 @@ class TestChatCompletion(TestCaseExtended):
         self.assertIn("Model is empty", proc.stderr)
 
     def test_out_of_range_temp(self) -> None:
-        prompt = get_prompt_completion_pair().prompt
-
         for temp in [-2.5, 2.5]:
             with self.subTest(temp=temp):
-                proc = self.assertFailure("run", f"-p'{prompt}'", f"-t{temp}")
+                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-t{temp}")
                 self.assertIn("Temperature must be between 0 and 2", proc.stderr)
