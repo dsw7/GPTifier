@@ -1,16 +1,9 @@
 from dataclasses import dataclass
-from functools import cache
 from json import loads
 from pathlib import Path
 from tempfile import NamedTemporaryFile, gettempdir
 from time import time
 from .extended_testcase import TestCaseExtended
-
-
-@dataclass
-class Pair:
-    completion: str
-    prompt: str
 
 
 @dataclass
@@ -22,14 +15,6 @@ class Completion:
     prompt: str
     prompt_tokens: int
     rtt: float
-
-
-@cache
-def get_prompt_completion_pair(x: int = 1) -> Pair:
-    return Pair(
-        prompt=f"What is 1 + {x}? Format the result as follows: >>>{{result}}<<<",
-        completion=f">>>{1 + x}<<<",
-    )
 
 
 def load_content(json_file: str) -> Completion:
