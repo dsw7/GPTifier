@@ -67,34 +67,35 @@ class TestChatCompletionReadFromInputfile(TestCaseExtended):
 
 
 class TestChatCompletionJSON(TestCaseExtended):
-    def setUp(self) -> None:
-        self.pair = get_prompt_completion_pair(5)
+    prompt = "What is 1 + 4? Format the result as follows: >>>{result}<<<"
+    completion = ">>>5<<<"
 
+    def setUp(self) -> None:
         with NamedTemporaryFile(dir=gettempdir()) as f:
             t_start = time()
             # Yes... a hack :)
-            self.assertSuccess("run", f"-p{self.pair.prompt}", "-t0", f"-o{f.name}")
+            self.assertSuccess("run", f"-p{self.prompt}", "-t0", f"-o{f.name}")
             self.rtt = time() - t_start
-            self.completion = load_content(f.name)
+            self.content = load_content(f.name)
 
     def test_equal_prompt(self) -> None:
-        self.assertEqual(self.completion.prompt, self.pair.prompt)
+        self.assertEqual(self.content.prompt, self.prompt)
 
     def test_equal_completion(self) -> None:
-        self.assertEqual(self.completion.completion, self.pair.completion)
+        self.assertEqual(self.content.completion, self.completion)
 
     def test_prompt_tokens(self) -> None:
-        self.assertEqual(self.completion.prompt_tokens, 26)
+        self.assertEqual(self.content.prompt_tokens, 26)
 
     def test_completion_tokens(self) -> None:
-        self.assertEqual(self.completion.completion_tokens, 3)
+        self.assertEqual(self.content.completion_tokens, 3)
 
     def test_approx_rtt(self) -> None:
-        diff = abs(self.completion.rtt - self.rtt)
+        diff = abs(self.content.rtt - self.rtt)
         self.assertLessEqual(diff, 0.25, "RTT times are not within 0.25 seconds")
 
     def test_approx_created(self) -> None:
-        diff = abs(self.completion.created - int(time()))
+        diff = abs(self.content.created - int(time()))
         self.assertLessEqual(diff, 2.0, "Creation times are not within 2 seconds")
 
 
