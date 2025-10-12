@@ -154,6 +154,7 @@ class TestIncompatibleModels(TestCaseExtended):
     errmsg_2 = "You are not allowed to sample from this model\nCannot proceed"
     errmsg_3 = r"Your organization must be verified to use the model.*\nCannot proceed"
     errmsg_4 = "This model is only supported in v1/responses and not in v1/chat/completions.\nCannot proceed"
+    errmsg_5 = "No available capacity was found for the model\nCannot proceed"
 
     def test_non_existent_model(self) -> None:
         proc = self.assertFailure("run", f"-p'{self.prompt}'", "-mfoobar")
@@ -192,10 +193,10 @@ class TestIncompatibleModels(TestCaseExtended):
         for model in ["codex-mini-latest", "gpt-image-1", "o4-mini-deep-research"]:
             with self.subTest(model=model):
                 proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
-                self.assertRegex(proc.stderr, self.errmsg_4)
+                self.assertIn(self.errmsg_4, proc.stderr)
 
     def test_sora_2(self) -> None:
-        proc = self.assertFailure("run", f"-p'{self.prompt}'", "-msora-2")
-        self.assertIn(
-            "No available capacity was found for the model\nCannot proceed", proc.stderr
-        )
+        for model in ["sora-2", "sora-2-pro"]:
+            with self.subTest(model=model):
+                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
+                self.assertIn(self.errmsg_5, proc.stderr)
