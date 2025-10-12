@@ -152,3 +152,13 @@ class TestChatCompletion(TestCaseExtended):
             with self.subTest(temp=temp):
                 proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-t{temp}")
                 self.assertIn("Temperature must be between 0 and 2", proc.stderr)
+
+
+class TestIncompatibleModels(TestCaseExtended):
+    prompt = "What is 1 + 1?"
+
+    def test_sora_2_handling(self) -> None:
+        proc = self.assertFailure("run", f"-p'{self.prompt}'", "-msora-2")
+        self.assertIn(
+            "No available capacity was found for the model\nCannot proceed", proc.stderr
+        )
