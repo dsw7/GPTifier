@@ -156,8 +156,15 @@ class TestChatCompletion(TestCaseExtended):
 
 class TestIncompatibleModels(TestCaseExtended):
     prompt = "What is 1 + 1?"
+    errmsg_1 = "This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?\nCannot proceed"
 
-    def test_sora_2_handling(self) -> None:
+    def test_misc_models_errmsg_1(self) -> None:
+        for model in ["tts-1", "tts-1-hd", "whisper-1", "davinci-002"]:
+            with self.subTest(model=model):
+                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
+                self.assertIn(self.errmsg_1, proc.stderr)
+
+    def test_sora_2(self) -> None:
         proc = self.assertFailure("run", f"-p'{self.prompt}'", "-msora-2")
         self.assertIn(
             "No available capacity was found for the model\nCannot proceed", proc.stderr
