@@ -45,13 +45,6 @@ class TestEmbed(TestCaseExtended):
         proc = self.assertFailure("embed", "--read-from-file=/tmp/yU8nnkRs.txt")
         self.assertIn("Unable to open '/tmp/yU8nnkRs.txt'", proc.stderr)
 
-    def test_invalid_model(self) -> None:
-        proc = self.assertFailure("embed", "-i'What is 3 + 5?'", "-mfoobar")
-        self.assertIn(
-            "The model `foobar` does not exist or you do not have access to it.",
-            proc.stderr,
-        )
-
     def test_empty_input(self) -> None:
         proc = self.assertFailure("embed", "--input=")
         self.assertIn("No input text provided anywhere", proc.stderr)
@@ -72,6 +65,14 @@ class TestEmbed(TestCaseExtended):
 
 
 class TestEmbedIncompatibleModels(TestCaseExtended):
+
+    def test_non_existent_model(self) -> None:
+        proc = self.assertFailure("embed", "-i'What is 3 + 5?'", "-mfoobar")
+        self.assertIn(
+            "The model `foobar` does not exist or you do not have access to it.",
+            proc.stderr,
+        )
+
     def test_wrong_models(self) -> None:
         for model in [
             "dall-e-3",
