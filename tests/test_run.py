@@ -136,13 +136,6 @@ class TestChatCompletion(TestCaseExtended):
         proc = self.assertFailure("run", "--prompt='What is 7 + 2?'", "--file=")
         self.assertIn("No filename provided", proc.stderr)
 
-    def test_invalid_model(self) -> None:
-        proc = self.assertFailure("run", f"-p'{self.prompt}'", "-mfoobar")
-        self.assertIn(
-            "The model `foobar` does not exist or you do not have access to it.",
-            proc.stderr,
-        )
-
     def test_empty_model(self) -> None:
         proc = self.assertFailure("run", "-p'foobar'", "--model=")
         self.assertIn("Model is empty", proc.stderr)
@@ -152,3 +145,84 @@ class TestChatCompletion(TestCaseExtended):
             with self.subTest(temp=temp):
                 proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-t{temp}")
                 self.assertIn("Temperature must be between 0 and 2", proc.stderr)
+
+
+class TestCompatibleModels(TestCaseExtended):
+    def test_misc_valid_models(self) -> None:
+        prompt = "What is 1 + 1?"
+        for model in [
+            "gpt-3.5-turbo",
+            "gpt-4",
+            "gpt-4.1",
+            "gpt-4.1-mini",
+            "gpt-4.1-nano",
+            "gpt-4o",
+            "gpt-4o-mini",
+            "o1",
+            "o1-mini",
+            "o3",
+            "o3-mini",
+            "o4-mini",
+        ]:
+            with self.subTest(model=model):
+                self.assertSuccess("run", f"-p'{prompt}'", f"-m{model}")
+
+
+class TestIncompatibleModels(TestCaseExtended):
+    prompt = "What is 1 + 1?"
+    errmsg_0 = "The model `foobar` does not exist or you do not have access to it.\nCannot proceed"
+    errmsg_1 = "This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?\nCannot proceed"
+    errmsg_2 = "You are not allowed to sample from this model\nCannot proceed"
+    errmsg_3 = r"Your organization must be verified to use the model.*\nCannot proceed"
+    errmsg_4 = "This model is only supported in v1/responses and not in v1/chat/completions.\nCannot proceed"
+    errmsg_5 = "No available capacity was found for the model\nCannot proceed"
+
+    def test_non_existent_model(self) -> None:
+        proc = self.assertFailure("run", f"-p'{self.prompt}'", "-mfoobar")
+        self.assertIn(self.errmsg_0, proc.stderr)
+
+    def test_wrong_endpoint_1(self) -> None:
+        for model in [
+            "tts-1",
+            "tts-1-hd",
+            "whisper-1",
+            "davinci-002",
+            "gpt-4o-transcribe",
+        ]:
+            with self.subTest(model=model):
+                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
+                self.assertIn(self.errmsg_1, proc.stderr)
+
+    def test_wrong_endpoint_2(self) -> None:
+        for model in [
+            "dall-e-2",
+            "dall-e-3",
+            "text-embedding-3-small",
+            "text-embedding-3-large",
+        ]:
+            with self.subTest(model=model):
+                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
+                self.assertIn(self.errmsg_2, proc.stderr)
+
+    def test_wrong_endpoint_3(self) -> None:
+        for model in ["gpt-5", "gpt-5-mini", "gpt-5-codex"]:
+            with self.subTest(model=model):
+                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
+                self.assertRegex(proc.stderr, self.errmsg_3)
+
+    def test_wrong_endpoint_4(self) -> None:
+        for model in [
+            "codex-mini-latest",
+            "gpt-image-1",
+            "o4-mini-deep-research",
+            "o1-pro",
+        ]:
+            with self.subTest(model=model):
+                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
+                self.assertIn(self.errmsg_4, proc.stderr)
+
+    def test_sora_2(self) -> None:
+        for model in ["sora-2", "sora-2-pro"]:
+            with self.subTest(model=model):
+                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
+                self.assertIn(self.errmsg_5, proc.stderr)

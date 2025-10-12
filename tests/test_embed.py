@@ -45,13 +45,6 @@ class TestEmbed(TestCaseExtended):
         proc = self.assertFailure("embed", "--read-from-file=/tmp/yU8nnkRs.txt")
         self.assertIn("Unable to open '/tmp/yU8nnkRs.txt'", proc.stderr)
 
-    def test_invalid_model(self) -> None:
-        proc = self.assertFailure("embed", "-i'What is 3 + 5?'", "-mfoobar")
-        self.assertIn(
-            "The model `foobar` does not exist or you do not have access to it.",
-            proc.stderr,
-        )
-
     def test_empty_input(self) -> None:
         proc = self.assertFailure("embed", "--input=")
         self.assertIn("No input text provided anywhere", proc.stderr)
@@ -69,6 +62,37 @@ class TestEmbed(TestCaseExtended):
             "embed", "--read-from-file=", "--output-file=/tmp/results.txt"
         )
         self.assertIn("Could not read from file. Filename is empty", proc.stderr)
+
+
+class TestEmbedIncompatibleModels(TestCaseExtended):
+
+    def test_non_existent_model(self) -> None:
+        proc = self.assertFailure("embed", "-i'What is 3 + 5?'", "-mfoobar")
+        self.assertIn(
+            "The model `foobar` does not exist or you do not have access to it.",
+            proc.stderr,
+        )
+
+    def test_wrong_models(self) -> None:
+        for model in [
+            "dall-e-3",
+            "gpt-3.5-turbo",
+            "gpt-4",
+            "gpt-4.1",
+            "gpt-4o",
+            "o1",
+            "o3",
+            "tts-1",
+            "whisper-1",
+        ]:
+            with self.subTest(model=model):
+                proc = self.assertFailure(
+                    "embed", "--input='A foo that bars'", f"-m{model}"
+                )
+                self.assertIn(
+                    "You are not allowed to generate embeddings from this model",
+                    proc.stderr,
+                )
 
 
 class TestEmbedCosineSimilarityIdentical(TestCaseExtended):
