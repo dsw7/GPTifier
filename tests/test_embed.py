@@ -71,6 +71,29 @@ class TestEmbed(TestCaseExtended):
         self.assertIn("Could not read from file. Filename is empty", proc.stderr)
 
 
+class TestEmbedIncompatibleModels(TestCaseExtended):
+    def test_wrong_models(self) -> None:
+        for model in [
+            "dall-e-3",
+            "gpt-3.5-turbo",
+            "gpt-4",
+            "gpt-4.1",
+            "gpt-4o",
+            "o1",
+            "o3",
+            "tts-1",
+            "whisper-1",
+        ]:
+            with self.subTest(model=model):
+                proc = self.assertFailure(
+                    "embed", "--input='A foo that bars'", f"-m{model}"
+                )
+                self.assertIn(
+                    "You are not allowed to generate embeddings from this model",
+                    proc.stderr,
+                )
+
+
 class TestEmbedCosineSimilarityIdentical(TestCaseExtended):
 
     def setUp(self) -> None:
