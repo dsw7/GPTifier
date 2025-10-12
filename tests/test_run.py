@@ -136,13 +136,6 @@ class TestChatCompletion(TestCaseExtended):
         proc = self.assertFailure("run", "--prompt='What is 7 + 2?'", "--file=")
         self.assertIn("No filename provided", proc.stderr)
 
-    def test_invalid_model(self) -> None:
-        proc = self.assertFailure("run", f"-p'{self.prompt}'", "-mfoobar")
-        self.assertIn(
-            "The model `foobar` does not exist or you do not have access to it.",
-            proc.stderr,
-        )
-
     def test_empty_model(self) -> None:
         proc = self.assertFailure("run", "-p'foobar'", "--model=")
         self.assertIn("Model is empty", proc.stderr)
@@ -156,7 +149,12 @@ class TestChatCompletion(TestCaseExtended):
 
 class TestIncompatibleModels(TestCaseExtended):
     prompt = "What is 1 + 1?"
+    errmsg_0 = "The model `foobar` does not exist or you do not have access to it.\nCannot proceed"
     errmsg_1 = "This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?\nCannot proceed"
+
+    def test_non_existent_model(self) -> None:
+        proc = self.assertFailure("run", f"-p'{self.prompt}'", "-mfoobar")
+        self.assertIn(self.errmsg_0, proc.stderr)
 
     def test_misc_models_errmsg_1(self) -> None:
         for model in ["tts-1", "tts-1-hd", "whisper-1", "davinci-002"]:
