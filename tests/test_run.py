@@ -147,6 +147,27 @@ class TestChatCompletion(TestCaseExtended):
                 self.assertIn("Temperature must be between 0 and 2", proc.stderr)
 
 
+class TestCompatibleModels(TestCaseExtended):
+    def test_misc_valid_models(self) -> None:
+        prompt = "What is 1 + 1?"
+        for model in [
+            "gpt-3.5-turbo",
+            "gpt-4",
+            "gpt-4.1",
+            "gpt-4.1-mini",
+            "gpt-4.1-nano",
+            "gpt-4o",
+            "gpt-4o-mini",
+            "o1",
+            "o1-mini",
+            "o3",
+            "o3-mini",
+            "o4-mini",
+        ]:
+            with self.subTest(model=model):
+                self.assertSuccess("run", f"-p'{prompt}'", f"-m{model}")
+
+
 class TestIncompatibleModels(TestCaseExtended):
     prompt = "What is 1 + 1?"
     errmsg_0 = "The model `foobar` does not exist or you do not have access to it.\nCannot proceed"
@@ -190,7 +211,12 @@ class TestIncompatibleModels(TestCaseExtended):
                 self.assertRegex(proc.stderr, self.errmsg_3)
 
     def test_wrong_endpoint_4(self) -> None:
-        for model in ["codex-mini-latest", "gpt-image-1", "o4-mini-deep-research"]:
+        for model in [
+            "codex-mini-latest",
+            "gpt-image-1",
+            "o4-mini-deep-research",
+            "o1-pro",
+        ]:
             with self.subTest(model=model):
                 proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
                 self.assertIn(self.errmsg_4, proc.stderr)
