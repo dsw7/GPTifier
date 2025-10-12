@@ -151,16 +151,34 @@ class TestIncompatibleModels(TestCaseExtended):
     prompt = "What is 1 + 1?"
     errmsg_0 = "The model `foobar` does not exist or you do not have access to it.\nCannot proceed"
     errmsg_1 = "This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?\nCannot proceed"
+    errmsg_2 = "You are not allowed to sample from this model\nCannot proceed"
 
     def test_non_existent_model(self) -> None:
         proc = self.assertFailure("run", f"-p'{self.prompt}'", "-mfoobar")
         self.assertIn(self.errmsg_0, proc.stderr)
 
-    def test_misc_models_errmsg_1(self) -> None:
-        for model in ["tts-1", "tts-1-hd", "whisper-1", "davinci-002"]:
+    def test_wrong_endpoint_1(self) -> None:
+        for model in [
+            "tts-1",
+            "tts-1-hd",
+            "whisper-1",
+            "davinci-002",
+            "gpt-4o-transcribe",
+        ]:
             with self.subTest(model=model):
                 proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
                 self.assertIn(self.errmsg_1, proc.stderr)
+
+    def test_wrong_endpoint_2(self) -> None:
+        for model in [
+            "dall-e-2",
+            "dall-e-3",
+            "text-embedding-3-small",
+            "text-embedding-3-large",
+        ]:
+            with self.subTest(model=model):
+                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
+                self.assertIn(self.errmsg_2, proc.stderr)
 
     def test_sora_2(self) -> None:
         proc = self.assertFailure("run", f"-p'{self.prompt}'", "-msora-2")
