@@ -153,6 +153,7 @@ class TestIncompatibleModels(TestCaseExtended):
     errmsg_1 = "This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?\nCannot proceed"
     errmsg_2 = "You are not allowed to sample from this model\nCannot proceed"
     errmsg_3 = r"Your organization must be verified to use the model.*\nCannot proceed"
+    errmsg_4 = "This model is only supported in v1/responses and not in v1/chat/completions.\nCannot proceed"
 
     def test_non_existent_model(self) -> None:
         proc = self.assertFailure("run", f"-p'{self.prompt}'", "-mfoobar")
@@ -186,6 +187,12 @@ class TestIncompatibleModels(TestCaseExtended):
             with self.subTest(model=model):
                 proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
                 self.assertRegex(proc.stderr, self.errmsg_3)
+
+    def test_wrong_endpoint_4(self) -> None:
+        for model in ["codex-mini-latest", "gpt-image-1", "o4-mini-deep-research"]:
+            with self.subTest(model=model):
+                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
+                self.assertRegex(proc.stderr, self.errmsg_4)
 
     def test_sora_2(self) -> None:
         proc = self.assertFailure("run", f"-p'{self.prompt}'", "-msora-2")
