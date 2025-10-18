@@ -11,7 +11,27 @@ namespace {
 
 void unpack_response_(const nlohmann::json &json, Response &rp)
 {
-    rp.output = json["output"][0]["content"][0]["text"];
+    bool found_end = false;
+
+    for (const auto &step: json["output"]) {
+        if (not step.contains("status")) {
+            continue;
+        }
+
+        if (step["status"] != "completed") {
+            continue;
+        }
+
+        if (step["type"] == "message") {
+            rp.output = step["content"][0]["text"];
+            found_end = true;
+        }
+    }
+
+    if (not found_end) {
+        throw std::runtime_error("Something is wrong. Could not unpack message");
+    }
+
     rp.output_tokens = json["usage"]["output_tokens"];
     rp.created = json["created_at"];
     rp.model = json["model"];
