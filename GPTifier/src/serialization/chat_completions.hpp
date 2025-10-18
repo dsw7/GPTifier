@@ -4,7 +4,6 @@
 #include <ctime>
 #include <json.hpp>
 #include <string>
-#include <vector>
 
 namespace serialization {
 
@@ -18,11 +17,6 @@ struct ChatCompletion {
     std::string prompt;
     std::string raw_response;
     std::time_t created = 0;
-};
-
-struct ChatCompletions {
-    std::string raw_response;
-    std::vector<ChatCompletion> completions;
 };
 
 ChatCompletion create_chat_completion(const std::string &prompt, const std::string &model, float temp);
