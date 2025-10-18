@@ -6,7 +6,7 @@
 #include "command_fine_tune.hpp"
 #include "command_img.hpp"
 #include "command_models.hpp"
-#include "command_run.hpp"
+#include "command_run_chat_completions.hpp"
 #include "command_short.hpp"
 #include "command_test.hpp"
 #include "configs.hpp"
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 
     try {
         if (command == "run") {
-            commands::command_run(argc, argv);
+            commands::command_run_cc(argc, argv);
         } else if (command == "short") {
             commands::command_short(argc, argv);
         } else if (command == "models") {

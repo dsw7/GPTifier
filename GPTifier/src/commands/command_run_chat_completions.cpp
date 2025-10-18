@@ -336,7 +336,7 @@ void export_chat_completion_response(const serialization::ChatCompletion &comple
 
 namespace commands {
 
-void command_run(int argc, char **argv)
+void command_run_cc(int argc, char **argv)
 {
     const Parameters params = read_cli(argc, argv);
     utils::separator();
