@@ -8,12 +8,12 @@ from .extended_testcase import TestCaseExtended
 
 @dataclass
 class Response:
-    completion: str
-    completion_tokens: int
     created: int
+    input_: str
+    input_tokens: int
     model: str
-    prompt: str
-    prompt_tokens: int
+    output: str
+    output_tokens: int
     rtt: float
 
 
@@ -22,17 +22,17 @@ def load_content(json_file: str) -> Response:
         contents = loads(f.read())
 
     return Response(
-        completion=contents["output"],
-        completion_tokens=contents["output_tokens"],
         created=contents["created"],
+        input_=contents["input"],
+        input_tokens=contents["input_tokens"],
         model=contents["model"],
-        prompt=contents["input"],
-        prompt_tokens=contents["input_tokens"],
+        output=contents["output"],
+        output_tokens=contents["output_tokens"],
         rtt=contents["rtt"],
     )
 
 
-class TestChatCompletionReadFromInputfile(TestCaseExtended):
+class TestResponseReadFromInputfile(TestCaseExtended):
     def setUp(self) -> None:
         self.filename = Path.cwd() / "Inputfile"
 
@@ -48,10 +48,10 @@ class TestChatCompletionReadFromInputfile(TestCaseExtended):
             json_file = f.name
             self.assertSuccess("run", "-t0", f"-o{json_file}")
             content = load_content(json_file)
-            self.assertEqual(content.completion, completion)
+            self.assertEqual(content.output, completion)
 
 
-class TestChatCompletionJSON(TestCaseExtended):
+class TestResponseJSON(TestCaseExtended):
     prompt = "What is 1 + 4? Format the result as follows: >>>{result}<<<"
     completion = ">>>5<<<"
 
@@ -63,17 +63,17 @@ class TestChatCompletionJSON(TestCaseExtended):
             self.rtt = time() - t_start
             self.content = load_content(f.name)
 
-    def test_equal_prompt(self) -> None:
-        self.assertEqual(self.content.prompt, self.prompt)
+    def test_prompt_matches_input(self) -> None:
+        self.assertEqual(self.content.input_, self.prompt)
 
-    def test_equal_completion(self) -> None:
-        self.assertEqual(self.content.completion, self.completion)
+    def test_output_matches_completion(self) -> None:
+        self.assertEqual(self.content.output, self.completion)
 
-    def test_prompt_tokens(self) -> None:
-        self.assertEqual(self.content.prompt_tokens, 26)
+    def test_correct_input_tokens_count(self) -> None:
+        self.assertEqual(self.content.input_tokens, 26)
 
-    def test_completion_tokens(self) -> None:
-        self.assertEqual(self.content.completion_tokens, 4)
+    def test_correct_output_tokens_count(self) -> None:
+        self.assertEqual(self.content.output_tokens, 4)
 
     def test_approx_rtt(self) -> None:
         diff = abs(self.content.rtt - self.rtt)
@@ -84,9 +84,7 @@ class TestChatCompletionJSON(TestCaseExtended):
         self.assertLessEqual(diff, 2.0, "Creation times are not within 2 seconds")
 
 
-class TestChatCompletion(TestCaseExtended):
-    prompt = "What is 1 + 1? Format the result as follows: >>>{result}<<<"
-
+class TestResponse(TestCaseExtended):
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
@@ -99,8 +97,10 @@ class TestChatCompletion(TestCaseExtended):
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
             self.assertSuccess("run", f"-r{prompt}", "-t0", f"-o{json_file}")
-            completion = load_content(json_file)
-            self.assertEqual(completion.completion, ">>>8<<<")
+            content = load_content(json_file)
+            self.assertEqual(content.output, ">>>8<<<")
+
+    prompt = "What is 1 + 1? Format the result as follows: >>>{result}<<<"
 
     def test_write_to_stdout(self) -> None:
         proc = self.assertSuccess("run", f"-p'{self.prompt}'")
