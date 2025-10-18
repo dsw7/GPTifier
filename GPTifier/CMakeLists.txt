@@ -44,7 +44,6 @@ set(SRC_FILES
   src/commands/command_img.cpp
   src/commands/command_models.cpp
   src/commands/command_run.cpp
-  src/commands/command_run_chat_completions.cpp
   src/commands/command_short.cpp
   src/commands/command_test.cpp
   src/configs.cpp
