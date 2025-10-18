@@ -9,6 +9,7 @@
 namespace {
 
 const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
+const std::string URL_RESPONSES = "https://api.openai.com/v1/responses";
 const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
 const std::string URL_FILES = "https://api.openai.com/v1/files";
 const std::string URL_FINE_TUNING = "https://api.openai.com/v1/fine_tuning";
@@ -80,6 +81,7 @@ std::string delete_model(const std::string &model_id)
 
 std::string create_chat_completion(const std::string &post_fields)
 {
+    // Legacy API that was superseded with Responses API
     Curl curl;
     CURL *handle = curl.get_handle();
 
@@ -88,6 +90,29 @@ std::string create_chat_completion(const std::string &post_fields)
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     curl_easy_setopt(handle, CURLOPT_URL, URL_CHAT_COMPLETIONS.c_str());
+    curl_easy_setopt(handle, CURLOPT_POST, 1L);
+    curl_easy_setopt(handle, CURLOPT_POSTFIELDS, post_fields.c_str());
+
+    std::string response;
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
+
+    const CURLcode code = curl_easy_perform(handle);
+    if (code != CURLE_OK) {
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
+    return response;
+}
+
+std::string create_response(const std::string &post_fields)
+{
+    Curl curl;
+    CURL *handle = curl.get_handle();
+
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Content-Type: application/json");
+    curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
+
+    curl_easy_setopt(handle, CURLOPT_URL, URL_RESPONSES.c_str());
     curl_easy_setopt(handle, CURLOPT_POST, 1L);
     curl_easy_setopt(handle, CURLOPT_POSTFIELDS, post_fields.c_str());
 
