@@ -1,4 +1,4 @@
-#include "command_run.hpp"
+#include "command_run_chat_completions.hpp"
 
 #include "chat_completions.hpp"
 #include "configs.hpp"
