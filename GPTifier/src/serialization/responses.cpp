@@ -13,7 +13,7 @@ void unpack_response_(const nlohmann::json &json, Response &rp)
 {
     rp.output = json["output"][0]["content"][0]["text"];
     rp.output_tokens = json["usage"]["output_tokens"];
-    rp.created = json["created"];
+    rp.created = json["created_at"];
     rp.model = json["model"];
     rp.input_tokens = json["usage"]["input_tokens"];
 }
