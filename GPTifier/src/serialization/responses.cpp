@@ -19,25 +19,22 @@ void unpack_response_(const nlohmann::json &json, Response &rp)
         throw std::runtime_error("The response from OpenAI does not contain an 'object' key");
     }
 
-    bool found_end = false;
+    bool job_complete = false;
 
-    for (const auto &step: json["output"]) {
-        if (not step.contains("status")) {
+    for (const auto &item: json["output"]) {
+        if (item["type"] != "message") {
             continue;
         }
 
-        if (step["status"] != "completed") {
-            continue;
-        }
-
-        if (step["type"] == "message") {
-            rp.output = step["content"][0]["text"];
-            found_end = true;
+        if (item["status"] == "completed") {
+            rp.output = item["content"][0]["text"];
+            job_complete = true;
+            break;
         }
     }
 
-    if (not found_end) {
-        throw std::runtime_error("Something is wrong. Could not unpack message");
+    if (not job_complete) {
+        throw std::runtime_error("OpenAI did not complete the transaction");
     }
 
     rp.created = json["created_at"];
