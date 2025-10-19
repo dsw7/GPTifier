@@ -46,6 +46,7 @@ Response create_response(const std::string &input, const std::string &model, flo
         { "model", model },
         { "temperature", temp },
         { "input", input },
+        { "store", false },
     };
 
     const auto start = std::chrono::high_resolution_clock::now();
