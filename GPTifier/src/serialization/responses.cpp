@@ -32,10 +32,10 @@ void unpack_response_(const nlohmann::json &json, Response &rp)
         throw std::runtime_error("Something is wrong. Could not unpack message");
     }
 
-    rp.output_tokens = json["usage"]["output_tokens"];
     rp.created = json["created_at"];
-    rp.model = json["model"];
     rp.input_tokens = json["usage"]["input_tokens"];
+    rp.model = json["model"];
+    rp.output_tokens = json["usage"]["output_tokens"];
 }
 
 } // namespace
@@ -43,10 +43,10 @@ void unpack_response_(const nlohmann::json &json, Response &rp)
 Response create_response(const std::string &input, const std::string &model, float temp)
 {
     const nlohmann::json data = {
-        { "model", model },
-        { "temperature", temp },
         { "input", input },
+        { "model", model },
         { "store", false },
+        { "temperature", temp },
     };
 
     const auto start = std::chrono::high_resolution_clock::now();
