@@ -11,6 +11,14 @@ namespace {
 
 void unpack_response_(const nlohmann::json &json, Response &rp)
 {
+    if (json.contains("object")) {
+        if (json["object"] != "response") {
+            throw std::runtime_error("The response from OpenAI is not an OpenAI Response");
+        }
+    } else {
+        throw std::runtime_error("The response from OpenAI does not contain an 'object' key");
+    }
+
     bool found_end = false;
 
     for (const auto &step: json["output"]) {
