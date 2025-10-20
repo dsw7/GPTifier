@@ -119,6 +119,46 @@ Parameters read_cli(int argc, char **argv)
     return params;
 }
 
+std::string get_model()
+{
+#ifdef TESTING_ENABLED
+    static std::string low_cost_model = "gpt-3.5-turbo";
+    return low_cost_model;
+#else
+    if (configs.model_run) {
+        return configs.model_run.value();
+    }
+    throw std::runtime_error("Could not determine which model to use");
+#endif
+}
+
+std::string get_prompt(const Parameters &params)
+{
+    if (params.prompt) {
+        return params.prompt.value();
+    }
+
+    if (params.prompt_file) {
+        fmt::print("Reading text from file: '{}'\n", params.prompt_file.value());
+        return utils::read_from_file(params.prompt_file.value());
+    }
+
+    static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
+
+    if (std::filesystem::exists(inputfile)) {
+        fmt::print("Found an Inputfile in current working directory!\n");
+        return utils::read_from_file(inputfile);
+    }
+
+    // Get prompt from stdin if all else fails
+    fmt::print(fg(white), "Input: ");
+    std::string prompt;
+    std::getline(std::cin, prompt);
+    utils::separator();
+
+    return prompt;
+}
+
 float get_temperature(const std::optional<std::string> &temperature)
 {
     float temp_f = 1.00;
@@ -136,30 +176,6 @@ float get_temperature(const std::optional<std::string> &temperature)
     }
 
     return temp_f;
-}
-
-std::string get_model()
-{
-#ifdef TESTING_ENABLED
-    static std::string low_cost_model = "gpt-3.5-turbo";
-    return low_cost_model;
-#else
-    if (configs.model_run) {
-        return configs.model_run.value();
-    }
-    throw std::runtime_error("Could not determine which model to use");
-#endif
-}
-
-// Input ----------------------------------------------------------------------------------------------------
-
-std::string read_text_from_stdin()
-{
-    fmt::print(fg(white), "Input: ");
-
-    std::string text;
-    std::getline(std::cin, text);
-    return text;
 }
 
 // Completion -----------------------------------------------------------------------------------------------
@@ -366,26 +382,10 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("Model is empty");
     }
 
-    const std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
-    std::string prompt;
-
-    if (params.prompt) {
-        prompt = params.prompt.value();
-    } else {
-        if (params.prompt_file) {
-            fmt::print("Reading text from file: '{}'\n", params.prompt_file.value());
-            prompt = utils::read_from_file(params.prompt_file.value());
-        } else if (std::filesystem::exists(inputfile)) {
-            fmt::print("Found an Inputfile in current working directory!\n");
-            prompt = utils::read_from_file(inputfile);
-        } else {
-            prompt = read_text_from_stdin();
-        }
-        utils::separator();
-    }
+    const std::string prompt = get_prompt(params);
 
     if (prompt.empty()) {
-        throw std::runtime_error("No input text provided anywhere. Cannot proceed");
+        throw std::runtime_error("Prompt is empty");
     }
 
     const float temperature = get_temperature(params.temperature);
