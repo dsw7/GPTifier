@@ -305,7 +305,7 @@ void write_message_to_file(const serialization::Response &rp)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-function"
 
-void export_chat_completion_response(const serialization::Response &rp)
+void export_response(const serialization::Response &rp)
 {
     fmt::print(fg(white), "Export:\n");
     char choice = 'n';
@@ -392,7 +392,7 @@ void command_run(int argc, char **argv)
     utils::separator();
 
 #ifndef TESTING_ENABLED
-    export_chat_completion_response(rp);
+    export_response(rp);
     utils::separator();
 #endif
 }
