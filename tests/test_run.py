@@ -120,7 +120,7 @@ class TestResponse(TestCaseExtended):
 
     def test_empty_prompt(self) -> None:
         proc = self.assertFailure("run", "--prompt=")
-        self.assertIn("No input text provided anywhere. Cannot proceed", proc.stderr)
+        self.assertIn("Prompt is empty", proc.stderr)
 
     def test_empty_prompt_file(self) -> None:
         proc = self.assertFailure("run", "--read-from-file=")
