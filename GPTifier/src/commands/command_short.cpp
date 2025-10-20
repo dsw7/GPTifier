@@ -1,7 +1,7 @@
 #include "command_short.hpp"
 
-#include "chat_completions.hpp"
 #include "configs.hpp"
+#include "responses.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -127,15 +127,14 @@ void command_short(int argc, char **argv)
     }
 
     const std::string model = get_model();
-    const serialization::ChatCompletion cc = serialization::create_chat_completion(
-        params.prompt.value(), model, temperature);
+    const serialization::Response rp = serialization::create_response(params.prompt.value(), model, temperature);
 
     if (params.print_raw_json) {
-        fmt::print("{}\n", cc.raw_response);
+        fmt::print("{}\n", rp.raw_response);
         return;
     }
 
-    fmt::print("{}\n", cc.completion);
+    fmt::print("{}\n", rp.output);
 }
 
 } // namespace commands
