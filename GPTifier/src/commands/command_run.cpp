@@ -51,11 +51,11 @@ Examples:
 }
 
 struct Parameters {
-    std::optional<std::string> json_dump_file = std::nullopt;
-    std::optional<std::string> model = std::nullopt;
-    std::optional<std::string> prompt = std::nullopt;
-    std::optional<std::string> prompt_file = std::nullopt;
-    std::string temperature = "1.00";
+    std::optional<std::string> json_dump_file;
+    std::optional<std::string> model;
+    std::optional<std::string> prompt;
+    std::optional<std::string> prompt_file;
+    std::optional<std::string> temperature;
 };
 
 Parameters read_cli(int argc, char **argv)
@@ -116,11 +116,26 @@ Parameters read_cli(int argc, char **argv)
         }
     }
 
-    if (params.temperature.empty()) {
-        throw std::runtime_error("Empty temperature");
+    return params;
+}
+
+float get_temperature(const std::optional<std::string> &temperature)
+{
+    float temp_f = 1.00;
+
+    if (temperature) {
+        if (temperature.value().empty()) {
+            throw std::runtime_error("Empty temperature");
+        }
+
+        temp_f = utils::string_to_float(temperature.value());
     }
 
-    return params;
+    if (temp_f < 0 || temp_f > 2) {
+        throw std::runtime_error("Temperature must be between 0 and 2");
+    }
+
+    return temp_f;
 }
 
 std::string get_model()
@@ -373,11 +388,7 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("No input text provided anywhere. Cannot proceed");
     }
 
-    const float temperature = utils::string_to_float(params.temperature);
-    if (temperature < 0 || temperature > 2) {
-        throw std::runtime_error("Temperature must be between 0 and 2");
-    }
-
+    const float temperature = get_temperature(params.temperature);
     const serialization::Response rp = run_query(model, prompt, temperature);
 
     if (params.json_dump_file) {
