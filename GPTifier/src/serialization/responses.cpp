@@ -75,4 +75,32 @@ Response create_response(const std::string &input, const std::string &model, flo
     return rp;
 }
 
+std::string test_curl_handle_is_reusable()
+{
+    static std::string low_cost_model = "gpt-3.5-turbo";
+    const nlohmann::json data = {
+        { "input", "What is 5 + 5? Return the result as follows: >>>{result}<<<" },
+        { "model", low_cost_model },
+        { "store", false },
+        { "temperature", 0.00 },
+    };
+
+    const std::string dump = data.dump();
+    const std::string response_1 = networking::create_response(dump);
+    const std::string response_2 = networking::create_response(dump);
+    const std::string response_3 = networking::create_response(dump);
+
+    const Response rp_1 = unpack_response<Response>(response_1, unpack_response_);
+    const Response rp_2 = unpack_response<Response>(response_2, unpack_response_);
+    const Response rp_3 = unpack_response<Response>(response_3, unpack_response_);
+
+    const nlohmann::json results = {
+        { "result_1", rp_1.output },
+        { "result_2", rp_2.output },
+        { "result_3", rp_3.output },
+    };
+
+    return results.dump(4);
+}
+
 } // namespace serialization

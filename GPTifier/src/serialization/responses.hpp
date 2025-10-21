@@ -20,5 +20,6 @@ struct Response {
 };
 
 Response create_response(const std::string &input, const std::string &model, float temp);
+std::string test_curl_handle_is_reusable();
 
 } // namespace serialization
