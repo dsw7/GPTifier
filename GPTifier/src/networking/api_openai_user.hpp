@@ -5,7 +5,7 @@
 namespace networking {
 std::string get_models();
 std::string delete_model(const std::string &model_id);
-std::string create_chat_completion(const std::string &post_fields);
+std::string create_response(const std::string &post_fields);
 std::string create_embedding(const std::string &post_fields);
 std::string upload_file(const std::string &filename, const std::string &purpose);
 std::string get_uploaded_files(bool sort_asc = true);

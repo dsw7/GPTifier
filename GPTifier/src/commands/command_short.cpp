@@ -1,7 +1,7 @@
 #include "command_short.hpp"
 
-#include "chat_completions.hpp"
 #include "configs.hpp"
+#include "responses.hpp"
 #include "utils.hpp"
 
 #include <fmt/core.h>
@@ -13,7 +13,7 @@ namespace {
 
 void help_short()
 {
-    const std::string messages = R"(Create a chat completion but without threading or verbosity. Command is
+    const std::string messages = R"(Create a response but without threading or verbosity. Command is
 useful for unit testing, vim integration, etc.
 
 Usage:
@@ -34,8 +34,8 @@ Examples:
 
 struct Parameters {
     bool print_raw_json = false;
-    std::optional<std::string> prompt = std::nullopt;
-    std::optional<std::string> temperature = std::nullopt;
+    std::optional<std::string> prompt;
+    std::optional<std::string> temperature;
 };
 
 Parameters read_cli(int argc, char **argv)
@@ -79,13 +79,26 @@ Parameters read_cli(int argc, char **argv)
         }
     }
 
-    if (params.temperature) {
-        if (params.temperature.value().empty()) {
+    return params;
+}
+
+float get_temperature(const std::optional<std::string> &temperature)
+{
+    float temp_f = 1.00;
+
+    if (temperature) {
+        if (temperature.value().empty()) {
             throw std::runtime_error("Empty temperature");
         }
+
+        temp_f = utils::string_to_float(temperature.value());
     }
 
-    return params;
+    if (temp_f < 0 || temp_f > 2) {
+        throw std::runtime_error("Temperature must be between 0 and 2");
+    }
+
+    return temp_f;
 }
 
 std::string get_model()
@@ -117,25 +130,16 @@ void command_short(int argc, char **argv)
         throw std::runtime_error("Prompt is empty");
     }
 
-    float temperature = 1.00;
-    if (params.temperature) {
-        temperature = utils::string_to_float(params.temperature.value());
-    }
-
-    if (temperature < 0 || temperature > 2) {
-        throw std::runtime_error("Temperature must be between 0 and 2");
-    }
-
+    const float temperature = get_temperature(params.temperature);
     const std::string model = get_model();
-    const serialization::ChatCompletion cc = serialization::create_chat_completion(
-        params.prompt.value(), model, temperature);
+    const serialization::Response rp = serialization::create_response(params.prompt.value(), model, temperature);
 
     if (params.print_raw_json) {
-        fmt::print("{}\n", cc.raw_response);
+        fmt::print("{}\n", rp.raw_response);
         return;
     }
 
-    fmt::print("{}\n", cc.completion);
+    fmt::print("{}\n", rp.output);
 }
 
 } // namespace commands

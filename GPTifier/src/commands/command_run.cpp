@@ -1,8 +1,8 @@
 #include "command_run.hpp"
 
-#include "chat_completions.hpp"
 #include "configs.hpp"
 #include "datadir.hpp"
+#include "responses.hpp"
 #include "utils.hpp"
 
 #include <atomic>
@@ -21,7 +21,7 @@ namespace {
 
 void help_run()
 {
-    const std::string messages = R"(Create a chat completion according to a prompt. A prompt can be provided
+    const std::string messages = R"(Create a response according to a prompt. A prompt can be provided
 as follows:
 
   1. Via a file named 'Inputfile' in the current working directory
@@ -51,11 +51,11 @@ Examples:
 }
 
 struct Parameters {
-    std::optional<std::string> json_dump_file = std::nullopt;
-    std::optional<std::string> model = std::nullopt;
-    std::optional<std::string> prompt = std::nullopt;
-    std::optional<std::string> prompt_file = std::nullopt;
-    std::string temperature = "1.00";
+    std::optional<std::string> json_dump_file;
+    std::optional<std::string> model;
+    std::optional<std::string> prompt;
+    std::optional<std::string> prompt_file;
+    std::optional<std::string> temperature;
 };
 
 Parameters read_cli(int argc, char **argv)
@@ -116,10 +116,6 @@ Parameters read_cli(int argc, char **argv)
         }
     }
 
-    if (params.temperature.empty()) {
-        throw std::runtime_error("Empty temperature");
-    }
-
     return params;
 }
 
@@ -136,15 +132,50 @@ std::string get_model()
 #endif
 }
 
-// Input ----------------------------------------------------------------------------------------------------
-
-std::string read_text_from_stdin()
+std::string get_prompt(const Parameters &params)
 {
-    fmt::print(fg(white), "Input: ");
+    if (params.prompt) {
+        return params.prompt.value();
+    }
 
-    std::string text;
-    std::getline(std::cin, text);
-    return text;
+    if (params.prompt_file) {
+        fmt::print("Reading text from file: '{}'\n", params.prompt_file.value());
+        return utils::read_from_file(params.prompt_file.value());
+    }
+
+    static std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
+
+    if (std::filesystem::exists(inputfile)) {
+        fmt::print("Found an Inputfile in current working directory!\n");
+        return utils::read_from_file(inputfile);
+    }
+
+    // Get prompt from stdin if all else fails
+    fmt::print(fg(white), "Input: ");
+    std::string prompt;
+    std::getline(std::cin, prompt);
+    utils::separator();
+
+    return prompt;
+}
+
+float get_temperature(const std::optional<std::string> &temperature)
+{
+    float temp_f = 1.00;
+
+    if (temperature) {
+        if (temperature.value().empty()) {
+            throw std::runtime_error("Empty temperature");
+        }
+
+        temp_f = utils::string_to_float(temperature.value());
+    }
+
+    if (temp_f < 0 || temp_f > 2) {
+        throw std::runtime_error("Temperature must be between 0 and 2");
+    }
+
+    return temp_f;
 }
 
 // Completion -----------------------------------------------------------------------------------------------
@@ -186,17 +217,17 @@ void time_api_call()
     std::cout << std::string(16, ' ') << '\r' << std::flush;
 }
 
-serialization::ChatCompletion run_query(const std::string &model, const std::string &prompt, const float temperature)
+serialization::Response run_query(const std::string &model, const std::string &prompt, const float temperature)
 {
     TIMER_ENABLED.store(true);
     std::thread timer(time_api_call);
 
     bool query_failed = false;
-    serialization::ChatCompletion cc;
+    serialization::Response rp;
     std::mutex mutex_print_stderr;
 
     try {
-        cc = serialization::create_chat_completion(prompt, model, temperature);
+        rp = serialization::create_response(prompt, model, temperature);
     } catch (std::runtime_error &e) {
         query_failed = true;
         {
@@ -212,30 +243,29 @@ serialization::ChatCompletion run_query(const std::string &model, const std::str
         throw std::runtime_error("Cannot proceed");
     }
 
-    return cc;
+    return rp;
 }
 
 // Output ---------------------------------------------------------------------------------------------------
 
-void dump_chat_completion_response(const serialization::ChatCompletion &cc, const std::string &json_dump_file)
+void dump_response(const serialization::Response &rp, const std::string &json_dump_file)
 {
-
     const nlohmann::json json = {
-        { "completion", cc.completion },
-        { "completion_tokens", cc.completion_tokens },
-        { "created", cc.created },
-        { "id", cc.id },
-        { "model", cc.model },
-        { "prompt", cc.prompt },
-        { "prompt_tokens", cc.prompt_tokens },
-        { "rtt", cc.rtt.count() },
+        { "created", rp.created },
+        { "id", rp.id },
+        { "input", rp.input },
+        { "input_tokens", rp.input_tokens },
+        { "model", rp.model },
+        { "output", rp.output },
+        { "output_tokens", rp.output_tokens },
+        { "rtt", rp.rtt.count() },
     };
 
     fmt::print("Dumping results to '{}'\n", json_dump_file);
     utils::write_to_file(json_dump_file, json.dump(2));
 }
 
-void print_chat_completion_response(const std::string &completion)
+void print_response(const std::string &completion)
 {
     fmt::print(fg(white), "Results: ");
     fmt::print(fg(green), "{}\n", completion);
@@ -262,43 +292,43 @@ void print_ratio(int num_tokens, int num_words)
     }
 }
 
-void print_usage_statistics(const serialization::ChatCompletion &completion)
+void print_usage_statistics(const serialization::Response &rp)
 {
-    const int wc_prompt = utils::get_word_count(completion.prompt);
-    const int wc_completion = utils::get_word_count(completion.completion);
+    const int wc_input = utils::get_word_count(rp.input);
+    const int wc_output = utils::get_word_count(rp.output);
 
     fmt::print(fg(white), "Usage:\n");
-    fmt::print("Model: {}\n", completion.model);
-    fmt::print("RTT: {} s\n", completion.rtt.count());
+    fmt::print("Model: {}\n", rp.model);
+    fmt::print("RTT: {} s\n", rp.rtt.count());
     fmt::print("\n");
 
     fmt::print("Prompt tokens: ");
-    fmt::print(fg(green), "{}\n", completion.prompt_tokens);
+    fmt::print(fg(green), "{}\n", rp.input_tokens);
     fmt::print("Prompt size (words): ");
-    fmt::print(fg(green), "{}\n", wc_prompt);
-    print_ratio(completion.prompt_tokens, wc_prompt);
+    fmt::print(fg(green), "{}\n", wc_input);
+    print_ratio(rp.input_tokens, wc_input);
     fmt::print("\n");
 
     fmt::print("Completion tokens: ");
-    fmt::print(fg(green), "{}\n", completion.completion_tokens);
+    fmt::print(fg(green), "{}\n", rp.output_tokens);
     fmt::print("Completion size (words): ");
-    fmt::print(fg(green), "{}\n", wc_completion);
-    print_ratio(completion.completion_tokens, wc_completion);
+    fmt::print(fg(green), "{}\n", wc_output);
+    print_ratio(rp.output_tokens, wc_output);
 }
 
-void write_message_to_file(const serialization::ChatCompletion &completion)
+void write_message_to_file(const serialization::Response &rp)
 {
-    const std::string created = utils::datetime_from_unix_timestamp(completion.created);
+    const std::string created = utils::datetime_from_unix_timestamp(rp.created);
 
     std::string text = "{\n";
     text += "> Created at: " + created + " (GMT)\n";
-    text += "> Model: " + completion.model + "\n\n";
-    text += "> Prompt:\n" + completion.prompt + "\n\n";
-    text += "> Completion:\n" + completion.completion + "\n";
+    text += "> Model: " + rp.model + "\n\n";
+    text += "> Input:\n" + rp.input + "\n\n";
+    text += "> Output:\n" + rp.output + "\n";
     text += "}\n\n";
 
     const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
-    fmt::print("> Writing completion to file {}\n", path_completions_file);
+    fmt::print("> Writing output to file {}\n", path_completions_file);
 
     utils::append_to_file(path_completions_file, text);
 }
@@ -306,7 +336,7 @@ void write_message_to_file(const serialization::ChatCompletion &completion)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-function"
 
-void export_chat_completion_response(const serialization::ChatCompletion &completion)
+void export_response(const serialization::Response &rp)
 {
     fmt::print(fg(white), "Export:\n");
     char choice = 'n';
@@ -327,7 +357,7 @@ void export_chat_completion_response(const serialization::ChatCompletion &comple
         return;
     }
 
-    write_message_to_file(completion);
+    write_message_to_file(rp);
 }
 
 #pragma GCC diagnostic pop
@@ -352,48 +382,28 @@ void command_run(int argc, char **argv)
         throw std::runtime_error("Model is empty");
     }
 
-    const std::filesystem::path inputfile = std::filesystem::current_path() / "Inputfile";
-    std::string prompt;
-
-    if (params.prompt) {
-        prompt = params.prompt.value();
-    } else {
-        if (params.prompt_file) {
-            fmt::print("Reading text from file: '{}'\n", params.prompt_file.value());
-            prompt = utils::read_from_file(params.prompt_file.value());
-        } else if (std::filesystem::exists(inputfile)) {
-            fmt::print("Found an Inputfile in current working directory!\n");
-            prompt = utils::read_from_file(inputfile);
-        } else {
-            prompt = read_text_from_stdin();
-        }
-        utils::separator();
-    }
+    const std::string prompt = get_prompt(params);
 
     if (prompt.empty()) {
-        throw std::runtime_error("No input text provided anywhere. Cannot proceed");
+        throw std::runtime_error("Prompt is empty");
     }
 
-    const float temperature = utils::string_to_float(params.temperature);
-    if (temperature < 0 || temperature > 2) {
-        throw std::runtime_error("Temperature must be between 0 and 2");
-    }
-
-    const serialization::ChatCompletion cc = run_query(model, prompt, temperature);
+    const float temperature = get_temperature(params.temperature);
+    const serialization::Response rp = run_query(model, prompt, temperature);
 
     if (params.json_dump_file) {
-        dump_chat_completion_response(cc, params.json_dump_file.value());
+        dump_response(rp, params.json_dump_file.value());
         return;
     }
 
-    print_usage_statistics(cc);
+    print_usage_statistics(rp);
     utils::separator();
 
-    print_chat_completion_response(cc.completion);
+    print_response(rp.output);
     utils::separator();
 
 #ifndef TESTING_ENABLED
-    export_chat_completion_response(cc);
+    export_response(rp);
     utils::separator();
 #endif
 }

@@ -1,5 +1,6 @@
 #include "command_test.hpp"
 
+#include "responses.hpp"
 #include "testing.hpp"
 
 #include <fmt/core.h>

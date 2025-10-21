@@ -8,12 +8,12 @@
 
 namespace {
 
-const std::string URL_CHAT_COMPLETIONS = "https://api.openai.com/v1/chat/completions";
 const std::string URL_EMBEDDINGS = "https://api.openai.com/v1/embeddings";
 const std::string URL_FILES = "https://api.openai.com/v1/files";
 const std::string URL_FINE_TUNING = "https://api.openai.com/v1/fine_tuning";
 const std::string URL_IMAGES = "https://api.openai.com/v1/images";
 const std::string URL_MODELS = "https://api.openai.com/v1/models";
+const std::string URL_RESPONSES = "https://api.openai.com/v1/responses";
 
 std::string get_user_api_key()
 {
@@ -78,7 +78,7 @@ std::string delete_model(const std::string &model_id)
     return response;
 }
 
-std::string create_chat_completion(const std::string &post_fields)
+std::string create_response(const std::string &post_fields)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -87,7 +87,7 @@ std::string create_chat_completion(const std::string &post_fields)
     curl.append_header("Content-Type: application/json");
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
-    curl_easy_setopt(handle, CURLOPT_URL, URL_CHAT_COMPLETIONS.c_str());
+    curl_easy_setopt(handle, CURLOPT_URL, URL_RESPONSES.c_str());
     curl_easy_setopt(handle, CURLOPT_POST, 1L);
     curl_easy_setopt(handle, CURLOPT_POSTFIELDS, post_fields.c_str());
 

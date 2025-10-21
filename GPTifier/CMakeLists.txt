@@ -52,7 +52,6 @@ set(SRC_FILES
   src/networking/api_openai_admin.cpp
   src/networking/api_openai_user.cpp
   src/networking/curl_base.cpp
-  src/serialization/chat_completions.cpp
   src/serialization/costs.cpp
   src/serialization/embeddings.cpp
   src/serialization/files.cpp
@@ -60,6 +59,7 @@ set(SRC_FILES
   src/serialization/images.cpp
   src/serialization/models.cpp
   src/serialization/response_to_json.cpp
+  src/serialization/responses.cpp
   src/serialization/testing.cpp
   src/utils.cpp
 )

@@ -1,15 +1,34 @@
+import typing
 from .extended_testcase import TestCaseExtended
 
 
 class TestShort(TestCaseExtended):
+
+    def load_output(self, output: typing.Any) -> str:
+        self.assertTrue(len(output) > 0, "Output is empty")
+        text: str | None = None
+
+        for item in output:
+            if item["type"] != "message":
+                continue
+
+            if item["status"] != "completed":
+                continue
+
+            if item["content"][0]["type"] == "output_text":
+                text = item["content"][0]["text"]
+                break
+
+        self.assertIsNotNone(text, "Could not find text in OpenAI output")
+        # Can ignore this since assertion will break out of function if text is null
+        return text  # type: ignore
 
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("short", option)
                 self.assertIn(
-                    "Create a chat completion but without threading or verbosity.",
-                    proc.stdout,
+                    "Create a response but without threading or verbosity.", proc.stdout
                 )
 
     prompt = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
@@ -23,7 +42,7 @@ class TestShort(TestCaseExtended):
             with self.subTest(option=option):
                 proc = self.assertSuccess("short", option, self.prompt)
                 results = proc.load_stdout_to_json()
-                self.assertIn(">>>4<<<", results["choices"][0]["message"]["content"])
+                self.assertIn(">>>4<<<", self.load_output(results["output"]))
 
     def test_empty_temp(self) -> None:
         proc = self.assertFailure("short", "--temperature=", self.prompt)

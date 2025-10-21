@@ -7,32 +7,32 @@ from .extended_testcase import TestCaseExtended
 
 
 @dataclass
-class Completion:
-    completion: str
-    completion_tokens: int
+class Response:
     created: int
+    input_: str
+    input_tokens: int
     model: str
-    prompt: str
-    prompt_tokens: int
+    output: str
+    output_tokens: int
     rtt: float
 
 
-def load_content(json_file: str) -> Completion:
+def load_content(json_file: str) -> Response:
     with open(json_file) as f:
         contents = loads(f.read())
 
-    return Completion(
-        completion=contents["completion"],
-        completion_tokens=contents["completion_tokens"],
+    return Response(
         created=contents["created"],
+        input_=contents["input"],
+        input_tokens=contents["input_tokens"],
         model=contents["model"],
-        prompt=contents["prompt"],
-        prompt_tokens=contents["prompt_tokens"],
+        output=contents["output"],
+        output_tokens=contents["output_tokens"],
         rtt=contents["rtt"],
     )
 
 
-class TestChatCompletionReadFromInputfile(TestCaseExtended):
+class TestResponseReadFromInputfile(TestCaseExtended):
     def setUp(self) -> None:
         self.filename = Path.cwd() / "Inputfile"
 
@@ -48,10 +48,10 @@ class TestChatCompletionReadFromInputfile(TestCaseExtended):
             json_file = f.name
             self.assertSuccess("run", "-t0", f"-o{json_file}")
             content = load_content(json_file)
-            self.assertEqual(content.completion, completion)
+            self.assertEqual(content.output, completion)
 
 
-class TestChatCompletionJSON(TestCaseExtended):
+class TestResponseJSON(TestCaseExtended):
     prompt = "What is 1 + 4? Format the result as follows: >>>{result}<<<"
     completion = ">>>5<<<"
 
@@ -63,17 +63,17 @@ class TestChatCompletionJSON(TestCaseExtended):
             self.rtt = time() - t_start
             self.content = load_content(f.name)
 
-    def test_equal_prompt(self) -> None:
-        self.assertEqual(self.content.prompt, self.prompt)
+    def test_prompt_matches_input(self) -> None:
+        self.assertEqual(self.content.input_, self.prompt)
 
-    def test_equal_completion(self) -> None:
-        self.assertEqual(self.content.completion, self.completion)
+    def test_output_matches_completion(self) -> None:
+        self.assertEqual(self.content.output, self.completion)
 
-    def test_prompt_tokens(self) -> None:
-        self.assertEqual(self.content.prompt_tokens, 26)
+    def test_correct_input_tokens_count(self) -> None:
+        self.assertEqual(self.content.input_tokens, 26)
 
-    def test_completion_tokens(self) -> None:
-        self.assertEqual(self.content.completion_tokens, 3)
+    def test_correct_output_tokens_count(self) -> None:
+        self.assertEqual(self.content.output_tokens, 4)
 
     def test_approx_rtt(self) -> None:
         diff = abs(self.content.rtt - self.rtt)
@@ -84,14 +84,12 @@ class TestChatCompletionJSON(TestCaseExtended):
         self.assertLessEqual(diff, 2.0, "Creation times are not within 2 seconds")
 
 
-class TestChatCompletion(TestCaseExtended):
-    prompt = "What is 1 + 1? Format the result as follows: >>>{result}<<<"
-
+class TestResponse(TestCaseExtended):
     def test_help(self) -> None:
         for option in ["-h", "--help"]:
             with self.subTest(option=option):
                 proc = self.assertSuccess("run", option)
-                self.assertIn("Create a chat completion", proc.stdout)
+                self.assertIn("Create a response according to a prompt.", proc.stdout)
 
     def test_read_from_file(self) -> None:
         prompt = Path(__file__).resolve().parent / "test_run" / "prompt_basic.txt"
@@ -99,8 +97,10 @@ class TestChatCompletion(TestCaseExtended):
         with NamedTemporaryFile(dir=gettempdir()) as f:
             json_file = f.name
             self.assertSuccess("run", f"-r{prompt}", "-t0", f"-o{json_file}")
-            completion = load_content(json_file)
-            self.assertEqual(completion.completion, ">>>8<<<")
+            content = load_content(json_file)
+            self.assertEqual(content.output, ">>>8<<<")
+
+    prompt = "What is 1 + 1? Format the result as follows: >>>{result}<<<"
 
     def test_write_to_stdout(self) -> None:
         proc = self.assertSuccess("run", f"-p'{self.prompt}'")
@@ -120,7 +120,7 @@ class TestChatCompletion(TestCaseExtended):
 
     def test_empty_prompt(self) -> None:
         proc = self.assertFailure("run", "--prompt=")
-        self.assertIn("No input text provided anywhere. Cannot proceed", proc.stderr)
+        self.assertIn("Prompt is empty", proc.stderr)
 
     def test_empty_prompt_file(self) -> None:
         proc = self.assertFailure("run", "--read-from-file=")
@@ -151,6 +151,7 @@ class TestCompatibleModels(TestCaseExtended):
     def test_misc_valid_models(self) -> None:
         prompt = "What is 1 + 1?"
         for model in [
+            "codex-mini-latest",
             "gpt-3.5-turbo",
             "gpt-4",
             "gpt-4.1",
@@ -159,8 +160,7 @@ class TestCompatibleModels(TestCaseExtended):
             "gpt-4o",
             "gpt-4o-mini",
             "o1",
-            "o1-mini",
-            "o3",
+            "o1-pro",
             "o3-mini",
             "o4-mini",
         ]:
@@ -170,59 +170,63 @@ class TestCompatibleModels(TestCaseExtended):
 
 class TestIncompatibleModels(TestCaseExtended):
     prompt = "What is 1 + 1?"
-    errmsg_0 = "The model `foobar` does not exist or you do not have access to it.\nCannot proceed"
-    errmsg_1 = "This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?\nCannot proceed"
-    errmsg_2 = "You are not allowed to sample from this model\nCannot proceed"
-    errmsg_3 = r"Your organization must be verified to use the model.*\nCannot proceed"
-    errmsg_4 = "This model is only supported in v1/responses and not in v1/chat/completions.\nCannot proceed"
-    errmsg_5 = "No available capacity was found for the model\nCannot proceed"
 
     def test_non_existent_model(self) -> None:
         proc = self.assertFailure("run", f"-p'{self.prompt}'", "-mfoobar")
-        self.assertIn(self.errmsg_0, proc.stderr)
+        self.assertIn(
+            "The requested model 'foobar' does not exist.\nCannot proceed", proc.stderr
+        )
 
-    def test_wrong_endpoint_1(self) -> None:
+    def test_wrong_endpoint_model_not_supported(self) -> None:
         for model in [
+            "gpt-4o-transcribe",
+            "gpt-image-1",
+            "o1-mini",
             "tts-1",
             "tts-1-hd",
             "whisper-1",
-            "davinci-002",
-            "gpt-4o-transcribe",
         ]:
             with self.subTest(model=model):
                 proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
-                self.assertIn(self.errmsg_1, proc.stderr)
+                self.assertIn(
+                    f"The requested model '{model}' is not supported with the Responses API.\nCannot proceed\n",
+                    proc.stderr,
+                )
 
-    def test_wrong_endpoint_2(self) -> None:
+    def test_wrong_endpoint_model_not_found(self) -> None:
         for model in [
             "dall-e-2",
             "dall-e-3",
-            "text-embedding-3-small",
+            "davinci-002",
             "text-embedding-3-large",
+            "text-embedding-3-small",
         ]:
             with self.subTest(model=model):
                 proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
-                self.assertIn(self.errmsg_2, proc.stderr)
+                self.assertIn(
+                    f"The requested model, '{model}' was not found.\nCannot proceed\n",
+                    proc.stderr,
+                )
 
-    def test_wrong_endpoint_3(self) -> None:
-        for model in ["gpt-5", "gpt-5-mini", "gpt-5-codex"]:
+    def test_unverified_organization_error(self) -> None:
+        for model in ["gpt-5", "gpt-5-mini", "gpt-5-codex", "o3"]:
             with self.subTest(model=model):
                 proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
-                self.assertRegex(proc.stderr, self.errmsg_3)
+                self.assertIn(
+                    f"Your organization must be verified to use the model '{model}'.",
+                    proc.stderr,
+                )
 
-    def test_wrong_endpoint_4(self) -> None:
-        for model in [
-            "codex-mini-latest",
-            "gpt-image-1",
-            "o4-mini-deep-research",
-            "o1-pro",
-        ]:
-            with self.subTest(model=model):
-                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
-                self.assertIn(self.errmsg_4, proc.stderr)
+    def test_wrong_endpoint_deep_research(self) -> None:
+        model = "o4-mini-deep-research"
+        proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
+        self.assertIn(
+            "Deep research models require at least one of 'web_search_preview', 'mcp', or 'file_search' tools.\nCannot proceed\n",
+            proc.stderr,
+        )
 
     def test_sora_2(self) -> None:
         for model in ["sora-2", "sora-2-pro"]:
             with self.subTest(model=model):
                 proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
-                self.assertIn(self.errmsg_5, proc.stderr)
+                self.assertIn(f"Model not found {model}", proc.stderr)
