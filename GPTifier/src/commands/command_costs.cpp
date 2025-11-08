@@ -11,8 +11,8 @@
 
 namespace {
 
-  const int MIN_DAYS = 1;
-  const int MAX_DAYS = 60;
+const int MIN_DAYS = 1;
+const int MAX_DAYS = 60;
 
 void help_costs()
 {
@@ -25,7 +25,8 @@ Usage:
 Options:
   -h, --help       Print help information and exit
   -j, --json       Print raw JSON response from OpenAI
-  -d, --days=DAYS  Select number of days to go back
+  -d, --days=DAYS  Select number of days to go back. Value
+                   will be clamped between 1 and 60 days
 )";
 
     fmt::print("{}\n", messages);
