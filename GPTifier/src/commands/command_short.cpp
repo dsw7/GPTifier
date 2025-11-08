@@ -4,12 +4,16 @@
 #include "responses.hpp"
 #include "utils.hpp"
 
+#include <algorithm>
 #include <fmt/core.h>
 #include <getopt.h>
 #include <optional>
 #include <string>
 
 namespace {
+
+const float MIN_TEMP = 0.00;
+const float MAX_TEMP = 2.00;
 
 void help_short()
 {
@@ -22,7 +26,8 @@ Usage:
 Options:
   -h, --help                     Print help information and exit
   -j, --json                     Print raw JSON response from OpenAI
-  -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2
+  -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2. Note that
+                                 temperature will be clamped between 0 and 2
 
 Examples:
   > Create a chat completion:
@@ -94,11 +99,7 @@ float get_temperature(const std::optional<std::string> &temperature)
         temp_f = utils::string_to_float(temperature.value());
     }
 
-    if (temp_f < 0 || temp_f > 2) {
-        throw std::runtime_error("Temperature must be between 0 and 2");
-    }
-
-    return temp_f;
+    return std::clamp(temp_f, MIN_TEMP, MAX_TEMP);
 }
 
 std::string get_model()

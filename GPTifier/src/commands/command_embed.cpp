@@ -36,10 +36,10 @@ Options:
 }
 
 struct Parameters {
-    std::optional<std::string> input = std::nullopt;
-    std::optional<std::string> input_file = std::nullopt;
-    std::optional<std::string> model = std::nullopt;
-    std::optional<std::string> output_file = std::nullopt;
+    std::optional<std::string> input;
+    std::optional<std::string> input_file;
+    std::optional<std::string> model;
+    std::optional<std::string> output_file;
 };
 
 Parameters read_cli(int argc, char **argv)

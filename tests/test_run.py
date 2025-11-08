@@ -140,12 +140,6 @@ class TestResponse(TestCaseExtended):
         proc = self.assertFailure("run", "-p'foobar'", "--model=")
         self.assertIn("Model is empty", proc.stderr)
 
-    def test_out_of_range_temp(self) -> None:
-        for temp in [-2.5, 2.5]:
-            with self.subTest(temp=temp):
-                proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-t{temp}")
-                self.assertIn("Temperature must be between 0 and 2", proc.stderr)
-
 
 class TestCompatibleModels(TestCaseExtended):
     def test_misc_valid_models(self) -> None:

@@ -94,7 +94,8 @@ Usage:
 Options:
   -h, --help         Print help information and exit
   -j, --json         Print raw JSON response from OpenAI
-  -l, --limit=LIMIT  Show LIMIT number of fine-tuning jobs
+  -l, --limit=LIMIT  Show LIMIT number of fine-tuning jobs. LIMIT will
+                     be clamped to list between 1 and 100 jobs
 )";
 
     fmt::print("{}\n", messages);
@@ -190,6 +191,9 @@ void delete_fine_tuned_model(int argc, char **argv)
 
 // Print fine tuning jobs -----------------------------------------------------------------------------------
 
+const int MIN_JOBS_TO_LIST = 1;
+const int MAX_JOBS_TO_LIST = 100;
+
 void print_fine_tuning_jobs(const serialization::FineTuningJobs &jobs)
 {
     utils::separator();
@@ -245,11 +249,8 @@ void list_fine_tuning_jobs(int argc, char **argv)
         }
     }
 
-    const int limit_i = utils::string_to_int(limit.value_or("20"));
-
-    if (limit_i < 1) {
-        throw std::runtime_error("Limit must be greater than or equal to 1");
-    }
+    const int limit_i = std::clamp(
+        utils::string_to_int(limit.value_or("20")), MIN_JOBS_TO_LIST, MAX_JOBS_TO_LIST);
 
     serialization::FineTuningJobs jobs = serialization::get_fine_tuning_jobs(limit_i);
 

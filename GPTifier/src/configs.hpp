@@ -6,10 +6,10 @@
 struct Configs {
     void load_configs_from_config_file();
 
-    std::optional<std::string> model_edit = std::nullopt;
-    std::optional<std::string> model_embed = std::nullopt;
-    std::optional<std::string> model_run = std::nullopt;
-    std::optional<std::string> model_short = std::nullopt;
+    std::optional<std::string> model_edit;
+    std::optional<std::string> model_embed;
+    std::optional<std::string> model_run;
+    std::optional<std::string> model_short;
 };
 
 extern Configs configs;
