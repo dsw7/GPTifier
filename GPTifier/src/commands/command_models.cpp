@@ -11,6 +11,8 @@
 
 namespace {
 
+typedef std::vector<serialization::Model> models_t;
+
 void help_models()
 {
     const std::string messages = R"(List available OpenAI or user models.
@@ -69,9 +71,9 @@ Parameters read_cli(int argc, char **argv)
     return params;
 }
 
-auto get_openai_models(const std::vector<serialization::Model> &all_models)
+models_t get_openai_models(const models_t &all_models)
 {
-    std::vector<serialization::Model> openai_models;
+    models_t openai_models;
 
     for (const auto &model: all_models) {
         if (model.owned_by_openai) {
@@ -82,9 +84,9 @@ auto get_openai_models(const std::vector<serialization::Model> &all_models)
     return openai_models;
 }
 
-auto get_user_models(const std::vector<serialization::Model> &all_models)
+models_t get_user_models(const models_t &all_models)
 {
-    std::vector<serialization::Model> user_models;
+    models_t user_models;
 
     for (const auto &model: all_models) {
         if (not model.owned_by_openai) {
@@ -95,7 +97,7 @@ auto get_user_models(const std::vector<serialization::Model> &all_models)
     return user_models;
 }
 
-void print_models(const std::vector<serialization::Model> &models)
+void print_models(const models_t &models)
 {
     fmt::print("> Number of models: {}\n", models.size());
     utils::separator();
@@ -127,7 +129,7 @@ void command_models(int argc, char **argv)
         return;
     }
 
-    std::vector<serialization::Model> filtered_models;
+    models_t filtered_models;
 
     if (params.print_user_models) {
         filtered_models = get_user_models(all_models.models);
