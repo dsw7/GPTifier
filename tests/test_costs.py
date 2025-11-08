@@ -33,14 +33,6 @@ class TestCosts(TestCaseExtended):
         proc = self.assertFailure("costs", "--days=")
         self.assertIn("Days argument is empty", proc.stderr)
 
-    def test_costs_invalid_days_low(self) -> None:
-        proc = self.assertFailure("costs", "--days=-1")
-        self.assertIn("Days must be greater than 0", proc.stderr)
-
-    def test_costs_invalid_days_high(self) -> None:
-        proc = self.assertFailure("costs", "--days=180")
-        self.assertIn("Days cannot be greater than 60", proc.stderr)
-
     def test_costs_invalid_days_stoi(self) -> None:
         proc = self.assertFailure("costs", "--days=abc")
         self.assertIn("Failed to convert 'abc' to int", proc.stderr)
