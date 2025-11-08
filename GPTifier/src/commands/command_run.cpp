@@ -42,7 +42,8 @@ Options:
   -o, --file=FILE                Export results to a JSON file named FILE
   -p, --prompt=PROMPT            Provide prompt via command line
   -r, --read-from-file=FILENAME  Read prompt from a custom file named FILENAME
-  -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2
+  -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2. Note that
+                                 temperature will be clamped between 0 and 2
 
 Examples:
   > Run an interaction session:
