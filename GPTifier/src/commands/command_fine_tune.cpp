@@ -94,7 +94,8 @@ Usage:
 Options:
   -h, --help         Print help information and exit
   -j, --json         Print raw JSON response from OpenAI
-  -l, --limit=LIMIT  Show LIMIT number of fine-tuning jobs
+  -l, --limit=LIMIT  Show LIMIT number of fine-tuning jobs. LIMIT will
+                     be clamped to list between 1 and 100 jobs
 )";
 
     fmt::print("{}\n", messages);
