@@ -26,7 +26,8 @@ Usage:
 Options:
   -h, --help                     Print help information and exit
   -j, --json                     Print raw JSON response from OpenAI
-  -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2
+  -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2. Note that
+                                 temperature will be clamped between 0 and 2
 
 Examples:
   > Create a chat completion:
