@@ -11,6 +11,9 @@
 
 namespace {
 
+  const int MIN_DAYS = 1;
+  const int MAX_DAYS = 60;
+
 void help_costs()
 {
     const std::string messages = R"(Get OpenAI usage details. This is an administrative command and this command
@@ -113,17 +116,11 @@ namespace commands {
 void command_costs(int argc, char **argv)
 {
     const Parameters params = read_cli(argc, argv);
+
     const int days = utils::string_to_int(params.days);
+    const int days_clamped = std::clamp(days, MIN_DAYS, MAX_DAYS);
 
-    if (days < 1) {
-        throw std::runtime_error("Days must be greater than 0");
-    }
-
-    if (days > 60) {
-        throw std::runtime_error("Days cannot be greater than 60");
-    }
-
-    const std::time_t start_time = get_current_time_minus_days(days);
+    const std::time_t start_time = get_current_time_minus_days(days_clamped);
 
     if (not params.print_raw_json) {
         fmt::print("Awaiting response from API...\n");
@@ -139,7 +136,7 @@ void command_costs(int argc, char **argv)
     fmt::print("Complete!\n");
 
     std::sort(costs.buckets.begin(), costs.buckets.end());
-    print_costs(costs, days);
+    print_costs(costs, days_clamped);
 }
 
 } // namespace commands
