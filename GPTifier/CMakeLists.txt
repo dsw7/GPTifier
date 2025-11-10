@@ -37,7 +37,6 @@ include_directories(
 set(SRC_FILES
   src/commands/command_chats.cpp
   src/commands/command_costs.cpp
-  src/commands/command_edit.cpp
   src/commands/command_embed.cpp
   src/commands/command_files.cpp
   src/commands/command_fine_tune.cpp

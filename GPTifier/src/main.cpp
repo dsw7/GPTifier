@@ -1,6 +1,5 @@
 #include "command_chats.hpp"
 #include "command_costs.hpp"
-#include "command_edit.hpp"
 #include "command_embed.hpp"
 #include "command_files.hpp"
 #include "command_fine_tune.hpp"
@@ -108,8 +107,6 @@ int main(int argc, char **argv)
             commands::command_costs(argc, argv);
         } else if (command == "chats") {
             commands::command_chats();
-        } else if (command == "edit") {
-            commands::command_edit();
         } else if (command == "test") {
             commands::command_test(argc, argv);
         } else if (command == "img") {
