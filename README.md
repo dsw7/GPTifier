@@ -18,7 +18,6 @@ resulting in a faster and more efficient user experience. This program is tested
   - [The `files` command](#the-files-command)
   - [The `fine-tune` command](#the-fine-tune-command)
   - [The `chats` command](#the-chats-command)
-  - [The `edit` command](#the-edit-command)
   - [The `img` command](#the-img-command)
 - [Administration](#administration)
   - [The `costs` command](#the-costs-command)
@@ -273,11 +272,6 @@ The `fine-tune` command is used for managing fine-tuning operations.
 ### The `chats` command
 > [!NOTE]
 > This command has been deprecated.
-
-### The `edit` command
-> [!NOTE]
-> This command has been deprecated in favor of a standalone solution.
-> See [FuncGraft](https://github.com/dsw7/FuncGraft) for more information.
 
 ### The `img` command
 The `img` command allows users to generate PNG images according to instructions provided in a text file. At
