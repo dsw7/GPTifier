@@ -36,7 +36,6 @@ Commands:
   files          Manage files uploaded to OpenAI
   fine-tune      Manage fine tuning operations
   costs          Get OpenAI usage details
-  chats          Manage chat completions uploaded to OpenAI [DEPRECATED]
   img            Generate an image from a prompt
 
 Try 'gpt <subcommand> [-h | --help]' for subcommand specific help.
