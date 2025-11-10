@@ -9,7 +9,7 @@ class TestVersion(TestCaseExtended):
         proc = self.assertSuccess("-v")
         stdout = proc.load_stdout_to_json()
         self.assertIn("version", stdout)
-        self.assertEqual(stdout["version"], "1.5.0")
+        self.assertEqual(stdout["version"], "1.6.0")
 
     def test_version_version(self) -> None:
         for option in ["-v", "--version"]:
