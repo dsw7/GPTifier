@@ -4,9 +4,11 @@
 [![GitHub Releases](https://img.shields.io/github/release/dsw7/GPTifier.svg)](https://github.com/dsw7/GPTifier/releases)
 
 ## Overview
-**GPTifier** is a command-line tool designed to interact seamlessly with OpenAI's API. I designed this program
-to "look and feel" similar to `git`. I wrote this program in C++ to enhance performance and responsiveness,
-resulting in a faster and more efficient user experience. This program is tested on Ubuntu/Debian and macOS.
+**GPTifier** is a command line tool designed to interact with OpenAI's API. The
+program supports a few operations out of the box, such as prompting,
+fine-tuning, generating images, etc. This program is written purely in C++
+because python just feels clunky and slow. This program is tested on
+Ubuntu/Debian and macOS.
 
 ## Table of Contents
 - [Installation](#installation)
