@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(GPTifier VERSION 1.6.0)
+project(GPTifier VERSION 1.7.0)
 
 # Keep all options up top
 option(ENABLE_COVERAGE "Enable coverage reporting" OFF)
