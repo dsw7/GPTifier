@@ -122,11 +122,6 @@ def costs():
     pass
 
 
-@main.command(help="Edit one or more files according to a prompt [DEPRECATED]")
-def edit():
-    pass
-
-
 @main.command(help="Generate an image from a prompt")
 @click.option(
     "-q",
