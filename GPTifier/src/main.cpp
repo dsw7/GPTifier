@@ -38,11 +38,9 @@ Commands:
   fine-tune      Manage fine tuning operations
   costs          Get OpenAI usage details
   chats          Manage chat completions uploaded to OpenAI [DEPRECATED]
-  edit           Edit one or more files according to a prompt [DEPRECATED]
   img            Generate an image from a prompt
 
 Try 'gpt <subcommand> [-h | --help]' for subcommand specific help.
-The 'edit' subcommand has been moved. See https://github.com/dsw7/FuncGraft for more information.
 )";
 
     fmt::print("-- GPTifier | v{}\n{}", PROJECT_VERSION, messages);
