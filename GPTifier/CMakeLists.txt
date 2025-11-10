@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(GPTifier VERSION 1.6.0)
+project(GPTifier VERSION 1.7.0)
 
 # Keep all options up top
 option(ENABLE_COVERAGE "Enable coverage reporting" OFF)
@@ -35,9 +35,7 @@ include_directories(
 )
 
 set(SRC_FILES
-  src/commands/command_chats.cpp
   src/commands/command_costs.cpp
-  src/commands/command_edit.cpp
   src/commands/command_embed.cpp
   src/commands/command_files.cpp
   src/commands/command_fine_tune.cpp

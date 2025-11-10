@@ -4,9 +4,11 @@
 [![GitHub Releases](https://img.shields.io/github/release/dsw7/GPTifier.svg)](https://github.com/dsw7/GPTifier/releases)
 
 ## Overview
-**GPTifier** is a command-line tool designed to interact seamlessly with OpenAI's API. I designed this program
-to "look and feel" similar to `git`. I wrote this program in C++ to enhance performance and responsiveness,
-resulting in a faster and more efficient user experience. This program is tested on Ubuntu/Debian and macOS.
+**GPTifier** is a command line tool designed to interact with OpenAI's API. The
+program supports a few operations out of the box, such as prompting,
+fine-tuning, generating images, etc. This program is written purely in C++
+because python just feels clunky and slow. This program is tested on
+Ubuntu/Debian and macOS.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -17,8 +19,6 @@ resulting in a faster and more efficient user experience. This program is tested
   - [The `models` command](#the-models-command)
   - [The `files` command](#the-files-command)
   - [The `fine-tune` command](#the-fine-tune-command)
-  - [The `chats` command](#the-chats-command)
-  - [The `edit` command](#the-edit-command)
   - [The `img` command](#the-img-command)
 - [Administration](#administration)
   - [The `costs` command](#the-costs-command)
@@ -269,15 +269,6 @@ The `fine-tune` command is used for managing fine-tuning operations.
     ```console
     gpt models -u
     ```
-
-### The `chats` command
-> [!NOTE]
-> This command has been deprecated.
-
-### The `edit` command
-> [!NOTE]
-> This command has been deprecated in favor of a standalone solution.
-> See [FuncGraft](https://github.com/dsw7/FuncGraft) for more information.
 
 ### The `img` command
 The `img` command allows users to generate PNG images according to instructions provided in a text file. At

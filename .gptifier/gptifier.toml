@@ -11,10 +11,6 @@ model = "gpt-4o"
 # Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
 model = "gpt-4o"
 
-[command.edit]
-# Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
-model = "gpt-4o"
-
 [command.embed]
 # Specify a default embeddings model to use such as "text-embedding-ada-002"
 model = "text-embedding-ada-002"
