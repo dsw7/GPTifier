@@ -10,6 +10,11 @@ class TestRootHelp(TestCaseExtended):
     def test_root_help_short(self) -> None:
         self.assertSuccess("-h")
 
+    def test_root_help_empty_argv(self) -> None:
+        # i.e. running just $ gpt
+        proc = self.assertFailure()
+        self.assertIn("A command line OpenAI toolkit.", proc.stdout.strip())
+
 
 class TestUnknownCommand(TestCaseExtended):
 
