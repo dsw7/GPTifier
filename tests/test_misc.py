@@ -1,5 +1,27 @@
+from datetime import datetime
 from unittest import skipIf
 from .extended_testcase import TestCaseExtended, is_memory_test
+
+
+class TestRootHelp(TestCaseExtended):
+
+    def test_root_help_long(self) -> None:
+        self.assertSuccess("--help")
+
+    def test_root_help_short(self) -> None:
+        self.assertSuccess("-h")
+
+    def test_root_help_empty_argv(self) -> None:
+        # i.e. running just $ gpt
+        proc = self.assertFailure()
+        self.assertIn("A command line OpenAI toolkit.", proc.stdout.strip())
+
+    def test_copyright(self) -> None:
+        proc = self.assertSuccess("--help")
+        self.assertIn(
+            f"-- Copyright (C) 2023-{datetime.now().year} by David Weber",
+            proc.stdout.strip(),
+        )
 
 
 class TestUnknownCommand(TestCaseExtended):

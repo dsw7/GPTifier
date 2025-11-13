@@ -16,8 +16,10 @@
 
 void print_help_messages()
 {
-    const std::string messages = R"(-- Copyright (C) 2023-2025 by David Weber
--- Site: https://github.com/dsw7/GPTifier
+    fmt::print("-- GPTifier | v{}\n", PROJECT_VERSION);
+    fmt::print("-- Copyright (C) 2023-{} by David Weber\n", CURRENT_YEAR);
+
+    const std::string messages = R"(-- Site: https://github.com/dsw7/GPTifier
 
 A command line OpenAI toolkit.
 
@@ -41,7 +43,7 @@ Commands:
 Try 'gpt <subcommand> [-h | --help]' for subcommand specific help.
 )";
 
-    fmt::print("-- GPTifier | v{}\n{}", PROJECT_VERSION, messages);
+    fmt::print("{}\n", messages);
 }
 
 void print_build_information()
