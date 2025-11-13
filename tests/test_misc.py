@@ -2,6 +2,15 @@ from unittest import skipIf
 from .extended_testcase import TestCaseExtended, is_memory_test
 
 
+class TestRootHelp(TestCaseExtended):
+
+    def test_root_help_long(self) -> None:
+        self.assertSuccess("--help")
+
+    def test_root_help_short(self) -> None:
+        self.assertSuccess("-h")
+
+
 class TestUnknownCommand(TestCaseExtended):
 
     def test_unknown_command(self) -> None:
