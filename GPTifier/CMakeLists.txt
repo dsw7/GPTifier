@@ -13,14 +13,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INSTALL_PREFIX "$ENV{HOME}/.local/bin")
 
 string(TIMESTAMP BUILD_DATE)
-string(TIMESTAMP CURRENT_YEAR "%Y")
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
-add_compile_definitions(
-  BUILD_DATE="${BUILD_DATE}"
-  CURRENT_YEAR="${CURRENT_YEAR}"
-  PROJECT_VERSION="${PROJECT_VERSION}"
-)
+add_compile_definitions(BUILD_DATE="${BUILD_DATE}" PROJECT_VERSION="${PROJECT_VERSION}")
 
 if(ENABLE_COVERAGE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
