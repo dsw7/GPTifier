@@ -17,7 +17,14 @@ void unpack_costs(const nlohmann::json &json, Costs &costs)
         }
 
         const nlohmann::json cost_obj = entry["results"][0];
-        const float cost = cost_obj["amount"]["value"];
+        float cost = 0.00f;
+
+        if (cost_obj["amount"]["value"].is_number_float()) {
+            cost = cost_obj["amount"]["value"];
+        } else {
+            cost = std::stof(cost_obj["amount"]["value"].get<std::string>());
+        }
+
         costs.total_cost += cost;
 
         CostsBucket bucket;
