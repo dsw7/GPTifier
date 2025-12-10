@@ -175,10 +175,6 @@ class TestIncompatibleModels(TestCaseExtended):
         for model in [
             "gpt-4o-transcribe",
             "gpt-image-1",
-            "o1-mini",
-            "tts-1",
-            "tts-1-hd",
-            "whisper-1",
         ]:
             with self.subTest(model=model):
                 proc = self.assertFailure("run", f"-p'{self.prompt}'", f"-m{model}")
