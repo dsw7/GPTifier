@@ -15,8 +15,13 @@ bool is_owned_by_openai(const std::string &owned_by)
     return owned_by.compare(0, 6, "openai") == 0 or owned_by.compare(0, 6, "system") == 0;
 }
 
-void unpack_models(const nlohmann::json &json, Models &models)
+Models unpack_models(const std::string &response)
 {
+    const nlohmann::json json = parse_json(response);
+
+    Models models;
+    models.raw_response = response;
+
     for (const auto &entry: json["data"]) {
         Model model;
         model.created_at = entry["created"];
@@ -25,16 +30,21 @@ void unpack_models(const nlohmann::json &json, Models &models)
         model.owner = entry["owned_by"];
         models.models.push_back(model);
     }
+
+    return models;
 }
 
 } // namespace
 
-Models get_models()
+ModelResult get_models()
 {
-    const std::string response = networking::get_models();
-    Models models = unpack_response<Models>(response, unpack_models);
-    models.raw_response = response;
-    return models;
+    const auto result = networking::get_models();
+
+    if (result.has_value()) {
+        return unpack_models(result.value().response);
+    }
+
+    return std::unexpected(unpack_error(result.error().response, result.error().code));
 }
 
 bool delete_model(const std::string &model_id)

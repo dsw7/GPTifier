@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ser_utils.hpp"
+
+#include <expected>
 #include <string>
 #include <vector>
 
@@ -22,7 +25,9 @@ struct Models {
     std::vector<Model> models;
 };
 
-Models get_models();
+using ModelResult = std::expected<Models, Err>;
+
+ModelResult get_models();
 bool delete_model(const std::string &model_id);
 
 } // namespace serialization
