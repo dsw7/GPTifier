@@ -1,7 +1,10 @@
 #pragma once
 
+#include "ser_utils.hpp"
+
 #include <chrono>
 #include <ctime>
+#include <expected>
 #include <json.hpp>
 #include <string>
 
@@ -19,7 +22,8 @@ struct Response {
     std::time_t created = 0;
 };
 
-Response create_response(const std::string &input, const std::string &model, float temp);
+using ResponseResult = std::expected<Response, Err>;
+ResponseResult create_response(const std::string &input, const std::string &model, float temp);
 std::string test_curl_handle_is_reusable();
 
 } // namespace serialization

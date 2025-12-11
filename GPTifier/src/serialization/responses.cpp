@@ -1,7 +1,6 @@
 #include "responses.hpp"
 
 #include "api_openai_user.hpp"
-#include "response_to_json.hpp"
 
 #include <stdexcept>
 
@@ -9,8 +8,10 @@ namespace serialization {
 
 namespace {
 
-void unpack_response_(const nlohmann::json &json, Response &rp)
+Response unpack_response(const std::string &response)
 {
+    const nlohmann::json json = parse_json(response);
+
     if (json.contains("object")) {
         if (json["object"] != "response") {
             throw std::runtime_error("The response from OpenAI is not an OpenAI Response");
@@ -38,6 +39,8 @@ void unpack_response_(const nlohmann::json &json, Response &rp)
         throw std::runtime_error("OpenAI did not complete the transaction");
     }
 
+    Response rp;
+
     if (content["type"] == "output_text") {
         rp.output = content["text"];
     } else if (content["type"] == "refusal") {
@@ -50,11 +53,12 @@ void unpack_response_(const nlohmann::json &json, Response &rp)
     rp.input_tokens = json["usage"]["input_tokens"];
     rp.model = json["model"];
     rp.output_tokens = json["usage"]["output_tokens"];
+    return rp;
 }
 
 } // namespace
 
-Response create_response(const std::string &input, const std::string &model, float temp)
+ResponseResult create_response(const std::string &input, const std::string &model, float temp)
 {
     const nlohmann::json data = {
         { "input", input },
@@ -64,13 +68,17 @@ Response create_response(const std::string &input, const std::string &model, flo
     };
 
     const auto start = std::chrono::high_resolution_clock::now();
-    const std::string response = networking::create_response(data.dump());
+    const auto result = networking::create_response(data.dump());
     const auto end = std::chrono::high_resolution_clock::now();
     const std::chrono::duration<float> rtt = end - start;
 
-    Response rp = unpack_response<Response>(response, unpack_response_);
+    if (not result.has_value()) {
+        return std::unexpected(unpack_error(result.error().response, result.error().code));
+    }
+
+    Response rp = unpack_response(result.value().response);
     rp.input = input;
-    rp.raw_response = response;
+    rp.raw_response = result.value().response;
     rp.rtt = rtt;
     return rp;
 }
@@ -86,13 +94,25 @@ std::string test_curl_handle_is_reusable()
     };
 
     const std::string dump = data.dump();
-    const std::string response_1 = networking::create_response(dump);
-    const std::string response_2 = networking::create_response(dump);
-    const std::string response_3 = networking::create_response(dump);
 
-    const Response rp_1 = unpack_response<Response>(response_1, unpack_response_);
-    const Response rp_2 = unpack_response<Response>(response_2, unpack_response_);
-    const Response rp_3 = unpack_response<Response>(response_3, unpack_response_);
+    const auto result_1 = networking::create_response(dump);
+    if (not result_1.has_value()) {
+        throw std::runtime_error(result_1.error().response);
+    }
+
+    const auto result_2 = networking::create_response(dump);
+    if (not result_2.has_value()) {
+        throw std::runtime_error(result_2.error().response);
+    }
+
+    const auto result_3 = networking::create_response(dump);
+    if (not result_3.has_value()) {
+        throw std::runtime_error(result_3.error().response);
+    }
+
+    const Response rp_1 = unpack_response(result_1.value().response);
+    const Response rp_2 = unpack_response(result_2.value().response);
+    const Response rp_3 = unpack_response(result_3.value().response);
 
     const nlohmann::json results = {
         { "result_1", rp_1.output },
