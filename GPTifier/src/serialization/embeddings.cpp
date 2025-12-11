@@ -2,8 +2,8 @@
 
 #include "api_openai_user.hpp"
 
-#include <json.hpp>
 #include <fmt/core.h>
+#include <json.hpp>
 
 namespace serialization {
 
