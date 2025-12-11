@@ -241,11 +241,13 @@ serialization::Response run_query(const std::string &model, const std::string &p
     timer.join();
 
     if (query_failed) {
+        // handle any internal exceptions
         throw std::runtime_error("Cannot proceed");
     }
 
     if (not result.has_value()) {
-        throw std::runtime_error(result.error().errmsg);
+        // handle exceptions coming from API (i.e. non 200 responses)
+        throw std::runtime_error(fmt::format("{}\nCannot proceed", result.error().errmsg));
     }
 
     return result.value();
