@@ -26,8 +26,9 @@ struct Models {
 };
 
 using ModelResult = std::expected<Models, Err>;
+using ModelDeleteResult = std::expected<bool, Err>;
 
 ModelResult get_models();
-bool delete_model(const std::string &model_id);
+ModelDeleteResult delete_model(const std::string &model_id);
 
 } // namespace serialization

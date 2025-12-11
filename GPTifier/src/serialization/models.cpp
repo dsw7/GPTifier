@@ -51,10 +51,15 @@ ModelResult get_models()
     return std::unexpected(unpack_error(result.error().response, result.error().code));
 }
 
-bool delete_model(const std::string &model_id)
+ModelDeleteResult delete_model(const std::string &model_id)
 {
-    const std::string response = networking::delete_model(model_id);
-    const nlohmann::json json = response_to_json(response);
+    const auto result = networking::delete_model(model_id);
+
+    if (not result.has_value()) {
+        return std::unexpected(unpack_error(result.error().response, result.error().code));
+    }
+
+    const nlohmann::json json = parse_json(result.value().response);
 
     if (not json.contains("deleted")) {
         throw std::runtime_error("Malformed response. Missing 'deleted' key");
