@@ -133,14 +133,20 @@ void command_short(int argc, char **argv)
 
     const float temperature = get_temperature(params.temperature);
     const std::string model = get_model();
-    const serialization::Response rp = serialization::create_response(params.prompt.value(), model, temperature);
+
+    const auto result = serialization::create_response(params.prompt.value(), model, temperature);
+    if (not result.has_value()) {
+        throw std::runtime_error(result.error().errmsg);
+    }
+
+    serialization::Response response = result.value();
 
     if (params.print_raw_json) {
-        fmt::print("{}\n", rp.raw_response);
+        fmt::print("{}\n", response.raw_response);
         return;
     }
 
-    fmt::print("{}\n", rp.output);
+    fmt::print("{}\n", response.output);
 }
 
 } // namespace commands

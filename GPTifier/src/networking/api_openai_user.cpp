@@ -91,7 +91,7 @@ CurlResult delete_model(const std::string &model_id)
     return Ok { http_status_code, response };
 }
 
-std::string create_response(const std::string &post_fields)
+CurlResult create_response(const std::string &post_fields)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -108,10 +108,17 @@ std::string create_response(const std::string &post_fields)
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
     const CURLcode code = curl_easy_perform(handle);
+    long http_status_code = -1;
+    curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &http_status_code);
+
     if (code != CURLE_OK) {
         throw std::runtime_error(curl_easy_strerror(code));
     }
-    return response;
+
+    if (http_status_code != 200) {
+        return std::unexpected(Err { http_status_code, response });
+    }
+    return Ok { http_status_code, response };
 }
 
 CurlResult create_embedding(const std::string &post_fields)
