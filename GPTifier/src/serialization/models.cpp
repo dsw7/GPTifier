@@ -22,13 +22,17 @@ Models unpack_models(const std::string &response)
     Models models;
     models.raw_response = response;
 
-    for (const auto &entry: json["data"]) {
-        Model model;
-        model.created_at = entry["created"];
-        model.id = entry["id"];
-        model.owned_by_openai = is_owned_by_openai(entry["owned_by"]);
-        model.owner = entry["owned_by"];
-        models.models.push_back(model);
+    try {
+        for (const auto &entry: json["data"]) {
+            Model model;
+            model.created_at = entry["created"];
+            model.id = entry["id"];
+            model.owned_by_openai = is_owned_by_openai(entry["owned_by"]);
+            model.owner = entry["owned_by"];
+            models.models.push_back(model);
+        }
+    } catch (const nlohmann::json::exception &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack models response: {}", e.what()));
     }
 
     return models;
