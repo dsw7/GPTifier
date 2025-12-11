@@ -3,6 +3,7 @@
 #include "api_openai_user.hpp"
 
 #include <json.hpp>
+#include <fmt/core.h>
 
 namespace serialization {
 
@@ -15,20 +16,11 @@ Embedding unpack_embedding(const std::string &response, const std::string &input
     Embedding embedding;
     embedding.input = input;
 
-    if (json.contains("data") && json["data"].is_array() && not json["data"].empty()) {
-        if (json["data"][0].contains("embedding")) {
-            embedding.embedding = json["data"][0]["embedding"].template get<std::vector<float>>();
-        } else {
-            throw std::runtime_error("JSON data does not contain the expected 'embedding'");
-        }
-    } else {
-        throw std::runtime_error("JSON does not contain the expected 'data'");
-    }
-
-    if (json.contains("model")) {
+    try {
+        embedding.embedding = json["data"][0]["embedding"].template get<std::vector<float>>();
         embedding.model = json["model"];
-    } else {
-        throw std::runtime_error("JSON does not contain the 'model'");
+    } catch (const nlohmann::json::exception &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack embeddings response: {}", e.what()));
     }
 
     return embedding;
