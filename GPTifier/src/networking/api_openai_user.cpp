@@ -62,7 +62,7 @@ CurlResult get_models()
     return Ok { http_status_code, response };
 }
 
-std::string delete_model(const std::string &model_id)
+CurlResult delete_model(const std::string &model_id)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
