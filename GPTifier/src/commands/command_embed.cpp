@@ -150,8 +150,12 @@ void command_embed(int argc, char **argv)
         throw std::runtime_error("Model is empty");
     }
 
-    const serialization::Embedding em = serialization::create_embedding(model, text_to_embed);
-    export_embedding(em, params.output_file);
+    const auto result = serialization::create_embedding(model, text_to_embed);
+    if (not result.has_value()) {
+        throw std::runtime_error(result.error().errmsg);
+    }
+
+    export_embedding(result.value(), params.output_file);
 }
 
 } // namespace commands
