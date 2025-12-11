@@ -6,7 +6,7 @@
 
 namespace networking {
 CurlResult get_models();
-std::string delete_model(const std::string &model_id);
+CurlResult delete_model(const std::string &model_id);
 std::string create_response(const std::string &post_fields);
 CurlResult create_embedding(const std::string &post_fields);
 std::string upload_file(const std::string &filename, const std::string &purpose);
