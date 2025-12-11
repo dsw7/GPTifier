@@ -1,8 +1,7 @@
 #include "api_openai_user.hpp"
 
-#include "curl_base.hpp"
-
 #include <cstdlib>
+#include <expected>
 #include <fmt/core.h>
 #include <stdexcept>
 
@@ -35,7 +34,7 @@ std::string get_user_api_key()
 
 namespace networking {
 
-std::string get_models()
+CurlResult get_models()
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -50,10 +49,17 @@ std::string get_models()
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
     const CURLcode code = curl_easy_perform(handle);
+    long http_status_code = -1;
+    curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &http_status_code);
+
     if (code != CURLE_OK) {
         throw std::runtime_error(curl_easy_strerror(code));
     }
-    return response;
+
+    if (http_status_code != 200) {
+        return std::unexpected(Err { http_status_code, response });
+    }
+    return Ok { http_status_code, response };
 }
 
 std::string delete_model(const std::string &model_id)

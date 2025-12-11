@@ -1,6 +1,7 @@
 #pragma once
 
 #include <curl/curl.h>
+#include <expected>
 #include <string>
 
 namespace networking {
@@ -24,5 +25,17 @@ private:
     CURL *curl_ = nullptr;
     curl_slist *headers_ = nullptr;
 };
+
+struct Ok {
+    long code = -1;
+    std::string response;
+};
+
+struct Err {
+    long code = -1;
+    std::string response;
+};
+
+using CurlResult = std::expected<Ok, Err>;
 
 } // namespace networking
