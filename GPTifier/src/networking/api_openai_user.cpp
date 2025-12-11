@@ -39,7 +39,7 @@ CurlResult get_models()
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer 2" + get_user_api_key());
+    curl.append_header("Authorization: Bearer " + get_user_api_key());
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     curl_easy_setopt(handle, CURLOPT_URL, URL_MODELS.c_str());
