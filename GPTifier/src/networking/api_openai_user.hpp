@@ -1,9 +1,11 @@
 #pragma once
 
+#include "curl_base.hpp"
+
 #include <string>
 
 namespace networking {
-std::string get_models();
+CurlResult get_models();
 std::string delete_model(const std::string &model_id);
 std::string create_response(const std::string &post_fields);
 std::string create_embedding(const std::string &post_fields);
