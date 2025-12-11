@@ -15,10 +15,14 @@ Embedding unpack_embedding(const std::string &response, const std::string &input
     Embedding embedding;
     embedding.input = input;
 
-    if (json.contains("data") && json["data"].is_array() && !json["data"].empty() && json["data"][0].contains("embedding")) {
-        embedding.embedding = json["data"][0]["embedding"].template get<std::vector<float>>();
+    if (json.contains("data") && json["data"].is_array() && not json["data"].empty()) {
+        if (json["data"][0].contains("embedding")) {
+            embedding.embedding = json["data"][0]["embedding"].template get<std::vector<float>>();
+        } else {
+            throw std::runtime_error("JSON data does not contain the expected 'embedding'");
+        }
     } else {
-        throw std::runtime_error("JSON does not contain the expected 'data' or 'embedding'");
+        throw std::runtime_error("JSON does not contain the expected 'data'");
     }
 
     if (json.contains("model")) {
