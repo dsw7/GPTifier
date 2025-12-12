@@ -49,17 +49,7 @@ CurlResult get_models()
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
     const CURLcode code = curl_easy_perform(handle);
-    long http_status_code = -1;
-    curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &http_status_code);
-
-    if (code != CURLE_OK) {
-        throw std::runtime_error(curl_easy_strerror(code));
-    }
-
-    if (http_status_code != 200) {
-        return std::unexpected(Err { http_status_code, response });
-    }
-    return Ok { http_status_code, response };
+    return check_curl_code(handle, code, response);
 }
 
 CurlResult delete_model(const std::string &model_id)

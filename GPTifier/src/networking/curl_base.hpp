@@ -2,6 +2,7 @@
 
 #include <curl/curl.h>
 #include <expected>
+#include <stdexcept>
 #include <string>
 
 namespace networking {
@@ -37,5 +38,22 @@ struct Err {
 };
 
 using CurlResult = std::expected<Ok, Err>;
+
+inline CurlResult check_curl_code(CURL *handle, const CURLcode code, const std::string &response)
+{
+    if (code != CURLE_OK) {
+        // rare but catch truly exceptional cases
+        throw std::runtime_error(curl_easy_strerror(code));
+    }
+
+    long http_status_code = -1;
+    curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &http_status_code);
+
+    if (http_status_code != 200) {
+        return std::unexpected(Err { http_status_code, response });
+    }
+
+    return Ok { http_status_code, response };
+}
 
 } // namespace networking

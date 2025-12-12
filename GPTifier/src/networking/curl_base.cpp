@@ -1,7 +1,5 @@
 #include "curl_base.hpp"
 
-#include <stdexcept>
-
 namespace {
 
 size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
