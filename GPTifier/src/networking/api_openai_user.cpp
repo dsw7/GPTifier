@@ -239,7 +239,7 @@ std::string get_fine_tuning_jobs(const int limit)
     return response;
 }
 
-std::string create_image(const std::string &post_fields)
+CurlResult create_image(const std::string &post_fields)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -257,10 +257,7 @@ std::string create_image(const std::string &post_fields)
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
     const CURLcode code = curl_easy_perform(handle);
-    if (code != CURLE_OK) {
-        throw std::runtime_error(curl_easy_strerror(code));
-    }
-    return response;
+    return check_curl_code(handle, code, response);
 }
 
 } // namespace networking
