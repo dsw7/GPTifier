@@ -46,7 +46,7 @@ Models get_models()
     const auto result = networking::get_models();
 
     if (not result) {
-        throw_on_error(result.error().response);
+        throw_on_error_response(result.error().response);
     }
 
     return unpack_models(result->response);
@@ -57,7 +57,7 @@ bool delete_model(const std::string &model_id)
     const auto result = networking::delete_model(model_id);
 
     if (not result) {
-        throw_on_error(result.error().response);
+        throw_on_error_response(result.error().response);
     }
 
     const nlohmann::json json = parse_json(result->response);

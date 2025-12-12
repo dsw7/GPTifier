@@ -18,7 +18,7 @@ nlohmann::json parse_json(const std::string &response)
     return json;
 }
 
-void throw_on_error(const std::string &response)
+void throw_on_error_response(const std::string &response)
 {
     const nlohmann::json json = parse_json(response);
     std::string errmsg;

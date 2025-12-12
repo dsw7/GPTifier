@@ -36,7 +36,7 @@ Embedding create_embedding(const std::string &model, const std::string &input)
     const auto result = networking::create_embedding(data.dump());
 
     if (not result) {
-        throw_on_error(result.error().response);
+        throw_on_error_response(result.error().response);
     }
 
     return unpack_embedding(result->response, input);
