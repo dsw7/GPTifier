@@ -33,8 +33,8 @@ EmbedResult create_embedding(const std::string &model, const std::string &input)
     const nlohmann::json data = { { "model", model }, { "input", input } };
     const auto result = networking::create_embedding(data.dump());
 
-    if (result.has_value()) {
-        return unpack_embedding(result.value().response, input);
+    if (result) {
+        return unpack_embedding(result->response, input);
     }
 
     return std::unexpected(unpack_error(result.error().response, result.error().code));

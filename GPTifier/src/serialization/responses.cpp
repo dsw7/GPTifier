@@ -72,13 +72,13 @@ ResponseResult create_response(const std::string &input, const std::string &mode
     const auto end = std::chrono::high_resolution_clock::now();
     const std::chrono::duration<float> rtt = end - start;
 
-    if (not result.has_value()) {
+    if (not result) {
         return std::unexpected(unpack_error(result.error().response, result.error().code));
     }
 
-    Response rp = unpack_response(result.value().response);
+    Response rp = unpack_response(result->response);
     rp.input = input;
-    rp.raw_response = result.value().response;
+    rp.raw_response = result->response;
     rp.rtt = rtt;
     return rp;
 }
@@ -96,23 +96,23 @@ std::string test_curl_handle_is_reusable()
     const std::string dump = data.dump();
 
     const auto result_1 = networking::create_response(dump);
-    if (not result_1.has_value()) {
+    if (not result_1) {
         throw std::runtime_error(result_1.error().response);
     }
 
     const auto result_2 = networking::create_response(dump);
-    if (not result_2.has_value()) {
+    if (not result_2) {
         throw std::runtime_error(result_2.error().response);
     }
 
     const auto result_3 = networking::create_response(dump);
-    if (not result_3.has_value()) {
+    if (not result_3) {
         throw std::runtime_error(result_3.error().response);
     }
 
-    const Response rp_1 = unpack_response(result_1.value().response);
-    const Response rp_2 = unpack_response(result_2.value().response);
-    const Response rp_3 = unpack_response(result_3.value().response);
+    const Response rp_1 = unpack_response(result_1->response);
+    const Response rp_2 = unpack_response(result_2->response);
+    const Response rp_3 = unpack_response(result_3->response);
 
     const nlohmann::json results = {
         { "result_1", rp_1.output },
