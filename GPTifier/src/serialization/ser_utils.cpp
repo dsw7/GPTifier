@@ -1,6 +1,7 @@
 #include "ser_utils.hpp"
 
 #include <fmt/core.h>
+#include <stdexcept>
 
 namespace serialization {
 
@@ -15,6 +16,24 @@ nlohmann::json parse_json(const std::string &response)
     }
 
     return json;
+}
+
+void throw_on_error(const std::string &response)
+{
+    const nlohmann::json json = parse_json(response);
+    std::string errmsg;
+
+    if (json.contains("error")) {
+        if (json["error"].empty()) {
+            errmsg = "An error occurred but error message is empty";
+        } else {
+            errmsg = json["error"]["message"];
+        }
+    } else {
+        errmsg = "Malformed error response. No error object could be found";
+    }
+
+    throw std::runtime_error(errmsg);
 }
 
 Err unpack_error(const std::string &response, const long status_code)
