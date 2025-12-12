@@ -1,10 +1,9 @@
 #include "api_openai_admin.hpp"
 
-#include "curl_base.hpp"
-
 #include <cstdlib>
 #include <fmt/core.h>
 #include <stdexcept>
+#include <string>
 
 namespace {
 
@@ -30,7 +29,7 @@ std::string get_admin_api_key()
 
 namespace networking {
 
-std::string get_costs(const std::time_t &start_time, int limit)
+CurlResult get_costs(const std::time_t &start_time, int limit)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -48,11 +47,7 @@ std::string get_costs(const std::time_t &start_time, int limit)
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
     const CURLcode code = curl_easy_perform(handle);
-    if (code != CURLE_OK) {
-        throw std::runtime_error(curl_easy_strerror(code));
-    }
-
-    return response;
+    return check_curl_code(handle, code, response);
 }
 
 } // namespace networking
