@@ -22,7 +22,7 @@ Embedding unpack_embedding(const std::string &response, const std::string &input
         embedding.embedding = json["data"][0]["embedding"].template get<std::vector<float>>();
         embedding.model = json["model"];
     } catch (const nlohmann::json::exception &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack embeddings response: {}", e.what()));
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     }
 
     return embedding;

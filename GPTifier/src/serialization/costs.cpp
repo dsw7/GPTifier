@@ -44,7 +44,7 @@ Costs unpack_costs(const std::string &response)
             costs.buckets.push_back(bucket);
         }
     } catch (const nlohmann::json::exception &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack models response: {}", e.what()));
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     }
 
     return costs;

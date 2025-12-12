@@ -33,7 +33,7 @@ Models unpack_models(const std::string &response)
             models.models.push_back(model);
         }
     } catch (const nlohmann::json::exception &e) {
-        throw std::runtime_error(fmt::format("Failed to unpack models response: {}", e.what()));
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     }
 
     return models;
