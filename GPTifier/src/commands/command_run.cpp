@@ -224,11 +224,11 @@ serialization::Response run_query(const std::string &model, const std::string &p
     std::thread timer(time_api_call);
 
     bool query_failed = false;
-    serialization::ResponseResult result;
+    serialization::Response rp;
     std::mutex mutex_print_stderr;
 
     try {
-        result = serialization::create_response(prompt, model, temperature);
+        rp = serialization::create_response(prompt, model, temperature);
     } catch (std::runtime_error &e) {
         query_failed = true;
         {
@@ -241,16 +241,10 @@ serialization::Response run_query(const std::string &model, const std::string &p
     timer.join();
 
     if (query_failed) {
-        // handle any internal exceptions
         throw std::runtime_error("Cannot proceed");
     }
 
-    if (not result.has_value()) {
-        // handle exceptions coming from API (i.e. non 200 responses)
-        throw std::runtime_error(fmt::format("{}\nCannot proceed", result.error().errmsg));
-    }
-
-    return result.value();
+    return rp;
 }
 
 // Output ---------------------------------------------------------------------------------------------------

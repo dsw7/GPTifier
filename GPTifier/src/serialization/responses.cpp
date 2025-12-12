@@ -1,6 +1,7 @@
 #include "responses.hpp"
 
 #include "api_openai_user.hpp"
+#include "ser_utils.hpp"
 
 #include <stdexcept>
 
@@ -58,7 +59,7 @@ Response unpack_response(const std::string &response)
 
 } // namespace
 
-ResponseResult create_response(const std::string &input, const std::string &model, float temp)
+Response create_response(const std::string &input, const std::string &model, float temp)
 {
     const nlohmann::json data = {
         { "input", input },
@@ -73,7 +74,7 @@ ResponseResult create_response(const std::string &input, const std::string &mode
     const std::chrono::duration<float> rtt = end - start;
 
     if (not result) {
-        return std::unexpected(unpack_error(result.error().response, result.error().code));
+        throw_on_error(result.error().response);
     }
 
     Response rp = unpack_response(result->response);
