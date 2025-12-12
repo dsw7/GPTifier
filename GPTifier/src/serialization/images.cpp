@@ -1,22 +1,32 @@
 #include "images.hpp"
 
 #include "api_openai_user.hpp"
-#include "response_to_json.hpp"
+#include "ser_utils.hpp"
 
+#include <fmt/core.h>
 #include <json.hpp>
 
 namespace serialization {
 
 namespace {
 
-void unpack_image(const nlohmann::json &json, Image &image)
+Image unpack_image(const std::string &response)
 {
-    image.b64_json = json["data"][0]["b64_json"];
-    image.created = json["created"];
+    const nlohmann::json json = parse_json(response);
+    Image image;
 
-    if (json["data"][0].contains("revised_prompt")) {
-        image.revised_prompt = json["data"][0]["revised_prompt"];
+    try {
+        image.b64_json = json["data"][0]["b64_json"];
+        image.created = json["created"];
+
+        if (json["data"][0].contains("revised_prompt")) {
+            image.revised_prompt = json["data"][0]["revised_prompt"];
+        }
+    } catch (const nlohmann::json::exception &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     }
+
+    return image;
 }
 
 } // namespace
@@ -31,8 +41,13 @@ Image create_image(const std::string &model, const std::string &prompt, const st
         { "size", "1024x1024" },
         { "style", style },
     };
-    const std::string response = networking::create_image(data.dump());
-    return unpack_response<Image>(response, unpack_image);
+
+    const auto result = networking::create_image(data.dump());
+
+    if (not result) {
+        throw_on_error_response(result.error().response);
+    }
+    return unpack_image(result->response);
 }
 
 } // namespace serialization
