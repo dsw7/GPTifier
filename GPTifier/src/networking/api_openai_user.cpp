@@ -111,7 +111,7 @@ CurlResult create_embedding(const std::string &post_fields)
     return check_curl_code(handle, code, response);
 }
 
-std::string upload_file(const std::string &filename, const std::string &purpose)
+CurlResult upload_file(const std::string &filename, const std::string &purpose)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -140,14 +140,10 @@ std::string upload_file(const std::string &filename, const std::string &purpose)
 
     const CURLcode code = curl_easy_perform(handle);
     curl_mime_free(form);
-
-    if (code != CURLE_OK) {
-        throw std::runtime_error(curl_easy_strerror(code));
-    }
-    return response;
+    return check_curl_code(handle, code, response);
 }
 
-std::string get_uploaded_files(bool sort_asc)
+CurlResult get_uploaded_files(bool sort_asc)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -165,13 +161,10 @@ std::string get_uploaded_files(bool sort_asc)
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
     const CURLcode code = curl_easy_perform(handle);
-    if (code != CURLE_OK) {
-        throw std::runtime_error(curl_easy_strerror(code));
-    }
-    return response;
+    return check_curl_code(handle, code, response);
 }
 
-std::string delete_file(const std::string &file_id)
+CurlResult delete_file(const std::string &file_id)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -187,10 +180,7 @@ std::string delete_file(const std::string &file_id)
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
     const CURLcode code = curl_easy_perform(handle);
-    if (code != CURLE_OK) {
-        throw std::runtime_error(curl_easy_strerror(code));
-    }
-    return response;
+    return check_curl_code(handle, code, response);
 }
 
 std::string create_fine_tuning_job(const std::string &post_fields)
