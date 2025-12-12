@@ -1,8 +1,9 @@
 #include "models.hpp"
 
 #include "api_openai_user.hpp"
-#include "response_to_json.hpp"
+#include "ser_utils.hpp"
 
+#include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
 
@@ -40,26 +41,26 @@ Models unpack_models(const std::string &response)
 
 } // namespace
 
-ModelResult get_models()
+Models get_models()
 {
     const auto result = networking::get_models();
 
-    if (result.has_value()) {
-        return unpack_models(result.value().response);
+    if (not result) {
+        throw_on_error_response(result.error().response);
     }
 
-    return std::unexpected(unpack_error(result.error().response, result.error().code));
+    return unpack_models(result->response);
 }
 
-ModelDeleteResult delete_model(const std::string &model_id)
+bool delete_model(const std::string &model_id)
 {
     const auto result = networking::delete_model(model_id);
 
-    if (not result.has_value()) {
-        return std::unexpected(unpack_error(result.error().response, result.error().code));
+    if (not result) {
+        throw_on_error_response(result.error().response);
     }
 
-    const nlohmann::json json = parse_json(result.value().response);
+    const nlohmann::json json = parse_json(result->response);
 
     if (not json.contains("deleted")) {
         throw std::runtime_error("Malformed response. Missing 'deleted' key");

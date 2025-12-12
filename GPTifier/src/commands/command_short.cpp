@@ -134,12 +134,7 @@ void command_short(int argc, char **argv)
     const float temperature = get_temperature(params.temperature);
     const std::string model = get_model();
 
-    const auto result = serialization::create_response(params.prompt.value(), model, temperature);
-    if (not result.has_value()) {
-        throw std::runtime_error(result.error().errmsg);
-    }
-
-    serialization::Response response = result.value();
+    serialization::Response response = serialization::create_response(params.prompt.value(), model, temperature);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", response.raw_response);

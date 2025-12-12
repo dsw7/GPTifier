@@ -182,12 +182,9 @@ void delete_fine_tuned_model(int argc, char **argv)
         throw std::runtime_error("Model ID argument is empty");
     }
 
-    const auto result = serialization::delete_model(opt_or_model_id);
-    if (not result.has_value()) {
-        throw std::runtime_error(result.error().errmsg);
-    }
+    const bool was_deleted = serialization::delete_model(opt_or_model_id);
 
-    if (result.value()) {
+    if (was_deleted) {
         fmt::print("Success!\nDeleted model with ID: {}\n", opt_or_model_id);
     } else {
         fmt::print("Warning!\nDid not delete model with ID: {}\n", opt_or_model_id);
