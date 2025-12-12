@@ -121,12 +121,7 @@ void command_models(int argc, char **argv)
 {
     const Parameters params = read_cli(argc, argv);
 
-    const auto result = serialization::get_models();
-    if (not result.has_value()) {
-        throw std::runtime_error(result.error().errmsg);
-    }
-
-    serialization::Models all_models = result.value();
+    serialization::Models all_models = serialization::get_models();
     std::sort(all_models.models.begin(), all_models.models.end());
 
     if (params.print_raw_json) {
