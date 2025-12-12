@@ -12,7 +12,7 @@ CurlResult create_embedding(const std::string &post_fields);
 CurlResult upload_file(const std::string &filename, const std::string &purpose);
 CurlResult get_uploaded_files(bool sort_asc = true);
 CurlResult delete_file(const std::string &file_id);
-std::string create_fine_tuning_job(const std::string &post_fields);
-std::string get_fine_tuning_jobs(const int limit);
+CurlResult create_fine_tuning_job(const std::string &post_fields);
+CurlResult get_fine_tuning_jobs(const int limit);
 CurlResult create_image(const std::string &post_fields);
 } // namespace networking

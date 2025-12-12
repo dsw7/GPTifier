@@ -183,7 +183,7 @@ CurlResult delete_file(const std::string &file_id)
     return check_curl_code(handle, code, response);
 }
 
-std::string create_fine_tuning_job(const std::string &post_fields)
+CurlResult create_fine_tuning_job(const std::string &post_fields)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -201,13 +201,10 @@ std::string create_fine_tuning_job(const std::string &post_fields)
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
     const CURLcode code = curl_easy_perform(handle);
-    if (code != CURLE_OK) {
-        throw std::runtime_error(curl_easy_strerror(code));
-    }
-    return response;
+    return check_curl_code(handle, code, response);
 }
 
-std::string get_fine_tuning_jobs(const int limit)
+CurlResult get_fine_tuning_jobs(const int limit)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -223,10 +220,7 @@ std::string get_fine_tuning_jobs(const int limit)
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, &response);
 
     const CURLcode code = curl_easy_perform(handle);
-    if (code != CURLE_OK) {
-        throw std::runtime_error(curl_easy_strerror(code));
-    }
-    return response;
+    return check_curl_code(handle, code, response);
 }
 
 CurlResult create_image(const std::string &post_fields)

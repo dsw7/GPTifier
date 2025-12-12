@@ -36,23 +36,4 @@ void throw_on_error_response(const std::string &response)
     throw std::runtime_error(errmsg);
 }
 
-Err unpack_error(const std::string &response, const long status_code)
-{
-    const nlohmann::json json = parse_json(response);
-
-    std::string errmsg;
-
-    if (json.contains("error")) {
-        if (json["error"].empty()) {
-            errmsg = "An error occurred but error message is empty";
-        } else {
-            errmsg = json["error"]["message"];
-        }
-    } else {
-        errmsg = "Malformed error response. No error object could be found";
-    }
-
-    return Err { status_code, errmsg };
-}
-
 } // namespace serialization

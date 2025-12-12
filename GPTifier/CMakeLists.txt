@@ -61,7 +61,6 @@ set(SRC_FILES
   src/serialization/fine_tuning.cpp
   src/serialization/images.cpp
   src/serialization/models.cpp
-  src/serialization/response_to_json.cpp
   src/serialization/responses.cpp
   src/serialization/ser_utils.cpp
   src/serialization/testing.cpp
