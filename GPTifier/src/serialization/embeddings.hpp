@@ -1,8 +1,5 @@
 #pragma once
 
-#include "ser_utils.hpp"
-
-#include <expected>
 #include <string>
 #include <vector>
 
@@ -14,7 +11,6 @@ struct Embedding {
     std::vector<float> embedding;
 };
 
-using EmbedResult = std::expected<Embedding, Err>;
-EmbedResult create_embedding(const std::string &model, const std::string &input);
+Embedding create_embedding(const std::string &model, const std::string &input);
 
 } // namespace serialization

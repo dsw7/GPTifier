@@ -1,9 +1,11 @@
 #include "embeddings.hpp"
 
 #include "api_openai_user.hpp"
+#include "ser_utils.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
+#include <stdexcept>
 
 namespace serialization {
 
@@ -28,16 +30,16 @@ Embedding unpack_embedding(const std::string &response, const std::string &input
 
 } // namespace
 
-EmbedResult create_embedding(const std::string &model, const std::string &input)
+Embedding create_embedding(const std::string &model, const std::string &input)
 {
     const nlohmann::json data = { { "model", model }, { "input", input } };
     const auto result = networking::create_embedding(data.dump());
 
-    if (result) {
-        return unpack_embedding(result->response, input);
+    if (not result) {
+        throw_on_error(result.error().response);
     }
 
-    return std::unexpected(unpack_error(result.error().response, result.error().code));
+    return unpack_embedding(result->response, input);
 }
 
 } // namespace serialization
