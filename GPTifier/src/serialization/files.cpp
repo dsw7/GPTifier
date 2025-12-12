@@ -1,8 +1,9 @@
 #include "files.hpp"
 
 #include "api_openai_user.hpp"
-#include "response_to_json.hpp"
+#include "ser_utils.hpp"
 
+#include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
 
@@ -10,32 +11,49 @@ namespace serialization {
 
 namespace {
 
-void unpack_files(const nlohmann::json &json, Files &files)
+Files unpack_files(const std::string &response)
 {
-    for (const auto &entry: json["data"]) {
-        File file;
-        file.created_at = entry["created_at"];
-        file.filename = entry["filename"];
-        file.id = entry["id"];
-        file.purpose = entry["purpose"];
-        files.files.push_back(file);
+    const nlohmann::json json = parse_json(response);
+
+    Files files;
+    files.raw_response = response;
+
+    try {
+        for (const auto &entry: json["data"]) {
+            File file;
+            file.created_at = entry["created_at"];
+            file.filename = entry["filename"];
+            file.id = entry["id"];
+            file.purpose = entry["purpose"];
+            files.files.push_back(file);
+        }
+    } catch (const nlohmann::json::exception &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     }
+
+    return files;
 }
 
 } // namespace
 
 Files get_files()
 {
-    const std::string response = networking::get_uploaded_files();
-    Files files = unpack_response<Files>(response, unpack_files);
-    files.raw_response = response;
-    return files;
+    const auto result = networking::get_uploaded_files();
+    if (not result) {
+        throw_on_error_response(result.error().response);
+    }
+
+    return unpack_files(result->response);
 }
 
 bool delete_file(const std::string &file_id)
 {
-    const std::string response = networking::delete_file(file_id);
-    const nlohmann::json json = response_to_json(response);
+    const auto result = networking::delete_file(file_id);
+    if (not result) {
+        throw_on_error_response(result.error().response);
+    }
+
+    const nlohmann::json json = parse_json(result->response);
 
     if (not json.contains("deleted")) {
         throw std::runtime_error("Malformed response. Missing 'deleted' key");
@@ -47,8 +65,13 @@ bool delete_file(const std::string &file_id)
 std::string upload_file(const std::string &filename)
 {
     const std::string purpose = "fine-tune";
-    const std::string response = networking::upload_file(filename, purpose);
-    const nlohmann::json json = response_to_json(response);
+
+    const auto result = networking::upload_file(filename, purpose);
+    if (not result) {
+        throw_on_error_response(result.error().response);
+    }
+
+    const nlohmann::json json = parse_json(result->response);
 
     if (not json.contains("id")) {
         throw std::runtime_error("Malformed response. Missing 'id' key");
