@@ -185,37 +185,19 @@ std::atomic<bool> TIMER_ENABLED(false);
 
 void time_api_call()
 {
-    auto delay = std::chrono::milliseconds(50);
-    int counter = 0;
+    const std::chrono::duration delay = std::chrono::milliseconds(100);
+
+    static std::vector spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" };
+    const int num_frames = spinner.size();
 
     while (TIMER_ENABLED.load()) {
-        switch (counter) {
-            case 0:
-                std::cout << "·....\r" << std::flush;
-                break;
-            case 5:
-                std::cout << ".·...\r" << std::flush;
-                break;
-            case 10:
-                std::cout << "..·..\r" << std::flush;
-                break;
-            case 15:
-                std::cout << "...·.\r" << std::flush;
-                break;
-            case 20:
-                std::cout << "....·\r" << std::flush;
-                break;
+        for (int i = 0; i < num_frames; ++i) {
+            std::cout << "\r" << spinner[i] << std::flush;
+            std::this_thread::sleep_for(delay);
         }
-        counter++;
-
-        if (counter > 24) {
-            counter = 0;
-        }
-
-        std::this_thread::sleep_for(delay);
     }
 
-    std::cout << std::string(16, ' ') << '\r' << std::flush;
+    std::cout << " \r" << std::flush;
 }
 
 serialization::Response run_query(const std::string &model, const std::string &prompt, const float temperature)
