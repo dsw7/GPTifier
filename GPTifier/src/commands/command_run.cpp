@@ -6,6 +6,7 @@
 #include "utils.hpp"
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <chrono>
 #include <filesystem>
@@ -187,7 +188,7 @@ void time_api_call()
 {
     const std::chrono::duration delay = std::chrono::milliseconds(100);
 
-    static std::vector spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" };
+    static std::array spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" };
     const int num_frames = spinner.size();
 
     while (TIMER_ENABLED.load()) {
