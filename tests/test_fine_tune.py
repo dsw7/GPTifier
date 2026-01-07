@@ -31,7 +31,8 @@ def test_upload_empty_filename() -> None:
 
 
 def test_upload_invalid_file() -> None:
-    input_text_file = Path(__file__).resolve().parent / "__init__.py"
+    # try to upload a python file
+    input_text_file = Path(__file__).resolve().parent / "utils.py"
     stderr = utils.assert_command_failure(
         "fine-tune", "upload-file", str(input_text_file)
     )
