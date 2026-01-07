@@ -1,61 +1,63 @@
-import typing
-from .extended_testcase import TestCaseExtended
+from typing import Any
+import pytest
+import utils
+
+PROMPT = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
 
 
-class TestShort(TestCaseExtended):
+def _load_output(output: Any) -> str:
+    assert len(output) > 0, "Output is empty"
+    text: str | None = None
 
-    def load_output(self, output: typing.Any) -> str:
-        self.assertTrue(len(output) > 0, "Output is empty")
-        text: str | None = None
+    for item in output:
+        if item["type"] != "message":
+            continue
 
-        for item in output:
-            if item["type"] != "message":
-                continue
+        if item["status"] != "completed":
+            continue
 
-            if item["status"] != "completed":
-                continue
+        if item["content"][0]["type"] == "output_text":
+            text = item["content"][0]["text"]
+            break
 
-            if item["content"][0]["type"] == "output_text":
-                text = item["content"][0]["text"]
-                break
+    assert text is not None, "Could not find text in OpenAI output"
+    # Can ignore this since assertion will break out of function if text is null
+    return text  # type: ignore
 
-        self.assertIsNotNone(text, "Could not find text in OpenAI output")
-        # Can ignore this since assertion will break out of function if text is null
-        return text  # type: ignore
 
-    def test_help(self) -> None:
-        for option in ["-h", "--help"]:
-            with self.subTest(option=option):
-                proc = self.assertSuccess("short", option)
-                self.assertIn(
-                    "Create a response but without threading or verbosity.", proc.stdout
-                )
+@pytest.mark.parametrize("option", ["-h", "--help"])
+def test_help(option: str) -> None:
+    stdout = utils.assert_command_success("short", option)
+    assert "Create a response but without threading or verbosity." in stdout
 
-    prompt = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
 
-    def test_short_prompt(self) -> None:
-        proc = self.assertSuccess("short", "--temperature=1.00", self.prompt)
-        self.assertIn(">>>4<<<", proc.stdout)
+def test_short_prompt() -> None:
+    stdout = utils.assert_command_success("short", "--temperature=1.00", PROMPT)
+    assert ">>>4<<<" in stdout
 
-    def test_short_raw_json(self) -> None:
-        for option in ["-j", "--json"]:
-            with self.subTest(option=option):
-                proc = self.assertSuccess("short", option, self.prompt)
-                results = proc.load_stdout_to_json()
-                self.assertIn(">>>4<<<", self.load_output(results["output"]))
 
-    def test_empty_temp(self) -> None:
-        proc = self.assertFailure("short", "--temperature=", self.prompt)
-        self.assertIn("Empty temperature", proc.stderr)
+@pytest.mark.parametrize("option", ["-j", "--json"])
+def test_short_raw_json(option: str) -> None:
+    stdout = utils.assert_command_success("short", option, PROMPT)
+    results = utils.load_stdout_to_json(stdout)
+    assert ">>>4<<<" in _load_output(results["output"])
 
-    def test_invalid_temp_stof(self) -> None:
-        proc = self.assertFailure("short", "-tfoobar", self.prompt)
-        self.assertIn("Failed to convert 'foobar' to float", proc.stderr)
 
-    def test_missing_prompt(self) -> None:
-        proc = self.assertFailure("short")
-        self.assertIn("Prompt is empty", proc.stderr)
+def test_empty_temp() -> None:
+    stderr = utils.assert_command_failure("short", "--temperature=", PROMPT)
+    assert "Empty temperature" in stderr
 
-    def test_empty_prompt(self) -> None:
-        proc = self.assertFailure("short", "")
-        self.assertIn("Prompt is empty", proc.stderr)
+
+def test_invalid_temp_stof() -> None:
+    stderr = utils.assert_command_failure("short", "-tfoobar", PROMPT)
+    assert "Failed to convert 'foobar' to float" in stderr
+
+
+def test_missing_prompt() -> None:
+    stderr = utils.assert_command_failure("short")
+    assert "Prompt is empty" in stderr
+
+
+def test_empty_prompt() -> None:
+    stderr = utils.assert_command_failure("short", "")
+    assert "Prompt is empty" in stderr
