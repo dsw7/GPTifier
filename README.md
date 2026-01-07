@@ -292,7 +292,7 @@ gpt costs --days=5
 Will return the usage per day over the past 5 days and the overall usage over the 5 days.
 
 ## Code editing
-See the related project, [FuncGraft](https://github.com/dsw7/GPTifier). This
+See the related project, [FuncGraft](https://github.com/dsw7/FuncGraft). This
 project offers an interface similar to GPTifier, but the project is focused on
 targeted code manipulations using LLMs.
 
