@@ -1,18 +1,18 @@
-from .extended_testcase import TestCaseExtended
+import pytest
+import utils
 
 
-class TestImg(TestCaseExtended):
+@pytest.mark.parametrize("option", ["-h", "--help"])
+def test_help(option: str) -> None:
+    stdout = utils.assert_command_success("img", option)
+    assert "Generate an image from a prompt" in stdout
 
-    def test_help(self) -> None:
-        for option in ["-h", "--help"]:
-            with self.subTest(option=option):
-                proc = self.assertSuccess("img", option)
-                self.assertIn("Generate an image from a prompt", proc.stdout)
 
-    def test_missing_prompt_file(self) -> None:
-        proc = self.assertFailure("img")
-        self.assertIn("No prompt file provided. Cannot proceed", proc.stderr)
+def test_missing_prompt_file() -> None:
+    stderr = utils.assert_command_failure("img")
+    assert "No prompt file provided. Cannot proceed" in stderr
 
-    def test_empty_prompt_file(self) -> None:
-        proc = self.assertFailure("img", "")
-        self.assertIn("Could not read from file. Filename is empty", proc.stderr)
+
+def test_empty_prompt_file() -> None:
+    stderr = utils.assert_command_failure("img", "")
+    assert "Could not read from file. Filename is empty" in stderr
