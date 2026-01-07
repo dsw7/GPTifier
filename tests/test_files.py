@@ -31,12 +31,12 @@ PATTERN = r"File ID\s+Filename\s+Creation time\s+Purpose"
 
 def test_files_list_default() -> None:
     stdout = utils.assert_command_success("files")
-    assert search(stdout, PATTERN) is not None
+    assert search(PATTERN, stdout) is not None
 
 
 def test_files_list() -> None:
     stdout = utils.assert_command_success("files", "list")
-    assert search(stdout, PATTERN) is not None
+    assert search(PATTERN, stdout) is not None
 
 
 @pytest.mark.parametrize("option", ["-j", "--json"])
