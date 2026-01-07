@@ -26,7 +26,7 @@ def test_copyright() -> None:
 
 def test_unknown_command() -> None:
     stderr = utils.assert_command_failure("foobar")
-    assert stderr == "Received unknown command. Re-run with -h or --help"
+    assert stderr == "Received unknown command. Re-run with -h or --help\n"
 
 
 def _is_memory_test() -> bool:
