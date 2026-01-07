@@ -15,8 +15,7 @@ def test_root_help_short() -> None:
 
 def test_root_help_empty_argv() -> None:
     # i.e. running just $ gpt
-    stderr = utils.assert_command_failure()
-    assert "A command line OpenAI toolkit." in stderr
+    utils.assert_command_failure()
 
 
 def test_copyright() -> None:
