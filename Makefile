@@ -1,4 +1,4 @@
-.PHONY = compile-prod format compile tidy clean lint compile-test test test-memory
+.PHONY = compile-prod format compile tidy clean lint compile-test test test-memory py
 
 BUILD_DIR = build
 BUILD_DIR_PROD = $(BUILD_DIR)/prod
@@ -44,3 +44,8 @@ test-memory: export PATH_BIN = $(PATH_BIN_TEST)
 test-memory: export TEST_MEMORY = 1
 test-memory: compile-test
 	@python3 -m unittest -v tests/*.py
+
+py:
+	@black tests/*.py
+	@pylint --exit-zero tests/*.py
+	@mypy --strict tests/*.py
