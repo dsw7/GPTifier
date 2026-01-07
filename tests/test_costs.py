@@ -1,38 +1,41 @@
-from unittest import skipIf
 from os import environ
-from .extended_testcase import TestCaseExtended
+import pytest
+import utils
 
-
-@skipIf(
-    "OPENAI_ADMIN_KEY" not in environ, "OPENAI_ADMIN_KEY does not exist in environment"
+pytestmark = pytest.mark.skipif(
+    "OPENAI_ADMIN_KEY" not in environ,
+    reason="OPENAI_ADMIN_KEY does not exist in environment",
 )
-class TestCosts(TestCaseExtended):
 
-    def test_help(self) -> None:
-        for option in ["-h", "--help"]:
-            with self.subTest(option=option):
-                proc = self.assertSuccess("costs", option)
-                self.assertIn("Get OpenAI usage details", proc.stdout)
 
-    def test_costs(self) -> None:
-        proc = self.assertSuccess("costs", "--days=4")
-        self.assertIn("Overall usage", proc.stdout)
+@pytest.mark.parametrize("option", ["-h", "--help"])
+def test_help(option: str) -> None:
+    stdout = utils.assert_command_success("costs", option)
+    assert "Get OpenAI usage details" in stdout
 
-    def test_costs_count(self) -> None:
-        proc = self.assertSuccess("costs", "--json", "--days=3")
-        json = proc.load_stdout_to_json()
-        self.assertEqual(len(json["data"]), 3)
 
-    def test_costs_raw_json(self) -> None:
-        for option in ["-j", "--json"]:
-            with self.subTest(option=option):
-                proc = self.assertSuccess("costs", option, "--days=3")
-                proc.load_stdout_to_json()
+def test_costs() -> None:
+    stdout = utils.assert_command_success("costs", "--days=4")
+    assert "Overall usage" in stdout
 
-    def test_costs_invalid_days_empty(self) -> None:
-        proc = self.assertFailure("costs", "--days=")
-        self.assertIn("Days argument is empty", proc.stderr)
 
-    def test_costs_invalid_days_stoi(self) -> None:
-        proc = self.assertFailure("costs", "--days=abc")
-        self.assertIn("Failed to convert 'abc' to int", proc.stderr)
+def test_costs_count() -> None:
+    stdout = utils.assert_command_success("costs", "--json", "--days=3")
+    json = utils.load_stdout_to_json(stdout)
+    assert len(json["data"]) == 3
+
+
+@pytest.mark.parametrize("option", ["-j", "--json"])
+def test_costs_raw_json(option: str) -> None:
+    stdout = utils.assert_command_success("costs", option, "--days=3")
+    utils.load_stdout_to_json(stdout)
+
+
+def test_costs_invalid_days_empty() -> None:
+    stderr = utils.assert_command_failure("costs", "--days=")
+    assert "Days argument is empty" in stderr
+
+
+def test_costs_invalid_days_stoi() -> None:
+    stderr = utils.assert_command_failure("costs", "--days=abc")
+    assert "Failed to convert 'abc' to int" in stderr
