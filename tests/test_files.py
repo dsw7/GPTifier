@@ -1,86 +1,84 @@
+from re import search
 from pathlib import Path
-from .extended_testcase import TestCaseExtended
+import pytest
+import utils
 
 
-class TestFiles(TestCaseExtended):
-
-    def test_help(self) -> None:
-        for option in ["-h", "--help"]:
-            with self.subTest(option=option):
-                proc = self.assertSuccess("files", option)
-                self.assertIn("Manage files uploaded to OpenAI", proc.stdout)
-
-    def test_upload_then_delete(self) -> None:
-        jsonl_file = Path(__file__).resolve().parent / "test_files" / "dummy.jsonl"
-
-        proc = self.assertSuccess("fine-tune", "upload-file", str(jsonl_file))
-        last_line = proc.stdout.strip().rsplit("\n", maxsplit=1)[-1]
-        file_id = last_line.split(": ")[-1]
-
-        proc = self.assertSuccess("files", "delete", file_id)
+@pytest.mark.parametrize("option", ["-h", "--help"])
+def test_help_files(option: str) -> None:
+    stdout = utils.assert_command_success("files", option)
+    assert "Manage files uploaded to OpenAI" in stdout
 
 
-class TestFilesList(TestCaseExtended):
+def test_upload_then_delete() -> None:
+    jsonl_file = Path(__file__).resolve().parent / "test_files" / "dummy.jsonl"
 
-    def test_help(self) -> None:
-        for option in ["-h", "--help"]:
-            with self.subTest(option=option):
-                proc = self.assertSuccess("files", "list", option)
-                self.assertIn(
-                    "Get list of files uploaded to OpenAI servers", proc.stdout
-                )
+    stdout = utils.assert_command_success("fine-tune", "upload-file", str(jsonl_file))
+    last_line = stdout.strip().rsplit("\n", maxsplit=1)[-1]
+    file_id = last_line.split(": ")[-1]
 
-    pattern = r"File ID\s+Filename\s+Creation time\s+Purpose"
-
-    def test_files_list_default(self) -> None:
-        proc = self.assertSuccess("files")
-        self.assertRegex(proc.stdout, self.pattern)
-
-    def test_files_list(self) -> None:
-        proc = self.assertSuccess("files", "list")
-        self.assertRegex(proc.stdout, self.pattern)
-
-    def test_files_list_raw_json(self) -> None:
-        for option in ["-j", "--json"]:
-            with self.subTest(option=option):
-                proc = self.assertSuccess("files", "list", option)
-                proc.load_stdout_to_json()
+    utils.assert_command_success("files", "delete", file_id)
 
 
-class TestFilesDelete(TestCaseExtended):
+@pytest.mark.parametrize("option", ["-h", "--help"])
+def test_help_files_list(option: str) -> None:
+    stdout = utils.assert_command_success("files", "list", option)
+    assert "Get list of files uploaded to OpenAI servers" in stdout
 
-    def test_help(self) -> None:
-        for option in ["-h", "--help"]:
-            with self.subTest(option=option):
-                proc = self.assertSuccess("files", "delete", option)
-                self.assertIn("Delete one or more uploaded files", proc.stdout)
 
-    def test_files_delete(self) -> None:
-        proc = self.assertFailure("files", "delete", "foobar")
-        self.assertIn(
-            'Failed to delete file with ID: foobar. The error was: "No such File object: foobar"\n'
-            "One or more failures occurred when deleting files\n",
-            proc.stderr,
-        )
+PATTERN = r"File ID\s+Filename\s+Creation time\s+Purpose"
 
-    def test_files_delete_no_ids(self) -> None:
-        proc = self.assertFailure("files", "delete")
-        self.assertIn("One or more file IDs need to be provided", proc.stderr)
 
-    def test_files_delete_one_empty_id(self) -> None:
-        proc = self.assertSuccess("files", "delete", "")
-        self.assertIn("Cannot delete file. ID is empty", proc.stderr)
+def test_files_list_default() -> None:
+    stdout = utils.assert_command_success("files")
+    assert search(stdout, PATTERN) is not None
 
-    def test_files_delete_multiple_empty_ids(self) -> None:
-        proc = self.assertSuccess("files", "delete", "", "", "")
-        self.assertEqual(3 * "Cannot delete file. ID is empty\n", proc.stderr)
 
-    def test_files_delete_multiple(self) -> None:
-        proc = self.assertFailure("files", "delete", "spam", "ham", "eggs")
-        self.assertIn(
-            'Failed to delete file with ID: spam. The error was: "No such File object: spam"\n'
-            'Failed to delete file with ID: ham. The error was: "No such File object: ham"\n'
-            'Failed to delete file with ID: eggs. The error was: "No such File object: eggs"\n'
-            "One or more failures occurred when deleting files\n",
-            proc.stderr,
-        )
+def test_files_list() -> None:
+    stdout = utils.assert_command_success("files", "list")
+    assert search(stdout, PATTERN) is not None
+
+
+@pytest.mark.parametrize("option", ["-j", "--json"])
+def test_files_list_raw_json(option: str) -> None:
+    stdout = utils.assert_command_success("files", "list", option)
+    utils.load_stdout_to_json(stdout)
+
+
+@pytest.mark.parametrize("option", ["-h", "--help"])
+def test_help_files_delete(option: str) -> None:
+    stdout = utils.assert_command_success("files", "delete", option)
+    assert "Delete one or more uploaded files" in stdout
+
+
+def test_files_delete() -> None:
+    stderr = utils.assert_command_failure("files", "delete", "foobar")
+    assert (
+        'Failed to delete file with ID: foobar. The error was: "No such File object: foobar"\n'
+        "One or more failures occurred when deleting files\n"
+    ) in stderr
+
+
+def test_files_delete_no_ids() -> None:
+    stderr = utils.assert_command_failure("files", "delete")
+    assert "One or more file IDs need to be provided" in stderr
+
+
+def test_files_delete_one_empty_id() -> None:
+    stdout = utils.assert_command_success("files", "delete", "")
+    assert "Cannot delete file. ID is empty" in stdout
+
+
+def test_files_delete_multiple_empty_ids() -> None:
+    stdout = utils.assert_command_success("files", "delete", "", "", "")
+    assert 3 * "Cannot delete file. ID is empty\n" == stdout
+
+
+def test_files_delete_multiple() -> None:
+    stderr = utils.assert_command_failure("files", "delete", "spam", "ham", "eggs")
+    assert (
+        'Failed to delete file with ID: spam. The error was: "No such File object: spam"\n'
+        'Failed to delete file with ID: ham. The error was: "No such File object: ham"\n'
+        'Failed to delete file with ID: eggs. The error was: "No such File object: eggs"\n'
+        "One or more failures occurred when deleting files\n"
+    ) in stderr
