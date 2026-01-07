@@ -22,6 +22,7 @@ Ubuntu/Debian and macOS.
   - [The `img` command](#the-img-command)
 - [Administration](#administration)
   - [The `costs` command](#the-costs-command)
+- [Code editing](#code-editing)
 - [Integrations](#integrations)
 - [Uninstall GPTifier](#uninstall-gptifier)
 - [License](#license)
@@ -289,6 +290,11 @@ number of days for an organization. For example:
 gpt costs --days=5
 ```
 Will return the usage per day over the past 5 days and the overall usage over the 5 days.
+
+## Code editing
+See the related project, [FuncGraft](https://github.com/dsw7/GPTifier). This
+project offers an interface similar to GPTifier, but the project is focused on
+targeted code manipulations using LLMs.
 
 ## Integrations
 
