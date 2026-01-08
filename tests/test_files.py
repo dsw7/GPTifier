@@ -65,13 +65,13 @@ def test_files_delete_no_ids() -> None:
 
 
 def test_files_delete_one_empty_id() -> None:
-    stdout = utils.assert_command_success("files", "delete", "")
-    assert "Cannot delete file. ID is empty" in stdout
+    stderr = utils.assert_command_failure("files", "delete", "")
+    assert "Cannot delete file. ID is empty" in stderr
 
 
 def test_files_delete_multiple_empty_ids() -> None:
-    stdout = utils.assert_command_success("files", "delete", "", "", "")
-    assert 3 * "Cannot delete file. ID is empty\n" == stdout
+    stderr = utils.assert_command_failure("files", "delete", "", "", "")
+    assert 3 * "Cannot delete file. ID is empty\n" in stderr
 
 
 def test_files_delete_multiple() -> None:
