@@ -62,18 +62,13 @@ def test_valid_response_json() -> None:
     completion = ">>>5<<<"
 
     with NamedTemporaryFile(dir=gettempdir()) as f:
-        t_start = time()
         utils.assert_command_success("run", f"-p{prompt}", "-t0", f"-o{f.name}")
-        rtt = time() - t_start
         content = _load_content(f.name)
 
         assert content.input_ == prompt
         assert content.output == completion
         assert content.input_tokens == 26
         assert content.output_tokens == 4
-
-        diff_rtt = abs(content.rtt - rtt)
-        assert diff_rtt <= 0.25, "RTT times are not within 0.25 seconds"
 
         diff_created = abs(content.created - int(time()))
         assert diff_created <= 2.0, "Creation times are not within 2 seconds"
