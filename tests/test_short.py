@@ -31,8 +31,16 @@ def test_help(option: str) -> None:
     assert "Create a response but without threading or verbosity." in stdout
 
 
-def test_short_prompt() -> None:
+def test_short_prompt_openai() -> None:
     stdout = utils.assert_command_success("short", "--temperature=1.00", PROMPT)
+    assert ">>>4<<<" in stdout
+
+
+@pytest.mark.test_ollama
+def test_short_prompt_ollama() -> None:
+    stdout = utils.assert_command_success(
+        "short", "--use-local", "--model=gemma3:latest", PROMPT
+    )
     assert ">>>4<<<" in stdout
 
 
