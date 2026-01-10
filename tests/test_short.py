@@ -6,26 +6,6 @@ PROMPT = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
 MODEL_OLLAMA = "gemma3:latest"
 
 
-def _load_output(output: Any) -> str:
-    assert len(output) > 0, "Output is empty"
-    text: str | None = None
-
-    for item in output:
-        if item["type"] != "message":
-            continue
-
-        if item["status"] != "completed":
-            continue
-
-        if item["content"][0]["type"] == "output_text":
-            text = item["content"][0]["text"]
-            break
-
-    assert text is not None, "Could not find text in OpenAI output"
-    # Can ignore this since assertion will break out of function if text is null
-    return text  # type: ignore
-
-
 @pytest.mark.parametrize("option", ["-h", "--help"])
 def test_help(option: str) -> None:
     stdout = utils.assert_command_success("short", option)
@@ -46,20 +26,42 @@ def test_short_prompt_ollama() -> None:
     assert ">>>4<<<" in stdout
 
 
+def _load_openai_output(output: Any) -> str:
+    assert len(output) > 0, "Output is empty"
+    text: str | None = None
+
+    for item in output:
+        if item["type"] != "message":
+            continue
+
+        if item["status"] != "completed":
+            continue
+
+        if item["content"][0]["type"] == "output_text":
+            text = item["content"][0]["text"]
+            break
+
+    assert text is not None, "Could not find text in OpenAI output"
+    # Can ignore this since assertion will break out of function if text is null
+    return text  # type: ignore
+
+
 @pytest.mark.test_openai
 @pytest.mark.parametrize("option", ["-j", "--json"])
 def test_short_raw_json_openai(option: str) -> None:
     stdout = utils.assert_command_success("short", option, PROMPT)
     results = utils.load_stdout_to_json(stdout)
-    assert ">>>4<<<" in _load_output(results["output"])
+    assert ">>>4<<<" in _load_openai_output(results["output"])
 
 
 @pytest.mark.test_ollama
 @pytest.mark.parametrize("option", ["-j", "--json"])
 def test_short_raw_json_ollama(option: str) -> None:
-    stdout = utils.assert_command_success("short", option, "--use-local", f"--model={MODEL_OLLAMA}",PROMPT)
+    stdout = utils.assert_command_success(
+        "short", option, "--use-local", f"--model={MODEL_OLLAMA}", PROMPT
+    )
     results = utils.load_stdout_to_json(stdout)
-    assert ">>>4<<<" in _load_output(results["output"])
+    assert ">>>4<<<" in results["response"]
 
 
 def test_empty_temp() -> None:
