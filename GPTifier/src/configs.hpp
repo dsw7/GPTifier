@@ -9,6 +9,7 @@ struct Configs {
     std::optional<std::string> model_embed;
     std::optional<std::string> model_run;
     std::optional<std::string> model_short;
+    std::optional<std::string> model_short_ollama;
 };
 
 extern Configs configs;
