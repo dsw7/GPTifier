@@ -96,9 +96,15 @@ def test_empty_temp_ollama() -> None:
 
 
 @pytest.mark.test_openai
-def test_invalid_temp_stof() -> None:
+def test_invalid_temp_stof_openai() -> None:
     stderr = utils.assert_command_failure("short", "-tfoobar", PROMPT)
     assert "Failed to convert 'foobar' to float" in stderr
+
+
+@pytest.mark.test_ollama
+def test_invalid_temp_stof_ollama() -> None:
+    # Test that temp is ignored for Ollama stream
+    utils.assert_command_success("short", "-tfoobar", "-l", PROMPT)
 
 
 def test_missing_prompt() -> None:
