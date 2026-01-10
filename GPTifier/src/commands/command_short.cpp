@@ -115,19 +115,6 @@ float get_temperature(const std::optional<std::string> &temperature)
     return std::clamp(temp_f, MIN_TEMP, MAX_TEMP);
 }
 
-std::string get_model()
-{
-#ifdef TESTING_ENABLED
-    static std::string low_cost_model = "gpt-3.5-turbo";
-    return low_cost_model;
-#else
-    if (configs.model_short) {
-        return configs.model_short.value();
-    }
-    throw std::runtime_error("Could not determine which model to use");
-#endif
-}
-
 void use_ollama(const Parameters &params)
 {
     std::string model;
@@ -154,7 +141,18 @@ void use_ollama(const Parameters &params)
 
 void use_openai(const Parameters &params)
 {
-    const std::string model = get_model();
+    std::string model;
+
+    if (params.model) {
+        model = params.model.value();
+    } else {
+        if (configs.model_short) {
+            model = configs.model_short.value();
+        } else {
+            throw std::runtime_error("Could not determine which OpenAI model to use");
+        }
+    }
+
     const float temperature = get_temperature(params.temperature);
     const serialization::Response response = serialization::create_response(params.prompt.value(), model, temperature);
 
