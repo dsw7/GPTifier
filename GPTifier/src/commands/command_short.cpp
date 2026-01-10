@@ -43,7 +43,7 @@ Examples:
 struct Parameters {
     bool print_raw_json = false;
     bool use_local = false;
-    std::optional<std::string> model = "gpt-4o";
+    std::optional<std::string> model;
     std::optional<std::string> prompt;
     std::optional<std::string> temperature;
 };
