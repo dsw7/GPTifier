@@ -43,7 +43,7 @@ def _load_openai_output(output: Any) -> str:
 
     assert text is not None, "Could not find text in OpenAI output"
     # Can ignore this since assertion will break out of function if text is null
-    return text  # type: ignore
+    return text
 
 
 @pytest.mark.test_openai
@@ -64,11 +64,13 @@ def test_short_raw_json_ollama(option: str) -> None:
     assert ">>>4<<<" in results["response"]
 
 
+@pytest.mark.test_openai
 def test_empty_temp() -> None:
     stderr = utils.assert_command_failure("short", "--temperature=", PROMPT)
     assert "Empty temperature" in stderr
 
 
+@pytest.mark.test_openai
 def test_invalid_temp_stof() -> None:
     stderr = utils.assert_command_failure("short", "-tfoobar", PROMPT)
     assert "Failed to convert 'foobar' to float" in stderr
