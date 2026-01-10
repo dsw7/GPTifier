@@ -139,17 +139,18 @@ void command_short(int argc, char **argv)
     }
 
     const float temperature = get_temperature(params.temperature);
-    const std::string model = get_model();
     const std::string prompt = params.prompt.value();
 
     std::string raw_response;
     std::string output;
 
     if (params.use_local) {
+        const std::string model = "gemma3:latest"; // temporary
         const serialization::OllamaResponse response = serialization::create_ollama_response(prompt, model);
         output = response.output;
         raw_response = response.raw_response;
     } else {
+        const std::string model = get_model();
         const serialization::Response response = serialization::create_response(prompt, model, temperature);
         output = response.output;
         raw_response = response.raw_response;
