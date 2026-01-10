@@ -26,6 +26,14 @@ def test_short_prompt_ollama() -> None:
     assert ">>>4<<<" in stdout
 
 
+@pytest.mark.test_ollama
+def test_invalid_model_ollama() -> None:
+    stderr = utils.assert_command_failure(
+        "short", "--use-local", "--model=foobar", PROMPT
+    )
+    assert "model 'foobar' not found" in stderr
+
+
 def _load_openai_output(output: Any) -> str:
     assert len(output) > 0, "Output is empty"
     text: str | None = None
