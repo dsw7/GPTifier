@@ -31,6 +31,7 @@ def test_help(option: str) -> None:
     assert "Create a response but without threading or verbosity." in stdout
 
 
+@pytest.mark.test_openai
 def test_short_prompt_openai() -> None:
     stdout = utils.assert_command_success("short", "--temperature=1.00", PROMPT)
     assert ">>>4<<<" in stdout
