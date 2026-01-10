@@ -1,6 +1,7 @@
 #include "command_short.hpp"
 
 #include "configs.hpp"
+#include "ollama_generate.hpp"
 #include "responses.hpp"
 #include "utils.hpp"
 
@@ -26,6 +27,8 @@ Usage:
 Options:
   -h, --help                     Print help information and exit
   -j, --json                     Print raw JSON response from OpenAI
+  -l, --use-local                Connect to locally hosted LLM as opposed to OpenAI
+  -m, --model                    Select model
   -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2. Note that
                                  temperature will be clamped between 0 and 2
 
@@ -39,6 +42,8 @@ Examples:
 
 struct Parameters {
     bool print_raw_json = false;
+    bool use_local = false;
+    std::optional<std::string> model;
     std::optional<std::string> prompt;
     std::optional<std::string> temperature;
 };
@@ -51,12 +56,14 @@ Parameters read_cli(int argc, char **argv)
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
             { "json", no_argument, 0, 'j' },
+            { "model", required_argument, 0, 'm' },
             { "temperature", required_argument, 0, 't' },
+            { "use-local", no_argument, 0, 'l' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hjt:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hjm:t:l", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -69,8 +76,14 @@ Parameters read_cli(int argc, char **argv)
             case 'j':
                 params.print_raw_json = true;
                 break;
+            case 'm':
+                params.model = optarg;
+                break;
             case 't':
                 params.temperature = optarg;
+                break;
+            case 'l':
+                params.use_local = true;
                 break;
             default:
                 utils::exit_on_failure();
@@ -115,6 +128,44 @@ std::string get_model()
 #endif
 }
 
+void use_ollama(const Parameters &params)
+{
+    std::string model;
+
+    if (params.model) {
+        model = params.model.value();
+    } else {
+        if (configs.model_short_ollama) {
+            model = configs.model_short_ollama.value();
+        } else {
+            throw std::runtime_error("Could not determine which Ollama model to use");
+        }
+    }
+
+    const serialization::OllamaResponse response = serialization::create_ollama_response(params.prompt.value(), model);
+
+    if (params.print_raw_json) {
+        fmt::print("{}\n", response.raw_response);
+        return;
+    }
+
+    fmt::print("{}\n", response.output);
+}
+
+void use_openai(const Parameters &params)
+{
+    const std::string model = get_model();
+    const float temperature = get_temperature(params.temperature);
+    const serialization::Response response = serialization::create_response(params.prompt.value(), model, temperature);
+
+    if (params.print_raw_json) {
+        fmt::print("{}\n", response.raw_response);
+        return;
+    }
+
+    fmt::print("{}\n", response.output);
+}
+
 } // namespace
 
 namespace commands {
@@ -131,17 +182,11 @@ void command_short(int argc, char **argv)
         throw std::runtime_error("Prompt is empty");
     }
 
-    const float temperature = get_temperature(params.temperature);
-    const std::string model = get_model();
-
-    serialization::Response response = serialization::create_response(params.prompt.value(), model, temperature);
-
-    if (params.print_raw_json) {
-        fmt::print("{}\n", response.raw_response);
-        return;
+    if (params.use_local) {
+        use_ollama(params);
+    } else {
+        use_openai(params);
     }
-
-    fmt::print("{}\n", response.output);
 }
 
 } // namespace commands

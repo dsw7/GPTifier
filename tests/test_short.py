@@ -3,9 +3,38 @@ import pytest
 import utils
 
 PROMPT = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
+MODEL_OLLAMA = "gemma3:latest"
 
 
-def _load_output(output: Any) -> str:
+@pytest.mark.parametrize("option", ["-h", "--help"])
+def test_help(option: str) -> None:
+    stdout = utils.assert_command_success("short", option)
+    assert "Create a response but without threading or verbosity." in stdout
+
+
+@pytest.mark.test_openai
+def test_short_prompt_openai() -> None:
+    stdout = utils.assert_command_success("short", "--temperature=1.00", PROMPT)
+    assert ">>>4<<<" in stdout
+
+
+@pytest.mark.test_ollama
+def test_short_prompt_ollama() -> None:
+    stdout = utils.assert_command_success(
+        "short", "--use-local", f"--model={MODEL_OLLAMA}", PROMPT
+    )
+    assert ">>>4<<<" in stdout
+
+
+@pytest.mark.test_ollama
+def test_invalid_model_ollama() -> None:
+    stderr = utils.assert_command_failure(
+        "short", "--use-local", "--model=foobar", PROMPT
+    )
+    assert "model 'foobar' not found" in stderr
+
+
+def _load_openai_output(output: Any) -> str:
     assert len(output) > 0, "Output is empty"
     text: str | None = None
 
@@ -22,32 +51,34 @@ def _load_output(output: Any) -> str:
 
     assert text is not None, "Could not find text in OpenAI output"
     # Can ignore this since assertion will break out of function if text is null
-    return text  # type: ignore
+    return text
 
 
-@pytest.mark.parametrize("option", ["-h", "--help"])
-def test_help(option: str) -> None:
-    stdout = utils.assert_command_success("short", option)
-    assert "Create a response but without threading or verbosity." in stdout
-
-
-def test_short_prompt() -> None:
-    stdout = utils.assert_command_success("short", "--temperature=1.00", PROMPT)
-    assert ">>>4<<<" in stdout
-
-
+@pytest.mark.test_openai
 @pytest.mark.parametrize("option", ["-j", "--json"])
-def test_short_raw_json(option: str) -> None:
+def test_short_raw_json_openai(option: str) -> None:
     stdout = utils.assert_command_success("short", option, PROMPT)
     results = utils.load_stdout_to_json(stdout)
-    assert ">>>4<<<" in _load_output(results["output"])
+    assert ">>>4<<<" in _load_openai_output(results["output"])
 
 
+@pytest.mark.test_ollama
+@pytest.mark.parametrize("option", ["-j", "--json"])
+def test_short_raw_json_ollama(option: str) -> None:
+    stdout = utils.assert_command_success(
+        "short", option, "--use-local", f"--model={MODEL_OLLAMA}", PROMPT
+    )
+    results = utils.load_stdout_to_json(stdout)
+    assert ">>>4<<<" in results["response"]
+
+
+@pytest.mark.test_openai
 def test_empty_temp() -> None:
     stderr = utils.assert_command_failure("short", "--temperature=", PROMPT)
     assert "Empty temperature" in stderr
 
 
+@pytest.mark.test_openai
 def test_invalid_temp_stof() -> None:
     stderr = utils.assert_command_failure("short", "-tfoobar", PROMPT)
     assert "Failed to convert 'foobar' to float" in stderr
