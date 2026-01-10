@@ -1,6 +1,7 @@
 #include "command_short.hpp"
 
 #include "configs.hpp"
+#include "ollama_generate.hpp"
 #include "responses.hpp"
 #include "utils.hpp"
 
@@ -26,6 +27,7 @@ Usage:
 Options:
   -h, --help                     Print help information and exit
   -j, --json                     Print raw JSON response from OpenAI
+  -l, --use-local                Connect to locally hosted LLM as opposed to OpenAI
   -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2. Note that
                                  temperature will be clamped between 0 and 2
 
@@ -39,6 +41,7 @@ Examples:
 
 struct Parameters {
     bool print_raw_json = false;
+    bool use_local = false;
     std::optional<std::string> prompt;
     std::optional<std::string> temperature;
 };
@@ -52,11 +55,12 @@ Parameters read_cli(int argc, char **argv)
             { "help", no_argument, 0, 'h' },
             { "json", no_argument, 0, 'j' },
             { "temperature", required_argument, 0, 't' },
+            { "use-local", no_argument, 0, 'l' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hjt:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hjt:l", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -71,6 +75,9 @@ Parameters read_cli(int argc, char **argv)
                 break;
             case 't':
                 params.temperature = optarg;
+                break;
+            case 'l':
+                params.use_local = true;
                 break;
             default:
                 utils::exit_on_failure();
@@ -133,15 +140,27 @@ void command_short(int argc, char **argv)
 
     const float temperature = get_temperature(params.temperature);
     const std::string model = get_model();
+    const std::string prompt = params.prompt.value();
 
-    serialization::Response response = serialization::create_response(params.prompt.value(), model, temperature);
+    std::string raw_response;
+    std::string output;
+
+    if (params.use_local) {
+        const serialization::OllamaResponse response = serialization::create_ollama_response(prompt, model);
+        output = response.output;
+        raw_response = response.raw_response;
+    } else {
+        const serialization::Response response = serialization::create_response(prompt, model, temperature);
+        output = response.output;
+        raw_response = response.raw_response;
+    }
 
     if (params.print_raw_json) {
-        fmt::print("{}\n", response.raw_response);
+        fmt::print("{}\n", raw_response);
         return;
     }
 
-    fmt::print("{}\n", response.output);
+    fmt::print("{}\n", output);
 }
 
 } // namespace commands
