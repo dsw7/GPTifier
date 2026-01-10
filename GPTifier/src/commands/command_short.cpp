@@ -28,6 +28,7 @@ Options:
   -h, --help                     Print help information and exit
   -j, --json                     Print raw JSON response from OpenAI
   -l, --use-local                Connect to locally hosted LLM as opposed to OpenAI
+  -m, --model                    Select model
   -t, --temperature=TEMPERATURE  Provide a sampling temperature between 0 and 2. Note that
                                  temperature will be clamped between 0 and 2
 
@@ -42,6 +43,7 @@ Examples:
 struct Parameters {
     bool print_raw_json = false;
     bool use_local = false;
+    std::optional<std::string> model = "gpt-4o";
     std::optional<std::string> prompt;
     std::optional<std::string> temperature;
 };
@@ -54,13 +56,14 @@ Parameters read_cli(int argc, char **argv)
         static struct option long_options[] = {
             { "help", no_argument, 0, 'h' },
             { "json", no_argument, 0, 'j' },
+            { "model", required_argument, 0, 'm' },
             { "temperature", required_argument, 0, 't' },
             { "use-local", no_argument, 0, 'l' },
             { 0, 0, 0, 0 }
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hjt:l", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hjm:t:l", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -72,6 +75,9 @@ Parameters read_cli(int argc, char **argv)
                 exit(EXIT_SUCCESS);
             case 'j':
                 params.print_raw_json = true;
+                break;
+            case 'm':
+                params.model = optarg;
                 break;
             case 't':
                 params.temperature = optarg;
@@ -145,8 +151,7 @@ void command_short(int argc, char **argv)
     std::string output;
 
     if (params.use_local) {
-        const std::string model = "gemma3:latest"; // temporary
-        const serialization::OllamaResponse response = serialization::create_ollama_response(prompt, model);
+        const serialization::OllamaResponse response = serialization::create_ollama_response(prompt, params.model.value());
         output = response.output;
         raw_response = response.raw_response;
     } else {
