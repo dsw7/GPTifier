@@ -84,9 +84,15 @@ def test_short_raw_json_ollama(option: str) -> None:
 
 
 @pytest.mark.test_openai
-def test_empty_temp() -> None:
+def test_empty_temp_openai() -> None:
     stderr = utils.assert_command_failure("short", "--temperature=", PROMPT)
     assert "Empty temperature" in stderr
+
+
+@pytest.mark.test_ollama
+def test_empty_temp_ollama() -> None:
+    # Test that temp is ignored for Ollama stream
+    utils.assert_command_success("short", "--temperature=", "-l", PROMPT)
 
 
 @pytest.mark.test_openai
