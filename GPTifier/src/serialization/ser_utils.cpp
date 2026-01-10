@@ -36,4 +36,15 @@ void throw_on_error_response(const std::string &response)
     throw std::runtime_error(errmsg);
 }
 
+void throw_on_ollama_error_response(const std::string &response)
+{
+    const nlohmann::json json = parse_json(response);
+
+    if (not json.contains("error")) {
+        throw std::runtime_error("An error occurred but 'error' key not found in the response JSON");
+    }
+
+    throw std::runtime_error(json["error"]);
+}
+
 } // namespace serialization
