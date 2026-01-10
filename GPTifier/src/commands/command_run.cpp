@@ -13,7 +13,6 @@
 #include <fmt/core.h>
 #include <getopt.h>
 #include <iostream>
-#include <mutex>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -208,22 +207,20 @@ serialization::Response run_query(const std::string &model, const std::string &p
 
     bool query_failed = false;
     serialization::Response rp;
-    std::mutex mutex_print_stderr;
+    std::string errmsg;
 
     try {
         rp = serialization::create_response(prompt, model, temperature);
     } catch (std::runtime_error &e) {
         query_failed = true;
-        {
-            std::lock_guard<std::mutex> lock(mutex_print_stderr);
-            fmt::print(stderr, "{}\n", e.what());
-        }
+        errmsg = e.what();
     }
 
     TIMER_ENABLED.store(false);
     timer.join();
 
     if (query_failed) {
+        fmt::print(stderr, "{}\n", errmsg);
         throw std::runtime_error("Cannot proceed");
     }
 
