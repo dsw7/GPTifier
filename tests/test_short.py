@@ -3,6 +3,7 @@ import pytest
 import utils
 
 PROMPT = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
+MODEL_OLLAMA = "gemma3:latest"
 
 
 def _load_output(output: Any) -> str:
@@ -40,14 +41,23 @@ def test_short_prompt_openai() -> None:
 @pytest.mark.test_ollama
 def test_short_prompt_ollama() -> None:
     stdout = utils.assert_command_success(
-        "short", "--use-local", "--model=gemma3:latest", PROMPT
+        "short", "--use-local", f"--model={MODEL_OLLAMA}", PROMPT
     )
     assert ">>>4<<<" in stdout
 
 
+@pytest.mark.test_openai
 @pytest.mark.parametrize("option", ["-j", "--json"])
-def test_short_raw_json(option: str) -> None:
+def test_short_raw_json_openai(option: str) -> None:
     stdout = utils.assert_command_success("short", option, PROMPT)
+    results = utils.load_stdout_to_json(stdout)
+    assert ">>>4<<<" in _load_output(results["output"])
+
+
+@pytest.mark.test_ollama
+@pytest.mark.parametrize("option", ["-j", "--json"])
+def test_short_raw_json_ollama(option: str) -> None:
+    stdout = utils.assert_command_success("short", option, "--use-local", f"--model={MODEL_OLLAMA}",PROMPT)
     results = utils.load_stdout_to_json(stdout)
     assert ">>>4<<<" in _load_output(results["output"])
 
