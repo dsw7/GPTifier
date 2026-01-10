@@ -128,6 +128,44 @@ std::string get_model()
 #endif
 }
 
+void use_ollama(const Parameters &params)
+{
+    std::string model;
+
+    if (params.model) {
+        model = params.model.value();
+    } else {
+        if (configs.model_short_ollama) {
+            model = configs.model_short_ollama.value();
+        } else {
+            throw std::runtime_error("Could not determine which Ollama model to use");
+        }
+    }
+
+    const serialization::OllamaResponse response = serialization::create_ollama_response(params.prompt.value(), model);
+
+    if (params.print_raw_json) {
+        fmt::print("{}\n", response.raw_response);
+        return;
+    }
+
+    fmt::print("{}\n", response.output);
+}
+
+void use_openai(const Parameters &params)
+{
+    const std::string model = get_model();
+    const float temperature = get_temperature(params.temperature);
+    const serialization::Response response = serialization::create_response(params.prompt.value(), model, temperature);
+
+    if (params.print_raw_json) {
+        fmt::print("{}\n", response.raw_response);
+        return;
+    }
+
+    fmt::print("{}\n", response.output);
+}
+
 } // namespace
 
 namespace commands {
@@ -144,29 +182,11 @@ void command_short(int argc, char **argv)
         throw std::runtime_error("Prompt is empty");
     }
 
-    const float temperature = get_temperature(params.temperature);
-    const std::string prompt = params.prompt.value();
-
-    std::string raw_response;
-    std::string output;
-
     if (params.use_local) {
-        const serialization::OllamaResponse response = serialization::create_ollama_response(prompt, params.model.value());
-        output = response.output;
-        raw_response = response.raw_response;
+        use_ollama(params);
     } else {
-        const std::string model = get_model();
-        const serialization::Response response = serialization::create_response(prompt, model, temperature);
-        output = response.output;
-        raw_response = response.raw_response;
+        use_openai(params);
     }
-
-    if (params.print_raw_json) {
-        fmt::print("{}\n", raw_response);
-        return;
-    }
-
-    fmt::print("{}\n", output);
 }
 
 } // namespace commands
