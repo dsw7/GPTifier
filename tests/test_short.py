@@ -4,6 +4,7 @@ import utils
 
 PROMPT = '"What is 2 + 2? Format the result as follows: >>>{result}<<<"'
 MODEL_OLLAMA = "gemma3:latest"
+MODEL_OPENAI = "gpt-3.5-turbo"
 
 
 @pytest.mark.parametrize("option", ["-h", "--help"])
@@ -14,7 +15,9 @@ def test_help(option: str) -> None:
 
 @pytest.mark.test_openai
 def test_short_prompt_openai() -> None:
-    stdout = utils.assert_command_success("short", "--temperature=1.00", PROMPT)
+    stdout = utils.assert_command_success(
+        "short", f"--model={MODEL_OPENAI}", "--temperature=1.00", PROMPT
+    )
     assert ">>>4<<<" in stdout
 
 
@@ -24,6 +27,12 @@ def test_short_prompt_ollama() -> None:
         "short", "--use-local", f"--model={MODEL_OLLAMA}", PROMPT
     )
     assert ">>>4<<<" in stdout
+
+
+@pytest.mark.test_openai
+def test_invalid_model_openai() -> None:
+    stderr = utils.assert_command_failure("short", "--model=foobar", PROMPT)
+    assert "The requested model 'foobar' does not exist.\n" in stderr
 
 
 @pytest.mark.test_ollama
@@ -57,7 +66,9 @@ def _load_openai_output(output: Any) -> str:
 @pytest.mark.test_openai
 @pytest.mark.parametrize("option", ["-j", "--json"])
 def test_short_raw_json_openai(option: str) -> None:
-    stdout = utils.assert_command_success("short", option, PROMPT)
+    stdout = utils.assert_command_success(
+        "short", option, f"--model={MODEL_OPENAI}", PROMPT
+    )
     results = utils.load_stdout_to_json(stdout)
     assert ">>>4<<<" in _load_openai_output(results["output"])
 
