@@ -52,6 +52,7 @@ set(SRC_FILES
   src/configs.cpp
   src/datadir.cpp
   src/main.cpp
+  src/networking/api_ollama.cpp
   src/networking/api_openai_admin.cpp
   src/networking/api_openai_user.cpp
   src/networking/curl_base.cpp
