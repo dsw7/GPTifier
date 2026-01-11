@@ -312,28 +312,29 @@ void print_ratio(int num_tokens, int num_words)
     }
 }
 
-void print_usage_statistics(const serialization::Response &rp)
+template<typename T>
+void print_usage_statistics(const T &response)
 {
-    const int wc_input = utils::get_word_count(rp.input);
-    const int wc_output = utils::get_word_count(rp.output);
+    const int wc_input = utils::get_word_count(response.input);
+    const int wc_output = utils::get_word_count(response.output);
 
     fmt::print(fg(white), "Usage:\n");
-    fmt::print("Model: {}\n", rp.model);
-    fmt::print("RTT: {} s\n", rp.rtt.count());
+    fmt::print("Model: {}\n", response.model);
+    fmt::print("RTT: {} s\n", response.rtt.count());
     fmt::print("\n");
 
     fmt::print("Prompt tokens: ");
-    fmt::print(fg(green), "{}\n", rp.input_tokens);
+    fmt::print(fg(green), "{}\n", response.input_tokens);
     fmt::print("Prompt size (words): ");
     fmt::print(fg(green), "{}\n", wc_input);
-    print_ratio(rp.input_tokens, wc_input);
+    print_ratio(response.input_tokens, wc_input);
     fmt::print("\n");
 
     fmt::print("Completion tokens: ");
-    fmt::print(fg(green), "{}\n", rp.output_tokens);
+    fmt::print(fg(green), "{}\n", response.output_tokens);
     fmt::print("Completion size (words): ");
     fmt::print(fg(green), "{}\n", wc_output);
-    print_ratio(rp.output_tokens, wc_output);
+    print_ratio(response.output_tokens, wc_output);
 }
 
 void write_message_to_file(const serialization::Response &rp)
