@@ -130,19 +130,6 @@ Parameters read_cli(int argc, char **argv)
     return params;
 }
 
-std::string get_model()
-{
-#ifdef TESTING_ENABLED
-    static std::string low_cost_model = "gpt-3.5-turbo";
-    return low_cost_model;
-#else
-    if (configs.model_run) {
-        return configs.model_run.value();
-    }
-    throw std::runtime_error("Could not determine which model to use");
-#endif
-}
-
 std::string get_prompt(const Parameters &params)
 {
     if (params.prompt) {
@@ -349,31 +336,33 @@ void export_response(const serialization::Response &rp)
 
 #pragma GCC diagnostic pop
 
-} // namespace
+// OpenAI / Ollama ------------------------------------------------------------------------------------------
 
-namespace commands {
-
-void command_run(int argc, char **argv)
+void run_ollama_query()
 {
-    const Parameters params = read_cli(argc, argv);
-    utils::separator();
+}
 
+void run_openai_query(const Parameters &params, const std::string &prompt)
+{
+#ifdef TESTING_ENABLED
+    const std::string model = "gpt-3.5-turbo";
+#else
     std::string model;
+
     if (params.model) {
         model = params.model.value();
     } else {
-        model = get_model();
+        if (configs.model_run) {
+            model = configs.model_run.value();
+        } else {
+            throw std::runtime_error("Could not determine which OpenAI model to use");
+        }
     }
 
     if (model.empty()) {
         throw std::runtime_error("Model is empty");
     }
-
-    const std::string prompt = get_prompt(params);
-
-    if (prompt.empty()) {
-        throw std::runtime_error("Prompt is empty");
-    }
+#endif
 
     const float temperature = get_temperature(params.temperature);
     const serialization::Response rp = run_query(model, prompt, temperature);
@@ -393,6 +382,28 @@ void command_run(int argc, char **argv)
     export_response(rp);
     utils::separator();
 #endif
+}
+
+} // namespace
+
+namespace commands {
+
+void command_run(int argc, char **argv)
+{
+    const Parameters params = read_cli(argc, argv);
+    utils::separator();
+
+    const std::string prompt = get_prompt(params);
+
+    if (prompt.empty()) {
+        throw std::runtime_error("Prompt is empty");
+    }
+
+    if (params.use_local) {
+        run_ollama_query();
+    } else {
+        run_openai_query(params, prompt);
+    }
 }
 
 } // namespace commands
