@@ -337,15 +337,22 @@ void print_usage_statistics(const T &response)
     print_ratio(response.output_tokens, wc_output);
 }
 
-void write_message_to_file(const serialization::Response &rp)
+template<typename T>
+void write_message_to_file(const T &response)
 {
-    const std::string created = utils::datetime_from_unix_timestamp(rp.created);
+    std::string created;
+    if constexpr (std::is_same_v<T, serialization::Response>) {
+        created = utils::datetime_from_unix_timestamp(response.created);
+    } else {
+        // creation time comes as ISO date from Ollama
+        created = response.created;
+    }
 
     std::string text = "{\n";
     text += "> Created at: " + created + " (GMT)\n";
-    text += "> Model: " + rp.model + "\n\n";
-    text += "> Input:\n" + rp.input + "\n\n";
-    text += "> Output:\n" + rp.output + "\n";
+    text += "> Model: " + response.model + "\n\n";
+    text += "> Input:\n" + response.input + "\n\n";
+    text += "> Output:\n" + response.output + "\n";
     text += "}\n\n";
 
     const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
@@ -357,7 +364,8 @@ void write_message_to_file(const serialization::Response &rp)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-function"
 
-void export_response(const serialization::Response &rp)
+template<typename T>
+void export_response(const T &response)
 {
     fmt::print(fg(white), "Export:\n");
     char choice = 'n';
@@ -378,7 +386,7 @@ void export_response(const serialization::Response &rp)
         return;
     }
 
-    write_message_to_file(rp);
+    write_message_to_file(response);
 }
 
 #pragma GCC diagnostic pop
