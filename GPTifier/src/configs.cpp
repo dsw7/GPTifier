@@ -21,6 +21,7 @@ void Configs::load_configs_from_config_file()
 
     this->model_embed = table["command"]["embed"]["model"].value<std::string>();
     this->model_run = table["command"]["run"]["model"].value<std::string>();
+    this->model_run_ollama = table["command"]["run"]["model_ollama"].value<std::string>();
     this->model_short = table["command"]["short"]["model"].value<std::string>();
     this->model_short_ollama = table["command"]["short"]["model_ollama"].value<std::string>();
 }

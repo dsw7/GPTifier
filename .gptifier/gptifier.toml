@@ -7,6 +7,9 @@
 # Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
 model = "gpt-4o"
 
+# Optionally, specify a default Ollama generation model to use such as "gemma3:latest"
+model_ollama = "gemma3:latest"
+
 [command.short]
 # Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
 model = "gpt-4o"
