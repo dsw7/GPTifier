@@ -61,6 +61,18 @@ def test_empty_prompt_file() -> None:
     assert "Empty prompt filename" in stderr
 
 
+def test_invalid_output_file_location() -> None:
+    stderr = utils.assert_command_failure(
+        "run", f"--prompt='{DUMMY_PROMPT_1}'", "--file=/tmp/a/b/c"
+    )
+    assert "Unable to open '/tmp/a/b/c'" in stderr
+
+
+def test_empty_output_file() -> None:
+    stderr = utils.assert_command_failure("run", "--prompt='What is 7 + 2?'", "--file=")
+    assert "No filename provided" in stderr
+
+
 @pytest.fixture
 def inputfile() -> Generator[Path, None, None]:
     filename = Path.cwd() / "Inputfile"
@@ -182,19 +194,8 @@ def test_empty_temp() -> None:
     assert "Empty temperature" in stderr
 
 
-def test_invalid_output_file_location() -> None:
-    stderr = utils.assert_command_failure(
-        "run", f"--prompt='{DUMMY_PROMPT_1}'", "--file=/tmp/a/b/c"
-    )
-    assert "Unable to open '/tmp/a/b/c'" in stderr
-
-
-def test_empty_output_file() -> None:
-    stderr = utils.assert_command_failure("run", "--prompt='What is 7 + 2?'", "--file=")
-    assert "No filename provided" in stderr
-
-
-def test_empty_model() -> None:
+@pytest.mark.test_openai
+def test_empty_model_openai() -> None:
     stderr = utils.assert_command_failure("run", "-p'foobar'", "--model=")
     assert "Model is empty" in stderr
 
