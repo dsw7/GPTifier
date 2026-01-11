@@ -426,25 +426,25 @@ void run_ollama_query(const Parameters &params, const std::string &prompt)
 
 void run_openai_query(const Parameters &params, const std::string &prompt)
 {
-#ifdef TESTING_ENABLED
-    const std::string model = "gpt-3.5-turbo";
-#else
     std::string model;
 
     if (params.model) {
         model = params.model.value();
     } else {
+#ifdef TESTING_ENABLED
+        model = "gpt-3.5-turbo";
+#else
         if (configs.model_run) {
             model = configs.model_run.value();
         } else {
             throw std::runtime_error("Could not determine which OpenAI model to use");
         }
+#endif
     }
 
     if (model.empty()) {
         throw std::runtime_error("Model is empty");
     }
-#endif
 
     const float temperature = get_temperature(params.temperature);
     const serialization::Response rp = run_query(model, prompt, temperature);
