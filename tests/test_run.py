@@ -38,6 +38,12 @@ def _load_content(json_file: str) -> _Response:
     )
 
 
+@pytest.mark.parametrize("option", ["-h", "--help"])
+def test_help(option: str) -> None:
+    stdout = utils.assert_command_success("run", option)
+    assert "Create a response according to a prompt." in stdout
+
+
 @pytest.fixture
 def inputfile() -> Generator[Path, None, None]:
     filename = Path.cwd() / "Inputfile"
@@ -45,7 +51,8 @@ def inputfile() -> Generator[Path, None, None]:
     filename.unlink()
 
 
-def test_read_from_inputfile(inputfile: Path) -> None:
+@pytest.mark.test_openai
+def test_read_from_inputfile_openai(inputfile: Path) -> None:
     prompt = "What is 1 + 3? Format the result as follows: >>>{result}<<<"
     completion = ">>>4<<<"
     inputfile.write_text(prompt)
@@ -53,6 +60,19 @@ def test_read_from_inputfile(inputfile: Path) -> None:
     with NamedTemporaryFile(dir=gettempdir()) as f:
         json_file = f.name
         utils.assert_command_success("run", "-t0", f"-o{json_file}")
+        content = _load_content(json_file)
+        assert content.output == completion
+
+
+@pytest.mark.test_ollama
+def test_read_from_inputfile_ollama(inputfile: Path) -> None:
+    prompt = "What is 1 + 3? Format the result as follows: >>>{result}<<<"
+    completion = ">>>4<<<"
+    inputfile.write_text(prompt)
+
+    with NamedTemporaryFile(dir=gettempdir()) as f:
+        json_file = f.name
+        utils.assert_command_success("run", "-t0", f"-o{json_file}", "--use-local")
         content = _load_content(json_file)
         assert content.output == completion
 
@@ -72,12 +92,6 @@ def test_valid_response_json() -> None:
 
         diff_created = abs(content.created - int(time()))
         assert diff_created <= 2.0, "Creation times are not within 2 seconds"
-
-
-@pytest.mark.parametrize("option", ["-h", "--help"])
-def test_help(option: str) -> None:
-    stdout = utils.assert_command_success("run", option)
-    assert "Create a response according to a prompt." in stdout
 
 
 def test_read_from_file() -> None:
