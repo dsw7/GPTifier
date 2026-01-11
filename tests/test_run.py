@@ -21,6 +21,7 @@ class _Response:
     output: str
     output_tokens: int
     rtt: float
+    source: str
 
 
 def _load_content(json_file: str) -> _Response:
@@ -35,76 +36,14 @@ def _load_content(json_file: str) -> _Response:
         output=contents["output"],
         output_tokens=contents["output_tokens"],
         rtt=contents["rtt"],
+        source=contents["source"],
     )
-
-
-@pytest.fixture
-def inputfile() -> Generator[Path, None, None]:
-    filename = Path.cwd() / "Inputfile"
-    yield filename
-    filename.unlink()
-
-
-def test_read_from_inputfile(inputfile: Path) -> None:
-    prompt = "What is 1 + 3? Format the result as follows: >>>{result}<<<"
-    completion = ">>>4<<<"
-    inputfile.write_text(prompt)
-
-    with NamedTemporaryFile(dir=gettempdir()) as f:
-        json_file = f.name
-        utils.assert_command_success("run", "-t0", f"-o{json_file}")
-        content = _load_content(json_file)
-        assert content.output == completion
-
-
-def test_valid_response_json() -> None:
-    prompt = "What is 1 + 4? Format the result as follows: >>>{result}<<<"
-    completion = ">>>5<<<"
-
-    with NamedTemporaryFile(dir=gettempdir()) as f:
-        utils.assert_command_success("run", f"-p{prompt}", "-t0", f"-o{f.name}")
-        content = _load_content(f.name)
-
-        assert content.input_ == prompt
-        assert content.output == completion
-        assert content.input_tokens == 26
-        assert content.output_tokens == 4
-
-        diff_created = abs(content.created - int(time()))
-        assert diff_created <= 2.0, "Creation times are not within 2 seconds"
 
 
 @pytest.mark.parametrize("option", ["-h", "--help"])
 def test_help(option: str) -> None:
     stdout = utils.assert_command_success("run", option)
     assert "Create a response according to a prompt." in stdout
-
-
-def test_read_from_file() -> None:
-    prompt = Path(__file__).resolve().parent / "test_run" / "prompt_basic.txt"
-
-    with NamedTemporaryFile(dir=gettempdir()) as f:
-        json_file = f.name
-        utils.assert_command_success("run", f"-r{prompt}", "-t0", f"-o{json_file}")
-        content = _load_content(json_file)
-        assert content.output == ">>>8<<<"
-
-
-def test_write_to_stdout() -> None:
-    stdout = utils.assert_command_success("run", f"-p'{DUMMY_PROMPT_1}'")
-    assert ">>>2<<<" in stdout
-
-
-def test_invalid_temp() -> None:
-    stderr = utils.assert_command_failure("run", f"-p'{DUMMY_PROMPT_1}'", "-tfoobar")
-    assert "Failed to convert 'foobar' to float" in stderr
-
-
-def test_empty_temp() -> None:
-    stderr = utils.assert_command_failure(
-        "run", "-p'A foo that bars?'", "--temperature="
-    )
-    assert "Empty temperature" in stderr
 
 
 def test_missing_prompt_file() -> None:
@@ -134,11 +73,140 @@ def test_empty_output_file() -> None:
     assert "No filename provided" in stderr
 
 
-def test_empty_model() -> None:
+@pytest.fixture
+def inputfile() -> Generator[Path, None, None]:
+    filename = Path.cwd() / "Inputfile"
+    yield filename
+    filename.unlink()
+
+
+@pytest.mark.test_openai
+def test_read_from_inputfile_openai(inputfile: Path) -> None:
+    prompt = "What is 1 + 3? Format the result as follows: >>>{result}<<<"
+    inputfile.write_text(prompt)
+
+    with NamedTemporaryFile(dir=gettempdir()) as f:
+        json_file = f.name
+        utils.assert_command_success("run", "-t0", f"-o{json_file}")
+        content = _load_content(json_file)
+        assert content.output == ">>>4<<<"
+
+
+@pytest.mark.test_ollama
+def test_read_from_inputfile_ollama(inputfile: Path) -> None:
+    prompt = "What is 1 + 3? Format the result as follows: >>>{result}<<<"
+    inputfile.write_text(prompt)
+
+    with NamedTemporaryFile(dir=gettempdir()) as f:
+        json_file = f.name
+        utils.assert_command_success("run", "-t0", f"-o{json_file}", "--use-local")
+        content = _load_content(json_file)
+        assert ">>>4<<<" in content.output
+
+
+@pytest.mark.test_openai
+def test_valid_response_json_openai() -> None:
+    prompt = "What is 1 + 4? Format the result as follows: >>>{result}<<<"
+
+    with NamedTemporaryFile(dir=gettempdir()) as f:
+        utils.assert_command_success(
+            "run", f"-p{prompt}", "-t0", f"-o{f.name}", "--model=gpt-4o"
+        )
+        content = _load_content(f.name)
+
+        assert ">>>5<<<" in content.output
+        assert "gpt-4o" in content.model
+        assert content.input_ == prompt
+        assert content.source == "OpenAI"
+
+        diff_created = abs(content.created - int(time()))
+        assert diff_created <= 2.0, "Creation times are not within 2 seconds"
+
+
+@pytest.mark.test_ollama
+def test_valid_response_json_ollama() -> None:
+    prompt = "What is 1 + 4? Format the result as follows: >>>{result}<<<"
+
+    with NamedTemporaryFile(dir=gettempdir()) as f:
+        utils.assert_command_success(
+            "run",
+            f"-p{prompt}",
+            "-t0",
+            f"-o{f.name}",
+            "--use-local",
+            "--model=gemma3:latest",
+        )
+        content = _load_content(f.name)
+
+        assert ">>>5<<<" in content.output
+        assert content.input_ == prompt
+        assert content.model == "gemma3:latest"
+        assert content.source == "Ollama"
+
+
+@pytest.mark.test_openai
+def test_read_from_prompt_file_openai() -> None:
+    prompt = Path(__file__).resolve().parent / "test_run" / "prompt_basic.txt"
+
+    with NamedTemporaryFile(dir=gettempdir()) as f:
+        json_file = f.name
+        utils.assert_command_success("run", f"-r{prompt}", "-t0", f"-o{json_file}")
+        content = _load_content(json_file)
+        assert ">>>8<<<" in content.output
+
+
+@pytest.mark.test_ollama
+def test_read_from_prompt_file_ollama() -> None:
+    prompt = Path(__file__).resolve().parent / "test_run" / "prompt_basic.txt"
+
+    with NamedTemporaryFile(dir=gettempdir()) as f:
+        json_file = f.name
+        utils.assert_command_success(
+            "run", f"-r{prompt}", "-t0", f"-o{json_file}", "--use-local"
+        )
+        content = _load_content(json_file)
+        assert ">>>8<<<" in content.output
+
+
+@pytest.mark.test_openai
+def test_write_to_stdout_openai() -> None:
+    stdout = utils.assert_command_success("run", f"-p'{DUMMY_PROMPT_1}'")
+    assert ">>>2<<<" in stdout
+
+
+@pytest.mark.test_ollama
+def test_write_to_stdout_ollama() -> None:
+    stdout = utils.assert_command_success("run", f"-p'{DUMMY_PROMPT_1}'", "-l")
+    assert ">>>2<<<" in stdout
+
+
+@pytest.mark.test_openai
+def test_invalid_temp() -> None:
+    stderr = utils.assert_command_failure("run", f"-p'{DUMMY_PROMPT_1}'", "-tfoobar")
+    assert "Failed to convert 'foobar' to float" in stderr
+
+
+@pytest.mark.test_openai
+def test_empty_temp() -> None:
+    stderr = utils.assert_command_failure(
+        "run", "-p'A foo that bars?'", "--temperature="
+    )
+    assert "Empty temperature" in stderr
+
+
+@pytest.mark.test_openai
+def test_empty_model_openai() -> None:
     stderr = utils.assert_command_failure("run", "-p'foobar'", "--model=")
     assert "Model is empty" in stderr
 
 
+@pytest.mark.test_ollama
+def test_empty_model_ollama() -> None:
+    stderr = utils.assert_command_failure("run", "-p'foobar'", "--model=", "-l")
+    assert "Model is empty" in stderr
+
+
+@pytest.mark.test_openai
 @pytest.mark.parametrize(
     "model",
     [
@@ -156,16 +224,26 @@ def test_empty_model() -> None:
         "o4-mini",
     ],
 )
-def test_misc_valid_models(model: str) -> None:
+def test_misc_valid_openai_models(model: str) -> None:
     prompt = "What is 1 + 1?"
     utils.assert_command_success("run", f"-p'{prompt}'", f"-m{model}")
 
 
-def test_non_existent_model() -> None:
+@pytest.mark.test_openai
+def test_non_existent_model_openai() -> None:
     stderr = utils.assert_command_failure("run", f"-p'{DUMMY_PROMPT_2}'", "-mfoobar")
     assert "The requested model 'foobar' does not exist.\nCannot proceed" in stderr
 
 
+@pytest.mark.test_ollama
+def test_non_existent_model_ollama() -> None:
+    stderr = utils.assert_command_failure(
+        "run", f"-p'{DUMMY_PROMPT_2}'", "-mfoobar", "--use-local"
+    )
+    assert "model 'foobar' not found\nCannot proceed" in stderr
+
+
+@pytest.mark.test_openai
 @pytest.mark.parametrize(
     "model",
     [
@@ -181,6 +259,7 @@ def test_wrong_endpoint_model_not_supported(model: str) -> None:
     )
 
 
+@pytest.mark.test_openai
 @pytest.mark.parametrize(
     "model",
     [
@@ -196,12 +275,14 @@ def test_wrong_endpoint_model_not_found(model: str) -> None:
     assert f"The requested model, '{model}' was not found.\nCannot proceed\n" in stderr
 
 
+@pytest.mark.test_openai
 @pytest.mark.parametrize("model", ["gpt-5", "gpt-5-mini", "gpt-5-codex", "o3"])
 def test_unverified_organization_error(model: str) -> None:
     stderr = utils.assert_command_failure("run", f"-p'{DUMMY_PROMPT_2}'", f"-m{model}")
     assert f"Your organization must be verified to use the model '{model}'." in stderr
 
 
+@pytest.mark.test_openai
 def test_wrong_endpoint_deep_research() -> None:
     model = "o4-mini-deep-research"
     stderr = utils.assert_command_failure("run", f"-p'{DUMMY_PROMPT_2}'", f"-m{model}")
@@ -211,6 +292,7 @@ def test_wrong_endpoint_deep_research() -> None:
     )
 
 
+@pytest.mark.test_openai
 @pytest.mark.parametrize("model", ["sora-2", "sora-2-pro"])
 def test_sora_2(model: str) -> None:
     stderr = utils.assert_command_failure("run", f"-p'{DUMMY_PROMPT_2}'", f"-m{model}")

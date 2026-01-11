@@ -2,6 +2,7 @@
 
 #include "configs.hpp"
 #include "datadir.hpp"
+#include "ollama_generate.hpp"
 #include "responses.hpp"
 #include "utils.hpp"
 
@@ -39,6 +40,7 @@ Usage:
 Options:
   -h, --help                     Print help information and exit
   -m, --model=MODEL              Specify a valid chat model
+  -l, --use-local                Connect to locally hosted LLM as opposed to OpenAI
   -o, --file=FILE                Export results to a JSON file named FILE
   -p, --prompt=PROMPT            Provide prompt via command line
   -r, --read-from-file=FILENAME  Read prompt from a custom file named FILENAME
@@ -56,6 +58,7 @@ Examples:
 }
 
 struct Parameters {
+    bool use_local = false;
     std::optional<std::string> json_dump_file;
     std::optional<std::string> model;
     std::optional<std::string> prompt;
@@ -72,6 +75,7 @@ Parameters read_cli(int argc, char **argv)
             { "help", no_argument, 0, 'h' },
             { "file", required_argument, 0, 'o' },
             { "model", required_argument, 0, 'm' },
+            { "use-local", no_argument, 0, 'l' },
             { "prompt", required_argument, 0, 'p' },
             { "read-from-file", required_argument, 0, 'r' },
             { "temperature", required_argument, 0, 't' },
@@ -79,7 +83,7 @@ Parameters read_cli(int argc, char **argv)
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "ho:m:p:r:t:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "ho:m:lp:r:t:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -104,6 +108,9 @@ Parameters read_cli(int argc, char **argv)
             case 'm':
                 params.model = optarg;
                 break;
+            case 'l':
+                params.use_local = true;
+                break;
             default:
                 utils::exit_on_failure();
         }
@@ -122,19 +129,6 @@ Parameters read_cli(int argc, char **argv)
     }
 
     return params;
-}
-
-std::string get_model()
-{
-#ifdef TESTING_ENABLED
-    static std::string low_cost_model = "gpt-3.5-turbo";
-    return low_cost_model;
-#else
-    if (configs.model_run) {
-        return configs.model_run.value();
-    }
-    throw std::runtime_error("Could not determine which model to use");
-#endif
 }
 
 std::string get_prompt(const Parameters &params)
@@ -227,20 +221,54 @@ serialization::Response run_query(const std::string &model, const std::string &p
     return rp;
 }
 
+serialization::OllamaResponse run_query(const std::string &model, const std::string &prompt)
+{
+    TIMER_ENABLED.store(true);
+    std::thread timer(time_api_call);
+
+    bool query_failed = false;
+    serialization::OllamaResponse rp;
+    std::string errmsg;
+
+    try {
+        rp = serialization::create_ollama_response(prompt, model);
+    } catch (std::runtime_error &e) {
+        query_failed = true;
+        errmsg = e.what();
+    }
+
+    TIMER_ENABLED.store(false);
+    timer.join();
+
+    if (query_failed) {
+        fmt::print(stderr, "{}\n", errmsg);
+        throw std::runtime_error("Cannot proceed");
+    }
+
+    return rp;
+}
+
 // Output ---------------------------------------------------------------------------------------------------
 
-void dump_response(const serialization::Response &rp, const std::string &json_dump_file)
+template<typename T>
+void dump_response(const T &response, const std::string &json_dump_file)
 {
-    const nlohmann::json json = {
-        { "created", rp.created },
-        { "id", rp.id },
-        { "input", rp.input },
-        { "input_tokens", rp.input_tokens },
-        { "model", rp.model },
-        { "output", rp.output },
-        { "output_tokens", rp.output_tokens },
-        { "rtt", rp.rtt.count() },
+    nlohmann::json json = {
+        { "created", response.created },
+        { "input", response.input },
+        { "input_tokens", response.input_tokens },
+        { "model", response.model },
+        { "output", response.output },
+        { "output_tokens", response.output_tokens },
+        { "rtt", response.rtt.count() },
     };
+
+    if constexpr (std::is_same_v<T, serialization::Response>) {
+        json["id"] = response.id;
+        json["source"] = "OpenAI";
+    } else {
+        json["source"] = "Ollama";
+    }
 
     fmt::print("Dumping results to '{}'\n", json_dump_file);
     utils::write_to_file(json_dump_file, json.dump(2));
@@ -273,39 +301,52 @@ void print_ratio(int num_tokens, int num_words)
     }
 }
 
-void print_usage_statistics(const serialization::Response &rp)
+template<typename T>
+void print_usage_statistics(const T &response)
 {
-    const int wc_input = utils::get_word_count(rp.input);
-    const int wc_output = utils::get_word_count(rp.output);
+    const int wc_input = utils::get_word_count(response.input);
+    const int wc_output = utils::get_word_count(response.output);
 
     fmt::print(fg(white), "Usage:\n");
-    fmt::print("Model: {}\n", rp.model);
-    fmt::print("RTT: {} s\n", rp.rtt.count());
+    fmt::print("Model: {}\n", response.model);
+    fmt::print("RTT: {} s\n", response.rtt.count());
     fmt::print("\n");
 
     fmt::print("Prompt tokens: ");
-    fmt::print(fg(green), "{}\n", rp.input_tokens);
+    fmt::print(fg(green), "{}\n", response.input_tokens);
     fmt::print("Prompt size (words): ");
     fmt::print(fg(green), "{}\n", wc_input);
-    print_ratio(rp.input_tokens, wc_input);
+    print_ratio(response.input_tokens, wc_input);
     fmt::print("\n");
 
     fmt::print("Completion tokens: ");
-    fmt::print(fg(green), "{}\n", rp.output_tokens);
+    fmt::print(fg(green), "{}\n", response.output_tokens);
     fmt::print("Completion size (words): ");
     fmt::print(fg(green), "{}\n", wc_output);
-    print_ratio(rp.output_tokens, wc_output);
+    print_ratio(response.output_tokens, wc_output);
 }
 
-void write_message_to_file(const serialization::Response &rp)
+template<typename T>
+void write_message_to_file(const T &response)
 {
-    const std::string created = utils::datetime_from_unix_timestamp(rp.created);
+    std::string created;
+    std::string source;
+
+    if constexpr (std::is_same_v<T, serialization::Response>) {
+        created = utils::datetime_from_unix_timestamp(response.created);
+        source = "OpenAI";
+    } else {
+        // creation time comes as ISO date from Ollama
+        created = response.created;
+        source = "Ollama";
+    }
 
     std::string text = "{\n";
     text += "> Created at: " + created + " (GMT)\n";
-    text += "> Model: " + rp.model + "\n\n";
-    text += "> Input:\n" + rp.input + "\n\n";
-    text += "> Output:\n" + rp.output + "\n";
+    text += "> Source: " + source + "\n\n";
+    text += "> Model: " + response.model + "\n\n";
+    text += "> Input:\n" + response.input + "\n\n";
+    text += "> Output:\n" + response.output + "\n";
     text += "}\n\n";
 
     const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
@@ -317,7 +358,8 @@ void write_message_to_file(const serialization::Response &rp)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-function"
 
-void export_response(const serialization::Response &rp)
+template<typename T>
+void export_response(const T &response)
 {
     fmt::print(fg(white), "Export:\n");
     char choice = 'n';
@@ -338,35 +380,70 @@ void export_response(const serialization::Response &rp)
         return;
     }
 
-    write_message_to_file(rp);
+    write_message_to_file(response);
 }
 
 #pragma GCC diagnostic pop
 
-} // namespace
+// OpenAI / Ollama ------------------------------------------------------------------------------------------
 
-namespace commands {
-
-void command_run(int argc, char **argv)
+void run_ollama_query(const Parameters &params, const std::string &prompt)
 {
-    const Parameters params = read_cli(argc, argv);
-    utils::separator();
-
     std::string model;
+
     if (params.model) {
         model = params.model.value();
     } else {
-        model = get_model();
+        if (configs.model_run_ollama) {
+            model = configs.model_run_ollama.value();
+        } else {
+            throw std::runtime_error("Could not determine which Ollama model to use");
+        }
     }
 
     if (model.empty()) {
         throw std::runtime_error("Model is empty");
     }
 
-    const std::string prompt = get_prompt(params);
+    const serialization::OllamaResponse rp = run_query(model, prompt);
 
-    if (prompt.empty()) {
-        throw std::runtime_error("Prompt is empty");
+    if (params.json_dump_file) {
+        dump_response(rp, params.json_dump_file.value());
+        return;
+    }
+
+    print_usage_statistics(rp);
+    utils::separator();
+
+    print_response(rp.output);
+    utils::separator();
+
+#ifndef TESTING_ENABLED
+    export_response(rp);
+    utils::separator();
+#endif
+}
+
+void run_openai_query(const Parameters &params, const std::string &prompt)
+{
+    std::string model;
+
+    if (params.model) {
+        model = params.model.value();
+    } else {
+#ifdef TESTING_ENABLED
+        model = "gpt-3.5-turbo";
+#else
+        if (configs.model_run) {
+            model = configs.model_run.value();
+        } else {
+            throw std::runtime_error("Could not determine which OpenAI model to use");
+        }
+#endif
+    }
+
+    if (model.empty()) {
+        throw std::runtime_error("Model is empty");
     }
 
     const float temperature = get_temperature(params.temperature);
@@ -387,6 +464,28 @@ void command_run(int argc, char **argv)
     export_response(rp);
     utils::separator();
 #endif
+}
+
+} // namespace
+
+namespace commands {
+
+void command_run(int argc, char **argv)
+{
+    const Parameters params = read_cli(argc, argv);
+    utils::separator();
+
+    const std::string prompt = get_prompt(params);
+
+    if (prompt.empty()) {
+        throw std::runtime_error("Prompt is empty");
+    }
+
+    if (params.use_local) {
+        run_ollama_query(params, prompt);
+    } else {
+        run_openai_query(params, prompt);
+    }
 }
 
 } // namespace commands
