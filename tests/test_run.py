@@ -82,7 +82,9 @@ def test_valid_response_json_openai() -> None:
     prompt = "What is 1 + 4? Format the result as follows: >>>{result}<<<"
 
     with NamedTemporaryFile(dir=gettempdir()) as f:
-        utils.assert_command_success("run", f"-p{prompt}", "-t0", f"-o{f.name}", "--model=gpt-4o")
+        utils.assert_command_success(
+            "run", f"-p{prompt}", "-t0", f"-o{f.name}", "--model=gpt-4o"
+        )
         content = _load_content(f.name)
 
         assert ">>>5<<<" in content.output
@@ -100,7 +102,12 @@ def test_valid_response_json_ollama() -> None:
 
     with NamedTemporaryFile(dir=gettempdir()) as f:
         utils.assert_command_success(
-                "run", f"-p{prompt}", "-t0", f"-o{f.name}", "--use-local", "--model=gemma3:latest",
+            "run",
+            f"-p{prompt}",
+            "-t0",
+            f"-o{f.name}",
+            "--use-local",
+            "--model=gemma3:latest",
         )
         content = _load_content(f.name)
 
