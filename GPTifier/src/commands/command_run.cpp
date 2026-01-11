@@ -3,6 +3,7 @@
 #include "configs.hpp"
 #include "datadir.hpp"
 #include "responses.hpp"
+#include "ollama_generate.hpp"
 #include "utils.hpp"
 
 #include <algorithm>
@@ -220,6 +221,33 @@ serialization::Response run_query(const std::string &model, const std::string &p
     return rp;
 }
 
+serialization::OllamaResponse run_query(const std::string &model, const std::string &prompt)
+{
+    TIMER_ENABLED.store(true);
+    std::thread timer(time_api_call);
+
+    bool query_failed = false;
+    serialization::OllamaResponse rp;
+    std::string errmsg;
+
+    try {
+        rp = serialization::create_ollama_response(prompt, model);
+    } catch (std::runtime_error &e) {
+        query_failed = true;
+        errmsg = e.what();
+    }
+
+    TIMER_ENABLED.store(false);
+    timer.join();
+
+    if (query_failed) {
+        fmt::print(stderr, "{}\n", errmsg);
+        throw std::runtime_error("Cannot proceed");
+    }
+
+    return rp;
+}
+
 // Output ---------------------------------------------------------------------------------------------------
 
 void dump_response(const serialization::Response &rp, const std::string &json_dump_file)
@@ -338,8 +366,37 @@ void export_response(const serialization::Response &rp)
 
 // OpenAI / Ollama ------------------------------------------------------------------------------------------
 
-void run_ollama_query()
+void run_ollama_query(const Parameters &params, const std::string &prompt)
 {
+    std::string model;
+
+    if (params.model) {
+        model = params.model.value();
+    } else {
+        if (configs.model_run_ollama) {
+            model = configs.model_run_ollama.value();
+        } else {
+            throw std::runtime_error("Could not determine which Ollama model to use");
+        }
+    }
+
+    const serialization::OllamaResponse rp = run_query(model, prompt);
+
+    if (params.json_dump_file) {
+        dump_response(rp, params.json_dump_file.value());
+        return;
+    }
+
+    print_usage_statistics(rp);
+    utils::separator();
+
+    print_response(rp.output);
+    utils::separator();
+
+#ifndef TESTING_ENABLED
+    export_response(rp);
+    utils::separator();
+#endif
 }
 
 void run_openai_query(const Parameters &params, const std::string &prompt)
@@ -400,7 +457,7 @@ void command_run(int argc, char **argv)
     }
 
     if (params.use_local) {
-        run_ollama_query();
+        run_ollama_query(params, prompt);
     } else {
         run_openai_query(params, prompt);
     }
