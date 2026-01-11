@@ -206,6 +206,7 @@ def test_empty_model_ollama() -> None:
     assert "Model is empty" in stderr
 
 
+@pytest.mark.test_openai
 @pytest.mark.parametrize(
     "model",
     [
@@ -223,14 +224,23 @@ def test_empty_model_ollama() -> None:
         "o4-mini",
     ],
 )
-def test_misc_valid_models(model: str) -> None:
+def test_misc_valid_openai_models(model: str) -> None:
     prompt = "What is 1 + 1?"
     utils.assert_command_success("run", f"-p'{prompt}'", f"-m{model}")
 
 
-def test_non_existent_model() -> None:
+@pytest.mark.test_openai
+def test_non_existent_model_openai() -> None:
     stderr = utils.assert_command_failure("run", f"-p'{DUMMY_PROMPT_2}'", "-mfoobar")
     assert "The requested model 'foobar' does not exist.\nCannot proceed" in stderr
+
+
+@pytest.mark.test_ollama
+def test_non_existent_model_ollama() -> None:
+    stderr = utils.assert_command_failure(
+        "run", f"-p'{DUMMY_PROMPT_2}'", "-mfoobar", "--use-local"
+    )
+    assert "model 'foobar' not found\nCannot proceed" in stderr
 
 
 @pytest.mark.parametrize(
