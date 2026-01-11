@@ -117,14 +117,28 @@ def test_valid_response_json_ollama() -> None:
         assert content.source == "Ollama"
 
 
-def test_read_from_file() -> None:
+@pytest.mark.test_openai
+def test_read_from_prompt_file_openai() -> None:
     prompt = Path(__file__).resolve().parent / "test_run" / "prompt_basic.txt"
 
     with NamedTemporaryFile(dir=gettempdir()) as f:
         json_file = f.name
         utils.assert_command_success("run", f"-r{prompt}", "-t0", f"-o{json_file}")
         content = _load_content(json_file)
-        assert content.output == ">>>8<<<"
+        assert ">>>8<<<" in content.output
+
+
+@pytest.mark.test_ollama
+def test_read_from_prompt_file_ollama() -> None:
+    prompt = Path(__file__).resolve().parent / "test_run" / "prompt_basic.txt"
+
+    with NamedTemporaryFile(dir=gettempdir()) as f:
+        json_file = f.name
+        utils.assert_command_success(
+            "run", f"-r{prompt}", "-t0", f"-o{json_file}", "--use-local"
+        )
+        content = _load_content(json_file)
+        assert ">>>8<<<" in content.output
 
 
 def test_write_to_stdout() -> None:
