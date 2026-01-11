@@ -39,6 +39,7 @@ Usage:
 Options:
   -h, --help                     Print help information and exit
   -m, --model=MODEL              Specify a valid chat model
+  -l, --use-local                Connect to locally hosted LLM as opposed to OpenAI
   -o, --file=FILE                Export results to a JSON file named FILE
   -p, --prompt=PROMPT            Provide prompt via command line
   -r, --read-from-file=FILENAME  Read prompt from a custom file named FILENAME
@@ -56,6 +57,7 @@ Examples:
 }
 
 struct Parameters {
+    bool use_local = false;
     std::optional<std::string> json_dump_file;
     std::optional<std::string> model;
     std::optional<std::string> prompt;
@@ -72,6 +74,7 @@ Parameters read_cli(int argc, char **argv)
             { "help", no_argument, 0, 'h' },
             { "file", required_argument, 0, 'o' },
             { "model", required_argument, 0, 'm' },
+            { "use-local", no_argument, 0, 'l' },
             { "prompt", required_argument, 0, 'p' },
             { "read-from-file", required_argument, 0, 'r' },
             { "temperature", required_argument, 0, 't' },
@@ -79,7 +82,7 @@ Parameters read_cli(int argc, char **argv)
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "ho:m:p:r:t:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "ho:m:lp:r:t:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -103,6 +106,9 @@ Parameters read_cli(int argc, char **argv)
                 break;
             case 'm':
                 params.model = optarg;
+                break;
+            case 'l':
+                params.use_local = true;
                 break;
             default:
                 utils::exit_on_failure();
