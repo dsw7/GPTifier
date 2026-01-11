@@ -46,6 +46,21 @@ def test_help(option: str) -> None:
     assert "Create a response according to a prompt." in stdout
 
 
+def test_missing_prompt_file() -> None:
+    stderr = utils.assert_command_failure("run", "--read-from-file=/tmp/yU8nnkRs.txt")
+    assert "Unable to open '/tmp/yU8nnkRs.txt'" in stderr
+
+
+def test_empty_prompt() -> None:
+    stderr = utils.assert_command_failure("run", "--prompt=")
+    assert "Prompt is empty" in stderr
+
+
+def test_empty_prompt_file() -> None:
+    stderr = utils.assert_command_failure("run", "--read-from-file=")
+    assert "Empty prompt filename" in stderr
+
+
 @pytest.fixture
 def inputfile() -> Generator[Path, None, None]:
     filename = Path.cwd() / "Inputfile"
@@ -153,31 +168,18 @@ def test_write_to_stdout_ollama() -> None:
     assert ">>>2<<<" in stdout
 
 
+@pytest.mark.test_openai
 def test_invalid_temp() -> None:
     stderr = utils.assert_command_failure("run", f"-p'{DUMMY_PROMPT_1}'", "-tfoobar")
     assert "Failed to convert 'foobar' to float" in stderr
 
 
+@pytest.mark.test_openai
 def test_empty_temp() -> None:
     stderr = utils.assert_command_failure(
         "run", "-p'A foo that bars?'", "--temperature="
     )
     assert "Empty temperature" in stderr
-
-
-def test_missing_prompt_file() -> None:
-    stderr = utils.assert_command_failure("run", "--read-from-file=/tmp/yU8nnkRs.txt")
-    assert "Unable to open '/tmp/yU8nnkRs.txt'" in stderr
-
-
-def test_empty_prompt() -> None:
-    stderr = utils.assert_command_failure("run", "--prompt=")
-    assert "Prompt is empty" in stderr
-
-
-def test_empty_prompt_file() -> None:
-    stderr = utils.assert_command_failure("run", "--read-from-file=")
-    assert "Empty prompt filename" in stderr
 
 
 def test_invalid_output_file_location() -> None:
