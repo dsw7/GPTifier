@@ -250,36 +250,25 @@ serialization::OllamaResponse run_query(const std::string &model, const std::str
 
 // Output ---------------------------------------------------------------------------------------------------
 
-void dump_response(const serialization::Response &rp, const std::string &json_dump_file)
+template<typename T>
+void dump_response(const T &response, const std::string &json_dump_file)
 {
-    const nlohmann::json json = {
-        { "created", rp.created },
-        { "id", rp.id },
-        { "input", rp.input },
-        { "input_tokens", rp.input_tokens },
-        { "model", rp.model },
-        { "output", rp.output },
-        { "output_tokens", rp.output_tokens },
-        { "rtt", rp.rtt.count() },
-        { "source", "OpenAI" },
+    nlohmann::json json = {
+        { "created", response.created },
+        { "input", response.input },
+        { "input_tokens", response.input_tokens },
+        { "model", response.model },
+        { "output", response.output },
+        { "output_tokens", response.output_tokens },
+        { "rtt", response.rtt.count() },
     };
 
-    fmt::print("Dumping results to '{}'\n", json_dump_file);
-    utils::write_to_file(json_dump_file, json.dump(2));
-}
-
-void dump_response(const serialization::OllamaResponse &rp, const std::string &json_dump_file)
-{
-    const nlohmann::json json = {
-        { "created", rp.created },
-        { "input", rp.input },
-        { "input_tokens", rp.input_tokens },
-        { "model", rp.model },
-        { "output", rp.output },
-        { "output_tokens", rp.output_tokens },
-        { "rtt", rp.rtt.count() },
-        { "source", "Ollama" },
-    };
+    if constexpr (std::is_same_v<T, serialization::Response>) {
+        json["id"] = response.id;
+        json["source"] = "OpenAI";
+    } else {
+        json["source"] = "Ollama";
+    }
 
     fmt::print("Dumping results to '{}'\n", json_dump_file);
     utils::write_to_file(json_dump_file, json.dump(2));
