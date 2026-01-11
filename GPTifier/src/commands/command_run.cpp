@@ -401,6 +401,10 @@ void run_ollama_query(const Parameters &params, const std::string &prompt)
         }
     }
 
+    if (model.empty()) {
+        throw std::runtime_error("Model is empty");
+    }
+
     const serialization::OllamaResponse rp = run_query(model, prompt);
 
     if (params.json_dump_file) {
