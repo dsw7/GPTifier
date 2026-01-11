@@ -2,8 +2,8 @@
 
 #include "configs.hpp"
 #include "datadir.hpp"
-#include "responses.hpp"
 #include "ollama_generate.hpp"
+#include "responses.hpp"
 #include "utils.hpp"
 
 #include <algorithm>
@@ -261,6 +261,24 @@ void dump_response(const serialization::Response &rp, const std::string &json_du
         { "output", rp.output },
         { "output_tokens", rp.output_tokens },
         { "rtt", rp.rtt.count() },
+        { "source", "OpenAI" },
+    };
+
+    fmt::print("Dumping results to '{}'\n", json_dump_file);
+    utils::write_to_file(json_dump_file, json.dump(2));
+}
+
+void dump_response(const serialization::OllamaResponse &rp, const std::string &json_dump_file)
+{
+    const nlohmann::json json = {
+        { "created", rp.created },
+        { "input", rp.input },
+        { "input_tokens", rp.input_tokens },
+        { "model", rp.model },
+        { "output", rp.output },
+        { "output_tokens", rp.output_tokens },
+        { "rtt", rp.rtt.count() },
+        { "source", "Ollama" },
     };
 
     fmt::print("Dumping results to '{}'\n", json_dump_file);
