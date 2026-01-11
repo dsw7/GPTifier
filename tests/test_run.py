@@ -141,8 +141,15 @@ def test_read_from_prompt_file_ollama() -> None:
         assert ">>>8<<<" in content.output
 
 
-def test_write_to_stdout() -> None:
+@pytest.mark.test_openai
+def test_write_to_stdout_openai() -> None:
     stdout = utils.assert_command_success("run", f"-p'{DUMMY_PROMPT_1}'")
+    assert ">>>2<<<" in stdout
+
+
+@pytest.mark.test_ollama
+def test_write_to_stdout_ollama() -> None:
+    stdout = utils.assert_command_success("run", f"-p'{DUMMY_PROMPT_1}'", "-l")
     assert ">>>2<<<" in stdout
 
 
