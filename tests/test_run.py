@@ -200,6 +200,12 @@ def test_empty_model_openai() -> None:
     assert "Model is empty" in stderr
 
 
+@pytest.mark.test_ollama
+def test_empty_model_ollama() -> None:
+    stderr = utils.assert_command_failure("run", "-p'foobar'", "--model=", "-l")
+    assert "Model is empty" in stderr
+
+
 @pytest.mark.parametrize(
     "model",
     [
