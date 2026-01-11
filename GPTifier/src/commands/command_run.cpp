@@ -330,15 +330,20 @@ template<typename T>
 void write_message_to_file(const T &response)
 {
     std::string created;
+    std::string source;
+
     if constexpr (std::is_same_v<T, serialization::Response>) {
         created = utils::datetime_from_unix_timestamp(response.created);
+        source = "OpenAI";
     } else {
         // creation time comes as ISO date from Ollama
         created = response.created;
+        source = "Ollama";
     }
 
     std::string text = "{\n";
     text += "> Created at: " + created + " (GMT)\n";
+    text += "> Source: " + source + "\n\n";
     text += "> Model: " + response.model + "\n\n";
     text += "> Input:\n" + response.input + "\n\n";
     text += "> Output:\n" + response.output + "\n";
