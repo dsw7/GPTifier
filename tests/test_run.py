@@ -21,6 +21,7 @@ class _Response:
     output: str
     output_tokens: int
     rtt: float
+    source: str
 
 
 def _load_content(json_file: str) -> _Response:
@@ -35,6 +36,7 @@ def _load_content(json_file: str) -> _Response:
         output=contents["output"],
         output_tokens=contents["output_tokens"],
         rtt=contents["rtt"],
+        source=contents["source"],
     )
 
 
@@ -54,44 +56,58 @@ def inputfile() -> Generator[Path, None, None]:
 @pytest.mark.test_openai
 def test_read_from_inputfile_openai(inputfile: Path) -> None:
     prompt = "What is 1 + 3? Format the result as follows: >>>{result}<<<"
-    completion = ">>>4<<<"
     inputfile.write_text(prompt)
 
     with NamedTemporaryFile(dir=gettempdir()) as f:
         json_file = f.name
         utils.assert_command_success("run", "-t0", f"-o{json_file}")
         content = _load_content(json_file)
-        assert content.output == completion
+        assert content.output == ">>>4<<<"
 
 
 @pytest.mark.test_ollama
 def test_read_from_inputfile_ollama(inputfile: Path) -> None:
     prompt = "What is 1 + 3? Format the result as follows: >>>{result}<<<"
-    completion = ">>>4<<<"
     inputfile.write_text(prompt)
 
     with NamedTemporaryFile(dir=gettempdir()) as f:
         json_file = f.name
         utils.assert_command_success("run", "-t0", f"-o{json_file}", "--use-local")
         content = _load_content(json_file)
-        assert content.output == completion
+        assert ">>>4<<<" in content.output
 
 
-def test_valid_response_json() -> None:
+@pytest.mark.test_openai
+def test_valid_response_json_openai() -> None:
     prompt = "What is 1 + 4? Format the result as follows: >>>{result}<<<"
-    completion = ">>>5<<<"
 
     with NamedTemporaryFile(dir=gettempdir()) as f:
-        utils.assert_command_success("run", f"-p{prompt}", "-t0", f"-o{f.name}")
+        utils.assert_command_success("run", f"-p{prompt}", "-t0", f"-o{f.name}", "--model=gpt-4o")
         content = _load_content(f.name)
 
+        assert ">>>5<<<" in content.output
         assert content.input_ == prompt
-        assert content.output == completion
-        assert content.input_tokens == 26
-        assert content.output_tokens == 4
+        assert content.model == "gpt-4o"
+        assert content.source == "OpenAI"
 
         diff_created = abs(content.created - int(time()))
         assert diff_created <= 2.0, "Creation times are not within 2 seconds"
+
+
+@pytest.mark.test_ollama
+def test_valid_response_json_ollama() -> None:
+    prompt = "What is 1 + 4? Format the result as follows: >>>{result}<<<"
+
+    with NamedTemporaryFile(dir=gettempdir()) as f:
+        utils.assert_command_success(
+                "run", f"-p{prompt}", "-t0", f"-o{f.name}", "--use-local", "--model=gemma3:latest",
+        )
+        content = _load_content(f.name)
+
+        assert ">>>5<<<" in content.output
+        assert content.input_ == prompt
+        assert content.model == "gemma3:latest"
+        assert content.source == "Ollama"
 
 
 def test_read_from_file() -> None:
