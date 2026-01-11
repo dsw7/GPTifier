@@ -109,14 +109,12 @@ def test_valid_response_json_openai() -> None:
     prompt = "What is 1 + 4? Format the result as follows: >>>{result}<<<"
 
     with NamedTemporaryFile(dir=gettempdir()) as f:
-        utils.assert_command_success(
-            "run", f"-p{prompt}", "-t0", f"-o{f.name}", "--model=gpt-4o"
-        )
+        utils.assert_command_success("run", f"-p{prompt}", "-t0", f"-o{f.name}")
         content = _load_content(f.name)
 
         assert ">>>5<<<" in content.output
         assert content.input_ == prompt
-        assert content.model == "gpt-4o"
+        assert content.model == "gpt-3.5-turbo-0125"  # internal cheap test model
         assert content.source == "OpenAI"
 
         diff_created = abs(content.created - int(time()))
