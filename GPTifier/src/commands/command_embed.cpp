@@ -153,6 +153,7 @@ void export_embedding(const serialization::Embedding &em, const std::optional<st
         { "embedding", em.embedding },
         { "input", em.input },
         { "model", em.model },
+        { "source", em.source},
     };
 
     fmt::print("Dumping JSON to '{}'\n", filename);
