@@ -37,7 +37,7 @@ def test_empty_model() -> None:
 
 def test_empty_output_file() -> None:
     stderr = utils.assert_command_failure("embed", "--input=foobar", "--output-file=")
-    assert "Could not write to file. Filename is empty" in stderr
+    assert "Output file argument provided with no value" in stderr
 
 
 def test_non_existent_model() -> None:
