@@ -150,9 +150,9 @@ saved:
 Any new responses will append to this file.
 
 #### Specifying a model
-To specify a model for chat completion, use the `-m` or `--model` option. For example, to use GPT-4:
+To specify a model for chat completion, use the `-m` or `--model` option:
 ```console
-gpt run --model gpt-4 --prompt "What is 3 + 5?"
+gpt run --model gpt-4o --prompt "What is 3 + 5?"
 ```
 
 > [!TIP]
@@ -161,6 +161,16 @@ gpt run --model gpt-4 --prompt "What is 3 + 5?"
 #### Handling long, multiline prompts
 For multiline prompts, create a file named `Inputfile` in your working directory. GPTifier will automatically
 read from it. Alternatively, use the `-r` or `--read-from-file` option to specify a custom file.
+
+#### Diverting requests to Ollama
+Simply append the `-l` or `--use-local` flag:
+```console
+gpt run --use-local
+```
+This flag will automatically divert the request to the Ollama host and port
+specified under the `[ollama]` section in the GPTifier configuration file.
+Additionally, the command will default to using the Ollama model specified
+under the `[command.run]` section in the configuration file.
 
 ### The `short` command
 The `short` command is almost identical to the [run command](#the-run-command), but this command returns
@@ -181,6 +191,16 @@ Which will print out:
 
 > [!TIP]
 > Use this command if running GPTifier via something like `vim`'s `system()` function
+
+#### Diverting requests to Ollama
+Simply append the `-l` or `--use-local` flag:
+```console
+gpt short --use-local
+```
+This flag will automatically divert the request to the Ollama host and port
+specified under the `[ollama]` section in the GPTifier configuration file.
+Additionally, the command will default to using the Ollama model specified
+under the `[command.short]` section in the configuration file.
 
 ### The `embed` Command
 The `embed` command converts input text into a vector representation. To embed text, execute the following:
@@ -205,6 +225,16 @@ For large blocks of text, you can read from a file:
 ```console
 gpt embed -r my_text.txt -o my_embedding.json # and export embedding to a custom file!
 ```
+
+#### Diverting requests to Ollama
+Simply append the `-l` or `--use-local` flag:
+```console
+gpt embed --use-local
+```
+This flag will automatically divert the request to the Ollama host and port
+specified under the `[ollama]` section in the GPTifier configuration file.
+Additionally, the command will default to using the Ollama model specified
+under the `[command.embed]` section in the configuration file.
 
 ### The `models` command
 This command returns a list of currently available models. Simply run:
