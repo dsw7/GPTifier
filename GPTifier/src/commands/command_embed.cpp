@@ -156,7 +156,7 @@ void command_embed(int argc, char **argv)
         throw std::runtime_error("Model is empty");
     }
 
-    const serialization::Embedding embedding = serialization::create_embedding(model, text_to_embed);
+    const serialization::Embedding embedding = serialization::create_openai_embedding(model, text_to_embed);
     export_embedding(embedding, params.output_file);
 }
 
