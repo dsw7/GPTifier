@@ -35,7 +35,7 @@ Embedding unpack_ollama_embedding(const std::string &response, const std::string
     Embedding embedding;
 
     try {
-        embedding.embedding = json["embeddings"].template get<std::vector<float>>();
+        embedding.embedding = json["embeddings"][0].template get<std::vector<float>>();
         embedding.model = json["model"];
     } catch (const nlohmann::json::exception &e) {
         throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
