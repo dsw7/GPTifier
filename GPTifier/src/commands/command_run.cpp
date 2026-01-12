@@ -396,11 +396,7 @@ void run_ollama_query(const Parameters &params, const std::string &prompt)
     if (params.model) {
         model = params.model.value();
     } else {
-        if (configs.model_run_ollama) {
-            model = configs.model_run_ollama.value();
-        } else {
-            throw std::runtime_error("Could not determine which Ollama model to use");
-        }
+        model = configs.model_run_ollama.value();
     }
 
     if (model.empty()) {

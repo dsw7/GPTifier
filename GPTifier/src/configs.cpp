@@ -25,7 +25,7 @@ void Configs::load_configs_from_config_file()
 
     // run command
     this->model_run_openai = table["command"]["run"]["model"].value_or<std::string>("gpt-4o");
-    this->model_run_ollama = table["command"]["run"]["model_ollama"].value<std::string>();
+    this->model_run_ollama = table["command"]["run"]["model_ollama"].value_or<std::string>("gemma3:latest");
 
     // short command
     this->model_short_openai = table["command"]["short"]["model"].value_or<std::string>("gpt-4o");
