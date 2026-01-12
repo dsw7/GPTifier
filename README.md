@@ -10,6 +10,10 @@ fine-tuning, generating images, etc. This program is written purely in C++
 because python just feels clunky and slow. This program is tested on
 Ubuntu/Debian and macOS.
 
+## 2026 Update
+GPTifier is gradually rolling out support for integration with self-hosted models (via [Ollama](https://ollama.com/)) as an alternative to using OpenAI's API. API Access to the latest OpenAI models requires Persona verification which feels unacceptably invasive. Support for
+OpenAI integration will still be maintained, but as of right now, only fourth generation OpenAI models (i.e. `gpt-4o`) and below can be expected to work seamlessly with GPTifier.
+
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
