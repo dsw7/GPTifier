@@ -120,6 +120,25 @@ std::string get_text_to_embed(const Parameters &params)
     return text_to_embed;
 }
 
+std::string get_model(const Parameters &params)
+{
+    std::string model;
+
+    if (params.model) {
+        model = params.model.value();
+    } else if (configs.model_embed) {
+        model = configs.model_embed.value();
+    } else {
+        throw std::runtime_error("No model provided via configuration file or command line");
+    }
+
+    if (model.empty()) {
+        throw std::runtime_error("Model is empty");
+    }
+
+    return model;
+}
+
 void export_embedding(const serialization::Embedding &em, const std::optional<std::string> &output_file)
 {
     std::string filename;
@@ -148,20 +167,7 @@ void command_embed(int argc, char **argv)
 {
     const Parameters params = read_cli(argc, argv);
     const std::string text_to_embed = get_text_to_embed(params);
-
-    std::string model;
-
-    if (params.model) {
-        model = params.model.value();
-    } else if (configs.model_embed) {
-        model = configs.model_embed.value();
-    } else {
-        throw std::runtime_error("No model provided via configuration file or command line");
-    }
-
-    if (model.empty()) {
-        throw std::runtime_error("Model is empty");
-    }
+    const std::string model = get_model(params);
 
     const serialization::Embedding embedding = serialization::create_openai_embedding(model, text_to_embed);
     export_embedding(embedding, params.output_file);
