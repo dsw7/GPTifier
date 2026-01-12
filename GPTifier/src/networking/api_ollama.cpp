@@ -8,8 +8,8 @@ namespace {
 
 std::string get_ollama_base_url()
 {
-    const std::string host = configs.host_ollama.value_or("localhost");
-    const int port = configs.port_ollama.value_or(11434);
+    static const std::string host = configs.host_ollama.value();
+    static const int port = configs.port_ollama.value();
 
     static std::string base_url = fmt::format("http://{}:{}/api", host, port);
     return base_url;

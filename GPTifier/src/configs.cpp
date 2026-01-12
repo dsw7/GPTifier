@@ -20,8 +20,8 @@ void Configs::load_configs_from_config_file()
     }
 
     // ollama
-    this->host_ollama = table["ollama"]["host"].value<std::string>();
-    this->port_ollama = table["ollama"]["port"].value<int>();
+    this->host_ollama = table["ollama"]["host"].value_or<std::string>("localhost");
+    this->port_ollama = table["ollama"]["port"].value_or<int>(11434);
 
     // run command
     this->model_run_openai = table["command"]["run"]["model"].value<std::string>();
