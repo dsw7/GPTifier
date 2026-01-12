@@ -45,7 +45,7 @@ Image create_image(const std::string &model, const std::string &prompt, const st
     const auto result = networking::create_image(data.dump());
 
     if (not result) {
-        throw_on_error_response(result.error().response);
+        throw_on_openai_error_response(result.error().response);
     }
     return unpack_image(result->response);
 }

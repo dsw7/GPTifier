@@ -3,6 +3,13 @@
 # See https://github.com/dsw7/GPTifier for more information
 # --------------------------------------------------
 
+[ollama]
+# Set Ollama host
+host = "localhost"
+
+# Set Ollama port
+port = 11434
+
 [command.run]
 # Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
 model = "gpt-4o"

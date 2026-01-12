@@ -19,12 +19,17 @@ void Configs::load_configs_from_config_file()
         throw std::runtime_error(e);
     }
 
-    this->model_embed = table["command"]["embed"]["model"].value<std::string>();
-    this->model_embed_ollama = table["command"]["embed"]["model_ollama"].value<std::string>();
-    this->model_run = table["command"]["run"]["model"].value<std::string>();
+    // run command
+    this->model_run_openai = table["command"]["run"]["model"].value<std::string>();
     this->model_run_ollama = table["command"]["run"]["model_ollama"].value<std::string>();
-    this->model_short = table["command"]["short"]["model"].value<std::string>();
+
+    // short command
+    this->model_short_openai = table["command"]["short"]["model"].value<std::string>();
     this->model_short_ollama = table["command"]["short"]["model_ollama"].value<std::string>();
+
+    // embed command
+    this->model_embed_openai = table["command"]["embed"]["model"].value<std::string>();
+    this->model_embed_ollama = table["command"]["embed"]["model_ollama"].value<std::string>();
 }
 
 Configs configs;

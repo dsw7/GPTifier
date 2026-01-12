@@ -1,7 +1,6 @@
 #include "command_short.hpp"
 
 #include "configs.hpp"
-#include "ollama_generate.hpp"
 #include "responses.hpp"
 #include "utils.hpp"
 
@@ -146,15 +145,15 @@ void use_openai(const Parameters &params)
     if (params.model) {
         model = params.model.value();
     } else {
-        if (configs.model_short) {
-            model = configs.model_short.value();
+        if (configs.model_short_openai) {
+            model = configs.model_short_openai.value();
         } else {
             throw std::runtime_error("Could not determine which OpenAI model to use");
         }
     }
 
     const float temperature = get_temperature(params.temperature);
-    const serialization::Response response = serialization::create_response(params.prompt.value(), model, temperature);
+    const serialization::OpenAIResponse response = serialization::create_openai_response(params.prompt.value(), model, temperature);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", response.raw_response);
