@@ -28,7 +28,7 @@ void Configs::load_configs_from_config_file()
     this->model_run_ollama = table["command"]["run"]["model_ollama"].value<std::string>();
 
     // short command
-    this->model_short_openai = table["command"]["short"]["model"].value<std::string>();
+    this->model_short_openai = table["command"]["short"]["model"].value_or<std::string>("gpt-4o");
     this->model_short_ollama = table["command"]["short"]["model_ollama"].value<std::string>();
 
     // embed command

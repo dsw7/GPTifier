@@ -145,11 +145,7 @@ void use_openai(const Parameters &params)
     if (params.model) {
         model = params.model.value();
     } else {
-        if (configs.model_short_openai) {
-            model = configs.model_short_openai.value();
-        } else {
-            throw std::runtime_error("Could not determine which OpenAI model to use");
-        }
+        model = configs.model_short_openai.value();
     }
 
     const float temperature = get_temperature(params.temperature);
