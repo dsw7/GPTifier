@@ -74,7 +74,7 @@ Response create_response(const std::string &input, const std::string &model, flo
     const std::chrono::duration<float> rtt = end - start;
 
     if (not result) {
-        throw_on_error_response(result.error().response);
+        throw_on_openai_error_response(result.error().response);
     }
 
     Response rp = unpack_response(result->response);
@@ -98,17 +98,17 @@ std::string test_curl_handle_is_reusable()
 
     const auto result_1 = networking::create_response(dump);
     if (not result_1) {
-        throw_on_error_response(result_1.error().response);
+        throw_on_openai_error_response(result_1.error().response);
     }
 
     const auto result_2 = networking::create_response(dump);
     if (not result_2) {
-        throw_on_error_response(result_2.error().response);
+        throw_on_openai_error_response(result_2.error().response);
     }
 
     const auto result_3 = networking::create_response(dump);
     if (not result_3) {
-        throw_on_error_response(result_3.error().response);
+        throw_on_openai_error_response(result_3.error().response);
     }
 
     const Response rp_1 = unpack_response(result_1->response);

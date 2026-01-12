@@ -48,7 +48,7 @@ FineTuningJobs get_fine_tuning_jobs(const int limit)
 {
     const auto result = networking::get_fine_tuning_jobs(limit);
     if (not result) {
-        throw_on_error_response(result.error().response);
+        throw_on_openai_error_response(result.error().response);
     }
 
     return unpack_fine_tuning_jobs(result->response);
@@ -60,7 +60,7 @@ std::string create_fine_tuning_job(const std::string &model, const std::string &
 
     const auto result = networking::create_fine_tuning_job(data.dump());
     if (not result) {
-        throw_on_error_response(result.error().response);
+        throw_on_openai_error_response(result.error().response);
     }
 
     const nlohmann::json json = parse_json(result->response);

@@ -57,7 +57,7 @@ Costs get_costs(std::time_t start_time, int limit)
     const auto result = networking::get_costs(start_time, limit);
 
     if (not result) {
-        throw_on_error_response(result.error().response);
+        throw_on_openai_error_response(result.error().response);
     }
 
     return unpack_costs(result->response);

@@ -40,7 +40,7 @@ Files get_files()
 {
     const auto result = networking::get_uploaded_files();
     if (not result) {
-        throw_on_error_response(result.error().response);
+        throw_on_openai_error_response(result.error().response);
     }
 
     return unpack_files(result->response);
@@ -50,7 +50,7 @@ bool delete_file(const std::string &file_id)
 {
     const auto result = networking::delete_file(file_id);
     if (not result) {
-        throw_on_error_response(result.error().response);
+        throw_on_openai_error_response(result.error().response);
     }
 
     const nlohmann::json json = parse_json(result->response);
@@ -68,7 +68,7 @@ std::string upload_file(const std::string &filename)
 
     const auto result = networking::upload_file(filename, purpose);
     if (not result) {
-        throw_on_error_response(result.error().response);
+        throw_on_openai_error_response(result.error().response);
     }
 
     const nlohmann::json json = parse_json(result->response);

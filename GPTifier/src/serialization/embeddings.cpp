@@ -54,7 +54,7 @@ Embedding create_openai_embedding(const std::string &model, const std::string &i
     const auto result = networking::create_embedding(data.dump());
 
     if (not result) {
-        throw_on_error_response(result.error().response);
+        throw_on_openai_error_response(result.error().response);
     }
 
     return unpack_openai_embedding(result->response, input);
