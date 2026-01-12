@@ -436,11 +436,7 @@ void run_openai_query(const Parameters &params, const std::string &prompt)
 #ifdef TESTING_ENABLED
         model = "gpt-3.5-turbo";
 #else
-        if (configs.model_run_openai) {
-            model = configs.model_run_openai.value();
-        } else {
-            throw std::runtime_error("Could not determine which OpenAI model to use");
-        }
+        model = configs.model_run_openai.value();
 #endif
     }
 

@@ -24,7 +24,7 @@ void Configs::load_configs_from_config_file()
     this->port_ollama = table["ollama"]["port"].value_or<int>(11434);
 
     // run command
-    this->model_run_openai = table["command"]["run"]["model"].value<std::string>();
+    this->model_run_openai = table["command"]["run"]["model"].value_or<std::string>("gpt-4o");
     this->model_run_ollama = table["command"]["run"]["model_ollama"].value<std::string>();
 
     // short command
