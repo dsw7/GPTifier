@@ -29,7 +29,7 @@ void Configs::load_configs_from_config_file()
 
     // short command
     this->model_short_openai = table["command"]["short"]["model"].value_or<std::string>("gpt-4o");
-    this->model_short_ollama = table["command"]["short"]["model_ollama"].value<std::string>();
+    this->model_short_ollama = table["command"]["short"]["model_ollama"].value_or<std::string>("gemma3:latest");
 
     // embed command
     this->model_embed_openai = table["command"]["embed"]["model"].value_or<std::string>("text-embedding-3-small");
