@@ -40,11 +40,20 @@ def test_empty_output_file() -> None:
     assert "Output file argument provided with no value" in stderr
 
 
-def test_non_existent_model() -> None:
+@pytest.mark.test_openai
+def test_non_existent_model_openai() -> None:
     stderr = utils.assert_command_failure("embed", "-i'What is 3 + 5?'", "-mfoobar")
     assert (
         "The model `foobar` does not exist or you do not have access to it." in stderr
     )
+
+
+@pytest.mark.test_ollama
+def test_non_existent_model_ollama() -> None:
+    stderr = utils.assert_command_failure(
+        "embed", "-i'What is 3 + 5?'", "-mfoobar", "--use-local"
+    )
+    assert 'model "foobar" not found, try pulling it first' in stderr
 
 
 @pytest.mark.parametrize(
