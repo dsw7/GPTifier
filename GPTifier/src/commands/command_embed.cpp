@@ -27,6 +27,7 @@ Usage:
 Options:
   -h, --help                     Print help information and exit
   -m, --model=MODEL              Specify a valid embedding model
+  -l, --use-local                Connect to locally hosted LLM as opposed to OpenAI
   -i, --input=TEXT               Input text to embed
   -r, --read-from-file=FILENAME  Read input text to embed from a file
   -o, --output-file=FILENAME     Export embedding to FILENAME
@@ -36,6 +37,7 @@ Options:
 }
 
 struct Parameters {
+    bool use_local = false;
     std::optional<std::string> input;
     std::optional<std::string> input_file;
     std::optional<std::string> model;
@@ -49,13 +51,14 @@ Parameters read_cli(int argc, char **argv)
     while (true) {
         static struct option long_options[] = { { "help", no_argument, 0, 'h' },
             { "model", required_argument, 0, 'm' },
+            { "use-local", no_argument, 0, 'l' },
             { "input", required_argument, 0, 'i' },
             { "output-file", required_argument, 0, 'o' },
             { "read-from-file", required_argument, 0, 'r' },
             { 0, 0, 0, 0 } };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hm:i:o:r:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hm:li:o:r:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -67,6 +70,9 @@ Parameters read_cli(int argc, char **argv)
                 exit(EXIT_SUCCESS);
             case 'm':
                 params.model = optarg;
+                break;
+            case 'l':
+                params.use_local = true;
                 break;
             case 'i':
                 params.input = optarg;
