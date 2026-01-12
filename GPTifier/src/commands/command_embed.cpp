@@ -27,6 +27,7 @@ Usage:
 Options:
   -h, --help                     Print help information and exit
   -m, --model=MODEL              Specify a valid embedding model
+  -l, --use-local                Connect to locally hosted LLM as opposed to OpenAI
   -i, --input=TEXT               Input text to embed
   -r, --read-from-file=FILENAME  Read input text to embed from a file
   -o, --output-file=FILENAME     Export embedding to FILENAME
@@ -36,6 +37,7 @@ Options:
 }
 
 struct Parameters {
+    bool use_local = false;
     std::optional<std::string> input;
     std::optional<std::string> input_file;
     std::optional<std::string> model;
@@ -49,13 +51,14 @@ Parameters read_cli(int argc, char **argv)
     while (true) {
         static struct option long_options[] = { { "help", no_argument, 0, 'h' },
             { "model", required_argument, 0, 'm' },
+            { "use-local", no_argument, 0, 'l' },
             { "input", required_argument, 0, 'i' },
             { "output-file", required_argument, 0, 'o' },
             { "read-from-file", required_argument, 0, 'r' },
             { 0, 0, 0, 0 } };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hm:i:o:r:", long_options, &option_index);
+        int c = getopt_long(argc, argv, "hm:li:o:r:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -67,6 +70,9 @@ Parameters read_cli(int argc, char **argv)
                 exit(EXIT_SUCCESS);
             case 'm':
                 params.model = optarg;
+                break;
+            case 'l':
+                params.use_local = true;
                 break;
             case 'i':
                 params.input = optarg;
@@ -82,6 +88,12 @@ Parameters read_cli(int argc, char **argv)
         }
     }
 
+    if (params.output_file) {
+        if (params.output_file.value().empty()) {
+            throw std::runtime_error("Output file argument provided with no value");
+        }
+    }
+
     return params;
 }
 
@@ -94,33 +106,8 @@ std::string read_text_from_stdin()
     return text;
 }
 
-void export_embedding(const serialization::Embedding &em, const std::optional<std::string> &output_file)
+std::string get_text_to_embed(const Parameters &params)
 {
-    std::string filename;
-
-    if (output_file) {
-        filename = output_file.value();
-    } else {
-        filename = datadir::GPT_EMBEDDINGS.string();
-    }
-
-    const nlohmann::json json = {
-        { "embedding", em.embedding },
-        { "input", em.input },
-        { "model", em.model },
-    };
-
-    fmt::print("Dumping JSON to '{}'\n", filename);
-    utils::write_to_file(filename, json.dump(2));
-}
-
-} // namespace
-
-namespace commands {
-
-void command_embed(int argc, char **argv)
-{
-    const Parameters params = read_cli(argc, argv);
     std::string text_to_embed;
 
     if (params.input) {
@@ -136,12 +123,17 @@ void command_embed(int argc, char **argv)
         throw std::runtime_error("No input text provided anywhere");
     }
 
+    return text_to_embed;
+}
+
+std::string get_model(const Parameters &params)
+{
     std::string model;
 
     if (params.model) {
         model = params.model.value();
-    } else if (configs.model_embed) {
-        model = configs.model_embed.value();
+    } else if (configs.model_embed_ollama) {
+        model = configs.model_embed_ollama.value();
     } else {
         throw std::runtime_error("No model provided via configuration file or command line");
     }
@@ -150,8 +142,49 @@ void command_embed(int argc, char **argv)
         throw std::runtime_error("Model is empty");
     }
 
-    const serialization::Embedding embedding = serialization::create_embedding(model, text_to_embed);
-    export_embedding(embedding, params.output_file);
+    return model;
+}
+
+void export_embedding(const serialization::Embedding &em, const std::string &output_file)
+{
+    const nlohmann::json json = {
+        { "embedding", em.embedding },
+        { "input", em.input },
+        { "model", em.model },
+        { "source", em.source },
+    };
+
+    fmt::print("Dumping JSON to '{}'\n", output_file);
+    utils::write_to_file(output_file, json.dump(2));
+}
+
+} // namespace
+
+namespace commands {
+
+void command_embed(int argc, char **argv)
+{
+    const Parameters params = read_cli(argc, argv);
+    const std::string text_to_embed = get_text_to_embed(params);
+    const std::string model = get_model(params);
+
+    serialization::Embedding embedding;
+
+    if (params.use_local) {
+        embedding = serialization::create_ollama_embedding(model, text_to_embed);
+    } else {
+        embedding = serialization::create_openai_embedding(model, text_to_embed);
+    }
+
+    std::string output_file;
+
+    if (params.output_file) {
+        output_file = params.output_file.value();
+    } else {
+        output_file = datadir::GPT_EMBEDDINGS.string();
+    }
+
+    export_embedding(embedding, output_file);
 }
 
 } // namespace commands
