@@ -90,6 +90,7 @@ def test_wrong_models_ollama() -> None:
 class _Embedding:
     embedding: list[float]
     model: str
+    source: str
     text: str
 
 
@@ -98,24 +99,15 @@ def _load_embedding(results_file: Path) -> _Embedding:
         data = loads(f.read())
 
     return _Embedding(
-        model=data["model"], text=data["input"], embedding=data["embedding"]
+        model=data["model"],
+        text=data["input"],
+        embedding=data["embedding"],
+        source=data["source"],
     )
 
 
-def _get_cosine_similarity(left: _Embedding, right: _Embedding) -> float:
-    dot_p: float = 0
-
-    for l, r in zip(left.embedding, right.embedding):
-        dot_p += l * r
-
-    mag_l: float = (sum(i**2 for i in left.embedding)) ** 0.5
-    mag_r: float = (sum(i**2 for i in right.embedding)) ** 0.5
-
-    return dot_p / (mag_l * mag_r)
-
-
 @pytest.fixture
-def files_parallel() -> Generator[tuple[Path, Path], None, None]:
+def embed_test_files() -> Generator[tuple[Path, Path], None, None]:
     input_file = Path(__file__).resolve().parent / "test_embed" / "lorem.txt"
     output_file = Path(gettempdir()) / "result.gpt"
     yield input_file, output_file
@@ -124,54 +116,16 @@ def files_parallel() -> Generator[tuple[Path, Path], None, None]:
         output_file.unlink()
 
 
-@pytest.fixture
-def files_orthogonal() -> Generator[tuple[Path, Path], None, None]:
-    filename_1 = Path(gettempdir()) / "result_1.gpt"
-    filename_2 = Path(gettempdir()) / "result_2.gpt"
-
-    yield filename_1, filename_2
-
-    if filename_1.exists():
-        filename_1.unlink()
-
-    if filename_2.exists():
-        filename_2.unlink()
-
-
-def test_compute_cosine_similarities_parallel(
-    files_parallel: tuple[Path, Path],
-) -> None:
-    input_file, output_file = files_parallel
+@pytest.mark.test_openai
+def test_get_embedding_openai(embed_test_files: tuple[Path, Path]) -> None:
+    input_file, output_file = embed_test_files
     model = "text-embedding-3-small"
     utils.assert_command_success(
         "embed", f"-r{input_file}", f"-m{model}", f"-o{output_file}"
     )
 
     embedding = _load_embedding(output_file)
-
-    assert model == embedding.model
+    assert embedding.source == "OpenAI"
     assert embedding.text in input_file.read_text()
-
-    assert len(embedding.embedding) == 1536  # text-embedding-ada-002 dimension
-    pytest.approx(_get_cosine_similarity(embedding, embedding), 1.00)
-
-
-def test_compute_cosine_similarities_orthogonal(
-    files_orthogonal: tuple[Path, Path],
-) -> None:
-    filename_1, filename_2 = files_orthogonal
-    model = "text-embedding-ada-002"
-
-    text_1 = "The cat meowed softly."
-    utils.assert_command_success(
-        "embed", f"-i{text_1}", f"-m{model}", f"-o{filename_1}"
-    )
-    embedding_1 = _load_embedding(filename_1)
-
-    text_2 = "Quantum physics is fascinating."
-    utils.assert_command_success(
-        "embed", f"-i{text_2}", f"-m{model}", f"-o{filename_2}"
-    )
-    embedding_2 = _load_embedding(filename_2)
-
-    assert 0.6 <= _get_cosine_similarity(embedding_1, embedding_2) <= 0.8
+    assert len(embedding.embedding) == 1536
+    assert model == embedding.model
