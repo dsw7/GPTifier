@@ -88,6 +88,12 @@ Parameters read_cli(int argc, char **argv)
         }
     }
 
+    if (params.output_file) {
+        if (params.output_file.value().empty()) {
+            throw std::runtime_error("Output file argument provided with no value");
+        }
+    }
+
     return params;
 }
 
@@ -139,25 +145,17 @@ std::string get_model(const Parameters &params)
     return model;
 }
 
-void export_embedding(const serialization::Embedding &em, const std::optional<std::string> &output_file)
+void export_embedding(const serialization::Embedding &em, const std::string &output_file)
 {
-    std::string filename;
-
-    if (output_file) {
-        filename = output_file.value();
-    } else {
-        filename = datadir::GPT_EMBEDDINGS.string();
-    }
-
     const nlohmann::json json = {
         { "embedding", em.embedding },
         { "input", em.input },
         { "model", em.model },
-        { "source", em.source},
+        { "source", em.source },
     };
 
-    fmt::print("Dumping JSON to '{}'\n", filename);
-    utils::write_to_file(filename, json.dump(2));
+    fmt::print("Dumping JSON to '{}'\n", output_file);
+    utils::write_to_file(output_file, json.dump(2));
 }
 
 } // namespace
@@ -178,7 +176,15 @@ void command_embed(int argc, char **argv)
         embedding = serialization::create_openai_embedding(model, text_to_embed);
     }
 
-    export_embedding(embedding, params.output_file);
+    std::string output_file;
+
+    if (params.output_file) {
+        output_file = params.output_file.value();
+    } else {
+        output_file = datadir::GPT_EMBEDDINGS.string();
+    }
+
+    export_embedding(embedding, output_file);
 }
 
 } // namespace commands
