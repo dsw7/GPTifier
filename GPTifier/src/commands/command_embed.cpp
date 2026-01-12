@@ -132,10 +132,12 @@ std::string get_model(const Parameters &params)
 
     if (params.model) {
         model = params.model.value();
-    } else if (configs.model_embed_ollama) {
-        model = configs.model_embed_ollama.value();
     } else {
-        throw std::runtime_error("No model provided via configuration file or command line");
+        if (params.use_local) {
+            model = configs.model_embed_ollama.value();
+        } else {
+            model = configs.model_embed_openai.value();
+        }
     }
 
     if (model.empty()) {
