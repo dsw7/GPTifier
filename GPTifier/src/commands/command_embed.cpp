@@ -100,6 +100,26 @@ std::string read_text_from_stdin()
     return text;
 }
 
+std::string get_text_to_embed(const Parameters &params)
+{
+    std::string text_to_embed;
+
+    if (params.input) {
+        text_to_embed = params.input.value();
+    } else if (params.input_file) {
+        fmt::print("Reading text from file: '{}'\n", params.input_file.value());
+        text_to_embed = utils::read_from_file(params.input_file.value());
+    } else {
+        text_to_embed = read_text_from_stdin();
+    }
+
+    if (text_to_embed.empty()) {
+        throw std::runtime_error("No input text provided anywhere");
+    }
+
+    return text_to_embed;
+}
+
 void export_embedding(const serialization::Embedding &em, const std::optional<std::string> &output_file)
 {
     std::string filename;
@@ -127,20 +147,7 @@ namespace commands {
 void command_embed(int argc, char **argv)
 {
     const Parameters params = read_cli(argc, argv);
-    std::string text_to_embed;
-
-    if (params.input) {
-        text_to_embed = params.input.value();
-    } else if (params.input_file) {
-        fmt::print("Reading text from file: '{}'\n", params.input_file.value());
-        text_to_embed = utils::read_from_file(params.input_file.value());
-    } else {
-        text_to_embed = read_text_from_stdin();
-    }
-
-    if (text_to_embed.empty()) {
-        throw std::runtime_error("No input text provided anywhere");
-    }
+    const std::string text_to_embed = get_text_to_embed(params);
 
     std::string model;
 
