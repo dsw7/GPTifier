@@ -56,6 +56,7 @@ def test_non_existent_model_ollama() -> None:
     assert 'model "foobar" not found, try pulling it first' in stderr
 
 
+@pytest.mark.test_openai
 @pytest.mark.parametrize(
     "model",
     [
@@ -70,11 +71,19 @@ def test_non_existent_model_ollama() -> None:
         "whisper-1",
     ],
 )
-def test_wrong_models(model: str) -> None:
+def test_wrong_models_openai(model: str) -> None:
     stderr = utils.assert_command_failure(
         "embed", "--input='A foo that bars'", f"-m{model}"
     )
     assert "You are not allowed to generate embeddings from this model" in stderr
+
+
+@pytest.mark.test_ollama
+def test_wrong_models_ollama() -> None:
+    stderr = utils.assert_command_failure(
+        "embed", "--input='A foo that bars'", "--model=gemma3:latest", "--use-local"
+    )
+    assert "this model does not support embeddings" in stderr
 
 
 @dataclass
