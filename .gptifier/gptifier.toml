@@ -20,3 +20,6 @@ model_ollama = "gemma3:latest"
 [command.embed]
 # Specify a default embeddings model to use such as "text-embedding-ada-002"
 model = "text-embedding-ada-002"
+
+# Optionally, specify a default Ollama embedding model to use such as "embeddinggemma"
+model_ollama = "embeddinggemma"
