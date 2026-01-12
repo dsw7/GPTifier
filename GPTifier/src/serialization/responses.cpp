@@ -91,7 +91,7 @@ OpenAIResponse create_openai_response(const std::string &input, const std::strin
     };
 
     const auto start = std::chrono::high_resolution_clock::now();
-    const auto result = networking::create_response(data.dump());
+    const auto result = networking::create_openai_response(data.dump());
     const auto end = std::chrono::high_resolution_clock::now();
     const std::chrono::duration<float> rtt = end - start;
 
@@ -142,17 +142,17 @@ std::string test_curl_handle_is_reusable()
 
     const std::string dump = data.dump();
 
-    const auto result_1 = networking::create_response(dump);
+    const auto result_1 = networking::create_openai_response(dump);
     if (not result_1) {
         throw_on_openai_error_response(result_1.error().response);
     }
 
-    const auto result_2 = networking::create_response(dump);
+    const auto result_2 = networking::create_openai_response(dump);
     if (not result_2) {
         throw_on_openai_error_response(result_2.error().response);
     }
 
-    const auto result_3 = networking::create_response(dump);
+    const auto result_3 = networking::create_openai_response(dump);
     if (not result_3) {
         throw_on_openai_error_response(result_3.error().response);
     }

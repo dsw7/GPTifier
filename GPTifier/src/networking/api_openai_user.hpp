@@ -7,8 +7,8 @@
 namespace networking {
 CurlResult get_models();
 CurlResult delete_model(const std::string &model_id);
-CurlResult create_response(const std::string &post_fields);
-CurlResult create_embedding(const std::string &post_fields);
+CurlResult create_openai_response(const std::string &post_fields);
+CurlResult create_openai_embedding(const std::string &post_fields);
 CurlResult upload_file(const std::string &filename, const std::string &purpose);
 CurlResult get_uploaded_files(bool sort_asc = true);
 CurlResult delete_file(const std::string &file_id);

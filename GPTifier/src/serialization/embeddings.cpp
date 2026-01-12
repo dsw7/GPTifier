@@ -51,7 +51,7 @@ Embedding unpack_ollama_embedding(const std::string &response, const std::string
 Embedding create_openai_embedding(const std::string &model, const std::string &input)
 {
     const nlohmann::json data = { { "model", model }, { "input", input } };
-    const auto result = networking::create_embedding(data.dump());
+    const auto result = networking::create_openai_embedding(data.dump());
 
     if (not result) {
         throw_on_openai_error_response(result.error().response);

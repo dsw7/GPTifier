@@ -71,7 +71,7 @@ CurlResult delete_model(const std::string &model_id)
     return check_curl_code(handle, code, response);
 }
 
-CurlResult create_response(const std::string &post_fields)
+CurlResult create_openai_response(const std::string &post_fields)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
@@ -91,7 +91,7 @@ CurlResult create_response(const std::string &post_fields)
     return check_curl_code(handle, code, response);
 }
 
-CurlResult create_embedding(const std::string &post_fields)
+CurlResult create_openai_embedding(const std::string &post_fields)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
