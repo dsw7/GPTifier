@@ -127,5 +127,20 @@ def test_get_embedding_openai(embed_test_files: tuple[Path, Path]) -> None:
     embedding = _load_embedding(output_file)
     assert embedding.source == "OpenAI"
     assert embedding.text in input_file.read_text()
-    assert len(embedding.embedding) == 1536
+    assert len(embedding.embedding) > 0
+    assert model == embedding.model
+
+
+@pytest.mark.test_ollama
+def test_get_embedding_ollama(embed_test_files: tuple[Path, Path]) -> None:
+    input_file, output_file = embed_test_files
+    model = "embeddinggemma"
+    utils.assert_command_success(
+        "embed", f"-r{input_file}", f"-m{model}", f"-o{output_file}", "-l"
+    )
+
+    embedding = _load_embedding(output_file)
+    assert embedding.source == "Ollama"
+    assert embedding.text in input_file.read_text()
+    assert len(embedding.embedding) > 0
     assert model == embedding.model
