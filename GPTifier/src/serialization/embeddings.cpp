@@ -1,5 +1,6 @@
 #include "embeddings.hpp"
 
+#include "api_ollama.hpp"
 #include "api_openai_user.hpp"
 #include "ser_utils.hpp"
 
@@ -11,12 +12,10 @@ namespace serialization {
 
 namespace {
 
-Embedding unpack_embedding(const std::string &response, const std::string &input)
+Embedding unpack_openai_embedding(const std::string &response, const std::string &input)
 {
     const nlohmann::json json = parse_json(response);
-
     Embedding embedding;
-    embedding.input = input;
 
     try {
         embedding.embedding = json["data"][0]["embedding"].template get<std::vector<float>>();
@@ -25,6 +24,25 @@ Embedding unpack_embedding(const std::string &response, const std::string &input
         throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     }
 
+    embedding.input = input;
+    embedding.source = "OpenAI";
+    return embedding;
+}
+
+Embedding unpack_ollama_embedding(const std::string &response, const std::string &input)
+{
+    const nlohmann::json json = parse_json(response);
+    Embedding embedding;
+
+    try {
+        embedding.embedding = json["embeddings"].template get<std::vector<float>>();
+        embedding.model = json["model"];
+    } catch (const nlohmann::json::exception &e) {
+        throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
+    }
+
+    embedding.input = input;
+    embedding.source = "Ollama";
     return embedding;
 }
 
@@ -39,7 +57,19 @@ Embedding create_embedding(const std::string &model, const std::string &input)
         throw_on_error_response(result.error().response);
     }
 
-    return unpack_embedding(result->response, input);
+    return unpack_openai_embedding(result->response, input);
+}
+
+Embedding create_ollama_embedding(const std::string &model, const std::string &input)
+{
+    const nlohmann::json data = { { "model", model }, { "input", input } };
+    const auto result = networking::create_ollama_embedding(data.dump());
+
+    if (not result) {
+        throw_on_ollama_error_response(result.error().response);
+    }
+
+    return unpack_ollama_embedding(result->response, input);
 }
 
 } // namespace serialization
