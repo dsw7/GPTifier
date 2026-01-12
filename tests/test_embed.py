@@ -18,6 +18,13 @@ def test_missing_input_file() -> None:
     assert "Unable to open '/tmp/yU8nnkRs.txt'" in stderr
 
 
+def test_empty_input_file() -> None:
+    stderr = utils.assert_command_failure(
+        "embed", "--read-from-file=", "--output-file=/tmp/results.txt"
+    )
+    assert "Could not read from file. Filename is empty" in stderr
+
+
 def test_empty_input() -> None:
     stderr = utils.assert_command_failure("embed", "--input=")
     assert "No input text provided anywhere" in stderr
@@ -31,13 +38,6 @@ def test_empty_model() -> None:
 def test_empty_output_file() -> None:
     stderr = utils.assert_command_failure("embed", "--input=foobar", "--output-file=")
     assert "Could not write to file. Filename is empty" in stderr
-
-
-def test_empty_input_file() -> None:
-    stderr = utils.assert_command_failure(
-        "embed", "--read-from-file=", "--output-file=/tmp/results.txt"
-    )
-    assert "Could not read from file. Filename is empty" in stderr
 
 
 def test_non_existent_model() -> None:
