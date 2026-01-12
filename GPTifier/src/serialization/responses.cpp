@@ -1,7 +1,7 @@
 #include "responses.hpp"
 
-#include "api_openai_user.hpp"
 #include "api_ollama.hpp"
+#include "api_openai_user.hpp"
 #include "ser_utils.hpp"
 
 #include <stdexcept>

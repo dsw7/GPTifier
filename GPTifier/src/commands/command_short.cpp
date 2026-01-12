@@ -1,7 +1,6 @@
 #include "command_short.hpp"
 
 #include "configs.hpp"
-#include "ollama_generate.hpp"
 #include "responses.hpp"
 #include "utils.hpp"
 
@@ -154,7 +153,7 @@ void use_openai(const Parameters &params)
     }
 
     const float temperature = get_temperature(params.temperature);
-    const serialization::Response response = serialization::create_response(params.prompt.value(), model, temperature);
+    const serialization::OpenAIResponse response = serialization::create_openai_response(params.prompt.value(), model, temperature);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", response.raw_response);

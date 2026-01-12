@@ -2,7 +2,6 @@
 
 #include "configs.hpp"
 #include "datadir.hpp"
-#include "ollama_generate.hpp"
 #include "responses.hpp"
 #include "utils.hpp"
 
@@ -20,6 +19,9 @@
 #include <thread>
 
 namespace {
+
+using OpenAIResult = serialization::OpenAIResponse;
+using OllamaResult = serialization::OllamaResponse;
 
 const float MIN_TEMP = 0.00;
 const float MAX_TEMP = 2.00;
@@ -194,17 +196,17 @@ void time_api_call()
     std::cout << " \r" << std::flush;
 }
 
-serialization::Response run_query(const std::string &model, const std::string &prompt, const float temperature)
+OpenAIResult run_query(const std::string &model, const std::string &prompt, const float temperature)
 {
     TIMER_ENABLED.store(true);
     std::thread timer(time_api_call);
 
     bool query_failed = false;
-    serialization::Response rp;
+    OpenAIResult rp;
     std::string errmsg;
 
     try {
-        rp = serialization::create_response(prompt, model, temperature);
+        rp = serialization::create_openai_response(prompt, model, temperature);
     } catch (std::runtime_error &e) {
         query_failed = true;
         errmsg = e.what();
@@ -221,13 +223,13 @@ serialization::Response run_query(const std::string &model, const std::string &p
     return rp;
 }
 
-serialization::OllamaResponse run_query(const std::string &model, const std::string &prompt)
+OllamaResult run_query(const std::string &model, const std::string &prompt)
 {
     TIMER_ENABLED.store(true);
     std::thread timer(time_api_call);
 
     bool query_failed = false;
-    serialization::OllamaResponse rp;
+    OllamaResult rp;
     std::string errmsg;
 
     try {
@@ -263,7 +265,7 @@ void dump_response(const T &response, const std::string &json_dump_file)
         { "rtt", response.rtt.count() },
     };
 
-    if constexpr (std::is_same_v<T, serialization::Response>) {
+    if constexpr (std::is_same_v<T, OpenAIResult>) {
         json["id"] = response.id;
         json["source"] = "OpenAI";
     } else {
@@ -332,7 +334,7 @@ void write_message_to_file(const T &response)
     std::string created;
     std::string source;
 
-    if constexpr (std::is_same_v<T, serialization::Response>) {
+    if constexpr (std::is_same_v<T, OpenAIResult>) {
         created = utils::datetime_from_unix_timestamp(response.created);
         source = "OpenAI";
     } else {
@@ -405,7 +407,7 @@ void run_ollama_query(const Parameters &params, const std::string &prompt)
         throw std::runtime_error("Model is empty");
     }
 
-    const serialization::OllamaResponse rp = run_query(model, prompt);
+    const OllamaResult rp = run_query(model, prompt);
 
     if (params.json_dump_file) {
         dump_response(rp, params.json_dump_file.value());
@@ -447,7 +449,7 @@ void run_openai_query(const Parameters &params, const std::string &prompt)
     }
 
     const float temperature = get_temperature(params.temperature);
-    const serialization::Response rp = run_query(model, prompt, temperature);
+    const OpenAIResult rp = run_query(model, prompt, temperature);
 
     if (params.json_dump_file) {
         dump_response(rp, params.json_dump_file.value());
