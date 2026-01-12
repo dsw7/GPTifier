@@ -16,7 +16,7 @@ OpenAI integration will still be maintained, but as of right now, only fourth ge
 
 ## Table of Contents
 - [Installation](#installation)
-- [Usage - OpenAI](#usage---openai)
+- [Usage](#usage)
   - [The `run` command](#the-run-command)
   - [The `short` command](#the-short-command)
   - [The `embed` command](#the-embed-command)
@@ -26,10 +26,6 @@ OpenAI integration will still be maintained, but as of right now, only fourth ge
   - [The `img` command](#the-img-command)
 - [Administration](#administration)
   - [The `costs` command](#the-costs-command)
-- [Usage - Ollama](#usage---ollama)
-  - [The `run` command](#the-run-command)
-  - [The `short` command](#the-short-command)
-  - [The `embed` command](#the-embed-command)
 - [Code editing](#code-editing)
 - [Integrations](#integrations)
 - [Uninstall GPTifier](#uninstall-gptifier)
@@ -110,7 +106,7 @@ some variation of:
 ```
 If so, try running `gpt` in a new terminal window.
 
-## Usage - OpenAI
+## Usage
 
 ### The `run` command
 The `run` command allows you to query OpenAI models like GPT-4. To start an interactive session, enter:
@@ -298,14 +294,6 @@ number of days for an organization. For example:
 gpt costs --days=5
 ```
 Will return the usage per day over the past 5 days and the overall usage over the 5 days.
-
-## Usage - Ollama
-
-### The `run` command
-
-### The `short` command
-
-### The `embed` command
 
 ## Code editing
 See the related project, [FuncGraft](https://github.com/dsw7/FuncGraft). This
