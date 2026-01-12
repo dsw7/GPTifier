@@ -11,6 +11,8 @@ because python just feels clunky and slow. This program is tested on
 Ubuntu/Debian and macOS.
 
 ## 2026 Update - Support for locally hosted LLMs
+> "The great enshittification has begun"
+
 GPTifier is gradually rolling out support for integration with self-hosted LLMs
 (via [Ollama](https://ollama.com/)) as an alternative to using OpenAI's API.
 API Access to the latest OpenAI models requires Persona verification which
