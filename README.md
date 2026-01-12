@@ -11,8 +11,12 @@ because python just feels clunky and slow. This program is tested on
 Ubuntu/Debian and macOS.
 
 ## 2026 Update
-GPTifier is gradually rolling out support for integration with self-hosted models (via [Ollama](https://ollama.com/)) as an alternative to using OpenAI's API. API Access to the latest OpenAI models requires Persona verification which feels unacceptably invasive. Support for
-OpenAI integration will still be maintained, but as of right now, only fourth generation OpenAI models (i.e. `gpt-4o`) and below can be expected to work seamlessly with GPTifier.
+GPTifier is gradually rolling out support for integration with self-hosted
+models (via [Ollama](https://ollama.com/)) as an alternative to using OpenAI's
+API. API Access to the latest OpenAI models requires Persona verification which
+feels unacceptably invasive. Support for OpenAI integration will still be
+maintained, but as of right now, only fourth generation OpenAI models (i.e.
+`gpt-4o`) and below can be expected to work seamlessly with GPTifier.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -34,14 +38,6 @@ OpenAI integration will still be maintained, but as of right now, only fourth ge
 ## Installation
 
 ### Prerequisites
-Ensure you possess a valid OpenAI API key. Set it as an environment variable:
-```bash
-export OPENAI_API_KEY="<your-api-key>"
-```
-Set an additional administrative key as an environment variable for running administrative commands:
-```bash
-export OPENAI_ADMIN_KEY="<your-admin-key>"
-```
 This program requires [CMake](https://cmake.org/), [{fmt}](https://fmt.dev/latest/) and
 [libcurl](https://curl.se/libcurl/). These can be installed as follows:
 
@@ -57,6 +53,24 @@ brew install cmake fmt
 #### Other systems
 This program should work on other Unix-like systems (i.e. other Linux distributions) however I do not
 extensively test these.
+
+#### Environment variables for OpenAI integration
+If integrating with OpenAI, you will need a valid OpenAI API key. Set it as an
+environment variable:
+```bash
+export OPENAI_API_KEY="<your-api-key>"
+```
+Set an additional administrative key as an environment variable for running
+administrative commands:
+```bash
+export OPENAI_ADMIN_KEY="<your-admin-key>"
+```
+
+#### Integrating with locally hosted LLMs
+If integrating with Ollama, ensure that you have access to a running Ollama
+instance somewhere on your network. See
+[Quickstart](https://docs.ollama.com/quickstart) for a walkthrough on setting
+up an Ollama server.
 
 ### Step 1: Compile the binary
 Compile the binary by executing the `make` target:
