@@ -120,6 +120,9 @@ some variation of:
 ```
 If so, try running `gpt` in a new terminal window.
 
+> [!NOTE]
+> Setting the Ollama configurations is optional if integrating GPTifier solely with OpenAI.
+
 ## Usage
 
 ### The `run` command
