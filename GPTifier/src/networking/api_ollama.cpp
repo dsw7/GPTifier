@@ -1,9 +1,20 @@
 #include "api_ollama.hpp"
 
+#include "configs.hpp"
+
+#include <fmt/core.h>
+
 namespace {
-// temporarily hard code socket address
-const std::string URL_OLLAMA_GENERATE = "http://localhost:11434/api/generate";
-const std::string URL_OLLAMA_EMBED = "http://localhost:11434/api/embed";
+
+std::string get_ollama_base_url()
+{
+    static const std::string host = configs.host_ollama.value();
+    static const int port = configs.port_ollama.value();
+
+    static std::string base_url = fmt::format("http://{}:{}/api", host, port);
+    return base_url;
+}
+
 } // namespace
 
 namespace networking {
@@ -16,7 +27,8 @@ CurlResult generate_ollama_response(const std::string &post_fields)
     curl.append_header("Content-Type: application/json");
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
-    curl_easy_setopt(handle, CURLOPT_URL, URL_OLLAMA_GENERATE.c_str());
+    const std::string url_generate = fmt::format("{}/generate", get_ollama_base_url());
+    curl_easy_setopt(handle, CURLOPT_URL, url_generate.c_str());
     curl_easy_setopt(handle, CURLOPT_POST, 1L);
     curl_easy_setopt(handle, CURLOPT_POSTFIELDS, post_fields.c_str());
 
@@ -35,7 +47,8 @@ CurlResult create_ollama_embedding(const std::string &post_fields)
     curl.append_header("Content-Type: application/json");
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
-    curl_easy_setopt(handle, CURLOPT_URL, URL_OLLAMA_EMBED.c_str());
+    const std::string url_embed = fmt::format("{}/embed", get_ollama_base_url());
+    curl_easy_setopt(handle, CURLOPT_URL, url_embed.c_str());
     curl_easy_setopt(handle, CURLOPT_POST, 1L);
     curl_easy_setopt(handle, CURLOPT_POSTFIELDS, post_fields.c_str());
 

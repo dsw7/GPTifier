@@ -19,6 +19,10 @@ void Configs::load_configs_from_config_file()
         throw std::runtime_error(e);
     }
 
+    // ollama
+    this->host_ollama = table["ollama"]["host"].value_or<std::string>("localhost");
+    this->port_ollama = table["ollama"]["port"].value_or<int>(11434);
+
     // run command
     this->model_run_openai = table["command"]["run"]["model"].value<std::string>();
     this->model_run_ollama = table["command"]["run"]["model_ollama"].value<std::string>();
