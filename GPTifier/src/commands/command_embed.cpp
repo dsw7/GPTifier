@@ -169,7 +169,14 @@ void command_embed(int argc, char **argv)
     const std::string text_to_embed = get_text_to_embed(params);
     const std::string model = get_model(params);
 
-    const serialization::Embedding embedding = serialization::create_openai_embedding(model, text_to_embed);
+    serialization::Embedding embedding;
+
+    if (params.use_local) {
+        embedding = serialization::create_ollama_embedding(model, text_to_embed);
+    } else {
+        embedding = serialization::create_openai_embedding(model, text_to_embed);
+    }
+
     export_embedding(embedding, params.output_file);
 }
 
