@@ -7,19 +7,23 @@
 # Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
 model = "gpt-4o"
 
-# Optionally, specify a default Ollama generation model to use such as "gemma3:latest"
-model_ollama = "gemma3:latest"
-
 [command.short]
 # Specify a default chat model to use such as "gpt-3.5-turbo" or "gpt-4"
 model = "gpt-4o"
-
-# Optionally, specify a default Ollama generation model to use such as "gemma3:latest"
-model_ollama = "gemma3:latest"
 
 [command.embed]
 # Specify a default embeddings model to use such as "text-embedding-ada-002"
 model = "text-embedding-ada-002"
 
-# Optionally, specify a default Ollama embedding model to use such as "embeddinggemma"
-model_ollama = "embeddinggemma"
+[ollama]
+# Set Ollama host
+host = "localhost"
+
+# Set Ollama port
+port = 11434
+
+# Specify a default Ollama generation model to use such as "gemma3:latest"
+model_generate = "gemma3:latest"
+
+# Specify a default Ollama embedding model to use such as "embeddinggemma"
+model_embed = "embeddinggemma"
