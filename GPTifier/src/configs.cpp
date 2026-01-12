@@ -24,16 +24,16 @@ void Configs::load_configs_from_config_file()
     this->port_ollama = table["ollama"]["port"].value_or<int>(11434);
 
     // run command
-    this->model_run_openai = table["command"]["run"]["model"].value<std::string>();
-    this->model_run_ollama = table["command"]["run"]["model_ollama"].value<std::string>();
+    this->model_run_openai = table["command"]["run"]["model"].value_or<std::string>("gpt-4o");
+    this->model_run_ollama = table["command"]["run"]["model_ollama"].value_or<std::string>("gemma3:latest");
 
     // short command
-    this->model_short_openai = table["command"]["short"]["model"].value<std::string>();
-    this->model_short_ollama = table["command"]["short"]["model_ollama"].value<std::string>();
+    this->model_short_openai = table["command"]["short"]["model"].value_or<std::string>("gpt-4o");
+    this->model_short_ollama = table["command"]["short"]["model_ollama"].value_or<std::string>("gemma3:latest");
 
     // embed command
-    this->model_embed_openai = table["command"]["embed"]["model"].value<std::string>();
-    this->model_embed_ollama = table["command"]["embed"]["model_ollama"].value<std::string>();
+    this->model_embed_openai = table["command"]["embed"]["model"].value_or<std::string>("text-embedding-3-small");
+    this->model_embed_ollama = table["command"]["embed"]["model_ollama"].value_or<std::string>("embeddinggemma");
 }
 
 Configs configs;

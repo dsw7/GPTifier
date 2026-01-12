@@ -121,11 +121,7 @@ void use_ollama(const Parameters &params)
     if (params.model) {
         model = params.model.value();
     } else {
-        if (configs.model_short_ollama) {
-            model = configs.model_short_ollama.value();
-        } else {
-            throw std::runtime_error("Could not determine which Ollama model to use");
-        }
+        model = configs.model_short_ollama.value();
     }
 
     const serialization::OllamaResponse response = serialization::create_ollama_response(params.prompt.value(), model);
@@ -145,11 +141,7 @@ void use_openai(const Parameters &params)
     if (params.model) {
         model = params.model.value();
     } else {
-        if (configs.model_short_openai) {
-            model = configs.model_short_openai.value();
-        } else {
-            throw std::runtime_error("Could not determine which OpenAI model to use");
-        }
+        model = configs.model_short_openai.value();
     }
 
     const float temperature = get_temperature(params.temperature);
