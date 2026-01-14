@@ -193,15 +193,15 @@ void time_api_call()
     std::cout << " \r" << std::flush;
 }
 
-using OpenAIResult = serialization::OpenAIResponse;
+using serialization::OpenAIResponse;
 
-OpenAIResult run_query(const std::string &model, const std::string &prompt, const float temperature)
+OpenAIResponse run_query(const std::string &model, const std::string &prompt, const float temperature)
 {
     TIMER_ENABLED.store(true);
     std::thread timer(time_api_call);
 
     bool query_failed = false;
-    OpenAIResult rp;
+    OpenAIResponse rp;
     std::string errmsg;
 
     try {
@@ -222,15 +222,15 @@ OpenAIResult run_query(const std::string &model, const std::string &prompt, cons
     return rp;
 }
 
-using OllamaResult = serialization::OllamaResponse;
+using serialization::OllamaResponse;
 
-OllamaResult run_query(const std::string &model, const std::string &prompt)
+OllamaResponse run_query(const std::string &model, const std::string &prompt)
 {
     TIMER_ENABLED.store(true);
     std::thread timer(time_api_call);
 
     bool query_failed = false;
-    OllamaResult rp;
+    OllamaResponse rp;
     std::string errmsg;
 
     try {
@@ -266,7 +266,7 @@ void dump_response(const T &response, const std::string &json_dump_file)
         { "rtt", response.rtt.count() },
     };
 
-    if constexpr (std::is_same_v<T, OpenAIResult>) {
+    if constexpr (std::is_same_v<T, OpenAIResponse>) {
         json["id"] = response.id;
         json["source"] = "OpenAI";
     } else {
@@ -335,7 +335,7 @@ void write_message_to_file(const T &response)
     std::string created;
     std::string source;
 
-    if constexpr (std::is_same_v<T, OpenAIResult>) {
+    if constexpr (std::is_same_v<T, OpenAIResponse>) {
         created = utils::datetime_from_unix_timestamp(response.created);
         source = "OpenAI";
     } else {
@@ -404,7 +404,7 @@ void run_ollama_query(const Parameters &params, const std::string &prompt)
         throw std::runtime_error("Model is empty");
     }
 
-    const OllamaResult rp = run_query(model, prompt);
+    const OllamaResponse rp = run_query(model, prompt);
 
     if (params.json_dump_file) {
         dump_response(rp, params.json_dump_file.value());
@@ -442,7 +442,7 @@ void run_openai_query(const Parameters &params, const std::string &prompt)
     }
 
     const float temperature = get_temperature(params.temperature);
-    const OpenAIResult rp = run_query(model, prompt, temperature);
+    const OpenAIResponse rp = run_query(model, prompt, temperature);
 
     if (params.json_dump_file) {
         dump_response(rp, params.json_dump_file.value());

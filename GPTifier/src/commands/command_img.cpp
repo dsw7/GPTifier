@@ -115,7 +115,7 @@ std::string base64_decode(const std::string &str_encoded)
     return str_decoded;
 }
 
-using Image = serialization::Image;
+using serialization::Image;
 
 void export_image(const Image &image, const std::string &filename_png)
 {

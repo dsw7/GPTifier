@@ -147,7 +147,7 @@ std::string get_model(const Parameters &params)
     return model;
 }
 
-using Embedding = serialization::Embedding;
+using serialization::Embedding;
 
 void export_embedding(const Embedding &embedding, const std::string &output_file)
 {

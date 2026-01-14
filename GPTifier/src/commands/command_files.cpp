@@ -62,7 +62,7 @@ Use "gpt files list" to get the IDs corresponding to files to be deleted
 
 // List files -----------------------------------------------------------------------------------------------
 
-using Files = serialization::Files;
+using serialization::Files;
 
 void print_files(const Files &files)
 {

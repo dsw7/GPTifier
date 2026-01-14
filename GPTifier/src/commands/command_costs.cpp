@@ -90,7 +90,7 @@ std::time_t get_current_time_minus_days(int days)
     return now - offset;
 }
 
-using Costs = serialization::Costs;
+using serialization::Costs;
 
 void print_costs(const Costs &costs, int days)
 {

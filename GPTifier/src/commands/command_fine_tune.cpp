@@ -193,7 +193,7 @@ void delete_fine_tuned_model(int argc, char **argv)
 
 // Print fine tuning jobs -----------------------------------------------------------------------------------
 
-using FineTuningJobs = serialization::FineTuningJobs;
+using serialization::FineTuningJobs;
 
 void print_fine_tuning_jobs(const FineTuningJobs &jobs)
 {
