@@ -23,9 +23,6 @@ namespace {
 using OpenAIResult = serialization::OpenAIResponse;
 using OllamaResult = serialization::OllamaResponse;
 
-const float MIN_TEMP = 0.00;
-const float MAX_TEMP = 2.00;
-
 void help_run()
 {
     const std::string messages = R"(Create a response according to a prompt. A prompt can be provided
@@ -172,7 +169,10 @@ float get_temperature(const std::optional<std::string> &temperature)
         temp_f = utils::string_to_float(temperature.value());
     }
 
-    return std::clamp(temp_f, MIN_TEMP, MAX_TEMP);
+    static float min_temp = 0.00;
+    static float max_temp = 2.00;
+
+    return std::clamp(temp_f, min_temp, max_temp);
 }
 
 // Completion -----------------------------------------------------------------------------------------------
