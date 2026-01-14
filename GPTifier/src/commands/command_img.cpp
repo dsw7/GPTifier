@@ -115,6 +115,20 @@ std::string base64_decode(const std::string &str_encoded)
     return str_decoded;
 }
 
+void export_image(const serialization::Image &image, const std::string &filename_png)
+{
+    const std::string b64_decoded = base64_decode(image.b64_json);
+    utils::write_to_png(filename_png, b64_decoded);
+    fmt::print("Exported image to {}\n", filename_png);
+}
+
+void export_image_metadata(const nlohmann::json &metadata, const std::string &filename)
+{
+    const std::string filename_json = fmt::format("{}.json", filename);
+    utils::write_to_file(filename_json, metadata.dump(4));
+    fmt::print("Exported image metadata to {}\n", filename_json);
+}
+
 } // namespace
 
 namespace commands {
@@ -129,12 +143,11 @@ void command_img(int argc, char **argv)
 
     const std::string prompt = utils::read_from_file(params.prompt_file.value());
     const serialization::Image image = serialization::create_image(params.model, prompt, params.quality, params.style);
-    const std::string name = filename_from_created(image.created);
 
-    const std::string b64_decoded = base64_decode(image.b64_json);
-    const std::string filename_png = fmt::format("{}.png", name);
-    utils::write_to_png(filename_png, b64_decoded);
-    fmt::print("Exported image to {}\n", filename_png);
+    const std::string filename = filename_from_created(image.created);
+    const std::string filename_png = fmt::format("{}.png", filename);
+
+    export_image(image, filename_png);
 
     nlohmann::json metadata = {
         { "filename", filename_png },
@@ -148,9 +161,7 @@ void command_img(int argc, char **argv)
         metadata["revised_prompt"] = image.revised_prompt.value();
     }
 
-    const std::string filename_json = fmt::format("{}.json", name);
-    utils::write_to_file(filename_json, metadata.dump(4));
-    fmt::print("Exported metadata to {}\n", filename_json);
+    export_image_metadata(metadata, filename);
 }
 
 } // namespace commands
