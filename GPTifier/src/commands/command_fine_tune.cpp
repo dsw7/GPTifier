@@ -193,7 +193,9 @@ void delete_fine_tuned_model(int argc, char **argv)
 
 // Print fine tuning jobs -----------------------------------------------------------------------------------
 
-void print_fine_tuning_jobs(const serialization::FineTuningJobs &jobs)
+using FineTuningJobs = serialization::FineTuningJobs;
+
+void print_fine_tuning_jobs(const FineTuningJobs &jobs)
 {
     utils::separator();
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
@@ -253,7 +255,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
 
     const int limit_i = std::clamp(utils::string_to_int(limit.value_or("20")), min_jobs_to_list, max_jobs_to_list);
 
-    serialization::FineTuningJobs jobs = serialization::get_fine_tuning_jobs(limit_i);
+    FineTuningJobs jobs = serialization::get_fine_tuning_jobs(limit_i);
 
     if (print_raw_json) {
         fmt::print("{}\n", jobs.raw_response);

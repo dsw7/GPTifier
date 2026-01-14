@@ -115,7 +115,9 @@ std::string base64_decode(const std::string &str_encoded)
     return str_decoded;
 }
 
-void export_image(const serialization::Image &image, const std::string &filename_png)
+using Image = serialization::Image;
+
+void export_image(const Image &image, const std::string &filename_png)
 {
     const std::string b64_decoded = base64_decode(image.b64_json);
     utils::write_to_png(filename_png, b64_decoded);
@@ -142,7 +144,7 @@ void command_img(int argc, char **argv)
     }
 
     const std::string prompt = utils::read_from_file(params.prompt_file.value());
-    const serialization::Image image = serialization::create_image(params.model, prompt, params.quality, params.style);
+    const Image image = serialization::create_image(params.model, prompt, params.quality, params.style);
 
     const std::string filename = filename_from_created(image.created);
     const std::string filename_png = fmt::format("{}.png", filename);

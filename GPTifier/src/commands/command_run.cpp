@@ -20,9 +20,6 @@
 
 namespace {
 
-using OpenAIResult = serialization::OpenAIResponse;
-using OllamaResult = serialization::OllamaResponse;
-
 void help_run()
 {
     const std::string messages = R"(Create a response according to a prompt. A prompt can be provided
@@ -196,6 +193,8 @@ void time_api_call()
     std::cout << " \r" << std::flush;
 }
 
+using OpenAIResult = serialization::OpenAIResponse;
+
 OpenAIResult run_query(const std::string &model, const std::string &prompt, const float temperature)
 {
     TIMER_ENABLED.store(true);
@@ -222,6 +221,8 @@ OpenAIResult run_query(const std::string &model, const std::string &prompt, cons
 
     return rp;
 }
+
+using OllamaResult = serialization::OllamaResponse;
 
 OllamaResult run_query(const std::string &model, const std::string &prompt)
 {

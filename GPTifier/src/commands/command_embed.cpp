@@ -147,13 +147,15 @@ std::string get_model(const Parameters &params)
     return model;
 }
 
-void export_embedding(const serialization::Embedding &em, const std::string &output_file)
+using Embedding = serialization::Embedding;
+
+void export_embedding(const Embedding &embedding, const std::string &output_file)
 {
     const nlohmann::json json = {
-        { "embedding", em.embedding },
-        { "input", em.input },
-        { "model", em.model },
-        { "source", em.source },
+        { "embedding", embedding.embedding },
+        { "input", embedding.input },
+        { "model", embedding.model },
+        { "source", embedding.source },
     };
 
     fmt::print("Dumping JSON to '{}'\n", output_file);
@@ -170,7 +172,7 @@ void command_embed(int argc, char **argv)
     const std::string text_to_embed = get_text_to_embed(params);
     const std::string model = get_model(params);
 
-    serialization::Embedding embedding;
+    Embedding embedding;
 
     if (params.use_local) {
         embedding = serialization::create_ollama_embedding(model, text_to_embed);

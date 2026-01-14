@@ -62,7 +62,9 @@ Use "gpt files list" to get the IDs corresponding to files to be deleted
 
 // List files -----------------------------------------------------------------------------------------------
 
-void print_files(const serialization::Files &files)
+using Files = serialization::Files;
+
+void print_files(const Files &files)
 {
     utils::separator();
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
@@ -106,7 +108,7 @@ void list_files(int argc, char **argv)
         }
     }
 
-    const serialization::Files files = serialization::get_files();
+    const Files files = serialization::get_files();
 
     if (print_raw_json) {
         fmt::print("{}\n", files.raw_response);
