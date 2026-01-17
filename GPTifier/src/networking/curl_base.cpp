@@ -2,7 +2,7 @@
 
 namespace {
 
-size_t write_callback(char *ptr, size_t size, size_t nmemb, std::string *data)
+size_t write_callback_(char *ptr, size_t size, size_t nmemb, std::string *data)
 {
     data->append(ptr, size * nmemb);
     return size * nmemb;
@@ -24,7 +24,7 @@ Curl::Curl()
         throw std::runtime_error("Something went wrong when starting libcurl easy session");
     }
 
-    curl_easy_setopt(this->curl_, CURLOPT_WRITEFUNCTION, write_callback);
+    curl_easy_setopt(this->curl_, CURLOPT_WRITEFUNCTION, write_callback_);
 }
 
 Curl::~Curl()
