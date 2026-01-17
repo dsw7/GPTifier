@@ -8,6 +8,7 @@
 #include <getopt.h>
 #include <iterator>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -98,7 +99,7 @@ void command_models(const int argc, char **argv)
         return;
     }
 
-    VecModels models = response.models;
+    VecModels models = std::move(response.models);
     std::sort(models.begin(), models.end());
 
     VecModels filtered_models;
