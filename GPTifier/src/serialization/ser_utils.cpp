@@ -21,19 +21,16 @@ nlohmann::json parse_json(const std::string &response)
 void throw_on_openai_error_response(const std::string &response)
 {
     const nlohmann::json json = parse_json(response);
-    std::string errmsg;
 
-    if (json.contains("error")) {
-        if (json["error"].empty()) {
-            errmsg = "An error occurred but error message is empty";
-        } else {
-            errmsg = json["error"]["message"];
-        }
-    } else {
-        errmsg = "Malformed error response. No error object could be found";
+    if (not json.contains("error")) {
+        throw std::runtime_error("Malformed error response. No error object could be found");
     }
 
-    throw std::runtime_error(errmsg);
+    if (json["error"].empty()) {
+        throw std::runtime_error("An error occurred but error message is empty");
+    }
+
+    throw std::runtime_error(json["error"]["message"]);
 }
 
 void throw_on_ollama_error_response(const std::string &response)
