@@ -1,7 +1,8 @@
 #include "configs.hpp"
-#include "datadir.hpp"
-#include "toml.hpp"
 
+#include "datadir.hpp"
+
+#include <toml.hpp>
 #include <filesystem>
 #include <stdexcept>
 

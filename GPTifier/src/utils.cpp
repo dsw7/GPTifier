@@ -9,7 +9,7 @@
 
 namespace {
 
-short get_terminal_columns()
+short get_terminal_columns_()
 {
     static struct winsize window_size;
     window_size.ws_col = 0;
@@ -27,7 +27,7 @@ namespace utils {
 
 void separator()
 {
-    static short columns = get_terminal_columns();
+    static short columns = get_terminal_columns_();
     static std::string separator = std::string(columns, '-');
     fmt::print("{}\n", separator);
 }
