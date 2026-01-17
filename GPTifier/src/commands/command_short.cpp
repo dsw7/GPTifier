@@ -12,7 +12,7 @@
 
 namespace {
 
-void help_short()
+void help_short_command_()
 {
     const std::string messages = R"(Create a response but without threading or verbosity. Command is
 useful for unit testing, vim integration, etc.
@@ -67,7 +67,7 @@ Parameters read_cli_(const int argc, char **argv)
 
         switch (c) {
             case 'h':
-                help_short();
+                help_short_command_();
                 exit(EXIT_SUCCESS);
             case 'j':
                 params.print_raw_json = true;
@@ -96,7 +96,7 @@ Parameters read_cli_(const int argc, char **argv)
     return params;
 }
 
-float get_temperature(const std::optional<std::string> &temperature)
+float select_temperature_(const std::optional<std::string> &temperature)
 {
     float temp_f = 1.00;
 
@@ -114,7 +114,7 @@ float get_temperature(const std::optional<std::string> &temperature)
     return std::clamp(temp_f, min_temp, max_temp);
 }
 
-void use_ollama(const Parameters &params)
+void create_ollama_response_(const Parameters &params)
 {
     std::string model;
 
@@ -134,7 +134,7 @@ void use_ollama(const Parameters &params)
     fmt::print("{}\n", response.output);
 }
 
-void use_openai(const Parameters &params)
+void create_openai_response_(const Parameters &params)
 {
     std::string model;
 
@@ -144,7 +144,7 @@ void use_openai(const Parameters &params)
         model = configs.model_short_openai.value();
     }
 
-    const float temperature = get_temperature(params.temperature);
+    const float temperature = select_temperature_(params.temperature);
     const serialization::OpenAIResponse response = serialization::create_openai_response(params.prompt.value(), model, temperature);
 
     if (params.print_raw_json) {
@@ -172,9 +172,9 @@ void command_short(const int argc, char **argv)
     }
 
     if (params.use_local) {
-        use_ollama(params);
+        create_ollama_response_(params);
     } else {
-        use_openai(params);
+        create_openai_response_(params);
     }
 }
 
