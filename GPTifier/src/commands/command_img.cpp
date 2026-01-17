@@ -12,7 +12,7 @@
 
 namespace {
 
-void help_img()
+void help_img_()
 {
     const std::string messages = R"(Generate an image from a prompt. Command currently defaults to using the
 DALL-E 3 model for image generation.
@@ -57,7 +57,7 @@ Parameters read_cli_(const int argc, char **argv)
 
         switch (c) {
             case 'h':
-                help_img();
+                help_img_();
                 exit(EXIT_SUCCESS);
             case 'q':
                 params.quality = "hd";
@@ -80,7 +80,7 @@ Parameters read_cli_(const int argc, char **argv)
     return params;
 }
 
-std::string filename_from_created(const std::time_t &timestamp)
+std::string get_filename_from_created_(const std::time_t &timestamp)
 {
     const std::tm *datetime = std::gmtime(&timestamp);
     char buffer[80];
@@ -89,9 +89,10 @@ std::string filename_from_created(const std::time_t &timestamp)
     return buffer;
 }
 
-std::string base64_decode(const std::string &str_encoded)
+std::string base64_decode_(const std::string &str_encoded)
 {
     std::vector<int> T(256, -1);
+
     for (int i = 0; i < 64; i++) {
         T["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = i;
     }
@@ -104,8 +105,10 @@ std::string base64_decode(const std::string &str_encoded)
         if (T[c] == -1) {
             break; // i.e. non-base64 character is found
         }
+
         val = (val << 6) + T[c];
         valb += 6;
+
         if (valb >= 0) {
             str_decoded.push_back(char((val >> valb) & 0xFF));
             valb -= 8;
@@ -117,14 +120,14 @@ std::string base64_decode(const std::string &str_encoded)
 
 using serialization::Image;
 
-void export_image(const Image &image, const std::string &filename_png)
+void export_image_(const Image &image, const std::string &filename_png)
 {
-    const std::string b64_decoded = base64_decode(image.b64_json);
+    const std::string b64_decoded = base64_decode_(image.b64_json);
     utils::write_to_png(filename_png, b64_decoded);
     fmt::print("Exported image to {}\n", filename_png);
 }
 
-void export_image_metadata(const nlohmann::json &metadata, const std::string &filename)
+void export_image_metadata_(const nlohmann::json &metadata, const std::string &filename)
 {
     const std::string filename_json = fmt::format("{}.json", filename);
     utils::write_to_file(filename_json, metadata.dump(4));
@@ -146,10 +149,10 @@ void command_img(const int argc, char **argv)
     const std::string prompt = utils::read_from_file(params.prompt_file.value());
     const Image image = serialization::create_image(params.model, prompt, params.quality, params.style);
 
-    const std::string filename = filename_from_created(image.created);
+    const std::string filename = get_filename_from_created_(image.created);
     const std::string filename_png = fmt::format("{}.png", filename);
 
-    export_image(image, filename_png);
+    export_image_(image, filename_png);
 
     nlohmann::json metadata = {
         { "filename", filename_png },
@@ -163,7 +166,7 @@ void command_img(const int argc, char **argv)
         metadata["revised_prompt"] = image.revised_prompt.value();
     }
 
-    export_image_metadata(metadata, filename);
+    export_image_metadata_(metadata, filename);
 }
 
 } // namespace commands
