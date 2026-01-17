@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <fmt/core.h>
 #include <getopt.h>
+#include <iterator>
 #include <string>
 #include <vector>
 
@@ -69,33 +70,8 @@ Parameters read_cli_(const int argc, char **argv)
     return params;
 }
 
-using VecModels = std::vector<serialization::Model>;
-
-VecModels get_openai_models_(const VecModels &all_models)
-{
-    VecModels openai_models;
-
-    for (const auto &model: all_models) {
-        if (model.owned_by_openai) {
-            openai_models.push_back(model);
-        }
-    }
-
-    return openai_models;
-}
-
-VecModels get_user_models_(const VecModels &all_models)
-{
-    VecModels user_models;
-
-    for (const auto &model: all_models) {
-        if (not model.owned_by_openai) {
-            user_models.push_back(model);
-        }
-    }
-
-    return user_models;
-}
+using serialization::Model;
+using VecModels = std::vector<Model>;
 
 void print_models_(const VecModels &models)
 {
@@ -115,22 +91,27 @@ namespace commands {
 void command_models(const int argc, char **argv)
 {
     const Parameters params = read_cli_(argc, argv);
-
-    serialization::Models all_models = serialization::get_models();
-    std::sort(all_models.models.begin(), all_models.models.end());
+    const serialization::Models response = serialization::get_models();
 
     if (params.print_raw_json) {
-        fmt::print("{}\n", all_models.raw_response);
+        fmt::print("{}\n", response.raw_response);
         return;
     }
 
+    VecModels models = response.models;
+    std::sort(models.begin(), models.end());
+
     VecModels filtered_models;
 
-    if (params.print_user_models) {
-        filtered_models = get_user_models_(all_models.models);
-    } else {
-        filtered_models = get_openai_models_(all_models.models);
-    }
+    std::copy_if(
+        models.begin(), models.end(), std::back_inserter(filtered_models),
+        [params](const Model &model) {
+            if (params.print_user_models) {
+                return not model.owned_by_openai;
+            }
+
+            return model.owned_by_openai;
+        });
 
     print_models_(filtered_models);
 }
