@@ -11,7 +11,7 @@
 
 namespace {
 
-void help_costs()
+void help_costs_()
 {
     const std::string messages = R"(Get OpenAI usage details. This is an administrative command and this command
 will require that a valid OPENAI_ADMIN_KEY environment variable is set.
@@ -34,7 +34,7 @@ struct Parameters {
     std::string days = "30";
 };
 
-Parameters read_cli(int argc, char **argv)
+Parameters read_cli_(int argc, char **argv)
 {
     Parameters params;
 
@@ -55,7 +55,7 @@ Parameters read_cli(int argc, char **argv)
 
         switch (c) {
             case 'h':
-                help_costs();
+                help_costs_();
                 exit(EXIT_SUCCESS);
             case 'j':
                 params.print_raw_json = true;
@@ -75,7 +75,7 @@ Parameters read_cli(int argc, char **argv)
     return params;
 }
 
-std::time_t get_current_time_minus_days(int days)
+std::time_t get_current_time_minus_days_(int days)
 {
     if (days < 0) {
         return std::time(nullptr);
@@ -92,13 +92,9 @@ std::time_t get_current_time_minus_days(int days)
 
 using serialization::Costs;
 
-void print_costs(const Costs &costs, int days)
+void print_costs_(const Costs &costs, const int days)
 {
-    utils::separator();
-    fmt::print("Overall usage (in USD) over {} days: {}\n", days, costs.total_cost);
-    utils::separator();
-    fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
-    utils::separator();
+    fmt::print("{:<25}{:<25}{:<25}{}\n\n", "Start time", "End time", "Usage (USD)", "Organization ID");
 
     for (const auto &bucket: costs.buckets) {
         const std::string dt_start = utils::datetime_from_unix_timestamp(bucket.start_time);
@@ -106,7 +102,7 @@ void print_costs(const Costs &costs, int days)
         fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, bucket.cost, bucket.org_id);
     }
 
-    utils::separator();
+    fmt::print("\nOverall usage (in USD) over {} days: {}\n", days, costs.total_cost);
 }
 
 } // namespace
@@ -115,13 +111,13 @@ namespace commands {
 
 void command_costs(int argc, char **argv)
 {
-    const Parameters params = read_cli(argc, argv);
+    const Parameters params = read_cli_(argc, argv);
 
     static int min_days = 1;
     static int max_days = 60;
 
     const int days = std::clamp(utils::string_to_int(params.days), min_days, max_days);
-    const std::time_t start_time = get_current_time_minus_days(days);
+    const std::time_t start_time = get_current_time_minus_days_(days);
 
     if (not params.print_raw_json) {
         fmt::print("Awaiting response from API...\n");
@@ -134,10 +130,9 @@ void command_costs(int argc, char **argv)
         fmt::print("{}\n", costs.raw_response);
         return;
     }
-    fmt::print("Complete!\n");
 
     std::sort(costs.buckets.begin(), costs.buckets.end());
-    print_costs(costs, days);
+    print_costs_(costs, days);
 }
 
 } // namespace commands
