@@ -36,7 +36,7 @@ struct Parameters {
     std::optional<std::string> prompt_file;
 };
 
-Parameters read_cli(const int argc, char **argv)
+Parameters read_cli_(const int argc, char **argv)
 {
     Parameters params;
 
@@ -137,7 +137,7 @@ namespace commands {
 
 void command_img(const int argc, char **argv)
 {
-    const Parameters params = read_cli(argc, argv);
+    const Parameters params = read_cli_(argc, argv);
 
     if (not params.prompt_file) {
         throw std::runtime_error("No prompt file provided. Cannot proceed");

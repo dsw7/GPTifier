@@ -62,7 +62,7 @@ struct Parameters {
     std::optional<std::string> temperature;
 };
 
-Parameters read_cli(const int argc, char **argv)
+Parameters read_cli_(const int argc, char **argv)
 {
     Parameters params;
 
@@ -467,7 +467,7 @@ namespace commands {
 
 void command_run(const int argc, char **argv)
 {
-    const Parameters params = read_cli(argc, argv);
+    const Parameters params = read_cli_(argc, argv);
     utils::separator();
 
     const std::string prompt = get_prompt(params);

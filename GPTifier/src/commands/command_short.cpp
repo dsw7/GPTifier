@@ -44,7 +44,7 @@ struct Parameters {
     std::optional<std::string> temperature;
 };
 
-Parameters read_cli(const int argc, char **argv)
+Parameters read_cli_(const int argc, char **argv)
 {
     Parameters params;
 
@@ -161,7 +161,7 @@ namespace commands {
 
 void command_short(const int argc, char **argv)
 {
-    const Parameters params = read_cli(argc, argv);
+    const Parameters params = read_cli_(argc, argv);
 
     if (not params.prompt) {
         throw std::runtime_error("Prompt is empty");

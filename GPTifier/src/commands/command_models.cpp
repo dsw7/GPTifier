@@ -32,7 +32,7 @@ struct Parameters {
     bool print_user_models = false;
 };
 
-Parameters read_cli(const int argc, char **argv)
+Parameters read_cli_(const int argc, char **argv)
 {
     Parameters params;
 
@@ -119,7 +119,7 @@ namespace commands {
 
 void command_models(const int argc, char **argv)
 {
-    const Parameters params = read_cli(argc, argv);
+    const Parameters params = read_cli_(argc, argv);
 
     serialization::Models all_models = serialization::get_models();
     std::sort(all_models.models.begin(), all_models.models.end());
