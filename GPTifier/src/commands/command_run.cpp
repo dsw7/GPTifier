@@ -20,7 +20,7 @@
 
 namespace {
 
-void help_run()
+void help_run_command_()
 {
     const std::string messages = R"(Create a response according to a prompt. A prompt can be provided
 as follows:
@@ -87,7 +87,7 @@ Parameters read_cli_(const int argc, char **argv)
 
         switch (c) {
             case 'h':
-                help_run();
+                help_run_command_();
                 exit(EXIT_SUCCESS);
             case 'o':
                 params.json_dump_file = optarg;
@@ -127,7 +127,7 @@ Parameters read_cli_(const int argc, char **argv)
     return params;
 }
 
-std::string get_prompt(const Parameters &params)
+std::string get_prompt_(const Parameters &params)
 {
     if (params.prompt) {
         return params.prompt.value();
@@ -154,7 +154,7 @@ std::string get_prompt(const Parameters &params)
     return prompt;
 }
 
-float get_temperature(const std::optional<std::string> &temperature)
+float select_temperature_(const std::optional<std::string> &temperature)
 {
     float temp_f = 1.00;
 
@@ -176,7 +176,7 @@ float get_temperature(const std::optional<std::string> &temperature)
 
 std::atomic<bool> TIMER_ENABLED(false);
 
-void time_api_call()
+void time_api_call_()
 {
     const std::chrono::duration delay = std::chrono::milliseconds(100);
 
@@ -195,10 +195,10 @@ void time_api_call()
 
 using serialization::OpenAIResponse;
 
-OpenAIResponse run_query(const std::string &model, const std::string &prompt, const float temperature)
+OpenAIResponse create_openai_response_(const std::string &model, const std::string &prompt, const float temperature)
 {
     TIMER_ENABLED.store(true);
-    std::thread timer(time_api_call);
+    std::thread timer(time_api_call_);
 
     bool query_failed = false;
     OpenAIResponse rp;
@@ -224,10 +224,10 @@ OpenAIResponse run_query(const std::string &model, const std::string &prompt, co
 
 using serialization::OllamaResponse;
 
-OllamaResponse run_query(const std::string &model, const std::string &prompt)
+OllamaResponse create_ollama_response_(const std::string &model, const std::string &prompt)
 {
     TIMER_ENABLED.store(true);
-    std::thread timer(time_api_call);
+    std::thread timer(time_api_call_);
 
     bool query_failed = false;
     OllamaResponse rp;
@@ -254,7 +254,7 @@ OllamaResponse run_query(const std::string &model, const std::string &prompt)
 // Output ---------------------------------------------------------------------------------------------------
 
 template<typename T>
-void dump_response(const T &response, const std::string &json_dump_file)
+void dump_response_to_json_file_(const T &response, const std::string &json_dump_file)
 {
     nlohmann::json json = {
         { "created", response.created },
@@ -277,13 +277,13 @@ void dump_response(const T &response, const std::string &json_dump_file)
     utils::write_to_file(json_dump_file, json.dump(2));
 }
 
-void print_response(const std::string &completion)
+void print_completion_to_stdout_(const std::string &completion)
 {
     fmt::print(fg(white), "Results: ");
     fmt::print(fg(green), "{}\n", completion);
 }
 
-void print_ratio(int num_tokens, int num_words)
+void print_token_to_word_count_ratio_(int num_tokens, int num_words)
 {
     if (num_words < 1) {
         throw std::runtime_error("Zero division. Number of words is 0!");
@@ -305,7 +305,7 @@ void print_ratio(int num_tokens, int num_words)
 }
 
 template<typename T>
-void print_usage_statistics(const T &response)
+void print_inference_usage_statistics_(const T &response)
 {
     const int wc_input = utils::get_word_count(response.input);
     const int wc_output = utils::get_word_count(response.output);
@@ -319,18 +319,18 @@ void print_usage_statistics(const T &response)
     fmt::print(fg(green), "{}\n", response.input_tokens);
     fmt::print("Prompt size (words): ");
     fmt::print(fg(green), "{}\n", wc_input);
-    print_ratio(response.input_tokens, wc_input);
+    print_token_to_word_count_ratio_(response.input_tokens, wc_input);
     fmt::print("\n");
 
     fmt::print("Completion tokens: ");
     fmt::print(fg(green), "{}\n", response.output_tokens);
     fmt::print("Completion size (words): ");
     fmt::print(fg(green), "{}\n", wc_output);
-    print_ratio(response.output_tokens, wc_output);
+    print_token_to_word_count_ratio_(response.output_tokens, wc_output);
 }
 
 template<typename T>
-void write_message_to_file(const T &response)
+void append_response_to_completions_file_(const T &response)
 {
     std::string created;
     std::string source;
@@ -362,7 +362,7 @@ void write_message_to_file(const T &response)
 #pragma GCC diagnostic ignored "-Wunused-function"
 
 template<typename T>
-void export_response(const T &response)
+void dump_response_to_completions_file_(const T &response)
 {
     fmt::print(fg(white), "Export:\n");
     char choice = 'n';
@@ -383,14 +383,14 @@ void export_response(const T &response)
         return;
     }
 
-    write_message_to_file(response);
+    append_response_to_completions_file_(response);
 }
 
 #pragma GCC diagnostic pop
 
 // OpenAI / Ollama ------------------------------------------------------------------------------------------
 
-void run_ollama_query(const Parameters &params, const std::string &prompt)
+void run_ollama_query_(const Parameters &params, const std::string &prompt)
 {
     std::string model;
 
@@ -404,26 +404,26 @@ void run_ollama_query(const Parameters &params, const std::string &prompt)
         throw std::runtime_error("Model is empty");
     }
 
-    const OllamaResponse rp = run_query(model, prompt);
+    const OllamaResponse response = create_ollama_response_(model, prompt);
 
     if (params.json_dump_file) {
-        dump_response(rp, params.json_dump_file.value());
+        dump_response_to_json_file_(response, params.json_dump_file.value());
         return;
     }
 
-    print_usage_statistics(rp);
+    print_inference_usage_statistics_(response);
     utils::separator();
 
-    print_response(rp.output);
+    print_completion_to_stdout_(response.output);
     utils::separator();
 
 #ifndef TESTING_ENABLED
-    export_response(rp);
+    dump_response_to_completions_file_(response);
     utils::separator();
 #endif
 }
 
-void run_openai_query(const Parameters &params, const std::string &prompt)
+void run_openai_query_(const Parameters &params, const std::string &prompt)
 {
     std::string model;
 
@@ -441,22 +441,22 @@ void run_openai_query(const Parameters &params, const std::string &prompt)
         throw std::runtime_error("Model is empty");
     }
 
-    const float temperature = get_temperature(params.temperature);
-    const OpenAIResponse rp = run_query(model, prompt, temperature);
+    const float temperature = select_temperature_(params.temperature);
+    const OpenAIResponse response = create_openai_response_(model, prompt, temperature);
 
     if (params.json_dump_file) {
-        dump_response(rp, params.json_dump_file.value());
+        dump_response_to_json_file_(response, params.json_dump_file.value());
         return;
     }
 
-    print_usage_statistics(rp);
+    print_inference_usage_statistics_(response);
     utils::separator();
 
-    print_response(rp.output);
+    print_completion_to_stdout_(response.output);
     utils::separator();
 
 #ifndef TESTING_ENABLED
-    export_response(rp);
+    dump_response_to_completions_file_(response);
     utils::separator();
 #endif
 }
@@ -468,18 +468,18 @@ namespace commands {
 void command_run(const int argc, char **argv)
 {
     const Parameters params = read_cli_(argc, argv);
-    utils::separator();
 
-    const std::string prompt = get_prompt(params);
+    utils::separator();
+    const std::string prompt = get_prompt_(params);
 
     if (prompt.empty()) {
         throw std::runtime_error("Prompt is empty");
     }
 
     if (params.use_local) {
-        run_ollama_query(params, prompt);
+        run_ollama_query_(params, prompt);
     } else {
-        run_openai_query(params, prompt);
+        run_openai_query_(params, prompt);
     }
 }
 
