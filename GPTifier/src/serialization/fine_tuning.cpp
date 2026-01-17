@@ -11,7 +11,25 @@ namespace serialization {
 
 namespace {
 
-FineTuningJobs unpack_fine_tuning_jobs(const std::string &response)
+FineTuningJob unpack_fine_tuning_job_(const nlohmann::json &entry)
+{
+    FineTuningJob ft_job_obj;
+
+    ft_job_obj.id = entry["id"];
+    ft_job_obj.created_at = entry["created_at"];
+
+    if (not entry["finished_at"].is_null()) {
+        ft_job_obj.finished_at = utils::datetime_from_unix_timestamp(entry["finished_at"]);
+    }
+
+    if (not entry["estimated_finish"].is_null()) {
+        ft_job_obj.estimated_finish = utils::datetime_from_unix_timestamp(entry["estimated_finish"]);
+    }
+
+    return ft_job_obj;
+}
+
+FineTuningJobs unpack_fine_tuning_jobs_(const std::string &response)
 {
     const nlohmann::json json = parse_json(response);
 
@@ -20,20 +38,7 @@ FineTuningJobs unpack_fine_tuning_jobs(const std::string &response)
 
     try {
         for (const auto &entry: json["data"]) {
-            FineTuningJob job;
-
-            job.id = entry["id"];
-            job.created_at = entry["created_at"];
-
-            if (not entry["finished_at"].is_null()) {
-                job.finished_at = utils::datetime_from_unix_timestamp(entry["finished_at"]);
-            }
-
-            if (not entry["estimated_finish"].is_null()) {
-                job.estimated_finish = utils::datetime_from_unix_timestamp(entry["estimated_finish"]);
-            }
-
-            fine_tuning_jobs.jobs.push_back(job);
+            fine_tuning_jobs.jobs.push_back(unpack_fine_tuning_job_(entry));
         }
     } catch (const nlohmann::json::exception &e) {
         throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
@@ -51,7 +56,7 @@ FineTuningJobs get_fine_tuning_jobs(const int limit)
         throw_on_openai_error_response(result.error().response);
     }
 
-    return unpack_fine_tuning_jobs(result->response);
+    return unpack_fine_tuning_jobs_(result->response);
 }
 
 std::string create_fine_tuning_job(const std::string &model, const std::string &training_file)
