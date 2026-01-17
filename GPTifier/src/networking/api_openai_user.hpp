@@ -10,7 +10,7 @@ CurlResult delete_model(const std::string &model_id);
 CurlResult create_openai_response(const std::string &post_fields);
 CurlResult create_openai_embedding(const std::string &post_fields);
 CurlResult upload_file(const std::string &filename, const std::string &purpose);
-CurlResult get_uploaded_files(bool sort_asc = true);
+CurlResult get_uploaded_files(const bool sort_asc = true);
 CurlResult delete_file(const std::string &file_id);
 CurlResult create_fine_tuning_job(const std::string &post_fields);
 CurlResult get_fine_tuning_jobs(const int limit);

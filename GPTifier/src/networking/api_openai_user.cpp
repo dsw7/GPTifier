@@ -14,7 +14,7 @@ const std::string URL_IMAGES = "https://api.openai.com/v1/images";
 const std::string URL_MODELS = "https://api.openai.com/v1/models";
 const std::string URL_RESPONSES = "https://api.openai.com/v1/responses";
 
-std::string get_user_api_key()
+std::string get_openai_user_api_key_()
 {
     static std::string api_key;
 
@@ -39,7 +39,7 @@ CurlResult get_models()
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Authorization: Bearer " + get_openai_user_api_key_());
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     curl_easy_setopt(handle, CURLOPT_URL, URL_MODELS.c_str());
@@ -57,7 +57,7 @@ CurlResult delete_model(const std::string &model_id)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Authorization: Bearer " + get_openai_user_api_key_());
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string endpoint = fmt::format("{}/{}", URL_MODELS, model_id);
@@ -76,7 +76,7 @@ CurlResult create_openai_response(const std::string &post_fields)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Authorization: Bearer " + get_openai_user_api_key_());
     curl.append_header("Content-Type: application/json");
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
@@ -96,7 +96,7 @@ CurlResult create_openai_embedding(const std::string &post_fields)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Authorization: Bearer " + get_openai_user_api_key_());
     curl.append_header("Content-Type: application/json");
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
@@ -116,7 +116,7 @@ CurlResult upload_file(const std::string &filename, const std::string &purpose)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Authorization: Bearer " + get_openai_user_api_key_());
     curl.append_header("Content-Type: multipart/form-data");
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
@@ -143,12 +143,12 @@ CurlResult upload_file(const std::string &filename, const std::string &purpose)
     return check_curl_code(handle, code, response);
 }
 
-CurlResult get_uploaded_files(bool sort_asc)
+CurlResult get_uploaded_files(const bool sort_asc)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Authorization: Bearer " + get_openai_user_api_key_());
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string order = sort_asc ? "asc" : "desc";
@@ -169,7 +169,7 @@ CurlResult delete_file(const std::string &file_id)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Authorization: Bearer " + get_openai_user_api_key_());
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string endpoint = fmt::format("{}/{}", URL_FILES, file_id);
@@ -188,7 +188,7 @@ CurlResult create_fine_tuning_job(const std::string &post_fields)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Authorization: Bearer " + get_openai_user_api_key_());
     curl.append_header("Content-Type: application/json");
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
@@ -209,7 +209,7 @@ CurlResult get_fine_tuning_jobs(const int limit)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Authorization: Bearer " + get_openai_user_api_key_());
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
     const std::string endpoint = fmt::format("{}/{}?limit={}", URL_FINE_TUNING, "jobs", limit);
@@ -228,7 +228,7 @@ CurlResult create_image(const std::string &post_fields)
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer " + get_user_api_key());
+    curl.append_header("Authorization: Bearer " + get_openai_user_api_key_());
     curl.append_header("Content-Type: application/json");
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
