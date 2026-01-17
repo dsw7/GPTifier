@@ -11,12 +11,30 @@ namespace serialization {
 
 namespace {
 
-bool is_owned_by_openai(const std::string &owned_by)
+bool is_model_owned_by_openai_(const std::string &owned_by)
 {
-    return owned_by.compare(0, 6, "openai") == 0 or owned_by.compare(0, 6, "system") == 0;
+    if (owned_by.compare(0, 6, "openai") == 0) {
+        return true;
+    }
+
+    if (owned_by.compare(0, 6, "system") == 0) {
+        return true;
+    }
+
+    return false;
 }
 
-Models unpack_models(const std::string &response)
+Model unpack_model_object_(const nlohmann::json &entry)
+{
+    Model model_object;
+    model_object.created_at = entry["created"];
+    model_object.id = entry["id"];
+    model_object.owned_by_openai = is_model_owned_by_openai_(entry["owned_by"]);
+    model_object.owner = entry["owned_by"];
+    return model_object;
+}
+
+Models unpack_models_response_(const std::string &response)
 {
     const nlohmann::json json = parse_json(response);
 
@@ -25,12 +43,7 @@ Models unpack_models(const std::string &response)
 
     try {
         for (const auto &entry: json["data"]) {
-            Model model;
-            model.created_at = entry["created"];
-            model.id = entry["id"];
-            model.owned_by_openai = is_owned_by_openai(entry["owned_by"]);
-            model.owner = entry["owned_by"];
-            models.models.push_back(model);
+            models.models.push_back(unpack_model_object_(entry));
         }
     } catch (const nlohmann::json::exception &e) {
         throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
@@ -49,7 +62,7 @@ Models get_models()
         throw_on_openai_error_response(result.error().response);
     }
 
-    return unpack_models(result->response);
+    return unpack_models_response_(result->response);
 }
 
 bool delete_model(const std::string &model_id)
