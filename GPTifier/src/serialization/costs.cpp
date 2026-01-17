@@ -11,6 +11,25 @@ namespace serialization {
 
 namespace {
 
+float get_costs_amount_(const nlohmann::json &cost_object)
+{
+    if (cost_object["amount"]["value"].is_number_float()) {
+        return cost_object["amount"]["value"];
+    };
+
+    return std::stof(cost_object["amount"]["value"].get<std::string>());
+}
+
+CostsBucket unpack_individual_bucket_(const nlohmann::json &entry)
+{
+    CostsBucket bucket;
+    bucket.start_time = entry["start_time"];
+    bucket.end_time = entry["end_time"];
+    bucket.cost = get_costs_amount_(entry["results"][0]);
+    bucket.org_id = entry["results"][0]["organization_id"];
+    return bucket;
+}
+
 Costs unpack_costs_response_(const std::string &response)
 {
     const nlohmann::json json = parse_json(response);
@@ -24,23 +43,8 @@ Costs unpack_costs_response_(const std::string &response)
                 continue;
             }
 
-            const nlohmann::json cost_obj = entry["results"][0];
-            float cost = 0.00f;
-
-            if (cost_obj["amount"]["value"].is_number_float()) {
-                cost = cost_obj["amount"]["value"];
-            } else {
-                cost = std::stof(cost_obj["amount"]["value"].get<std::string>());
-            }
-
-            costs.total_cost += cost;
-
-            CostsBucket bucket;
-            bucket.end_time = entry["end_time"];
-            bucket.start_time = entry["start_time"];
-            bucket.cost = cost;
-            bucket.org_id = cost_obj["organization_id"];
-
+            const CostsBucket bucket = unpack_individual_bucket_(entry);
+            costs.total_cost += bucket.cost;
             costs.buckets.push_back(bucket);
         }
     } catch (const nlohmann::json::exception &e) {
