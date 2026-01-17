@@ -10,23 +10,23 @@ namespace serialization {
 
 namespace {
 
-Image unpack_image(const std::string &response)
+Image unpack_image_response_(const std::string &response)
 {
     const nlohmann::json json = parse_json(response);
-    Image image;
+    Image image_obj;
 
     try {
-        image.b64_json = json["data"][0]["b64_json"];
-        image.created = json["created"];
+        image_obj.b64_json = json["data"][0]["b64_json"];
+        image_obj.created = json["created"];
 
         if (json["data"][0].contains("revised_prompt")) {
-            image.revised_prompt = json["data"][0]["revised_prompt"];
+            image_obj.revised_prompt = json["data"][0]["revised_prompt"];
         }
     } catch (const nlohmann::json::exception &e) {
         throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
     }
 
-    return image;
+    return image_obj;
 }
 
 } // namespace
@@ -47,7 +47,8 @@ Image create_image(const std::string &model, const std::string &prompt, const st
     if (not result) {
         throw_on_openai_error_response(result.error().response);
     }
-    return unpack_image(result->response);
+
+    return unpack_image_response_(result->response);
 }
 
 } // namespace serialization
