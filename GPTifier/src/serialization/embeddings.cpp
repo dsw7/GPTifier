@@ -12,7 +12,7 @@ namespace serialization {
 
 namespace {
 
-Embedding unpack_openai_embedding(const std::string &response, const std::string &input)
+Embedding unpack_openai_embedding_(const std::string &response, const std::string &input)
 {
     const nlohmann::json json = parse_json(response);
     Embedding embedding;
@@ -29,7 +29,7 @@ Embedding unpack_openai_embedding(const std::string &response, const std::string
     return embedding;
 }
 
-Embedding unpack_ollama_embedding(const std::string &response, const std::string &input)
+Embedding unpack_ollama_embedding_(const std::string &response, const std::string &input)
 {
     const nlohmann::json json = parse_json(response);
     Embedding embedding;
@@ -57,7 +57,7 @@ Embedding create_openai_embedding(const std::string &model, const std::string &i
         throw_on_openai_error_response(result.error().response);
     }
 
-    return unpack_openai_embedding(result->response, input);
+    return unpack_openai_embedding_(result->response, input);
 }
 
 Embedding create_ollama_embedding(const std::string &model, const std::string &input)
@@ -69,7 +69,7 @@ Embedding create_ollama_embedding(const std::string &model, const std::string &i
         throw_on_ollama_error_response(result.error().response);
     }
 
-    return unpack_ollama_embedding(result->response, input);
+    return unpack_ollama_embedding_(result->response, input);
 }
 
 } // namespace serialization
