@@ -291,7 +291,7 @@ void print_token_to_word_count_ratio_(int num_tokens, int num_words)
 
     // The ideal ratio is about 100 tokens / 75 words
     // See https://platform.openai.com/tokenizer for more information
-    float ratio = (float)num_tokens / num_words;
+    const float ratio = (float)num_tokens / num_words;
 
     fmt::print("Ratio: ");
 
@@ -344,13 +344,15 @@ void append_response_to_completions_file_(const T &response)
         source = "Ollama";
     }
 
-    std::string text = "{\n";
-    text += "> Created at: " + created + " (GMT)\n";
-    text += "> Source: " + source + "\n\n";
-    text += "> Model: " + response.model + "\n\n";
-    text += "> Input:\n" + response.input + "\n\n";
-    text += "> Output:\n" + response.output + "\n";
-    text += "}\n\n";
+    const std::string text = fmt::format(
+        "{{\n"
+        "> Created at: {} (GMT)\n"
+        "> Source: {}\n\n"
+        "> Model: {}\n\n"
+        "> Input:\n{}\n\n"
+        "> Output:\n{}\n"
+        "}}\n\n",
+        created, source, response.model, response.input, response.output);
 
     const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
     fmt::print("> Writing output to file {}\n", path_completions_file);
@@ -368,18 +370,18 @@ void dump_response_to_completions_file_(const T &response)
     char choice = 'n';
 
     while (true) {
-        std::cout << "> Write reply to file? [y/n]: ";
+        fmt::print("> Write reply to file? [y/n]: ");
         choice = std::cin.get();
 
         if (choice == 'y' or choice == 'n') {
             break;
         } else {
-            std::cout << "> Invalid choice. Input either 'y' or 'n'!\n";
+            fmt::print("> Invalid choice. Input either 'y' or 'n'!\n");
         }
     }
 
     if (choice == 'n') {
-        std::cout << "> Not exporting response.\n";
+        fmt::print("> Not exporting response.\n");
         return;
     }
 
