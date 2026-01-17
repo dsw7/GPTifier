@@ -9,6 +9,7 @@
 #include <getopt.h>
 #include <iostream>
 #include <string>
+#include <utility>
 
 namespace {
 
@@ -91,19 +92,17 @@ std::time_t get_current_time_minus_days_(int days)
     return now - offset;
 }
 
-using serialization::Costs;
+using VecCostsBuckets = std::vector<serialization::CostsBucket>;
 
-void print_costs_(const Costs &costs, const int days)
+void print_individual_cost_buckets_(const VecCostsBuckets &buckets)
 {
     fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
 
-    for (const auto &bucket: costs.buckets) {
+    for (const auto &bucket: buckets) {
         const std::string dt_start = utils::datetime_from_unix_timestamp(bucket.start_time);
         const std::string dt_end = utils::datetime_from_unix_timestamp(bucket.end_time);
         fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, bucket.cost, bucket.org_id);
     }
-
-    fmt::print("\nOverall usage (in USD) over {} days: {}\n", days, costs.total_cost);
 }
 
 } // namespace
@@ -125,15 +124,19 @@ void command_costs(const int argc, char **argv)
     }
 
     const int limit = 180;
-    Costs costs = serialization::get_costs(start_time, limit);
+    const serialization::Costs costs = serialization::get_costs(start_time, limit);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", costs.raw_response);
         return;
     }
 
-    std::sort(costs.buckets.begin(), costs.buckets.end());
-    print_costs_(costs, days);
+    VecCostsBuckets buckets = std::move(costs.buckets);
+    std::sort(buckets.begin(), buckets.end());
+
+    print_individual_cost_buckets_(buckets);
+
+    fmt::print("\nOverall usage (in USD) over {} days: {}\n", days, costs.total_cost);
 }
 
 } // namespace commands
