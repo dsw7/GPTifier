@@ -95,7 +95,7 @@ using serialization::Costs;
 
 void print_costs_(const Costs &costs, const int days)
 {
-    fmt::print("{:<25}{:<25}{:<25}{}\n\n", "Start time", "End time", "Usage (USD)", "Organization ID");
+    fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
 
     for (const auto &bucket: costs.buckets) {
         const std::string dt_start = utils::datetime_from_unix_timestamp(bucket.start_time);
