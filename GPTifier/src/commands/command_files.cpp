@@ -11,7 +11,7 @@
 
 namespace {
 
-void help_files()
+void help_files_()
 {
     const std::string messages = R"(Manage files uploaded to OpenAI servers.
 
@@ -29,7 +29,7 @@ Commands:
     fmt::print("{}\n", messages);
 }
 
-void help_files_list()
+void help_files_list_()
 {
     const std::string messages = R"(Get list of files uploaded to OpenAI servers.
 
@@ -44,7 +44,7 @@ Options:
     fmt::print("{}\n", messages);
 }
 
-void help_files_delete()
+void help_files_delete_()
 {
     const std::string messages = R"(Delete one or more uploaded files.
 
@@ -64,21 +64,17 @@ Use "gpt files list" to get the IDs corresponding to files to be deleted
 
 using serialization::Files;
 
-void print_files(const Files &files)
+void print_uploaded_files_(const Files &files)
 {
-    utils::separator();
-    fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
-    utils::separator();
+    fmt::print("{:<30}{:<30}{:<30}{}\n\n", "File ID", "Filename", "Creation time", "Purpose");
 
     for (const auto &file: files.files) {
         const std::string dt_created_at = utils::datetime_from_unix_timestamp(file.created_at);
         fmt::print("{:<30}{:<30}{:<30}{}\n", file.id, file.filename, dt_created_at, file.purpose);
     }
-
-    utils::separator();
 }
 
-void list_files(const int argc, char **argv)
+void list_uploaded_files_(const int argc, char **argv)
 {
     bool print_raw_json = false;
 
@@ -98,7 +94,7 @@ void list_files(const int argc, char **argv)
 
         switch (c) {
             case 'h':
-                help_files_list();
+                help_files_list_();
                 exit(EXIT_SUCCESS);
             case 'j':
                 print_raw_json = true;
@@ -115,12 +111,12 @@ void list_files(const int argc, char **argv)
         return;
     }
 
-    print_files(files);
+    print_uploaded_files_(files);
 }
 
 // Delete files ---------------------------------------------------------------------------------------------
 
-bool loop_over_ids(const std::vector<std::string> &ids)
+bool loop_over_file_ids_to_delete_(const std::vector<std::string> &ids)
 {
     bool success = true;
 
@@ -151,7 +147,7 @@ bool loop_over_ids(const std::vector<std::string> &ids)
     return success;
 }
 
-void delete_files(const int argc, char **argv)
+void delete_uploaded_files_(const int argc, char **argv)
 {
     if (argc == 3) {
         throw std::runtime_error("One or more file IDs need to be provided");
@@ -164,11 +160,11 @@ void delete_files(const int argc, char **argv)
     }
 
     if (args_or_ids[0] == "-h" or args_or_ids[0] == "--help") {
-        help_files_delete();
+        help_files_delete_();
         return;
     }
 
-    if (not loop_over_ids(args_or_ids)) {
+    if (not loop_over_file_ids_to_delete_(args_or_ids)) {
         throw std::runtime_error("One or more failures occurred when deleting files");
     }
 }
@@ -180,23 +176,23 @@ namespace commands {
 void command_files(const int argc, char **argv)
 {
     if (argc == 2) {
-        list_files(argc, argv);
+        list_uploaded_files_(argc, argv);
         return;
     }
 
     const std::string subcommand = argv[2];
 
     if (subcommand == "-h" or subcommand == "--help") {
-        help_files();
+        help_files_();
         exit(EXIT_SUCCESS);
     }
 
     if (subcommand == "list") {
-        list_files(argc, argv);
+        list_uploaded_files_(argc, argv);
     } else if (subcommand == "delete") {
-        delete_files(argc, argv);
+        delete_uploaded_files_(argc, argv);
     } else {
-        help_files();
+        help_files_();
         exit(EXIT_FAILURE);
     }
 }
