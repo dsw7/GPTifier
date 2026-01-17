@@ -1,5 +1,5 @@
 #pragma once
 
 namespace commands {
-void command_fine_tune(int argc, char **argv);
+void command_fine_tune(const int argc, char **argv);
 }

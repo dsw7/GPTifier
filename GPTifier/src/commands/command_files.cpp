@@ -78,7 +78,7 @@ void print_files(const Files &files)
     utils::separator();
 }
 
-void list_files(int argc, char **argv)
+void list_files(const int argc, char **argv)
 {
     bool print_raw_json = false;
 
@@ -90,7 +90,7 @@ void list_files(int argc, char **argv)
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hj", long_options, &option_index);
+        const int c = getopt_long(argc, argv, "hj", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -151,7 +151,7 @@ bool loop_over_ids(const std::vector<std::string> &ids)
     return success;
 }
 
-void delete_files(int argc, char **argv)
+void delete_files(const int argc, char **argv)
 {
     if (argc == 3) {
         throw std::runtime_error("One or more file IDs need to be provided");
@@ -177,7 +177,7 @@ void delete_files(int argc, char **argv)
 
 namespace commands {
 
-void command_files(int argc, char **argv)
+void command_files(const int argc, char **argv)
 {
     if (argc == 2) {
         list_files(argc, argv);

@@ -8,7 +8,7 @@
 
 namespace commands {
 
-void command_test(int argc, char **argv)
+void command_test(const int argc, char **argv)
 {
     if (argc == 2) {
         throw std::runtime_error("Usage: gpt test (<target>)");

@@ -62,7 +62,7 @@ struct Parameters {
     std::optional<std::string> temperature;
 };
 
-Parameters read_cli(int argc, char **argv)
+Parameters read_cli(const int argc, char **argv)
 {
     Parameters params;
 
@@ -79,7 +79,7 @@ Parameters read_cli(int argc, char **argv)
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "ho:m:lp:r:t:", long_options, &option_index);
+        const int c = getopt_long(argc, argv, "ho:m:lp:r:t:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -465,7 +465,7 @@ void run_openai_query(const Parameters &params, const std::string &prompt)
 
 namespace commands {
 
-void command_run(int argc, char **argv)
+void command_run(const int argc, char **argv)
 {
     const Parameters params = read_cli(argc, argv);
     utils::separator();

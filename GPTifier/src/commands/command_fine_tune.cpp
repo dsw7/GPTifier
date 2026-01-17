@@ -103,7 +103,7 @@ Options:
 
 // Upload fine tuning file ----------------------------------------------------------------------------------
 
-void upload_fine_tuning_file(int argc, char **argv)
+void upload_fine_tuning_file(const int argc, char **argv)
 {
     if (argc == 3) {
         throw std::runtime_error("A fine tuning file needs to be provided");
@@ -126,7 +126,7 @@ void upload_fine_tuning_file(int argc, char **argv)
 
 // Create fine tuning job -----------------------------------------------------------------------------------
 
-void create_fine_tuning_job(int argc, char **argv)
+void create_fine_tuning_job(const int argc, char **argv)
 {
     if (argc < 4) {
         throw std::runtime_error("A fine tuning file ID and model needs to be provided");
@@ -165,7 +165,7 @@ void create_fine_tuning_job(int argc, char **argv)
 
 // Delete fine tuned model-----------------------------------------------------------------------------------
 
-void delete_fine_tuned_model(int argc, char **argv)
+void delete_fine_tuned_model(const int argc, char **argv)
 {
     if (argc == 3) {
         throw std::runtime_error("A model ID needs to be provided");
@@ -209,7 +209,7 @@ void print_fine_tuning_jobs(const FineTuningJobs &jobs)
     utils::separator();
 }
 
-void list_fine_tuning_jobs(int argc, char **argv)
+void list_fine_tuning_jobs(const int argc, char **argv)
 {
     bool print_raw_json = false;
     std::optional<std::string> limit;
@@ -223,7 +223,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hjl:", long_options, &option_index);
+        const int c = getopt_long(argc, argv, "hjl:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -275,7 +275,7 @@ void list_fine_tuning_jobs(int argc, char **argv)
 
 namespace commands {
 
-void command_fine_tune(int argc, char **argv)
+void command_fine_tune(const int argc, char **argv)
 {
     if (argc == 2) {
         help_fine_tune();

@@ -1,5 +1,5 @@
 #pragma once
 
 namespace commands {
-void command_run(int argc, char **argv);
+void command_run(const int argc, char **argv);
 }
