@@ -15,7 +15,7 @@
 
 namespace {
 
-void help_fine_tune()
+void help_fine_tune_()
 {
     const std::string messages = R"(Manage all fine-tuning operations.
 
@@ -35,7 +35,7 @@ Commands:
     fmt::print("{}\n", messages);
 }
 
-void help_fine_tune_upload_file()
+void help_fine_tune_upload_file_()
 {
     const std::string messages = R"(Upload a fine-tuning file. The file must be in JSONL format.
 
@@ -49,7 +49,7 @@ Options:
     fmt::print("{}\n", messages);
 }
 
-void help_fine_tune_create_job()
+void help_fine_tune_create_job_()
 {
     const std::string messages = R"(Create a fine-tuning job. Command will fine-tune a model named
 MODEL. Note that this command assumes that a fine-tuning file
@@ -67,7 +67,7 @@ The file ID can be obtained by running the 'gpt files list' command
     fmt::print("{}\n", messages);
 }
 
-void help_fine_tune_delete_model()
+void help_fine_tune_delete_model_()
 {
     const std::string messages = R"(Delete a fine-tuned model.
 
@@ -83,7 +83,7 @@ The model ID can be obtained by running the 'gpt models --user' command
     fmt::print("{}\n", messages);
 }
 
-void help_fine_tune_list_jobs()
+void help_fine_tune_list_jobs_()
 {
     const std::string messages = R"(List fine-tuning jobs. This command can also be used to track the progress
 of a fine-tuning job.
@@ -103,7 +103,7 @@ Options:
 
 // Upload fine tuning file ----------------------------------------------------------------------------------
 
-void upload_fine_tuning_file(const int argc, char **argv)
+void upload_fine_tuning_file_(const int argc, char **argv)
 {
     if (argc == 3) {
         throw std::runtime_error("A fine tuning file needs to be provided");
@@ -112,7 +112,7 @@ void upload_fine_tuning_file(const int argc, char **argv)
     const std::string opt_or_filename = argv[3];
 
     if (opt_or_filename == "-h" or opt_or_filename == "--help") {
-        help_fine_tune_upload_file();
+        help_fine_tune_upload_file_();
         return;
     }
 
@@ -126,7 +126,7 @@ void upload_fine_tuning_file(const int argc, char **argv)
 
 // Create fine tuning job -----------------------------------------------------------------------------------
 
-void create_fine_tuning_job(const int argc, char **argv)
+void create_fine_tuning_job_(const int argc, char **argv)
 {
     if (argc < 4) {
         throw std::runtime_error("A fine tuning file ID and model needs to be provided");
@@ -134,7 +134,7 @@ void create_fine_tuning_job(const int argc, char **argv)
         const std::string opt = argv[3];
 
         if (opt == "-h" or opt == "--help") {
-            help_fine_tune_create_job();
+            help_fine_tune_create_job_();
             exit(EXIT_SUCCESS);
         } else {
             fmt::print(stderr, "Unknown option: '{}'\n", opt);
@@ -144,8 +144,6 @@ void create_fine_tuning_job(const int argc, char **argv)
 
     const std::string training_file_id = argv[3];
     const std::string model = argv[4];
-
-    utils::separator();
 
     if (training_file_id.empty()) {
         throw std::runtime_error("Training file ID argument is empty");
@@ -157,7 +155,6 @@ void create_fine_tuning_job(const int argc, char **argv)
 
     fmt::print("Training using file with ID: {}\n", training_file_id);
     fmt::print("Training model: {}\n", model);
-    utils::separator();
 
     const std::string id = serialization::create_fine_tuning_job(model, training_file_id);
     fmt::print("Deployed fine tuning job with ID: {}\n", id);
@@ -165,7 +162,7 @@ void create_fine_tuning_job(const int argc, char **argv)
 
 // Delete fine tuned model-----------------------------------------------------------------------------------
 
-void delete_fine_tuned_model(const int argc, char **argv)
+void delete_fine_tuned_model_(const int argc, char **argv)
 {
     if (argc == 3) {
         throw std::runtime_error("A model ID needs to be provided");
@@ -174,7 +171,7 @@ void delete_fine_tuned_model(const int argc, char **argv)
     const std::string opt_or_model_id = argv[3];
 
     if (opt_or_model_id == "-h" or opt_or_model_id == "--help") {
-        help_fine_tune_delete_model();
+        help_fine_tune_delete_model_();
         return;
     }
 
@@ -195,21 +192,17 @@ void delete_fine_tuned_model(const int argc, char **argv)
 
 using serialization::FineTuningJobs;
 
-void print_fine_tuning_jobs(const FineTuningJobs &jobs)
+void print_fine_tuning_jobs_(const FineTuningJobs &jobs)
 {
-    utils::separator();
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
-    utils::separator();
 
     for (const auto &job: jobs.jobs) {
         const std::string dt_created_at = utils::datetime_from_unix_timestamp(job.created_at);
         fmt::print("{:<40}{:<30}{:<30}{}\n", job.id, dt_created_at, job.estimated_finish, job.finished_at);
     }
-
-    utils::separator();
 }
 
-void list_fine_tuning_jobs(const int argc, char **argv)
+void list_fine_tuning_jobs_(const int argc, char **argv)
 {
     bool print_raw_json = false;
     std::optional<std::string> limit;
@@ -231,7 +224,7 @@ void list_fine_tuning_jobs(const int argc, char **argv)
 
         switch (c) {
             case 'h':
-                help_fine_tune_list_jobs();
+                help_fine_tune_list_jobs_();
                 exit(EXIT_SUCCESS);
             case 'j':
                 print_raw_json = true;
@@ -263,12 +256,11 @@ void list_fine_tuning_jobs(const int argc, char **argv)
     }
 
     if (not limit) {
-        utils::separator();
-        fmt::print("> No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n");
+        fmt::print("No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n\n");
     }
 
     std::sort(jobs.jobs.begin(), jobs.jobs.end());
-    print_fine_tuning_jobs(jobs);
+    print_fine_tuning_jobs_(jobs);
 }
 
 } // namespace
@@ -278,27 +270,27 @@ namespace commands {
 void command_fine_tune(const int argc, char **argv)
 {
     if (argc == 2) {
-        help_fine_tune();
+        help_fine_tune_();
         exit(EXIT_FAILURE);
     }
 
     const std::string subcommand = argv[2];
 
     if (subcommand == "-h" or subcommand == "--help") {
-        help_fine_tune();
+        help_fine_tune_();
         exit(EXIT_SUCCESS);
     }
 
     if (subcommand == "upload-file") {
-        upload_fine_tuning_file(argc, argv);
+        upload_fine_tuning_file_(argc, argv);
     } else if (subcommand == "create-job") {
-        create_fine_tuning_job(argc, argv);
+        create_fine_tuning_job_(argc, argv);
     } else if (subcommand == "delete-model") {
-        delete_fine_tuned_model(argc, argv);
+        delete_fine_tuned_model_(argc, argv);
     } else if (subcommand == "list-jobs") {
-        list_fine_tuning_jobs(argc, argv);
+        list_fine_tuning_jobs_(argc, argv);
     } else {
-        help_fine_tune();
+        help_fine_tune_();
         exit(EXIT_FAILURE);
     }
 }
