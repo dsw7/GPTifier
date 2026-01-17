@@ -11,7 +11,17 @@ namespace serialization {
 
 namespace {
 
-Files unpack_files(const std::string &response)
+File unpack_file_object_(const nlohmann::json &entry)
+{
+    File file_obj;
+    file_obj.created_at = entry["created_at"];
+    file_obj.filename = entry["filename"];
+    file_obj.id = entry["id"];
+    file_obj.purpose = entry["purpose"];
+    return file_obj;
+}
+
+Files unpack_files_response_(const std::string &response)
 {
     const nlohmann::json json = parse_json(response);
 
@@ -20,12 +30,7 @@ Files unpack_files(const std::string &response)
 
     try {
         for (const auto &entry: json["data"]) {
-            File file;
-            file.created_at = entry["created_at"];
-            file.filename = entry["filename"];
-            file.id = entry["id"];
-            file.purpose = entry["purpose"];
-            files.files.push_back(file);
+            files.files.push_back(unpack_file_object_(entry));
         }
     } catch (const nlohmann::json::exception &e) {
         throw std::runtime_error(fmt::format("Failed to unpack response: {}", e.what()));
@@ -39,11 +44,12 @@ Files unpack_files(const std::string &response)
 Files get_files()
 {
     const auto result = networking::get_uploaded_files();
+
     if (not result) {
         throw_on_openai_error_response(result.error().response);
     }
 
-    return unpack_files(result->response);
+    return unpack_files_response_(result->response);
 }
 
 bool delete_file(const std::string &file_id)
