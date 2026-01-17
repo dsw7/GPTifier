@@ -11,7 +11,7 @@
 
 namespace {
 
-void help_models()
+void help_models_()
 {
     const std::string messages = R"(List available OpenAI or user models.
 
@@ -53,7 +53,7 @@ Parameters read_cli_(const int argc, char **argv)
 
         switch (c) {
             case 'h':
-                help_models();
+                help_models_();
                 exit(EXIT_SUCCESS);
             case 'j':
                 params.print_raw_json = true;
@@ -71,7 +71,7 @@ Parameters read_cli_(const int argc, char **argv)
 
 using VecModels = std::vector<serialization::Model>;
 
-VecModels get_openai_models(const VecModels &all_models)
+VecModels get_openai_models_(const VecModels &all_models)
 {
     VecModels openai_models;
 
@@ -84,7 +84,7 @@ VecModels get_openai_models(const VecModels &all_models)
     return openai_models;
 }
 
-VecModels get_user_models(const VecModels &all_models)
+VecModels get_user_models_(const VecModels &all_models)
 {
     VecModels user_models;
 
@@ -97,20 +97,15 @@ VecModels get_user_models(const VecModels &all_models)
     return user_models;
 }
 
-void print_models(const VecModels &models)
+void print_models_(const VecModels &models)
 {
-    fmt::print("> Number of models: {}\n", models.size());
-    utils::separator();
-
+    fmt::print("Number of models: {}\n\n", models.size());
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
-    utils::separator();
 
     for (const auto &model: models) {
         const std::string dt_created_at = utils::datetime_from_unix_timestamp(model.created_at);
         fmt::print("{:<25}{:<35}{}\n", dt_created_at, model.owner, model.id);
     }
-
-    utils::separator();
 }
 
 } // namespace
@@ -132,12 +127,12 @@ void command_models(const int argc, char **argv)
     VecModels filtered_models;
 
     if (params.print_user_models) {
-        filtered_models = get_user_models(all_models.models);
+        filtered_models = get_user_models_(all_models.models);
     } else {
-        filtered_models = get_openai_models(all_models.models);
+        filtered_models = get_openai_models_(all_models.models);
     }
 
-    print_models(filtered_models);
+    print_models_(filtered_models);
 }
 
 } // namespace commands
