@@ -10,18 +10,19 @@ namespace serialization {
 
 namespace {
 
-OpenAIResponse unpack_openai_response(const std::string &response)
+void is_valid_openai_response_object_(const nlohmann::json &json)
 {
-    const nlohmann::json json = parse_json(response);
-
-    if (json.contains("object")) {
-        if (json["object"] != "response") {
-            throw std::runtime_error("The response from OpenAI is not an OpenAI Response");
-        }
-    } else {
+    if (not json.contains("object")) {
         throw std::runtime_error("The response from OpenAI does not contain an 'object' key");
     }
 
+    if (json["object"] != "response") {
+        throw std::runtime_error("The response from OpenAI is not an OpenAI Response");
+    }
+}
+
+std::string extract_output_from_response_(const nlohmann::json &json)
+{
     nlohmann::json content;
     bool job_complete = false;
 
@@ -41,24 +42,34 @@ OpenAIResponse unpack_openai_response(const std::string &response)
         throw std::runtime_error("OpenAI did not complete the transaction");
     }
 
-    OpenAIResponse rp;
-
     if (content["type"] == "output_text") {
-        rp.output = content["text"];
-    } else if (content["type"] == "refusal") {
-        rp.output = content["refusal"];
-    } else {
-        throw std::runtime_error("Some unknown object type was returned from OpenAI");
+        return content["text"];
     }
 
-    rp.created = json["created_at"];
-    rp.input_tokens = json["usage"]["input_tokens"];
-    rp.model = json["model"];
-    rp.output_tokens = json["usage"]["output_tokens"];
-    return rp;
+    if (content["type"] == "refusal") {
+        return content["refusal"];
+    }
+
+    throw std::runtime_error("Some unknown object type was returned from OpenAI");
 }
 
-OllamaResponse unpack_ollama_response(const std::string &response)
+OpenAIResponse unpack_openai_response_(const std::string &response)
+{
+    const nlohmann::json json = parse_json(response);
+
+    is_valid_openai_response_object_(json);
+    OpenAIResponse response_obj;
+
+    response_obj.created = json["created_at"];
+    response_obj.input_tokens = json["usage"]["input_tokens"];
+    response_obj.model = json["model"];
+    response_obj.output = extract_output_from_response_(json);
+    response_obj.output_tokens = json["usage"]["output_tokens"];
+
+    return response_obj;
+}
+
+OllamaResponse unpack_ollama_response_(const std::string &response)
 {
     const nlohmann::json json = parse_json(response);
 
@@ -70,13 +81,15 @@ OllamaResponse unpack_ollama_response(const std::string &response)
         throw std::runtime_error("The response from Ollama indicates the job is not done");
     }
 
-    OllamaResponse results;
-    results.created = json["created_at"];
-    results.input_tokens = json["prompt_eval_count"];
-    results.model = json["model"];
-    results.output = json["response"];
-    results.output_tokens = json["eval_count"];
-    return results;
+    OllamaResponse response_obj;
+
+    response_obj.created = json["created_at"];
+    response_obj.input_tokens = json["prompt_eval_count"];
+    response_obj.model = json["model"];
+    response_obj.output = json["response"];
+    response_obj.output_tokens = json["eval_count"];
+
+    return response_obj;
 }
 
 } // namespace
@@ -99,11 +112,13 @@ OpenAIResponse create_openai_response(const std::string &input, const std::strin
         throw_on_openai_error_response(result.error().response);
     }
 
-    OpenAIResponse rp = unpack_openai_response(result->response);
-    rp.input = input;
-    rp.raw_response = result->response;
-    rp.rtt = rtt;
-    return rp;
+    OpenAIResponse response = unpack_openai_response_(result->response);
+
+    response.input = input;
+    response.raw_response = result->response;
+    response.rtt = rtt;
+
+    return response;
 }
 
 OllamaResponse create_ollama_response(const std::string &prompt, const std::string &model)
@@ -123,11 +138,13 @@ OllamaResponse create_ollama_response(const std::string &prompt, const std::stri
         throw_on_ollama_error_response(result.error().response);
     }
 
-    OllamaResponse rp = unpack_ollama_response(result->response);
-    rp.input = prompt;
-    rp.raw_response = result->response;
-    rp.rtt = rtt;
-    return rp;
+    OllamaResponse response = unpack_ollama_response_(result->response);
+
+    response.input = prompt;
+    response.raw_response = result->response;
+    response.rtt = rtt;
+
+    return response;
 }
 
 std::string test_curl_handle_is_reusable()
@@ -157,9 +174,9 @@ std::string test_curl_handle_is_reusable()
         throw_on_openai_error_response(result_3.error().response);
     }
 
-    const OpenAIResponse rp_1 = unpack_openai_response(result_1->response);
-    const OpenAIResponse rp_2 = unpack_openai_response(result_2->response);
-    const OpenAIResponse rp_3 = unpack_openai_response(result_3->response);
+    const OpenAIResponse rp_1 = unpack_openai_response_(result_1->response);
+    const OpenAIResponse rp_2 = unpack_openai_response_(result_2->response);
+    const OpenAIResponse rp_3 = unpack_openai_response_(result_3->response);
 
     const nlohmann::json results = {
         { "result_1", rp_1.output },
