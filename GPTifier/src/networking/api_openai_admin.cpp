@@ -9,7 +9,7 @@ namespace {
 
 const std::string URL_ORGANIZATION = "https://api.openai.com/v1/organization";
 
-std::string get_admin_api_key()
+std::string get_openai_admin_api_key_()
 {
     static std::string api_key;
 
@@ -29,12 +29,12 @@ std::string get_admin_api_key()
 
 namespace networking {
 
-CurlResult get_costs(const std::time_t &start_time, int limit)
+CurlResult get_costs(const std::time_t start_time, const int limit)
 {
     Curl curl;
     CURL *handle = curl.get_handle();
 
-    curl.append_header("Authorization: Bearer " + get_admin_api_key());
+    curl.append_header("Authorization: Bearer " + get_openai_admin_api_key_());
     curl.append_header("Content-Type: application/json");
     curl_easy_setopt(handle, CURLOPT_HTTPHEADER, curl.get_headers());
 
