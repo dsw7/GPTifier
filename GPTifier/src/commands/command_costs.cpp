@@ -7,6 +7,7 @@
 #include <ctime>
 #include <fmt/core.h>
 #include <getopt.h>
+#include <iostream>
 #include <string>
 
 namespace {
@@ -120,7 +121,7 @@ void command_costs(int argc, char **argv)
     const std::time_t start_time = get_current_time_minus_days_(days);
 
     if (not params.print_raw_json) {
-        fmt::print("Awaiting response from API...\n");
+        std::cout << "Getting usage statistics from OpenAI servers...\r" << std::flush;
     }
 
     const int limit = 180;
