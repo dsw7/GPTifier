@@ -15,7 +15,7 @@
 
 namespace {
 
-void help_embed()
+void help_embed_()
 {
     const std::string messages = R"(Get embedding representing a block of text. By default, the subcommand
 will read text interactively. Long blocks of text can be read into the
@@ -44,7 +44,7 @@ struct Parameters {
     std::optional<std::string> output_file;
 };
 
-Parameters read_cli(int argc, char **argv)
+Parameters read_cli_(const int argc, char **argv)
 {
     Parameters params;
 
@@ -58,7 +58,7 @@ Parameters read_cli(int argc, char **argv)
             { 0, 0, 0, 0 } };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hm:li:o:r:", long_options, &option_index);
+        const int c = getopt_long(argc, argv, "hm:li:o:r:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -66,7 +66,7 @@ Parameters read_cli(int argc, char **argv)
 
         switch (c) {
             case 'h':
-                help_embed();
+                help_embed_();
                 exit(EXIT_SUCCESS);
             case 'm':
                 params.model = optarg;
@@ -97,7 +97,7 @@ Parameters read_cli(int argc, char **argv)
     return params;
 }
 
-std::string read_text_from_stdin()
+std::string read_input_text_from_stdin_()
 {
     fmt::print(fg(white), "Input text to embed: ");
     std::string text;
@@ -106,7 +106,7 @@ std::string read_text_from_stdin()
     return text;
 }
 
-std::string get_text_to_embed(const Parameters &params)
+std::string get_text_to_embed_(const Parameters &params)
 {
     std::string text_to_embed;
 
@@ -116,7 +116,7 @@ std::string get_text_to_embed(const Parameters &params)
         fmt::print("Reading text from file: '{}'\n", params.input_file.value());
         text_to_embed = utils::read_from_file(params.input_file.value());
     } else {
-        text_to_embed = read_text_from_stdin();
+        text_to_embed = read_input_text_from_stdin_();
     }
 
     if (text_to_embed.empty()) {
@@ -126,7 +126,7 @@ std::string get_text_to_embed(const Parameters &params)
     return text_to_embed;
 }
 
-std::string get_model(const Parameters &params)
+std::string select_model_(const Parameters &params)
 {
     std::string model;
 
@@ -149,7 +149,7 @@ std::string get_model(const Parameters &params)
 
 using serialization::Embedding;
 
-void export_embedding(const Embedding &embedding, const std::string &output_file)
+void export_embedding_(const Embedding &embedding, const std::string &output_file)
 {
     const nlohmann::json json = {
         { "embedding", embedding.embedding },
@@ -166,11 +166,11 @@ void export_embedding(const Embedding &embedding, const std::string &output_file
 
 namespace commands {
 
-void command_embed(int argc, char **argv)
+void command_embed(const int argc, char **argv)
 {
-    const Parameters params = read_cli(argc, argv);
-    const std::string text_to_embed = get_text_to_embed(params);
-    const std::string model = get_model(params);
+    const Parameters params = read_cli_(argc, argv);
+    const std::string text_to_embed = get_text_to_embed_(params);
+    const std::string model = select_model_(params);
 
     Embedding embedding;
 
@@ -188,7 +188,7 @@ void command_embed(int argc, char **argv)
         output_file = datadir::GPT_EMBEDDINGS.string();
     }
 
-    export_embedding(embedding, output_file);
+    export_embedding_(embedding, output_file);
 }
 
 } // namespace commands

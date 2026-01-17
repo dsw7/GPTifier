@@ -35,7 +35,7 @@ struct Parameters {
     std::string days = "30";
 };
 
-Parameters read_cli_(int argc, char **argv)
+Parameters read_cli_(const int argc, char **argv)
 {
     Parameters params;
 
@@ -48,7 +48,7 @@ Parameters read_cli_(int argc, char **argv)
         };
 
         int option_index = 0;
-        int c = getopt_long(argc, argv, "hjd:", long_options, &option_index);
+        const int c = getopt_long(argc, argv, "hjd:", long_options, &option_index);
 
         if (c == -1) {
             break;
@@ -110,7 +110,7 @@ void print_costs_(const Costs &costs, const int days)
 
 namespace commands {
 
-void command_costs(int argc, char **argv)
+void command_costs(const int argc, char **argv)
 {
     const Parameters params = read_cli_(argc, argv);
 

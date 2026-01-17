@@ -1,5 +1,5 @@
 #pragma once
 
 namespace commands {
-void command_costs(int argc, char **argv);
+void command_costs(const int argc, char **argv);
 }
