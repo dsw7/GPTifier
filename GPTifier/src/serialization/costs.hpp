@@ -24,6 +24,6 @@ struct Costs {
     std::vector<CostsBucket> buckets;
 };
 
-Costs get_costs(std::time_t start_time, int limit);
+Costs get_costs(const std::time_t start_time, const int limit);
 
 } // namespace serialization

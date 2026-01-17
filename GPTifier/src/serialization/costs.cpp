@@ -11,7 +11,7 @@ namespace serialization {
 
 namespace {
 
-Costs unpack_costs(const std::string &response)
+Costs unpack_costs_response_(const std::string &response)
 {
     const nlohmann::json json = parse_json(response);
 
@@ -52,7 +52,7 @@ Costs unpack_costs(const std::string &response)
 
 } // namespace
 
-Costs get_costs(std::time_t start_time, int limit)
+Costs get_costs(const std::time_t start_time, const int limit)
 {
     const auto result = networking::get_costs(start_time, limit);
 
@@ -60,7 +60,7 @@ Costs get_costs(std::time_t start_time, int limit)
         throw_on_openai_error_response(result.error().response);
     }
 
-    return unpack_costs(result->response);
+    return unpack_costs_response_(result->response);
 }
 
 } // namespace serialization
