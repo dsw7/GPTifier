@@ -80,8 +80,7 @@ void print_models_(const VecModels &models)
     fmt::print("{:<25}{:<35}{}\n", "Creation time", "Owner", "Model ID");
 
     for (const auto &model: models) {
-        const std::string dt_created_at = utils::datetime_from_unix_timestamp(model.created_at);
-        fmt::print("{:<25}{:<35}{}\n", dt_created_at, model.owner, model.id);
+        fmt::print("{:<25}{:<35}{}\n", model.created_at_dt_str, model.owner, model.id);
     }
 }
 
@@ -100,8 +99,6 @@ void command_models(const int argc, char **argv)
     }
 
     VecModels models = std::move(response.models);
-    std::sort(models.begin(), models.end());
-
     VecModels filtered_models;
 
     std::copy_if(
@@ -114,6 +111,7 @@ void command_models(const int argc, char **argv)
             return model.owned_by_openai;
         });
 
+    std::sort(filtered_models.begin(), filtered_models.end());
     print_models_(filtered_models);
 }
 
