@@ -8,7 +8,9 @@ namespace serialization {
 
 struct CostsBucket {
     float cost = 0.00;
+    std::string end_time_dt_str;
     std::string org_id;
+    std::string start_time_dt_str;
     std::time_t end_time;
     std::time_t start_time;
 

@@ -2,6 +2,7 @@
 
 #include "api_openai_admin.hpp"
 #include "ser_utils.hpp"
+#include "utils.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -24,7 +25,9 @@ CostsBucket unpack_individual_bucket_(const nlohmann::json &entry)
 {
     CostsBucket bucket;
     bucket.start_time = entry["start_time"];
+    bucket.start_time_dt_str = utils::datetime_from_unix_timestamp(entry["start_time"]);
     bucket.end_time = entry["end_time"];
+    bucket.end_time_dt_str = utils::datetime_from_unix_timestamp(entry["end_time"]);
     bucket.cost = get_costs_amount_(entry["results"][0]);
     bucket.org_id = entry["results"][0]["organization_id"];
     return bucket;

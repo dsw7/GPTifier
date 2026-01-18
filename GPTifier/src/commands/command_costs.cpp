@@ -99,9 +99,8 @@ void print_individual_cost_buckets_(const VecCostsBuckets &buckets)
     fmt::print("{:<25}{:<25}{:<25}{}\n", "Start time", "End time", "Usage (USD)", "Organization ID");
 
     for (const auto &bucket: buckets) {
-        const std::string dt_start = utils::datetime_from_unix_timestamp(bucket.start_time);
-        const std::string dt_end = utils::datetime_from_unix_timestamp(bucket.end_time);
-        fmt::print("{:<25}{:<25}{:<25}{}\n", dt_start, dt_end, bucket.cost, bucket.org_id);
+        fmt::print("{:<25}{:<25}{:<25}{}\n",
+            bucket.start_time_dt_str, bucket.end_time_dt_str, bucket.cost, bucket.org_id);
     }
 }
 
