@@ -199,8 +199,7 @@ void print_fine_tuning_jobs_(const VecFineTuningJobs &jobs)
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
 
     for (const auto &job: jobs) {
-        const std::string dt_created_at = utils::datetime_from_unix_timestamp(job.created_at);
-        fmt::print("{:<40}{:<30}{:<30}{}\n", job.id, dt_created_at, job.estimated_finish, job.finished_at);
+        fmt::print("{:<40}{:<30}{:<30}{}\n", job.id, job.created_at_dt_str, job.estimated_finish, job.finished_at);
     }
 }
 

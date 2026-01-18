@@ -6,7 +6,8 @@
 namespace serialization {
 
 struct FineTuningJob {
-    int created_at;
+    int created_at = 0;
+    std::string created_at_dt_str;
     std::string estimated_finish = "-";
     std::string finished_at = "-";
     std::string id;
