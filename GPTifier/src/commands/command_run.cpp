@@ -123,6 +123,12 @@ Parameters read_cli_(const int argc, char **argv)
         }
     }
 
+    if (params.temperature) {
+        if (params.temperature.value().empty()) {
+            throw std::runtime_error("Empty temperature");
+        }
+    }
+
     return params;
 }
 
