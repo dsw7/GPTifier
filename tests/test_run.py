@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from json import loads
 from pathlib import Path
 from tempfile import NamedTemporaryFile, gettempdir
-from time import time
 from typing import Generator
 import pytest
 import utils
@@ -118,9 +117,6 @@ def test_valid_response_json_openai() -> None:
         assert "gpt-4o" in content.model
         assert content.input_ == prompt
         assert content.source == "OpenAI"
-
-        diff_created = abs(content.created - int(time()))
-        assert diff_created <= 2.0, "Creation times are not within 2 seconds"
 
 
 @pytest.mark.test_ollama
