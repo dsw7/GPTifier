@@ -353,6 +353,20 @@ void dump_response_to_completions_file_(const Response &response)
 
 #pragma GCC diagnostic pop
 
+void process_outgoing_response_(const Response &response)
+{
+    print_inference_usage_statistics_(response);
+    utils::separator();
+
+    print_completion_to_stdout_(response.output);
+    utils::separator();
+
+#ifndef TESTING_ENABLED
+    dump_response_to_completions_file_(response);
+    utils::separator();
+#endif
+}
+
 // OpenAI / Ollama ------------------------------------------------------------------------------------------
 
 void run_ollama_query_(const Parameters &params, const std::string &prompt)
@@ -373,19 +387,9 @@ void run_ollama_query_(const Parameters &params, const std::string &prompt)
 
     if (params.json_dump_file) {
         dump_response_to_json_file_(response, params.json_dump_file.value());
-        return;
+    } else {
+        process_outgoing_response_(response);
     }
-
-    print_inference_usage_statistics_(response);
-    utils::separator();
-
-    print_completion_to_stdout_(response.output);
-    utils::separator();
-
-#ifndef TESTING_ENABLED
-    dump_response_to_completions_file_(response);
-    utils::separator();
-#endif
 }
 
 void run_openai_query_(const Parameters &params, const std::string &prompt)
@@ -411,19 +415,9 @@ void run_openai_query_(const Parameters &params, const std::string &prompt)
 
     if (params.json_dump_file) {
         dump_response_to_json_file_(response, params.json_dump_file.value());
-        return;
+    } else {
+        process_outgoing_response_(response);
     }
-
-    print_inference_usage_statistics_(response);
-    utils::separator();
-
-    print_completion_to_stdout_(response.output);
-    utils::separator();
-
-#ifndef TESTING_ENABLED
-    dump_response_to_completions_file_(response);
-    utils::separator();
-#endif
 }
 
 } // namespace
