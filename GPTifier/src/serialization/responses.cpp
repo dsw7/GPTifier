@@ -3,6 +3,7 @@
 #include "api_ollama.hpp"
 #include "api_openai_user.hpp"
 #include "ser_utils.hpp"
+#include "utils.hpp"
 
 #include <algorithm>
 #include <stdexcept>
@@ -61,7 +62,7 @@ OpenAIResponse unpack_openai_response_(const std::string &response)
     is_valid_openai_response_object_(json);
     OpenAIResponse response_obj;
 
-    response_obj.created = json["created_at"];
+    response_obj.created = utils::datetime_from_unix_timestamp(json["created_at"]);
     response_obj.input_tokens = json["usage"]["input_tokens"];
     response_obj.model = json["model"];
     response_obj.output = extract_output_from_response_(json);

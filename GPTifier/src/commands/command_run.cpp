@@ -319,15 +319,11 @@ void print_inference_usage_statistics_(const T &response)
 template<typename T>
 void append_response_to_completions_file_(const T &response)
 {
-    std::string created;
     std::string source;
 
     if constexpr (std::is_same_v<T, OpenAIResponse>) {
-        created = utils::datetime_from_unix_timestamp(response.created);
         source = "OpenAI";
     } else {
-        // creation time comes as ISO date from Ollama
-        created = response.created;
         source = "Ollama";
     }
 
@@ -339,7 +335,7 @@ void append_response_to_completions_file_(const T &response)
         "> Input:\n{}\n\n"
         "> Output:\n{}\n"
         "}}\n\n",
-        created, source, response.model, response.input, response.output);
+        response.created, source, response.model, response.input, response.output);
 
     const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
     fmt::print("> Writing output to file {}\n", path_completions_file);
