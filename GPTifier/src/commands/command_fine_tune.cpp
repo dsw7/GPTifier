@@ -12,6 +12,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 namespace {
 
@@ -191,12 +192,13 @@ void delete_fine_tuned_model_(const int argc, char **argv)
 // Print fine tuning jobs -----------------------------------------------------------------------------------
 
 using serialization::FineTuningJobs;
+using VecFineTuningJobs = std::vector<serialization::FineTuningJob>;
 
-void print_fine_tuning_jobs_(const FineTuningJobs &jobs)
+void print_fine_tuning_jobs_(const VecFineTuningJobs &jobs)
 {
     fmt::print("{:<40}{:<30}{:<30}{}\n", "Job ID", "Created at", "Estimated finish", "Finished at");
 
-    for (const auto &job: jobs.jobs) {
+    for (const auto &job: jobs) {
         const std::string dt_created_at = utils::datetime_from_unix_timestamp(job.created_at);
         fmt::print("{:<40}{:<30}{:<30}{}\n", job.id, dt_created_at, job.estimated_finish, job.finished_at);
     }
@@ -246,12 +248,13 @@ void list_fine_tuning_jobs_(const int argc, char **argv)
     static int min_jobs_to_list = 1;
     static int max_jobs_to_list = 100;
 
-    const int limit_i = std::clamp(utils::string_to_int(limit.value_or("20")), min_jobs_to_list, max_jobs_to_list);
+    const int limit_clamped = std::clamp(
+        utils::string_to_int(limit.value_or("20")), min_jobs_to_list, max_jobs_to_list);
 
-    FineTuningJobs jobs = serialization::get_fine_tuning_jobs(limit_i);
+    const FineTuningJobs response = serialization::get_fine_tuning_jobs(limit_clamped);
 
     if (print_raw_json) {
-        fmt::print("{}\n", jobs.raw_response);
+        fmt::print("{}\n", response.raw_response);
         return;
     }
 
@@ -259,7 +262,9 @@ void list_fine_tuning_jobs_(const int argc, char **argv)
         fmt::print("No limit passed with --limit flag. Will use OpenAI's default retrieval limit of 20 listings\n\n");
     }
 
-    std::sort(jobs.jobs.begin(), jobs.jobs.end());
+    VecFineTuningJobs jobs = std::move(response.jobs);
+    std::sort(jobs.begin(), jobs.end());
+
     print_fine_tuning_jobs_(jobs);
 }
 
