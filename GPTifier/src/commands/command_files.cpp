@@ -69,8 +69,7 @@ void print_uploaded_files_(const Files &files)
     fmt::print("{:<30}{:<30}{:<30}{}\n", "File ID", "Filename", "Creation time", "Purpose");
 
     for (const auto &file: files.files) {
-        const std::string dt_created_at = utils::datetime_from_unix_timestamp(file.created_at);
-        fmt::print("{:<30}{:<30}{:<30}{}\n", file.id, file.filename, dt_created_at, file.purpose);
+        fmt::print("{:<30}{:<30}{:<30}{}\n", file.id, file.filename, file.created_at_dt_str, file.purpose);
     }
 }
 

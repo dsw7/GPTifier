@@ -2,6 +2,7 @@
 
 #include "api_openai_user.hpp"
 #include "ser_utils.hpp"
+#include "utils.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -15,6 +16,7 @@ File unpack_file_object_(const nlohmann::json &entry)
 {
     File file_obj;
     file_obj.created_at = entry["created_at"];
+    file_obj.created_at_dt_str = utils::datetime_from_unix_timestamp(entry["created_at"]);
     file_obj.filename = entry["filename"];
     file_obj.id = entry["id"];
     file_obj.purpose = entry["purpose"];

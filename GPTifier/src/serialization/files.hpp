@@ -6,7 +6,8 @@
 namespace serialization {
 
 struct File {
-    int created_at;
+    int created_at = 0;
+    std::string created_at_dt_str;
     std::string filename;
     std::string id;
     std::string purpose;
