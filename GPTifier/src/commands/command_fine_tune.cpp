@@ -245,13 +245,8 @@ void list_fine_tuning_jobs_(const int argc, char **argv)
         }
     }
 
-    static int min_jobs_to_list = 1;
-    static int max_jobs_to_list = 100;
-
-    const int limit_clamped = std::clamp(
-        utils::string_to_int(limit.value_or("20")), min_jobs_to_list, max_jobs_to_list);
-
-    const FineTuningJobs response = serialization::get_fine_tuning_jobs(limit_clamped);
+    const FineTuningJobs response = serialization::get_fine_tuning_jobs(
+        utils::string_to_int(limit.value_or("20")));
 
     if (print_raw_json) {
         fmt::print("{}\n", response.raw_response);

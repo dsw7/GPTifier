@@ -4,6 +4,7 @@
 #include "ser_utils.hpp"
 #include "utils.hpp"
 
+#include <algorithm>
 #include <json.hpp>
 #include <stdexcept>
 
@@ -49,9 +50,15 @@ FineTuningJobs unpack_fine_tuning_jobs_(const std::string &response)
 
 } // namespace
 
-FineTuningJobs get_fine_tuning_jobs(const int limit)
+FineTuningJobs get_fine_tuning_jobs(const int limit_jobs_to_print)
 {
-    const auto result = networking::get_fine_tuning_jobs(limit);
+    static int min_jobs_to_list = 1;
+    static int max_jobs_to_list = 100;
+
+    const int limit_clamped = std::clamp(limit_jobs_to_print, min_jobs_to_list, max_jobs_to_list);
+
+    const auto result = networking::get_fine_tuning_jobs(limit_clamped);
+
     if (not result) {
         throw_on_openai_error_response(result.error().response);
     }

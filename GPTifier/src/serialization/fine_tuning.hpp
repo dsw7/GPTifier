@@ -22,7 +22,7 @@ struct FineTuningJobs {
     std::vector<FineTuningJob> jobs;
 };
 
-FineTuningJobs get_fine_tuning_jobs(const int limit);
+FineTuningJobs get_fine_tuning_jobs(const int limit_jobs_to_print);
 std::string create_fine_tuning_job(const std::string &model, const std::string &training_file);
 
 } // namespace serialization
