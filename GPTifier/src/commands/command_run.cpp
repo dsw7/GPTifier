@@ -161,6 +161,8 @@ std::string get_prompt_(const Parameters &params)
 
 // Completion -----------------------------------------------------------------------------------------------
 
+using serialization::Response;
+
 std::atomic<bool> TIMER_ENABLED(false);
 
 void time_api_call_()
@@ -180,19 +182,17 @@ void time_api_call_()
     std::cout << " \r" << std::flush;
 }
 
-using serialization::OpenAIResponse;
-
-OpenAIResponse create_openai_response_(const std::string &model, const std::string &prompt, const float temperature)
+Response create_openai_response_(const std::string &model, const std::string &prompt, const float temperature)
 {
     TIMER_ENABLED.store(true);
     std::thread timer(time_api_call_);
 
     bool query_failed = false;
-    OpenAIResponse rp;
+    Response response;
     std::string errmsg;
 
     try {
-        rp = serialization::create_openai_response(prompt, model, temperature);
+        response = serialization::create_openai_response(prompt, model, temperature);
     } catch (std::runtime_error &e) {
         query_failed = true;
         errmsg = e.what();
@@ -206,22 +206,20 @@ OpenAIResponse create_openai_response_(const std::string &model, const std::stri
         throw std::runtime_error("Cannot proceed");
     }
 
-    return rp;
+    return response;
 }
 
-using serialization::OllamaResponse;
-
-OllamaResponse create_ollama_response_(const std::string &model, const std::string &prompt)
+Response create_ollama_response_(const std::string &model, const std::string &prompt)
 {
     TIMER_ENABLED.store(true);
     std::thread timer(time_api_call_);
 
     bool query_failed = false;
-    OllamaResponse rp;
+    Response response;
     std::string errmsg;
 
     try {
-        rp = serialization::create_ollama_response(prompt, model);
+        response = serialization::create_ollama_response(prompt, model);
     } catch (std::runtime_error &e) {
         query_failed = true;
         errmsg = e.what();
@@ -235,15 +233,14 @@ OllamaResponse create_ollama_response_(const std::string &model, const std::stri
         throw std::runtime_error("Cannot proceed");
     }
 
-    return rp;
+    return response;
 }
 
 // Output ---------------------------------------------------------------------------------------------------
 
-template<typename T>
-void dump_response_to_json_file_(const T &response, const std::string &json_dump_file)
+void dump_response_to_json_file_(const Response &response, const std::string &json_dump_file)
 {
-    nlohmann::json json = {
+    const nlohmann::json json = {
         { "created", response.created },
         { "input", response.input },
         { "input_tokens", response.input_tokens },
@@ -251,13 +248,8 @@ void dump_response_to_json_file_(const T &response, const std::string &json_dump
         { "output", response.output },
         { "output_tokens", response.output_tokens },
         { "rtt", response.rtt.count() },
+        { "source", response.source },
     };
-
-    if constexpr (std::is_same_v<T, OpenAIResponse>) {
-        json["source"] = "OpenAI";
-    } else {
-        json["source"] = "Ollama";
-    }
 
     fmt::print("Dumping results to '{}'\n", json_dump_file);
     utils::write_to_file(json_dump_file, json.dump(2));
@@ -290,8 +282,7 @@ void print_token_to_word_count_ratio_(int num_tokens, int num_words)
     }
 }
 
-template<typename T>
-void print_inference_usage_statistics_(const T &response)
+void print_inference_usage_statistics_(const Response &response)
 {
     const int wc_input = utils::get_word_count(response.input);
     const int wc_output = utils::get_word_count(response.output);
@@ -315,17 +306,8 @@ void print_inference_usage_statistics_(const T &response)
     print_token_to_word_count_ratio_(response.output_tokens, wc_output);
 }
 
-template<typename T>
-void append_response_to_completions_file_(const T &response)
+void append_response_to_completions_file_(const Response &response)
 {
-    std::string source;
-
-    if constexpr (std::is_same_v<T, OpenAIResponse>) {
-        source = "OpenAI";
-    } else {
-        source = "Ollama";
-    }
-
     const std::string text = fmt::format(
         "{{\n"
         "> Created at: {} (GMT)\n"
@@ -334,7 +316,7 @@ void append_response_to_completions_file_(const T &response)
         "> Input:\n{}\n\n"
         "> Output:\n{}\n"
         "}}\n\n",
-        response.created, source, response.model, response.input, response.output);
+        response.created, response.source, response.model, response.input, response.output);
 
     const std::string path_completions_file = datadir::GPT_COMPLETIONS.string();
     fmt::print("> Writing output to file {}\n", path_completions_file);
@@ -345,8 +327,7 @@ void append_response_to_completions_file_(const T &response)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-function"
 
-template<typename T>
-void dump_response_to_completions_file_(const T &response)
+void dump_response_to_completions_file_(const Response &response)
 {
     fmt::print(fg(white), "Export:\n");
     char choice = 'n';
@@ -388,7 +369,7 @@ void run_ollama_query_(const Parameters &params, const std::string &prompt)
         throw std::runtime_error("Model is empty");
     }
 
-    const OllamaResponse response = create_ollama_response_(model, prompt);
+    const Response response = create_ollama_response_(model, prompt);
 
     if (params.json_dump_file) {
         dump_response_to_json_file_(response, params.json_dump_file.value());
@@ -426,7 +407,7 @@ void run_openai_query_(const Parameters &params, const std::string &prompt)
     }
 
     const float temperature = utils::string_to_float(params.temperature.value_or("1.00"));
-    const OpenAIResponse response = create_openai_response_(model, prompt, temperature);
+    const Response response = create_openai_response_(model, prompt, temperature);
 
     if (params.json_dump_file) {
         dump_response_to_json_file_(response, params.json_dump_file.value());
