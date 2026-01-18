@@ -11,7 +11,6 @@ struct OpenAIResponse {
     int output_tokens = 0;
     std::chrono::duration<float> rtt;
     std::string created;
-    std::string id;
     std::string input;
     std::string model;
     std::string output;

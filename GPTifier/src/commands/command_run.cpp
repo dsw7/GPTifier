@@ -254,7 +254,6 @@ void dump_response_to_json_file_(const T &response, const std::string &json_dump
     };
 
     if constexpr (std::is_same_v<T, OpenAIResponse>) {
-        json["id"] = response.id;
         json["source"] = "OpenAI";
     } else {
         json["source"] = "Ollama";
