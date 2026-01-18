@@ -4,7 +4,6 @@
 #include "responses.hpp"
 #include "utils.hpp"
 
-#include <algorithm>
 #include <fmt/core.h>
 #include <getopt.h>
 #include <optional>
@@ -96,24 +95,6 @@ Parameters read_cli_(const int argc, char **argv)
     return params;
 }
 
-float select_temperature_(const std::optional<std::string> &temperature)
-{
-    float temp_f = 1.00;
-
-    if (temperature) {
-        if (temperature.value().empty()) {
-            throw std::runtime_error("Empty temperature");
-        }
-
-        temp_f = utils::string_to_float(temperature.value());
-    }
-
-    static float min_temp = 0.00;
-    static float max_temp = 2.00;
-
-    return std::clamp(temp_f, min_temp, max_temp);
-}
-
 void create_ollama_response_(const Parameters &params)
 {
     std::string model;
@@ -144,8 +125,10 @@ void create_openai_response_(const Parameters &params)
         model = configs.model_short_openai.value();
     }
 
-    const float temperature = select_temperature_(params.temperature);
-    const serialization::OpenAIResponse response = serialization::create_openai_response(params.prompt.value(), model, temperature);
+    const float temperature = utils::string_to_float(params.temperature.value_or("1.00"));
+
+    const serialization::OpenAIResponse response = serialization::create_openai_response(
+        params.prompt.value(), model, temperature);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", response.raw_response);

@@ -4,6 +4,7 @@
 #include "api_openai_user.hpp"
 #include "ser_utils.hpp"
 
+#include <algorithm>
 #include <stdexcept>
 
 namespace serialization {
@@ -94,13 +95,16 @@ OllamaResponse unpack_ollama_response_(const std::string &response)
 
 } // namespace
 
-OpenAIResponse create_openai_response(const std::string &input, const std::string &model, float temp)
+OpenAIResponse create_openai_response(const std::string &input, const std::string &model, const float temperature)
 {
+    static float min_temp = 0.00;
+    static float max_temp = 2.00;
+
     const nlohmann::json data = {
         { "input", input },
         { "model", model },
         { "store", false },
-        { "temperature", temp },
+        { "temperature", std::clamp(temperature, min_temp, max_temp) },
     };
 
     const auto start = std::chrono::high_resolution_clock::now();

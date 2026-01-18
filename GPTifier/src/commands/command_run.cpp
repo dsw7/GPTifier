@@ -5,7 +5,6 @@
 #include "responses.hpp"
 #include "utils.hpp"
 
-#include <algorithm>
 #include <array>
 #include <atomic>
 #include <chrono>
@@ -152,24 +151,6 @@ std::string get_prompt_(const Parameters &params)
     utils::separator();
 
     return prompt;
-}
-
-float select_temperature_(const std::optional<std::string> &temperature)
-{
-    float temp_f = 1.00;
-
-    if (temperature) {
-        if (temperature.value().empty()) {
-            throw std::runtime_error("Empty temperature");
-        }
-
-        temp_f = utils::string_to_float(temperature.value());
-    }
-
-    static float min_temp = 0.00;
-    static float max_temp = 2.00;
-
-    return std::clamp(temp_f, min_temp, max_temp);
 }
 
 // Completion -----------------------------------------------------------------------------------------------
@@ -443,7 +424,7 @@ void run_openai_query_(const Parameters &params, const std::string &prompt)
         throw std::runtime_error("Model is empty");
     }
 
-    const float temperature = select_temperature_(params.temperature);
+    const float temperature = utils::string_to_float(params.temperature.value_or("1.00"));
     const OpenAIResponse response = create_openai_response_(model, prompt, temperature);
 
     if (params.json_dump_file) {

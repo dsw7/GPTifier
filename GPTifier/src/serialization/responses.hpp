@@ -30,7 +30,7 @@ struct OllamaResponse {
     std::string raw_response;
 };
 
-OpenAIResponse create_openai_response(const std::string &input, const std::string &model, float temp);
+OpenAIResponse create_openai_response(const std::string &input, const std::string &model, const float temperature);
 OllamaResponse create_ollama_response(const std::string &prompt, const std::string &model);
 std::string test_curl_handle_is_reusable();
 
