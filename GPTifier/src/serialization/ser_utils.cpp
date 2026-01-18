@@ -5,6 +5,15 @@
 
 namespace serialization {
 
+std::string datetime_from_unix_timestamp(const std::time_t &timestamp)
+{
+    const std::tm *datetime = std::gmtime(&timestamp);
+    char buffer[80];
+
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", datetime);
+    return buffer;
+}
+
 nlohmann::json parse_json(const std::string &response)
 {
     nlohmann::json json;

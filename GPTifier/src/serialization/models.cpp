@@ -2,7 +2,6 @@
 
 #include "api_openai_user.hpp"
 #include "ser_utils.hpp"
-#include "utils.hpp"
 
 #include <fmt/core.h>
 #include <json.hpp>
@@ -29,7 +28,7 @@ Model unpack_model_object_(const nlohmann::json &entry)
 {
     Model model_object;
     model_object.created_at = entry["created"];
-    model_object.created_at_dt_str = utils::datetime_from_unix_timestamp(entry["created"]);
+    model_object.created_at_dt_str = datetime_from_unix_timestamp(entry["created"]);
     model_object.id = entry["id"];
     model_object.owned_by_openai = is_model_owned_by_openai_(entry["owned_by"]);
     model_object.owner = entry["owned_by"];

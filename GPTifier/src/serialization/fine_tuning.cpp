@@ -2,9 +2,9 @@
 
 #include "api_openai_user.hpp"
 #include "ser_utils.hpp"
-#include "utils.hpp"
 
 #include <algorithm>
+#include <fmt/core.h>
 #include <json.hpp>
 #include <stdexcept>
 
@@ -19,14 +19,14 @@ FineTuningJob unpack_fine_tuning_job_(const nlohmann::json &entry)
     ft_job_obj.id = entry["id"];
 
     ft_job_obj.created_at = entry["created_at"];
-    ft_job_obj.created_at_dt_str = utils::datetime_from_unix_timestamp(entry["created_at"]);
+    ft_job_obj.created_at_dt_str = datetime_from_unix_timestamp(entry["created_at"]);
 
     if (not entry["finished_at"].is_null()) {
-        ft_job_obj.finished_at = utils::datetime_from_unix_timestamp(entry["finished_at"]);
+        ft_job_obj.finished_at = datetime_from_unix_timestamp(entry["finished_at"]);
     }
 
     if (not entry["estimated_finish"].is_null()) {
-        ft_job_obj.estimated_finish = utils::datetime_from_unix_timestamp(entry["estimated_finish"]);
+        ft_job_obj.estimated_finish = datetime_from_unix_timestamp(entry["estimated_finish"]);
     }
 
     return ft_job_obj;
