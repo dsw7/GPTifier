@@ -54,12 +54,12 @@ std::string extract_output_from_response_(const nlohmann::json &json)
     throw std::runtime_error("Some unknown object type was returned from OpenAI");
 }
 
-OpenAIResponse unpack_openai_response_(const std::string &response)
+Response unpack_openai_response_(const std::string &response)
 {
     const nlohmann::json json = parse_json(response);
 
     is_valid_openai_response_object_(json);
-    OpenAIResponse response_obj;
+    Response response_obj;
 
     response_obj.created = datetime_from_unix_timestamp(json["created_at"]);
     response_obj.input_tokens = json["usage"]["input_tokens"];
@@ -70,7 +70,7 @@ OpenAIResponse unpack_openai_response_(const std::string &response)
     return response_obj;
 }
 
-OllamaResponse unpack_ollama_response_(const std::string &response)
+Response unpack_ollama_response_(const std::string &response)
 {
     const nlohmann::json json = parse_json(response);
 
@@ -82,7 +82,7 @@ OllamaResponse unpack_ollama_response_(const std::string &response)
         throw std::runtime_error("The response from Ollama indicates the job is not done");
     }
 
-    OllamaResponse response_obj;
+    Response response_obj;
 
     response_obj.created = json["created_at"];
     response_obj.input_tokens = json["prompt_eval_count"];
@@ -95,7 +95,7 @@ OllamaResponse unpack_ollama_response_(const std::string &response)
 
 } // namespace
 
-OpenAIResponse create_openai_response(const std::string &input, const std::string &model, const float temperature)
+Response create_openai_response(const std::string &input, const std::string &model, const float temperature)
 {
     static float min_temp = 0.00;
     static float max_temp = 2.00;
@@ -116,16 +116,17 @@ OpenAIResponse create_openai_response(const std::string &input, const std::strin
         throw_on_openai_error_response(result.error().response);
     }
 
-    OpenAIResponse response = unpack_openai_response_(result->response);
+    Response response = unpack_openai_response_(result->response);
 
     response.input = input;
     response.raw_response = result->response;
     response.rtt = rtt;
+    response.source = "OpenAI";
 
     return response;
 }
 
-OllamaResponse create_ollama_response(const std::string &prompt, const std::string &model)
+Response create_ollama_response(const std::string &prompt, const std::string &model)
 {
     const nlohmann::json data = {
         { "model", model },
@@ -142,11 +143,12 @@ OllamaResponse create_ollama_response(const std::string &prompt, const std::stri
         throw_on_ollama_error_response(result.error().response);
     }
 
-    OllamaResponse response = unpack_ollama_response_(result->response);
+    Response response = unpack_ollama_response_(result->response);
 
     response.input = prompt;
     response.raw_response = result->response;
     response.rtt = rtt;
+    response.source = "Ollama";
 
     return response;
 }
@@ -178,9 +180,9 @@ std::string test_curl_handle_is_reusable()
         throw_on_openai_error_response(result_3.error().response);
     }
 
-    const OpenAIResponse rp_1 = unpack_openai_response_(result_1->response);
-    const OpenAIResponse rp_2 = unpack_openai_response_(result_2->response);
-    const OpenAIResponse rp_3 = unpack_openai_response_(result_3->response);
+    const Response rp_1 = unpack_openai_response_(result_1->response);
+    const Response rp_2 = unpack_openai_response_(result_2->response);
+    const Response rp_3 = unpack_openai_response_(result_3->response);
 
     const nlohmann::json results = {
         { "result_1", rp_1.output },
