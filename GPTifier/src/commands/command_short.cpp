@@ -111,7 +111,8 @@ void create_ollama_response_(const Parameters &params)
         model = configs.model_short_ollama.value();
     }
 
-    const serialization::OllamaResponse response = serialization::create_ollama_response(params.prompt.value(), model);
+    const serialization::Response response = serialization::create_ollama_response(
+        params.prompt.value(), model);
 
     if (params.print_raw_json) {
         fmt::print("{}\n", response.raw_response);
@@ -133,7 +134,7 @@ void create_openai_response_(const Parameters &params)
 
     const float temperature = utils::string_to_float(params.temperature.value_or("1.00"));
 
-    const serialization::OpenAIResponse response = serialization::create_openai_response(
+    const serialization::Response response = serialization::create_openai_response(
         params.prompt.value(), model, temperature);
 
     if (params.print_raw_json) {
