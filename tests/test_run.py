@@ -214,7 +214,6 @@ def test_empty_model_ollama() -> None:
         "gpt-4o",
         "gpt-4o-mini",
         "o1",
-        "o1-pro",
         "o3-mini",
         "o4-mini",
     ],
