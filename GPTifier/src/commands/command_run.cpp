@@ -292,16 +292,16 @@ void print_inference_usage_statistics_(const Response &response)
     fmt::print("RTT: {} s\n", response.rtt.count());
     fmt::print("\n");
 
-    fmt::print("Prompt tokens: ");
+    fmt::print("Input tokens: ");
     fmt::print(fg(green), "{}\n", response.input_tokens);
-    fmt::print("Prompt size (words): ");
+    fmt::print("Input size (words): ");
     fmt::print(fg(green), "{}\n", wc_input);
     print_token_to_word_count_ratio_(response.input_tokens, wc_input);
     fmt::print("\n");
 
-    fmt::print("Completion tokens: ");
+    fmt::print("Output tokens: ");
     fmt::print(fg(green), "{}\n", response.output_tokens);
-    fmt::print("Completion size (words): ");
+    fmt::print("Output size (words): ");
     fmt::print(fg(green), "{}\n", wc_output);
     print_token_to_word_count_ratio_(response.output_tokens, wc_output);
 }
