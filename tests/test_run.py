@@ -272,8 +272,16 @@ def test_wrong_endpoint_model_not_found(model: str) -> None:
 
 
 @pytest.mark.test_openai
-@pytest.mark.parametrize("model", ["gpt-5", "gpt-5-mini", "gpt-5-codex", "o3"])
+@pytest.mark.parametrize("model", ["gpt-5", "gpt-5-mini", "gpt-5-codex"])
 def test_unverified_organization_error(model: str) -> None:
+    stderr = utils.assert_command_failure("run", f"-p'{DUMMY_PROMPT_2}'", f"-m{model}")
+    assert f"Your organization must be verified to use the model `{model}`." in stderr
+
+
+@pytest.mark.test_openai
+def test_unverified_organization_error_o3() -> None:
+    # Error message for model o3 still uses single quotes
+    model = "o3"
     stderr = utils.assert_command_failure("run", f"-p'{DUMMY_PROMPT_2}'", f"-m{model}")
     assert f"Your organization must be verified to use the model '{model}'." in stderr
 
