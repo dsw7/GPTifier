@@ -206,7 +206,6 @@ def test_empty_model_ollama() -> None:
 @pytest.mark.parametrize(
     "model",
     [
-        "codex-mini-latest",
         "gpt-3.5-turbo",
         "gpt-4",
         "gpt-4.1",
@@ -223,6 +222,14 @@ def test_empty_model_ollama() -> None:
 def test_misc_valid_openai_models(model: str) -> None:
     prompt = "What is 1 + 1?"
     utils.assert_command_success("run", f"-p'{prompt}'", f"-m{model}")
+
+
+@pytest.mark.test_openai
+@pytest.mark.parametrize("model", ["codex-mini-latest"])
+def test_deprecated_models_response(model: str) -> None:
+    prompt = "What is 1 + 1?"
+    stderr = utils.assert_command_failure("run", f"-p'{prompt}'", f"-m{model}")
+    assert f"The requested model '{model}' does not exist.\nCannot proceed" in stderr
 
 
 @pytest.mark.test_openai
