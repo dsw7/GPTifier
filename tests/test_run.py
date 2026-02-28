@@ -225,7 +225,7 @@ def test_misc_valid_openai_models(model: str) -> None:
 
 
 @pytest.mark.test_openai
-@pytest.mark.parametrize("model", ["codex-mini-latest"])
+@pytest.mark.parametrize("model", ["codex-mini-latest", "o1-mini"])
 def test_deprecated_models_response(model: str) -> None:
     prompt = "What is 1 + 1?"
     stderr = utils.assert_command_failure("run", f"-p'{prompt}'", f"-m{model}")
