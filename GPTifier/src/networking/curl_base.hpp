@@ -49,11 +49,15 @@ inline CurlResult check_curl_code(CURL *handle, const CURLcode code, const std::
     long http_status_code = -1;
     curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &http_status_code);
 
-    if (http_status_code != 200) {
-        return std::unexpected(Err { http_status_code, response });
+    if (http_status_code == 200) {
+        return Ok { http_status_code, response };
     }
 
-    return Ok { http_status_code, response };
+    if (http_status_code == 404 and response.empty()) {
+        return std::unexpected(Err { http_status_code, "{\"error\": {\"message\": \"URL not found\"}}" });
+    }
+
+    return std::unexpected(Err { http_status_code, response });
 }
 
 } // namespace networking
