@@ -52,6 +52,8 @@ inline CurlResult check_curl_code(CURL *handle, const CURLcode code, const std::
     switch (http_status_code) {
         case 200:
             return Ok { http_status_code, response };
+        case 404:
+            return std::unexpected(Err { http_status_code, "{\"error\": \"Not found\"}" });
         default:
             return std::unexpected(Err { http_status_code, response });
     }
