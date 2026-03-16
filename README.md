@@ -20,6 +20,13 @@ feels unacceptably invasive. Support for OpenAI integration will still be
 maintained, but as of right now, only fourth generation OpenAI models (i.e.
 `gpt-4o`) and below can be expected to work seamlessly with GPTifier.
 
+## 2026 Update 2 - Moving to Claude
+[OpenAI has recently announced an agreement with the Department of
+War](https://openai.com/index/our-agreement-with-the-department-of-war/). _It
+is unknown what this entails._ Users interested in divesting from OpenAI can
+consider using [Claudifier](https://github.com/dsw7/claudifier), or better yet,
+use the CLI tools provided by Anthropic itself.
+
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
