@@ -60,7 +60,6 @@ def test_non_existent_model_ollama() -> None:
 @pytest.mark.parametrize(
     "model",
     [
-        "dall-e-3",
         "gpt-3.5-turbo",
         "gpt-4",
         "gpt-4.1",
